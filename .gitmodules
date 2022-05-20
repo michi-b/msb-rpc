@@ -1,3 +1,6 @@
 [submodule "misbat-dotsettings"]
 	path = misbat-dotsettings
 	url = git@github.com:michi-b/misbat-dotsettings.git
+[submodule "Misbat.CodeAnalysis.Test"]
+	path = Misbat.CodeAnalysis.Test
+	url = git@github.com:michi-b/misbat-code-analysis-test.git
