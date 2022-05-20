@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRps", "MsbRps\MsbRps.csproj", "{25FBF4F0-E0B0-40BA-94FF-58B52DEE02AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRps", "MsbRps\MsbRps.csproj", "{25FBF4F0-E0B0-40BA-94FF-58B52DEE02AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Misbat.CodeAnalysis.Test", "Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj", "{ED63E780-1760-4E7E-85D0-C27FEC9CC5E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{25FBF4F0-E0B0-40BA-94FF-58B52DEE02AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25FBF4F0-E0B0-40BA-94FF-58B52DEE02AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25FBF4F0-E0B0-40BA-94FF-58B52DEE02AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED63E780-1760-4E7E-85D0-C27FEC9CC5E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED63E780-1760-4E7E-85D0-C27FEC9CC5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED63E780-1760-4E7E-85D0-C27FEC9CC5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED63E780-1760-4E7E-85D0-C27FEC9CC5E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
