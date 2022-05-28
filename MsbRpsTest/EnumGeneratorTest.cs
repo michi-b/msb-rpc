@@ -9,9 +9,13 @@ namespace MsbRpsTest;
 [TestClass]
 public class EnumGeneratorTest
 {
-    private static readonly CodeTest CodeTest = CodeTestUtility.Default.WithGenerator(new EnumGenerator());
+    private static readonly CodeTest CodeTest = CodeTestUtility.Default
+        .Configure(configuration => configuration.WithAdditionalGenerators(new EnumGenerator()));
 
-    public TestContext TestContext { get; set; } = null!;
+    // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    // Injected by MSTest
+    public TestContext TestContext { private get; set; } = null!;
 
     private CancellationToken CancellationToken => TestContext.CancellationTokenSource.Token;
 
@@ -29,15 +33,13 @@ public class EnumGeneratorTest
     [TestMethod]
     public async Task EnumExtensionsGeneratesCode()
     {
+        const string code = @"
+[EnumExtensions]
+public enum TestEnum{}";
+
         CodeTestResult result = (await CodeTest
             .WithAddedNamespaceImports("NetEscapades.EnumGenerators")
-            .WithCode
-            (
-                @"[EnumExtensions]
-public enum TestEnum
-{
-}"
-            )
+            .WithCode(code)
             .Run(CancellationToken)).Result;
         GeneratorDriverRunResult enumGeneratorResult = result.GeneratorResults[typeof(EnumGenerator)].GetRunResult();
         Assert.AreEqual(2, enumGeneratorResult.GeneratedTrees.Length);

@@ -27,29 +27,7 @@ public class EnumGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(compilationAndEnums, static (spc, source) => Execute(source.Compilation, source.enumDeclarations, spc));
     }
 
-    private static void Execute(Compilation compilation, ImmutableArray<EnumDeclarationSyntax> enums, SourceProductionContext context)
-    {
-        if (enums.IsDefaultOrEmpty)
-        {
-            // nothing to do yet
-            return;
-        }
-
-        // I'm not sure if this is actually necessary, but `[LoggerMessage]` does it, so seems like a good idea!
-        IEnumerable<EnumDeclarationSyntax> distinctEnums = enums.Distinct();
-
-        // Convert each EnumDeclarationSyntax to an EnumToGenerate
-        List<EnumToGenerate> enumsToGenerate = GetTypesToGenerate(compilation, distinctEnums, context.CancellationToken);
-
-        // If there were errors in the EnumDeclarationSyntax, we won't create an
-        // EnumToGenerate for it, so make sure we have something to generate
-        if (enumsToGenerate.Count > 0)
-        {
-            // generate the source code and add it to the output
-            string result = GenerateExtensionClass(enumsToGenerate);
-            context.AddSource("EnumExtensions.g.cs", SourceText.From(result, Encoding.UTF8));
-        }
-    }
+    private static bool IsSyntaxTargetForGeneration(SyntaxNode node) => node is EnumDeclarationSyntax { AttributeLists.Count: > 0 };
 
     private static EnumDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
@@ -78,6 +56,30 @@ public class EnumGenerator : IIncrementalGenerator
         }
 
         return null;
+    }
+
+    private static void Execute(Compilation compilation, ImmutableArray<EnumDeclarationSyntax> enums, SourceProductionContext context)
+    {
+        if (enums.IsDefaultOrEmpty)
+        {
+            // nothing to do yet
+            return;
+        }
+
+        // I'm not sure if this is actually necessary, but `[LoggerMessage]` does it, so seems like a good idea!
+        IEnumerable<EnumDeclarationSyntax> distinctEnums = enums.Distinct();
+
+        // Convert each EnumDeclarationSyntax to an EnumToGenerate
+        List<EnumToGenerate> enumsToGenerate = GetTypesToGenerate(compilation, distinctEnums, context.CancellationToken);
+
+        // If there were errors in the EnumDeclarationSyntax, we won't create an
+        // EnumToGenerate for it, so make sure we have something to generate
+        if (enumsToGenerate.Count > 0)
+        {
+            // generate the source code and add it to the output
+            string result = GenerateExtensionClass(enumsToGenerate);
+            context.AddSource("EnumExtensions.g.cs", SourceText.From(result, Encoding.UTF8));
+        }
     }
 
     private static List<EnumToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<EnumDeclarationSyntax> enums, CancellationToken ct)
@@ -125,8 +127,6 @@ public class EnumGenerator : IIncrementalGenerator
 
         return enumsToGenerate;
     }
-
-    private static bool IsSyntaxTargetForGeneration(SyntaxNode node) => node is EnumDeclarationSyntax { AttributeLists.Count: > 0 };
 
     private static string GenerateExtensionClass(List<EnumToGenerate> enumsToGenerate)
     {

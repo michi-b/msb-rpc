@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj" />
     <ProjectReference Include="..\MsbRps.CodeAnalysis\MsbRps.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\MsbRps\MsbRps.csproj" />
   </ItemGroup>
 
   <ItemGroup>
