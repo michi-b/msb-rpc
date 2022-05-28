@@ -25,4 +25,21 @@ public class EnumGeneratorTest
         GeneratorDriverRunResult enumGeneratorResult = result.GeneratorResults[typeof(EnumGenerator)].GetRunResult();
         Assert.AreEqual(1, enumGeneratorResult.GeneratedTrees.Length);
     }
+
+    [TestMethod]
+    public async Task EnumExtensionsGeneratesCode()
+    {
+        CodeTestResult result = (await CodeTest
+            .WithAddedNamespaceImports("NetEscapades.EnumGenerators")
+            .WithCode
+            (
+                @"[EnumExtensions]
+public enum TestEnum
+{
+}"
+            )
+            .Run(CancellationToken)).Result;
+        GeneratorDriverRunResult enumGeneratorResult = result.GeneratorResults[typeof(EnumGenerator)].GetRunResult();
+        Assert.AreEqual(2, enumGeneratorResult.GeneratedTrees.Length);
+    }
 }
