@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MsbRps.CodeAnalysis\MsbRps.CodeAnalysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" PrivateAssets="all"/>
+    <ProjectReference Include="..\MsbRps.CodeAnalysis\MsbRps.CodeAnalysis.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all"/>
     <ProjectReference Include="..\MsbRps\MsbRps.csproj" />
   </ItemGroup>
 

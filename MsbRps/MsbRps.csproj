@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+    <PackageId>MsbRps</PackageId>
+    <Description>A Roslyn source generator based remote procedure call framework</Description>
   </PropertyGroup>
 
 </Project>
