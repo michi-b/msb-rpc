@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpsConsoleTest", "MsbRps
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRps", "MsbRps\MsbRps.csproj", "{31A6AE9E-78A5-4786-B112-97E001022A55}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRps.CodeAnalysis", "MsbRps.CodeAnalysis\MsbRps.CodeAnalysis.csproj", "{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRps.Generator", "MsbRps.Generator\MsbRps.Generator.csproj", "{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRps.GeneratorAttributes", "MsbRps.GeneratorAttributes\MsbRps.GeneratorAttributes.csproj", "{7506B616-A0D1-415F-A102-576BE6E91D1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,14 @@ Global
 		{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}.Release|x86.ActiveCfg = Release|Any CPU
 		{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}.Release|x86.Build.0 = Release|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Debug|x86.Build.0 = Debug|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

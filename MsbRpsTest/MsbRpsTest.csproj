@@ -18,12 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj" />
-    <ProjectReference Include="..\MsbRps.CodeAnalysis\MsbRps.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\MsbRps.Generator\MsbRps.Generator.csproj" />
     <ProjectReference Include="..\MsbRps\MsbRps.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utility\" />
   </ItemGroup>
 
 </Project>

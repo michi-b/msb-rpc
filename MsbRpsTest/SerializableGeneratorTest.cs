@@ -1,27 +1,30 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Misbat.CodeAnalysis.Test.CodeTest;
 using Misbat.CodeAnalysis.Test.Utility;
-using MsbRps.CodeAnalysis;
-using MsbRps.Interfaces;
-using MsbRpsTest.Utility;
+using MsbRps.Generator;
+using MsbRps.GeneratorAttributes;
 
 namespace MsbRpsTest;
 
 [TestClass]
 public class SerializableGeneratorTest
 {
-    private static readonly MetadataReference MsbRpsAssembly 
-        = MetadataReferenceUtility.GetAssemblyReference<IRpsSerializable>();
-
-    private static readonly CodeTest CodeTest = CodeTestUtility.Default
-        .Configure
+    private static readonly CodeTest CodeTest = new CodeTest
         (
-            configuration => configuration
-                .WithAdditionalMetadataReferences(MsbRpsAssembly)
-                .WithAdditionalGenerators(new SerializableGenerator())
+            new CodeTestConfiguration
+            (
+                ImmutableArray.Create
+                (
+                    MetadataReferenceUtility.MsCoreLib,
+                    MetadataReferenceUtility.SystemRuntime,
+                    MetadataReferenceUtility.NetStandard,
+                    MetadataReferenceUtility.GetAssemblyReference<MsbRpsObject>()
+                )
+            ).WithAdditionalGenerators(new MsbRpsSourceGenerator())
         )
-        .WithAddedNamespaceImports("MsbRps.Interfaces");
+        .WithAddedNamespaceImports("MsbRps.GeneratorAttributes");
 
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -34,10 +37,11 @@ public class SerializableGeneratorTest
     public async Task ValidClassGeneratesSerialization()
     {
         const string code = @"
-public partial class Serializable : IRpsSerializable{}";
+[MsbRpsObject]
+public partial struct Test {}";
 
         CodeTestResult result = (await CodeTest.WithCode(code).Run(CancellationToken)).Result;
-        GeneratorDriverRunResult serializationGeneratorResult = result.GeneratorResults[typeof(SerializableGenerator)].GetRunResult();
+        GeneratorDriverRunResult serializationGeneratorResult = result.GeneratorResults[typeof(MsbRpsSourceGenerator)].GetRunResult();
         Assert.AreEqual(1, serializationGeneratorResult.GeneratedTrees.Length);
     }
 }

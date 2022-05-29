@@ -4,61 +4,45 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using MsbRps.CodeAnalysis.Extensions;
+using MsbRps.Generator.Extensions;
 
-namespace MsbRps.CodeAnalysis;
+namespace MsbRps.Generator;
 
 [Generator]
-public class SerializableGenerator : IIncrementalGenerator
+public class MsbRpsSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<TypeDeclarationSyntax> rpsSerializableTypeDeclarations = context.SyntaxProvider
-            .CreateSyntaxProvider(GetIsTypeDeclarationSyntaxWithSimpleBase, SelectRpsSerializableTypes)
+        IncrementalValuesProvider<TypeDeclarationSyntax> constantSizeSerializables = context.SyntaxProvider
+            .CreateSyntaxProvider(GetIsTypeDeclarationWithAttributes, SelectMsbRpsObjectDeclarationSyntax)
             .Where(syntax => syntax != null)!;
 
         IncrementalValueProvider<(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> typeDeclarationSyntax)> compilationAndTypes
-            = context.CompilationProvider.Combine(rpsSerializableTypeDeclarations.Collect());
+            = context.CompilationProvider.Combine(constantSizeSerializables.Collect());
 
         context.RegisterSourceOutput(compilationAndTypes, Execute);
     }
 
-    private static bool GetIsTypeDeclarationSyntaxWithSimpleBase(SyntaxNode syntaxNode, CancellationToken cancellationToken)
+    private static bool GetIsTypeDeclarationWithAttributes(SyntaxNode syntaxNode, CancellationToken cancellationToken)
     {
         // ReSharper disable once MergeIntoPattern
         // I find this better readable
         return syntaxNode is TypeDeclarationSyntax typeDeclarationSyntax
-               && typeDeclarationSyntax.BaseList != null
-               && typeDeclarationSyntax.BaseList
-                   .ChildNodes()
-                   .Any(node => node is SimpleBaseTypeSyntax);
+               && typeDeclarationSyntax.AttributeLists.Any((attributeList) => attributeList.ChildNodes().Any(node => node is AttributeSyntax));
     }
 
-    private static TypeDeclarationSyntax? SelectRpsSerializableTypes(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+    private static TypeDeclarationSyntax? SelectMsbRpsObjectDeclarationSyntax(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
         SemanticModel semanticModel = context.SemanticModel;
 
         var syntax = (TypeDeclarationSyntax)context.Node;
 
-        IEnumerable<SimpleBaseTypeSyntax> baseTypeSyntax = syntax.BaseList!.ChildNodes()
-            .OfType<SimpleBaseTypeSyntax>();
-
         var symbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(context.Node)!;
 
-        if (!symbol.Interfaces.Any(interfaceSymbol => interfaceSymbol.HasName(SymbolNames.SerializableInterface)))
-        {
-            return null;
-        }
-
-        //return null if serialization or deserialization is implemented
-        //if (symbol.GetMembers("Serialize").Any() || symbol.GetMembers("Deserialize").Any())
-        //{
-        //    return null;
-        //}
-
-        return syntax;
-        //todo: also return symbol
-        //return new ValueTuple<TypeDeclarationSyntax, INamedTypeSymbol>(syntax, symbol);
+        return symbol.GetAttributes()
+            .Any(attribute => attribute.AttributeClass != null && attribute.AttributeClass.HasName(Symbols.MsbRpsObjectAttributeName))
+            ? syntax
+            : null;
     }
 
     private void Execute
