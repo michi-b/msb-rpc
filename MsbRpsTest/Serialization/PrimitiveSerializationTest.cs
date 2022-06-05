@@ -5,7 +5,6 @@ namespace MsbRpsTest.Serialization;
 
 public abstract class PrimitiveSerializationTest<T>
 {
-    protected PrimitiveSerializer Serializer { get; private set; } = null!;
     protected byte[] SingleElementBuffer { get; private set; }= null!;
 
     protected abstract int ElementSize { get; }
@@ -14,13 +13,11 @@ public abstract class PrimitiveSerializationTest<T>
     public void Setup()
     {
         SingleElementBuffer = new byte[ElementSize];
-        Serializer = new PrimitiveSerializer();
     }
 
     [TestCleanup]
     public void Cleanup()
     {
-        Serializer = null!;
         SingleElementBuffer = null!;
     }
 

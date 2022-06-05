@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRps.Serialization.Primitives;
 
 namespace MsbRpsTest.Serialization.Primitives;
 
@@ -54,8 +55,8 @@ public class Int32SerializationTest : PrimitiveSerializationTest<Int32>
         const int value = -3;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        Serializer.Write(value, buffer, offset);
-        int result = Serializer.ReadInt32(buffer, offset);
+        PrimitiveSerializer.Write(value, buffer, offset);
+        int result = PrimitiveSerializer.ReadInt32(buffer, offset);
         Assert.AreEqual(value, result);
     }
 
@@ -68,13 +69,13 @@ public class Int32SerializationTest : PrimitiveSerializationTest<Int32>
 
         byte[] buffer = GetBuffer(3);
 
-        Serializer.Write(value0, buffer, GetOffset(0));
-        Serializer.Write(value1, buffer, GetOffset(1));
-        Serializer.Write(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.Write(value0, buffer, GetOffset(0));
+        PrimitiveSerializer.Write(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.Write(value2, buffer, GetOffset(2));
 
-        int result0 = Serializer.ReadInt32(buffer, GetOffset(0));
-        int result1 = Serializer.ReadInt32(buffer, GetOffset(1));
-        int result2 = Serializer.ReadInt32(buffer, GetOffset(2));
+        int result0 = PrimitiveSerializer.ReadInt32(buffer, GetOffset(0));
+        int result1 = PrimitiveSerializer.ReadInt32(buffer, GetOffset(1));
+        int result2 = PrimitiveSerializer.ReadInt32(buffer, GetOffset(2));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -83,8 +84,8 @@ public class Int32SerializationTest : PrimitiveSerializationTest<Int32>
 
     protected override void WriteSingleElement(int value)
     {
-        Serializer.Write(value, SingleElementBuffer);
+        PrimitiveSerializer.Write(value, SingleElementBuffer);
     }
 
-    protected override int ReadSingleElement() => Serializer.ReadInt32(SingleElementBuffer);
+    protected override int ReadSingleElement() => PrimitiveSerializer.ReadInt32(SingleElementBuffer);
 }
