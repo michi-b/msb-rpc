@@ -28,7 +28,7 @@ public class DoubleSerializationTest : PrimitiveSerializationTest<Double>
     [TestMethod]
     public void PreservesMinusOne()
     {
-        TestPreserves(-1);
+        TestPreserves(Double.Epsilon);
     }
 
     [TestMethod]
@@ -47,6 +47,30 @@ public class DoubleSerializationTest : PrimitiveSerializationTest<Double>
     public void PreservesMaximum()
     {
         TestPreserves(Double.MaxValue);
+    }
+
+    [TestMethod]
+    public void PreservesEpsilon()
+    {
+        TestPreserves(Double.Epsilon);
+    }
+
+    [TestMethod]
+    public void PreservesNaN()
+    {
+        TestPreserves(Double.NaN);
+    }
+
+    [TestMethod]
+    public void PreservesPositiveInfinity()
+    {
+        TestPreserves(Double.PositiveInfinity);
+    }
+
+    [TestMethod]
+    public void PreservesNegativeInfinity()
+    {
+        TestPreserves(Double.NegativeInfinity);
     }
 
     [TestMethod]
