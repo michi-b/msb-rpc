@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MsbRps.GeneratorAttributes\MsbRps.GeneratorAttributes.csproj" />
     <ProjectReference Include="..\MsbRps.Generator\MsbRps.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
     <ProjectReference Include="..\MsbRps\MsbRps.csproj" />
   </ItemGroup>

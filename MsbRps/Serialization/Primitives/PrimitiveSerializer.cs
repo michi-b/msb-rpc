@@ -58,6 +58,14 @@ public class PrimitiveSerializer
 
     #endregion
 
+    #region Single
+
+    public void WriteSingle(Single value, byte[] buffer, int offset = 0) => _union.WriteSingle(value, buffer, offset);
+
+    public static Single ReadSingle(byte[] buffer, int offset = 0) => BitConverter.ToSingle(buffer, offset);
+
+    #endregion
+
     #region Int32
 
     public void WriteInt32(Int32 value, byte[] buffer, int offset = 0) => _union.WriteInt32(value, buffer, offset);
@@ -65,4 +73,48 @@ public class PrimitiveSerializer
     public static Int32 ReadInt32(byte[] buffer, int offset = 0) => BitConverter.ToInt32(buffer, offset);
 
     #endregion
+
+    #region UInt32
+
+    public void WriteUInt32(UInt32 value, byte[] buffer, int offset = 0) => _union.WriteUInt32(value, buffer, offset);
+
+    public static UInt32 ReadUInt32(byte[] buffer, int offset = 0) => BitConverter.ToUInt32(buffer, offset);
+
+    #endregion
+
+    #region Int64
+
+    public void WriteInt64(Int64 value, byte[] buffer, int offset = 0) => _union.WriteInt64(value, buffer, offset);
+
+    public static Int64 ReadInt64(byte[] buffer, int offset = 0) => BitConverter.ToInt64(buffer, offset);
+
+    #endregion
+
+    #region UInt64
+
+    public void WriteUInt64(UInt64 value, byte[] buffer, int offset = 0) => _union.WriteUInt64(value, buffer, offset);
+
+    public static UInt64 ReadUInt64(byte[] buffer, int offset = 0) => BitConverter.ToUInt64(buffer, offset);
+
+    #endregion
+
+    
+    #region Int16
+
+    public void WriteInt16(Int16 value, byte[] buffer, int offset = 0) => _union.WriteInt16(value, buffer, offset);
+
+    public static Int16 ReadInt16(byte[] buffer, int offset = 0) => BitConverter.ToInt16(buffer, offset);
+
+    #endregion
+
+    
+    #region UInt16
+
+    public void WriteUInt16(UInt16 value, byte[] buffer, int offset = 0) => _union.WriteUInt16(value, buffer, offset);
+
+    public static UInt16 ReadUInt16(byte[] buffer, int offset = 0) => BitConverter.ToUInt16(buffer, offset);
+
+    #endregion
+
 }
+

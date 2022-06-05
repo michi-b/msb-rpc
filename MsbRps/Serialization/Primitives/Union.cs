@@ -14,7 +14,14 @@ internal struct Union
     [FieldOffset(0)] private Char _charValue;
     [FieldOffset(0)] private Decimal _decimalValue;
     [FieldOffset(0)] private Double _doubleValue;
+    [FieldOffset(0)] private Single _singleValue;
     [FieldOffset(0)] private Int32 _int32Value;
+    [FieldOffset(0)] private UInt32 _uint32Value;
+    [FieldOffset(0)] private Int64 _int64Value;
+    [FieldOffset(0)] private UInt64 _uint64Value;
+    [FieldOffset(0)] private Int16 _int16Value;
+    [FieldOffset(0)] private UInt16 _uint16Value;
+
 
     [FieldOffset(0)] private  byte _byte0;
     [FieldOffset(1)] private  byte _byte1;
@@ -198,9 +205,42 @@ internal struct Union
         return _decimalValue;
     }
 
-    public void WriteDouble(double value, byte[] buffer, int offset)
+    public void WriteDouble(Double value, byte[] buffer, int offset)
     {
         _doubleValue = value;
         Write8Bytes(buffer, offset);
+    }
+
+    public void WriteSingle(Single value, byte[] buffer, int offset)
+    {
+        _singleValue = value;
+        Write4Bytes(buffer, offset);
+    }
+
+    public void WriteUInt32(UInt32 value, byte[] buffer, int offset)
+    {
+        _uint32Value = value;
+        Write4Bytes(buffer, offset);
+    }
+
+    public void WriteInt64(Int64 value, byte[] buffer, int offset)
+    {
+        _int64Value = value;
+        Write8Bytes(buffer, offset);
+    }
+    public void WriteUInt64(UInt64 value, byte[] buffer, int offset)
+    {
+        _uint64Value = value;
+        Write8Bytes(buffer, offset);
+    }
+    public void WriteInt16(Int16 value, byte[] buffer, int offset)
+    {
+        _int16Value = value;
+        Write2Bytes(buffer, offset);
+    }
+    public void WriteUInt16(UInt16 value, byte[] buffer, int offset)
+    {
+        _uint16Value = value;
+        Write2Bytes(buffer, offset);
     }
 }
