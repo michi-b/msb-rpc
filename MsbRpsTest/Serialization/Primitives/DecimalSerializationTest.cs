@@ -9,9 +9,9 @@ namespace MsbRpsTest.Serialization.Primitives;
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyleForMemberAccess")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public class Int32SerializationTest : PrimitiveSerializationTest<Int32>
+public class DecimalSerializationTest : PrimitiveSerializationTest<Decimal>
 {
-    protected override int ElementSize => sizeof(Int32);
+    protected override int ElementSize => sizeof(Decimal);
 
     [TestMethod]
     public void PreservesZero()
@@ -40,52 +40,52 @@ public class Int32SerializationTest : PrimitiveSerializationTest<Int32>
     [TestMethod]
     public void PreservesMinimum()
     {
-        TestPreserves(Int32.MinValue);
+        TestPreserves(Decimal.MinValue);
     }
 
     [TestMethod]
     public void PreservesMaximum()
     {
-        TestPreserves(Int32.MaxValue);
+        TestPreserves(Decimal.MaxValue);
     }
 
     [TestMethod]
     public void PreservesWithOffset()
     {
-        const Int32 value = -3;
+        const Decimal value = -3;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        PrimitiveSerializer.WriteInt32(value, buffer, offset);
-        Int32 result = PrimitiveSerializer.ReadInt32(buffer, offset);
+        PrimitiveSerializer.WriteDecimal(value, buffer, offset);
+        Decimal result = PrimitiveSerializer.ReadDecimal(buffer, offset);
         Assert.AreEqual(value, result);
     }
 
         [TestMethod]
     public void PreservesSeries()
     {
-        const Int32 value0 = 1234;
-        const Int32 value1 = -981;
-        const Int32 value2 = 1324981234;
+        const Decimal value0 = 1234;
+        const Decimal value1 = -981;
+        const Decimal value2 = 1324981234;
 
         byte[] buffer = GetBuffer(3);
 
-        PrimitiveSerializer.WriteInt32(value0, buffer, GetOffset(0));
-        PrimitiveSerializer.WriteInt32(value1, buffer, GetOffset(1));
-        PrimitiveSerializer.WriteInt32(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.WriteDecimal(value0, buffer, GetOffset(0));
+        PrimitiveSerializer.WriteDecimal(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.WriteDecimal(value2, buffer, GetOffset(2));
 
-        Int32 result0 = PrimitiveSerializer.ReadInt32(buffer, GetOffset(0));
-        Int32 result1 = PrimitiveSerializer.ReadInt32(buffer, GetOffset(1));
-        Int32 result2 = PrimitiveSerializer.ReadInt32(buffer, GetOffset(2));
+        Decimal result0 = PrimitiveSerializer.ReadDecimal(buffer, GetOffset(0));
+        Decimal result1 = PrimitiveSerializer.ReadDecimal(buffer, GetOffset(1));
+        Decimal result2 = PrimitiveSerializer.ReadDecimal(buffer, GetOffset(2));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
         Assert.AreEqual(value2, result2);
     }
 
-    protected override void WriteSingleElement(Int32 value)
+    protected override void WriteSingleElement(Decimal value)
     {
-        PrimitiveSerializer.WriteInt32(value, SingleElementBuffer);
+        PrimitiveSerializer.WriteDecimal(value, SingleElementBuffer);
     }
 
-    protected override Int32 ReadSingleElement() => PrimitiveSerializer.ReadInt32(SingleElementBuffer);
+    protected override Decimal ReadSingleElement() => PrimitiveSerializer.ReadDecimal(SingleElementBuffer);
 }

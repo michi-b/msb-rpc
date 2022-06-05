@@ -30,7 +30,7 @@ public class ByteSerializationTest : PrimitiveSerializationTest<Byte>
         const Byte value = 2;
         const int offset = 4;
         byte[] buffer = GetBuffer(7);
-        PrimitiveSerializer.Write(value, buffer, offset);
+        PrimitiveSerializer.WriteByte(value, buffer, offset);
         Byte result = PrimitiveSerializer.ReadByte(buffer, offset);
         Assert.AreEqual(value, result);
     }
@@ -46,11 +46,11 @@ public class ByteSerializationTest : PrimitiveSerializationTest<Byte>
 
         byte[] buffer = GetBuffer(5);
 
-        PrimitiveSerializer.Write(value0, buffer, 0);
-        PrimitiveSerializer.Write(value1, buffer, GetOffset(1));
-        PrimitiveSerializer.Write(value2, buffer, GetOffset(2));
-        PrimitiveSerializer.Write(value3, buffer, GetOffset(3));
-        PrimitiveSerializer.Write(value4, buffer, GetOffset(4));
+        PrimitiveSerializer.WriteByte(value0, buffer, 0);
+        PrimitiveSerializer.WriteByte(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.WriteByte(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.WriteByte(value3, buffer, GetOffset(3));
+        PrimitiveSerializer.WriteByte(value4, buffer, GetOffset(4));
 
         Byte result0 = PrimitiveSerializer.ReadByte(buffer, GetOffset(0));
         Byte result1 = PrimitiveSerializer.ReadByte(buffer, GetOffset(1));
@@ -67,7 +67,7 @@ public class ByteSerializationTest : PrimitiveSerializationTest<Byte>
 
     protected override void WriteSingleElement(byte value)
     {
-        PrimitiveSerializer.Write(value, SingleElementBuffer);
+        PrimitiveSerializer.WriteByte(value, SingleElementBuffer);
     }
 
     protected override Byte ReadSingleElement() => PrimitiveSerializer.ReadByte(SingleElementBuffer);

@@ -11,7 +11,7 @@ public static class PrimitiveSerializer
 
     #region Boolean
 
-    public static void Write(Boolean value, byte[] buffer, int offset = 0)
+    public static void WriteBoolean(Boolean value, byte[] buffer, int offset = 0)
     {
         buffer[offset] = value ? (byte)1 : (byte)0;
     }
@@ -22,7 +22,7 @@ public static class PrimitiveSerializer
 
     #region Byte
 
-    public static void Write(Byte value, byte[] buffer, int offset = 0) => buffer[offset] = value;
+    public static void WriteByte(Byte value, byte[] buffer, int offset = 0) => buffer[offset] = value;
 
     public static Byte ReadByte(byte[] buffer, int offset = 0) => buffer[offset];
 
@@ -30,17 +30,38 @@ public static class PrimitiveSerializer
 
     #region SByte
 
-    public static void Write(SByte value, byte[] buffer, int offset = 0) => buffer[offset] = (Byte)value;
+    public static void WriteSByte(SByte value, byte[] buffer, int offset = 0) => buffer[offset] = (Byte)value;
 
     public static SByte ReadSByte(byte[] buffer, int offset = 0) => (sbyte)buffer[offset];
 
     #endregion
 
+    #region Char
+
+    public static void WriteChar(Char value, byte[] buffer, int offset = 0)
+    {
+        _union.WriteChar(value, buffer, offset);
+    }
+
+    public static Char ReadChar(byte[] buffer, int offset = 0) => BitConverter.ToChar(buffer, offset);
+
+    #endregion
+
+    #region Decimal
+    public static void WriteDecimal(Decimal value, byte[] buffer, int offset = 0)
+    {
+        _union.WriteDecimal(value, buffer, offset);
+    }
+
+    public static Decimal ReadDecimal(byte[] buffer, int offset = 0) => _union.ReadDecimal(buffer, offset);
+
+    #endregion
+
     #region Int32
 
-    public static void Write(Int32 value, byte[] buffer, int offset = 0)
+    public static void WriteInt32(Int32 value, byte[] buffer, int offset = 0)
     {
-        _union.ConvertInt32(value, buffer, offset);
+        _union.WriteInt32(value, buffer, offset);
     }
 
     public static int ReadInt32(byte[] buffer, Int32 offset = 0) => BitConverter.ToInt32(buffer, offset);
