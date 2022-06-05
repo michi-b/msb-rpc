@@ -7,11 +7,14 @@ public abstract class PrimitiveSerializationTest<T>
 {
     protected byte[] SingleElementBuffer { get; private set; }= null!;
 
+    protected PrimitiveSerializer Serializer { get; private set; } = null!;
+
     protected abstract int ElementSize { get; }
 
     [TestInitialize]
     public void Setup()
     {
+        Serializer = new PrimitiveSerializer();
         SingleElementBuffer = new byte[ElementSize];
     }
 
@@ -19,6 +22,7 @@ public abstract class PrimitiveSerializationTest<T>
     public void Cleanup()
     {
         SingleElementBuffer = null!;
+        Serializer = null!;
     }
 
     protected abstract void WriteSingleElement(T value);

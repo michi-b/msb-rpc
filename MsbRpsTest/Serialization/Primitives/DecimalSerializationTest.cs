@@ -55,8 +55,8 @@ public class DecimalSerializationTest : PrimitiveSerializationTest<Decimal>
         const Decimal value = -3;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        PrimitiveSerializer.WriteDecimal(value, buffer, offset);
-        Decimal result = PrimitiveSerializer.ReadDecimal(buffer, offset);
+        Serializer.WriteDecimal(value, buffer, offset);
+        Decimal result = Serializer.ReadDecimal(buffer, offset);
         Assert.AreEqual(value, result);
     }
 
@@ -69,13 +69,13 @@ public class DecimalSerializationTest : PrimitiveSerializationTest<Decimal>
 
         byte[] buffer = GetBuffer(3);
 
-        PrimitiveSerializer.WriteDecimal(value0, buffer, GetOffset(0));
-        PrimitiveSerializer.WriteDecimal(value1, buffer, GetOffset(1));
-        PrimitiveSerializer.WriteDecimal(value2, buffer, GetOffset(2));
+        Serializer.WriteDecimal(value0, buffer, GetOffset(0));
+        Serializer.WriteDecimal(value1, buffer, GetOffset(1));
+        Serializer.WriteDecimal(value2, buffer, GetOffset(2));
 
-        Decimal result0 = PrimitiveSerializer.ReadDecimal(buffer, GetOffset(0));
-        Decimal result1 = PrimitiveSerializer.ReadDecimal(buffer, GetOffset(1));
-        Decimal result2 = PrimitiveSerializer.ReadDecimal(buffer, GetOffset(2));
+        Decimal result0 = Serializer.ReadDecimal(buffer, GetOffset(0));
+        Decimal result1 = Serializer.ReadDecimal(buffer, GetOffset(1));
+        Decimal result2 = Serializer.ReadDecimal(buffer, GetOffset(2));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -84,8 +84,8 @@ public class DecimalSerializationTest : PrimitiveSerializationTest<Decimal>
 
     protected override void WriteSingleElement(Decimal value)
     {
-        PrimitiveSerializer.WriteDecimal(value, SingleElementBuffer);
+        Serializer.WriteDecimal(value, SingleElementBuffer);
     }
 
-    protected override Decimal ReadSingleElement() => PrimitiveSerializer.ReadDecimal(SingleElementBuffer);
+    protected override Decimal ReadSingleElement() => Serializer.ReadDecimal(SingleElementBuffer);
 }

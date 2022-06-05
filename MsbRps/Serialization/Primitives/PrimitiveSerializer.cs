@@ -1,13 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Decimal = System.Decimal;
 
 namespace MsbRps.Serialization.Primitives;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public static class PrimitiveSerializer
+public class PrimitiveSerializer
 {
-    private static Union _union;
+    private Union _union;
+    private readonly int[] _decimalBits = new int[4];
 
     #region Boolean
 
@@ -38,7 +40,7 @@ public static class PrimitiveSerializer
 
     #region Char
 
-    public static void WriteChar(Char value, byte[] buffer, int offset = 0)
+    public void WriteChar(Char value, byte[] buffer, int offset = 0)
     {
         _union.WriteChar(value, buffer, offset);
     }
@@ -48,18 +50,30 @@ public static class PrimitiveSerializer
     #endregion
 
     #region Decimal
-    public static void WriteDecimal(Decimal value, byte[] buffer, int offset = 0)
+    public void WriteDecimal(Decimal value, byte[] buffer, int offset = 0)
     {
-        _union.WriteDecimal(value, buffer, offset);
+        int[] bits = Decimal.GetBits(value);
+        WriteInt32(bits[0], buffer, offset);
+        WriteInt32(bits[1], buffer, offset + 4);
+        WriteInt32(bits[2], buffer, offset + 8);
+        WriteInt32(bits[3], buffer, offset + 12);
     }
 
-    public static Decimal ReadDecimal(byte[] buffer, int offset = 0) => _union.ReadDecimal(buffer, offset);
+    public Decimal ReadDecimal(byte[] buffer, int offset = 0)
+    {
+
+        _decimalBits[0] = ReadInt32(buffer, offset);
+        _decimalBits[1] = ReadInt32(buffer, offset + 4);
+        _decimalBits[2] = ReadInt32(buffer, offset + 8);
+        _decimalBits[3] = ReadInt32(buffer, offset + 12);
+        return new decimal(_decimalBits);
+    }
 
     #endregion
 
     #region Int32
 
-    public static void WriteInt32(Int32 value, byte[] buffer, int offset = 0)
+    public void WriteInt32(Int32 value, byte[] buffer, int offset = 0)
     {
         _union.WriteInt32(value, buffer, offset);
     }
