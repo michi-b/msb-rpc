@@ -1,11 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpcTest.Serialization;
+namespace MsbRpcTest.Serialization.Primitives;
 
 public abstract class PrimitiveSerializationTest<T>
 {
-    protected byte[] SingleElementBuffer { get; private set; }= null!;
+    protected byte[] SingleElementBuffer { get; private set; } = null!;
 
     protected PrimitiveSerializer Serializer { get; private set; } = null!;
 

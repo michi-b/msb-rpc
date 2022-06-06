@@ -1,14 +1,16 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Misbat.CodeAnalysis.Test;
 using Misbat.CodeAnalysis.Test.CodeTest;
 using Misbat.CodeAnalysis.Test.Utility;
 using MsbRpc.Generator;
+using MsbRpc.GeneratorAttributes;
 
 namespace MsbRpcTest;
 
 [TestClass]
-public class SerializableGeneratorTest
+public class SerializableGeneratorTest : Test
 {
     private static readonly CodeTest CodeTest = new CodeTest
         (
@@ -19,18 +21,11 @@ public class SerializableGeneratorTest
                     MetadataReferenceUtility.MsCoreLib,
                     MetadataReferenceUtility.SystemRuntime,
                     MetadataReferenceUtility.NetStandard,
-                    MetadataReferenceUtility.GetAssemblyReference<MsbRpsObject>()
+                    MetadataReferenceUtility.GetAssemblyReference<RpcInterfaceAttribute>()
                 )
-            ).WithAdditionalGenerators(new MsbRpsSourceGenerator())
+            ).WithAdditionalGenerators(new RpcGenerator())
         )
         .WithAddedNamespaceImports("MsbRps.GeneratorAttributes");
-
-    // ReSharper disable once MemberCanBePrivate.Global
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    // MSTest needs the public setter
-    public TestContext TestContext { private get; set; } = null!;
-
-    private CancellationToken CancellationToken => TestContext.CancellationTokenSource.Token;
 
     [TestMethod]
     public async Task ValidClassGeneratesSerialization()
@@ -40,7 +35,7 @@ public class SerializableGeneratorTest
 public partial struct Test {}";
 
         CodeTestResult result = (await CodeTest.WithCode(code).Run(CancellationToken)).Result;
-        GeneratorDriverRunResult serializationGeneratorResult = result.GeneratorResults[typeof(MsbRpsSourceGenerator)].GetRunResult();
+        GeneratorDriverRunResult serializationGeneratorResult = result.GeneratorResults[typeof(RpcGenerator)].GetRunResult();
         Assert.AreEqual(1, serializationGeneratorResult.GeneratedTrees.Length);
     }
 }

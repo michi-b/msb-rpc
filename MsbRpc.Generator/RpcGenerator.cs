@@ -9,7 +9,7 @@ using MsbRpc.Generator.Extensions;
 namespace MsbRpc.Generator;
 
 [Generator]
-public class MsbRpsSourceGenerator : IIncrementalGenerator
+public class RpcGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -40,7 +40,7 @@ public class MsbRpsSourceGenerator : IIncrementalGenerator
         var symbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(context.Node)!;
 
         return symbol.GetAttributes()
-            .Any(attribute => attribute.AttributeClass != null && attribute.AttributeClass.HasName(Symbols.MsbRpsObjectAttributeName))
+            .Any(attribute => attribute.AttributeClass != null && attribute.AttributeClass.HasName("AttributeName"))//todo: filter for correct attribute name
             ? syntax
             : null;
     }
