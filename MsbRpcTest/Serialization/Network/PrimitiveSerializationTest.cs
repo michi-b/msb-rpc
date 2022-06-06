@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.Network;
 
-[TestClass]
-[SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+[TestClass, SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 public class PrimitiveSerializationTest : Test
 {
     private CancellationTokenSource _cancellationTokenSource = null!;
@@ -43,19 +43,19 @@ public class PrimitiveSerializationTest : Test
     [TestMethod]
     public async Task PreservesInt32()
     {
-        const int value = 531234;
+        const Int32 value = 531234;
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         _serializer.WriteInt32(value, buffer);
 
         var clientSocket = new Socket(NetworkUtility.LocalHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         await clientSocket.ConnectAsync(NetworkUtility.LocalHost);
 
-        await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, sizeof(int)), SocketFlags.None);
+        await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, sizeof(Int32)), SocketFlags.None);
         clientSocket.Close();
 
         byte[] serverReceivedBytes = await _serverTask;
 
-        int result = PrimitiveSerializer.ReadInt32(serverReceivedBytes);
+        Int32 result = PrimitiveSerializer.ReadInt32(serverReceivedBytes);
 
         Assert.AreEqual(value, result);
     }
