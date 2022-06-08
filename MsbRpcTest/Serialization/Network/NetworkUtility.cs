@@ -6,27 +6,22 @@ namespace MsbRpcTest.Serialization.Network;
 
 public static class NetworkUtility
 {
-    private const int Port = 19269;
-
     public const int DefaultBufferSize = 1024;
 
-    public static readonly IPEndPoint LocalHost;
+    public static readonly IPAddress LocalHost;
 
     static NetworkUtility()
     {
-        IPAddress localHostAddress = Dns.GetHostEntry("localhost").AddressList[0];
-        LocalHost = new IPEndPoint(localHostAddress, Port);
+        LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
     }
 
     public static async Task<byte[]> ReceiveBufferAsync
     (
         CancellationToken cancellationToken,
-        IPEndPoint? endPoint = default,
+        IPEndPoint endPoint,
         int bufferSize = DefaultBufferSize
     )
     {
-        endPoint ??= LocalHost;
-
         byte[] buffer = new byte[bufferSize];
         var serverSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         serverSocket.Bind(endPoint);

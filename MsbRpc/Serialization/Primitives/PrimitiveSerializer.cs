@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Decimal = System.Decimal;
 
 namespace MsbRpc.Serialization.Primitives;
 
@@ -16,6 +15,8 @@ public class PrimitiveSerializer
 
     public static Boolean ReadBoolean(byte[] buffer, int offset = 0) => buffer[offset] == 1;
 
+    public const int BooleanSize = 1;
+
     #endregion
 
     #region Byte
@@ -23,6 +24,8 @@ public class PrimitiveSerializer
     public static void WriteByte(Byte value, byte[] buffer, int offset = 0) => buffer[offset] = value;
 
     public static Byte ReadByte(byte[] buffer, int offset = 0) => buffer[offset];
+
+    public const int ByteSize = 1;
 
     #endregion
 
@@ -32,6 +35,8 @@ public class PrimitiveSerializer
 
     public static SByte ReadSByte(byte[] buffer, int offset = 0) => (sbyte)buffer[offset];
 
+    public const int SByteSize = 1;
+
     #endregion
 
     #region Char
@@ -40,21 +45,27 @@ public class PrimitiveSerializer
 
     public static Char ReadChar(byte[] buffer, int offset = 0) => BitConverter.ToChar(buffer, offset);
 
+    public const int CharSize = 2;
+
     #endregion
 
     #region Decimal
+
     public void WriteDecimal(Decimal value, byte[] buffer, int offset = 0) => _union.WriteDecimal(value, buffer, offset);
 
     public Decimal ReadDecimal(byte[] buffer, int offset = 0) => _union.ReadDecimal(buffer, offset);
 
+    public const int DecimalSize = 16;
+
     #endregion
 
-    
     #region Double
 
     public void WriteDouble(Double value, byte[] buffer, int offset = 0) => _union.WriteDouble(value, buffer, offset);
 
     public static Double ReadDouble(byte[] buffer, int offset = 0) => BitConverter.ToDouble(buffer, offset);
+
+    public const int DoubleSize = 8;
 
     #endregion
 
@@ -64,6 +75,8 @@ public class PrimitiveSerializer
 
     public static Single ReadSingle(byte[] buffer, int offset = 0) => BitConverter.ToSingle(buffer, offset);
 
+    public const int SingleSize = 8;
+
     #endregion
 
     #region Int32
@@ -71,6 +84,8 @@ public class PrimitiveSerializer
     public void WriteInt32(Int32 value, byte[] buffer, int offset = 0) => _union.WriteInt32(value, buffer, offset);
 
     public static Int32 ReadInt32(byte[] buffer, int offset = 0) => BitConverter.ToInt32(buffer, offset);
+
+    public const int Int32Size = 4;
 
     #endregion
 
@@ -80,6 +95,8 @@ public class PrimitiveSerializer
 
     public static UInt32 ReadUInt32(byte[] buffer, int offset = 0) => BitConverter.ToUInt32(buffer, offset);
 
+    public const int UInt32Size = 4;
+
     #endregion
 
     #region Int64
@@ -87,6 +104,8 @@ public class PrimitiveSerializer
     public void WriteInt64(Int64 value, byte[] buffer, int offset = 0) => _union.WriteInt64(value, buffer, offset);
 
     public static Int64 ReadInt64(byte[] buffer, int offset = 0) => BitConverter.ToInt64(buffer, offset);
+
+    public const int Int64Size = 8;
 
     #endregion
 
@@ -96,25 +115,27 @@ public class PrimitiveSerializer
 
     public static UInt64 ReadUInt64(byte[] buffer, int offset = 0) => BitConverter.ToUInt64(buffer, offset);
 
+    public const int UInt64Size = 8;
+
     #endregion
 
-    
     #region Int16
 
     public void WriteInt16(Int16 value, byte[] buffer, int offset = 0) => _union.WriteInt16(value, buffer, offset);
 
     public static Int16 ReadInt16(byte[] buffer, int offset = 0) => BitConverter.ToInt16(buffer, offset);
 
+    public const int Int16Size = 2;
+
     #endregion
 
-    
     #region UInt16
 
     public void WriteUInt16(UInt16 value, byte[] buffer, int offset = 0) => _union.WriteUInt16(value, buffer, offset);
 
     public static UInt16 ReadUInt16(byte[] buffer, int offset = 0) => BitConverter.ToUInt16(buffer, offset);
 
+    public const int UInt16Size = 2;
+
     #endregion
-
 }
-
