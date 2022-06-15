@@ -18,13 +18,13 @@ public static class NetworkUtility
     public static async Task<byte[]> ReceiveBufferAsync
     (
         CancellationToken cancellationToken,
-        IPEndPoint endPoint,
+        IPEndPoint ep,
         int bufferSize = DefaultBufferSize
     )
     {
         byte[] buffer = new byte[bufferSize];
-        var serverSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        serverSocket.Bind(endPoint);
+        var serverSocket = new Socket(ep.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        serverSocket.Bind(ep);
         serverSocket.Listen(1);
         Socket handler = await serverSocket.AcceptAsync(cancellationToken);
         int position = 0;

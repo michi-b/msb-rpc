@@ -5,7 +5,7 @@ namespace MsbRpc.Serialization.Primitives;
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public class PrimitiveSerializer
+public struct PrimitiveSerializer
 {
     private Union _union;
 
