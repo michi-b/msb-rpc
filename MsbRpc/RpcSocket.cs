@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using MsbRpc.Exceptions;
 using MsbRpc.Serialization.Primitives;
@@ -21,20 +22,40 @@ public abstract class RpcSocket : IDisposable
         _socket = socket;
     }
 
-    protected  async Task ListenAsync(Action<int> accept, CancellationToken cancellationToken)
+    protected async Task ListenAsync(Action<int> accept, CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            accept(await AcceptAsync());
+            int count = await ReceiveAsync();
+            if (count == 0)
+            {
+                break;
+            }
+            else
+            {
+                accept(await ReceiveAsync());
+            }
         }
     }
 
-    protected  async Task<int> AcceptAsync()
+    protected async Task<int> ReceiveAsync()
     {
         await ReceiveAsync(_countBuffer, PrimitiveSerializer.Int32Size);
         Int32 count = PrimitiveSerializer.ReadInt32(_countBuffer);
-        await ReceiveAsync(count);
-        return count;
+        int bytesReceived =  await ReceiveAsync(count);
+
+        if (bytesReceived == count)
+        {
+            return count;
+        }
+        else if (bytesReceived == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            throw new ConnectionClosedUnexpectedlyException();
+        }
     }
 
     protected async Task SendAsync(int count)
@@ -50,13 +71,13 @@ public abstract class RpcSocket : IDisposable
         _socket?.Dispose();
     }
 
-    protected  async Task ReceiveAsync(int count)
+    private  async Task<int> ReceiveAsync(int count)
     {
         Reserve(count);
-        await ReceiveAsync(_buffer, count);
+        return await ReceiveAsync(_buffer, count);
     }
 
-    private void Reserve(int size)
+    protected void Reserve(int size)
     {
         if (_buffer.Length < size)
         {
@@ -64,7 +85,7 @@ public abstract class RpcSocket : IDisposable
         }
     }
 
-    private async Task ReceiveAsync(byte[] buffer, int count)
+    private async Task<int> ReceiveAsync(byte[] buffer, int count)
     {
         AssertSocketOwnership();
         int totalBytesReceivedCount = 0;
@@ -73,13 +94,15 @@ public abstract class RpcSocket : IDisposable
             int totalBytesRemainingCount = count - totalBytesReceivedCount;
             var arraySegment = new ArraySegment<byte>(buffer, totalBytesReceivedCount, totalBytesRemainingCount);
             int bytesReceivedCount = await _socket.ReceiveAsync(arraySegment, SocketFlags.None);
-            if (bytesReceivedCount == 0)
+
+            if (bytesReceivedCount == 0) //no bytes received means connection closed
             {
-                throw new ConnectionClosedException();
+                break;
             }
 
             totalBytesReceivedCount += bytesReceivedCount;
         }
+        return totalBytesReceivedCount;
     }
 
     private void AssertSocketOwnership()
@@ -89,8 +112,6 @@ public abstract class RpcSocket : IDisposable
             throw new SocketOwnershipLostException();
         }
     }
-
-    protected abstract void ReadMessage(int size);
 
     #region Read Primitives
 

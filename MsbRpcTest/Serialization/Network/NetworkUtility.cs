@@ -11,6 +11,16 @@ public static class NetworkUtility
 
     static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
 
+    public static IPEndPoint GetLocalEndPoint(int port) => new(LocalHost, port);
+
+    public static async Task<Socket> AcceptAsync(IPEndPoint ep, CancellationToken cancellationToken)
+    {
+        var listenSocket = new Socket(ep.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        listenSocket.Bind(ep);
+        listenSocket.Listen(1);
+        return await listenSocket.AcceptAsync(cancellationToken);
+    }
+
     public static Task<byte[]> ReceiveBufferAsync
     (
         IPEndPoint ep,
@@ -26,10 +36,7 @@ public static class NetworkUtility
     )
     {
         byte[] buffer = new byte[bufferSize];
-        var serverSocket = new Socket(ep.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        serverSocket.Bind(ep);
-        serverSocket.Listen(1);
-        Socket handler = await serverSocket.AcceptAsync(cancellationToken);
+        Socket handler = await AcceptAsync(ep, cancellationToken);
         int position = 0;
         while (true)
         {

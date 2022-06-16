@@ -12,11 +12,10 @@ namespace MsbRpcTest.Serialization.Network;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class PrimitiveSerializationTest : Test
 {
-    [TestMethod, DoNotParallelize]
+    [TestMethod]
     public async Task PreservesInt32()
     {
-        const int port = 19269;
-        var endPoint = new IPEndPoint(NetworkUtility.LocalHost, port);
+        IPEndPoint endPoint = NetworkUtility.GetLocalEndPoint(19269);
         using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(endPoint, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var serializer = new PrimitiveSerializer();
@@ -38,11 +37,10 @@ public class PrimitiveSerializationTest : Test
         Assert.AreEqual(value, result);
     }
 
-    [TestMethod, DoNotParallelize]
+    [TestMethod]
     public async Task PreservesAllPrimitives()
     {
-        const int port = 19270;
-        var endPoint = new IPEndPoint(NetworkUtility.LocalHost, port);
+        IPEndPoint endPoint = NetworkUtility.GetLocalEndPoint(19270);
         using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(endPoint, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var serializer = new PrimitiveSerializer();
