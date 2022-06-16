@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using JetBrains.Annotations;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -10,16 +9,20 @@ public static class NetworkUtility
 
     public static readonly IPAddress LocalHost;
 
-    static NetworkUtility()
-    {
-        LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
-    }
+    static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
+
+    public static Task<byte[]> ReceiveBufferAsync
+    (
+        IPEndPoint ep,
+        CancellationToken cancellationToken
+    ) =>
+        ReceiveBufferAsync(ep, DefaultBufferSize, cancellationToken);
 
     public static async Task<byte[]> ReceiveBufferAsync
     (
-        CancellationToken cancellationToken,
         IPEndPoint ep,
-        int bufferSize = DefaultBufferSize
+        int bufferSize,
+        CancellationToken cancellationToken
     )
     {
         byte[] buffer = new byte[bufferSize];

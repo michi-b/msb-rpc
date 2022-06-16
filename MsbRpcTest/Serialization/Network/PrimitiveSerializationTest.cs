@@ -17,7 +17,7 @@ public class PrimitiveSerializationTest : Test
     {
         const int port = 19269;
         var endPoint = new IPEndPoint(NetworkUtility.LocalHost, port);
-        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(CancellationToken,endPoint);
+        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(endPoint, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var serializer = new PrimitiveSerializer();
 
@@ -43,7 +43,7 @@ public class PrimitiveSerializationTest : Test
     {
         const int port = 19270;
         var endPoint = new IPEndPoint(NetworkUtility.LocalHost, port);
-        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(CancellationToken,endPoint);
+        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(endPoint, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var serializer = new PrimitiveSerializer();
 
