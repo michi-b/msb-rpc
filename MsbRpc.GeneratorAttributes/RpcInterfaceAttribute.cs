@@ -1,7 +1,6 @@
-﻿namespace MsbRpc.GeneratorAttributes
+﻿using System;
+
+namespace MsbRpc.GeneratorAttributes
 {
-    public class RpcInterfaceAttribute : System.Attribute
-    {
-        
-    }
+    public class RpcInterfaceAttribute : Attribute { }
 }

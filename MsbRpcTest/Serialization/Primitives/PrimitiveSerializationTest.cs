@@ -7,7 +7,7 @@ public abstract class PrimitiveSerializationTest<T>
 {
     protected byte[] SingleElementBuffer { get; private set; } = null!;
 
-    protected PrimitiveSerializer Serializer { get; } = new PrimitiveSerializer();
+    protected PrimitiveSerializer Serializer { get; } = new();
 
     protected abstract int ElementSize { get; }
 
@@ -26,7 +26,6 @@ public abstract class PrimitiveSerializationTest<T>
     protected abstract void WriteSingleElement(T value);
 
     protected abstract T ReadSingleElement();
-
 
     protected void TestPreserves(T value)
     {

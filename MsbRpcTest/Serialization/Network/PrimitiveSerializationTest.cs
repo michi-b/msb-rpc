@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,15 +7,16 @@ using MsbRpc.Serialization.Primitives;
 namespace MsbRpcTest.Serialization.Network;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression
-[TestClass, SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+[TestClass]
+[SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class PrimitiveSerializationTest : Test
 {
     [TestMethod]
     public async Task PreservesInt32()
     {
-        IPEndPoint endPoint = NetworkUtility.GetLocalEndPoint(19269);
-        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(endPoint, CancellationToken);
+        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var serializer = new PrimitiveSerializer();
 
@@ -24,8 +24,8 @@ public class PrimitiveSerializationTest : Test
 
         serializer.WriteInt32(value, buffer);
 
-        var clientSocket = new Socket(NetworkUtility.LocalHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        await clientSocket.ConnectAsync(endPoint, CancellationToken);
+        Socket clientSocket = NetworkUtility.CreateSocket();
+        await clientSocket.ConnectAsync(ep, CancellationToken);
 
         await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, sizeof(Int32)), SocketFlags.None);
         clientSocket.Close();
@@ -40,8 +40,8 @@ public class PrimitiveSerializationTest : Test
     [TestMethod]
     public async Task PreservesAllPrimitives()
     {
-        IPEndPoint endPoint = NetworkUtility.GetLocalEndPoint(19270);
-        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(endPoint, CancellationToken);
+        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var serializer = new PrimitiveSerializer();
 
@@ -92,7 +92,7 @@ public class PrimitiveSerializationTest : Test
         serializer.WriteInt64(int64Value, buffer, offset);
         offset += PrimitiveSerializer.Int64Size;
 
-        PrimitiveSerializer.WriteSByte(sByteValue,buffer, offset);
+        PrimitiveSerializer.WriteSByte(sByteValue, buffer, offset);
         offset += PrimitiveSerializer.SByteSize;
 
         serializer.WriteSingle(singleValue, buffer, offset);
@@ -112,8 +112,8 @@ public class PrimitiveSerializationTest : Test
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         Assert.IsTrue(byteCount <= buffer.Length);
 
-        var clientSocket = new Socket(NetworkUtility.LocalHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        await clientSocket.ConnectAsync(endPoint);
+        Socket clientSocket = NetworkUtility.CreateSocket();
+        await clientSocket.ConnectAsync(ep);
         await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount), SocketFlags.None);
         clientSocket.Close();
 

@@ -48,7 +48,7 @@ public class UInt64SerializationTest : PrimitiveSerializationTest<UInt64>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const UInt64 value0 = 1234;

@@ -32,7 +32,7 @@ public class SByteSerializationTest : PrimitiveSerializationTest<SByte>
         SByte result = PrimitiveSerializer.ReadSByte(buffer, offset);
         Assert.AreEqual(value, result);
     }
-    
+
     [TestMethod]
     public void PreservesSeries()
     {
@@ -44,7 +44,7 @@ public class SByteSerializationTest : PrimitiveSerializationTest<SByte>
 
         byte[] buffer = GetBuffer(5);
 
-        PrimitiveSerializer.WriteSByte(value0, buffer, 0);
+        PrimitiveSerializer.WriteSByte(value0, buffer);
         PrimitiveSerializer.WriteSByte(value1, buffer, GetOffset(1));
         PrimitiveSerializer.WriteSByte(value2, buffer, GetOffset(2));
         PrimitiveSerializer.WriteSByte(value3, buffer, GetOffset(3));

@@ -1,24 +1,39 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using MsbRpc;
+using MsbRpc.Concurrent;
 
 namespace MsbRpcTest.Serialization.Network;
 
 public static class NetworkUtility
 {
-    public const int DefaultBufferSize = 1024;
+    public const int DefaultBufferSize = RpcSocket.DefaultCapacity;
 
     public static readonly IPAddress LocalHost;
 
+    public static readonly UniqueIntProvider UniquePortProvider = MsbRpc.NetworkUtility.CreateUniquePortProvider(false);
+
     static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
+
+    public static IPEndPoint GetLocalEndPoint()
+    {
+        int port = UniquePortProvider.Get();
+        Console.WriteLine($"using port {port}");
+        return GetLocalEndPoint(port);
+    }
 
     public static IPEndPoint GetLocalEndPoint(int port) => new(LocalHost, port);
 
-    public static async Task<Socket> AcceptAsync(IPEndPoint ep, CancellationToken cancellationToken)
+    public static Socket CreateSocket() => MsbRpc.NetworkUtility.CreateTcpSocket(LocalHost.AddressFamily);
+
+    public static async Task<RpcTestSocket.ListenResult> ReceiveMessagesAsync
+        (IPEndPoint ep, CancellationToken cancellationToken) =>
+        await ReceiveMessagesAsync(ep, DefaultBufferSize, cancellationToken);
+
+    public static async Task<RpcTestSocket.ListenResult> ReceiveMessagesAsync(IPEndPoint ep, int capacity, CancellationToken cancellationToken)
     {
-        var listenSocket = new Socket(ep.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        listenSocket.Bind(ep);
-        listenSocket.Listen(1);
-        return await listenSocket.AcceptAsync(cancellationToken);
+        var socket = new RpcTestSocket(await AcceptAsync(ep, cancellationToken), capacity);
+        return await socket.ListenAsync(cancellationToken);
     }
 
     public static Task<byte[]> ReceiveBufferAsync
@@ -58,5 +73,13 @@ public static class NetworkUtility
         }
 
         return buffer;
+    }
+
+    public static async Task<Socket> AcceptAsync(IPEndPoint ep, CancellationToken cancellationToken)
+    {
+        Socket listenSocket = CreateSocket();
+        listenSocket.Bind(ep);
+        listenSocket.Listen(1);
+        return await listenSocket.AcceptAsync(cancellationToken);
     }
 }

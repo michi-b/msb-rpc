@@ -1,7 +1,7 @@
-﻿using System.Data;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Sockets;
-using MsbRpc.Exceptions;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc;
@@ -11,70 +11,134 @@ namespace MsbRpc;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public abstract class RpcSocket : IDisposable
 {
+    public enum ReceiveCountReturnType
+    {
+        Success = 0,
+        ConnectionClosed = 1,
+        ConnectionClosedUnexpectedly = 2
+    }
+
+    public enum ReceiveOperationReturnType
+    {
+        Success = 0,
+        ConnectionClosed = 1,
+        ConnectionClosedUnexpectedlyAfterCount = 2,
+        ConnectionClosedUnexpectedlyBeforeCount = 3
+    }
+
+    public enum ListenReturnType
+    {
+        Canceled = 0,
+        ConnectionClosed = 1,
+        ConnectionClosedUnexpectedly = 2
+    }
+
+    public const int DefaultCapacity = 1024;
+
     private readonly byte[] _countBuffer = new byte[sizeof(Int32)];
-    private readonly Socket? _socket;
+    private readonly Socket _socket;
     private byte[] _buffer;
     private PrimitiveSerializer _primitiveSerializer;
 
-    protected RpcSocket(Socket socket, int initialBufferSize)
+    protected RpcSocket(AddressFamily addressFamily, int capacity = DefaultCapacity)
+        : this(NetworkUtility.CreateTcpSocket(addressFamily), capacity) { }
+
+    protected RpcSocket(Socket socket, int capacity = DefaultCapacity)
     {
-        _buffer = new byte[initialBufferSize];
+        _buffer = new byte[capacity];
         _socket = socket;
     }
 
-    protected async Task ListenAsync(Action<int> accept, CancellationToken cancellationToken)
+    public async Task ConnectAsync(IPEndPoint ep)
     {
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            int count = await ReceiveAsync();
-            if (count == 0)
-            {
-                break;
-            }
-            else
-            {
-                accept(await ReceiveAsync());
-            }
-        }
+        await _socket.ConnectAsync(ep);
     }
 
-    protected async Task<int> ReceiveAsync()
+    public void Close()
     {
-        await ReceiveAsync(_countBuffer, PrimitiveSerializer.Int32Size);
-        Int32 count = PrimitiveSerializer.ReadInt32(_countBuffer);
-        int bytesReceived =  await ReceiveAsync(count);
-
-        if (bytesReceived == count)
-        {
-            return count;
-        }
-        else if (bytesReceived == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            throw new ConnectionClosedUnexpectedlyException();
-        }
-    }
-
-    protected async Task SendAsync(int count)
-    {
-        AssertSocketOwnership();
-        _primitiveSerializer.WriteInt32(count, _countBuffer);
-        await _socket.SendAsync(new ArraySegment<byte>(_countBuffer, 0, count), SocketFlags.None);
-        await _socket.SendAsync(new ArraySegment<byte>(_buffer, 0, count), SocketFlags.None);
+        _socket.Close();
     }
 
     public void Dispose()
     {
-        _socket?.Dispose();
+        _socket.Dispose();
     }
 
-    private  async Task<int> ReceiveAsync(int count)
+    public readonly struct ReceiveResult
+    {
+        public ReceiveResult(int count, ReceiveOperationReturnType returnType)
+        {
+            Count = count;
+            ReturnType = returnType;
+        }
+
+        public int Count { get; }
+        public ReceiveOperationReturnType ReturnType { get; }
+    }
+
+    protected async Task<ListenReturnType> ListenAsync(Action<int> accept, CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            ReceiveResult receiveResult = await ReceiveAsync();
+            switch (receiveResult.ReturnType)
+            {
+                case ReceiveOperationReturnType.Success:
+                    accept(receiveResult.Count);
+                    break;
+                case ReceiveOperationReturnType.ConnectionClosed:
+                    return ListenReturnType.ConnectionClosed;
+                case ReceiveOperationReturnType.ConnectionClosedUnexpectedlyAfterCount:
+                case ReceiveOperationReturnType.ConnectionClosedUnexpectedlyBeforeCount:
+                    return ListenReturnType.ConnectionClosedUnexpectedly;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        return ListenReturnType.Canceled;
+    }
+
+    protected async Task<ReceiveResult> ReceiveAsync()
+    {
+        switch (await ReceiveCountAsync(_countBuffer, PrimitiveSerializer.Int32Size))
+        {
+            case ReceiveCountReturnType.Success:
+                break;
+            case ReceiveCountReturnType.ConnectionClosed:
+                return new ReceiveResult(0, ReceiveOperationReturnType.ConnectionClosed);
+            case ReceiveCountReturnType.ConnectionClosedUnexpectedly:
+                return new ReceiveResult(0, ReceiveOperationReturnType.ConnectionClosedUnexpectedlyBeforeCount);
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        Int32 count = PrimitiveSerializer.ReadInt32(_countBuffer);
+
+        return await ReceiveCountAsync(count) switch
+        {
+            ReceiveCountReturnType.Success => new ReceiveResult(count, ReceiveOperationReturnType.Success),
+            ReceiveCountReturnType.ConnectionClosed => new ReceiveResult(count, ReceiveOperationReturnType.ConnectionClosedUnexpectedlyAfterCount),
+            ReceiveCountReturnType.ConnectionClosedUnexpectedly => new ReceiveResult
+                (count, ReceiveOperationReturnType.ConnectionClosedUnexpectedlyAfterCount),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    protected async Task SendAsync(int count)
+    {
+        _primitiveSerializer.WriteInt32(count, _countBuffer);
+        int bytesSent = await _socket.SendAsync(new ArraySegment<byte>(_countBuffer, 0, PrimitiveSerializer.Int32Size), SocketFlags.None);
+        Debug.Assert(bytesSent == PrimitiveSerializer.Int32Size);
+
+        bytesSent = await _socket.SendAsync(new ArraySegment<byte>(_buffer, 0, count), SocketFlags.None);
+        Debug.Assert(bytesSent == count);
+    }
+
+    private async Task<ReceiveCountReturnType> ReceiveCountAsync(int count)
     {
         Reserve(count);
-        return await ReceiveAsync(_buffer, count);
+        return await ReceiveCountAsync(_buffer, count);
     }
 
     protected void Reserve(int size)
@@ -85,9 +149,8 @@ public abstract class RpcSocket : IDisposable
         }
     }
 
-    private async Task<int> ReceiveAsync(byte[] buffer, int count)
+    private async Task<ReceiveCountReturnType> ReceiveCountAsync(byte[] buffer, int count)
     {
-        AssertSocketOwnership();
         int totalBytesReceivedCount = 0;
         while (totalBytesReceivedCount < count)
         {
@@ -102,15 +165,12 @@ public abstract class RpcSocket : IDisposable
 
             totalBytesReceivedCount += bytesReceivedCount;
         }
-        return totalBytesReceivedCount;
-    }
 
-    private void AssertSocketOwnership()
-    {
-        if (_socket == null)
-        {
-            throw new SocketOwnershipLostException();
-        }
+        return totalBytesReceivedCount == count //order of these checks is important, as 0 can be the expected count
+            ? ReceiveCountReturnType.Success
+            : totalBytesReceivedCount == 0
+                ? ReceiveCountReturnType.ConnectionClosed
+                : ReceiveCountReturnType.ConnectionClosedUnexpectedly;
     }
 
     #region Read Primitives

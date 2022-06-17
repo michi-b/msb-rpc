@@ -84,7 +84,7 @@ public class DoubleSerializationTest : PrimitiveSerializationTest<Double>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const Double value0 = 1.234;

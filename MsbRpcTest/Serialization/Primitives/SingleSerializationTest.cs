@@ -84,7 +84,7 @@ public class SingleSerializationTest : PrimitiveSerializationTest<Single>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const Single value0 = 1.234f;

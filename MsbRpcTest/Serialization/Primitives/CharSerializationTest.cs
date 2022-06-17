@@ -48,7 +48,7 @@ public class CharSerializationTest : PrimitiveSerializationTest<Char>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const Char value0 = 'c';

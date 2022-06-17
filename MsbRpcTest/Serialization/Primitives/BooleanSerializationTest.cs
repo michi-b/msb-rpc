@@ -32,7 +32,7 @@ public class BooleanSerializationTest : PrimitiveSerializationTest<Boolean>
         Boolean result = PrimitiveSerializer.ReadBoolean(buffer, offset);
         Assert.AreEqual(value, result);
     }
-    
+
     [TestMethod]
     public void PreservesFalseWithOffset()
     {
@@ -55,7 +55,7 @@ public class BooleanSerializationTest : PrimitiveSerializationTest<Boolean>
 
         byte[] buffer = GetBuffer(5);
 
-        PrimitiveSerializer.WriteBoolean(value0, buffer, 0);
+        PrimitiveSerializer.WriteBoolean(value0, buffer);
         PrimitiveSerializer.WriteBoolean(value1, buffer, GetOffset(1));
         PrimitiveSerializer.WriteBoolean(value2, buffer, GetOffset(2));
         PrimitiveSerializer.WriteBoolean(value3, buffer, GetOffset(3));

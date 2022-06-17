@@ -54,7 +54,7 @@ public class Int32SerializationTest : PrimitiveSerializationTest<Int32>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const Int32 value0 = 1234;

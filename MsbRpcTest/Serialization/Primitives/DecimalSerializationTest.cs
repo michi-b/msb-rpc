@@ -59,7 +59,7 @@ public class DecimalSerializationTest : PrimitiveSerializationTest<Decimal>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const Decimal value0 = 1234;

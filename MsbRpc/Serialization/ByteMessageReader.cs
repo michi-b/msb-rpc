@@ -1,15 +1,12 @@
-﻿using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Security.Cryptography.X509Certificates;
-using MsbRpc.Serialization.Primitives;
+﻿using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.Serialization;
 
 public class ByteMessageReader
 {
-    const int DefaultInitialBufferSize = 128;
-    private readonly Stream _stream;
+    private const int DefaultInitialBufferSize = 128;
     private readonly byte[] _buffer;
+    private readonly Stream _stream;
 
     public ByteMessageReader(Stream stream, uint initialBufferSize = DefaultInitialBufferSize)
     {
@@ -48,12 +45,15 @@ public class ByteMessageReader
             {
                 return ReadResult.Canceled;
             }
+
             if (bytesRead == 0)
             {
                 return ReadResult.EndOfStream;
             }
+
             sumBytesRead += bytesRead;
         }
+
         return ReadResult.Success;
     }
 

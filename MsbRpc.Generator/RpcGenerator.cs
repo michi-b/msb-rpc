@@ -28,7 +28,7 @@ public class RpcGenerator : IIncrementalGenerator
         // ReSharper disable once MergeIntoPattern
         // I find this better readable
         return syntaxNode is TypeDeclarationSyntax typeDeclarationSyntax
-               && typeDeclarationSyntax.AttributeLists.Any((attributeList) => attributeList.ChildNodes().Any(node => node is AttributeSyntax));
+               && typeDeclarationSyntax.AttributeLists.Any(attributeList => attributeList.ChildNodes().Any(node => node is AttributeSyntax));
     }
 
     private static TypeDeclarationSyntax? SelectMsbRpsObjectDeclarationSyntax(GeneratorSyntaxContext context, CancellationToken cancellationToken)
@@ -40,7 +40,10 @@ public class RpcGenerator : IIncrementalGenerator
         var symbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(context.Node)!;
 
         return symbol.GetAttributes()
-            .Any(attribute => attribute.AttributeClass != null && attribute.AttributeClass.HasName("AttributeName"))//todo: filter for correct attribute name
+            .Any
+            (
+                attribute => attribute.AttributeClass != null && attribute.AttributeClass.HasName("AttributeName")
+            ) //todo: filter for correct attribute name
             ? syntax
             : null;
     }

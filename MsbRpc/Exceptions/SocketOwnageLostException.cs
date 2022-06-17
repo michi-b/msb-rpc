@@ -1,3 +1,3 @@
 ﻿namespace MsbRpc.Exceptions;
 
-public class SocketOwnershipLostException : System.Exception { }
+public class SocketOwnershipLostException : Exception { }

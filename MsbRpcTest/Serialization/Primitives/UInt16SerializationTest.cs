@@ -48,7 +48,7 @@ public class UInt16SerializationTest : PrimitiveSerializationTest<UInt16>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const UInt16 value0 = 1234;

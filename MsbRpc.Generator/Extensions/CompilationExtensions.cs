@@ -12,6 +12,7 @@ public static class CompilationExtensions
         {
             throw new SymbolCannotBeResolvedException(symbolName);
         }
+
         return result;
     }
 }

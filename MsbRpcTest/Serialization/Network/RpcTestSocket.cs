@@ -5,23 +5,40 @@ namespace MsbRpcTest.Serialization.Network;
 
 public class RpcTestSocket : RpcSocket
 {
-    public RpcTestSocket(Socket socket, int initialBufferSize) : base(socket, initialBufferSize) { }
+    public RpcTestSocket(AddressFamily addressFamily, int capacity = DefaultCapacity) : base(addressFamily, capacity) { }
 
-    public async Task<List<byte[]>> ListenAsync(CancellationToken cancellationToken)
+    public RpcTestSocket(Socket socket, int capacity = DefaultCapacity) : base(socket, capacity) { }
+
+    public readonly struct ListenResult
+    {
+        public ListenReturnType ReturnType { get; init; }
+        public List<byte[]> Messages { get; init; }
+    }
+
+    public async Task<ListenResult> ListenAsync(CancellationToken cancellationToken)
     {
         List<byte[]> messages = new();
 
-        await ListenAsync(count =>
-        {
-            byte[] buffer = new byte[count];
-            for (int offset = 0; offset < count; offset++)
+        ListenReturnType returnType = await ListenAsync
+        (
+            count =>
             {
-                buffer[offset] = ReadByte(offset);
-            }
-            messages.Add(buffer);
-        }, cancellationToken);
+                byte[] buffer = new byte[count];
+                for (int offset = 0; offset < count; offset++)
+                {
+                    buffer[offset] = ReadByte(offset);
+                }
 
-        return messages;
+                messages.Add(buffer);
+            },
+            cancellationToken
+        );
+
+        return new ListenResult
+        {
+            Messages = messages,
+            ReturnType = returnType
+        };
     }
 
     public async Task SendAsync(byte[] bytes)
@@ -32,6 +49,7 @@ public class RpcTestSocket : RpcSocket
         {
             WriteByte(bytes[offset], offset);
         }
+
         await SendAsync(count);
     }
 }

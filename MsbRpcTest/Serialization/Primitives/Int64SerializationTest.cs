@@ -60,7 +60,7 @@ public class Int64SerializationTest : PrimitiveSerializationTest<Int64>
         Assert.AreEqual(value, result);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void PreservesSeries()
     {
         const Int64 value0 = 1234;

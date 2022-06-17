@@ -22,23 +22,22 @@ internal struct Union
     [FieldOffset(0)] private Int16 _int16Value;
     [FieldOffset(0)] private UInt16 _uint16Value;
 
-
-    [FieldOffset(0)] private  byte _byte0;
-    [FieldOffset(1)] private  byte _byte1;
-    [FieldOffset(2)] private  byte _byte2;
-    [FieldOffset(3)] private  byte _byte3;
-    [FieldOffset(4)] private  byte _byte4;
-    [FieldOffset(5)] private  byte _byte5;
-    [FieldOffset(6)] private  byte _byte6;
-    [FieldOffset(7)] private  byte _byte7;
-    [FieldOffset(8)] private  byte _byte8;
-    [FieldOffset(9)] private  byte _byte9;
-    [FieldOffset(10)] private  byte _byte10;
-    [FieldOffset(11)] private  byte _byte11;
-    [FieldOffset(12)] private  byte _byte12;
-    [FieldOffset(13)] private  byte _byte13;
-    [FieldOffset(14)] private  byte _byte14;
-    [FieldOffset(15)] private  byte _byte15;
+    [FieldOffset(0)] private byte _byte0;
+    [FieldOffset(1)] private byte _byte1;
+    [FieldOffset(2)] private byte _byte2;
+    [FieldOffset(3)] private byte _byte3;
+    [FieldOffset(4)] private byte _byte4;
+    [FieldOffset(5)] private byte _byte5;
+    [FieldOffset(6)] private byte _byte6;
+    [FieldOffset(7)] private byte _byte7;
+    [FieldOffset(8)] private byte _byte8;
+    [FieldOffset(9)] private byte _byte9;
+    [FieldOffset(10)] private byte _byte10;
+    [FieldOffset(11)] private byte _byte11;
+    [FieldOffset(12)] private byte _byte12;
+    [FieldOffset(13)] private byte _byte13;
+    [FieldOffset(14)] private byte _byte14;
+    [FieldOffset(15)] private byte _byte15;
 
     private void Write2Bytes(byte[] buffer, int offset)
     {
@@ -139,6 +138,7 @@ internal struct Union
             buffer[offset + 15] = _byte0;
         }
     }
+
     private void Read16Bytes(byte[] buffer, int offset)
     {
         if (IsLittleEndian)
@@ -192,7 +192,7 @@ internal struct Union
         _charValue = value;
         Write2Bytes(buffer, offset);
     }
-    
+
     public void WriteDecimal(Decimal value, byte[] buffer, int offset)
     {
         _decimalValue = value;
@@ -228,16 +228,19 @@ internal struct Union
         _int64Value = value;
         Write8Bytes(buffer, offset);
     }
+
     public void WriteUInt64(UInt64 value, byte[] buffer, int offset)
     {
         _uint64Value = value;
         Write8Bytes(buffer, offset);
     }
+
     public void WriteInt16(Int16 value, byte[] buffer, int offset)
     {
         _int16Value = value;
         Write2Bytes(buffer, offset);
     }
+
     public void WriteUInt16(UInt16 value, byte[] buffer, int offset)
     {
         _uint16Value = value;
