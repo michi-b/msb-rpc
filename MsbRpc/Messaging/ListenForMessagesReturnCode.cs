@@ -1,8 +1,8 @@
 ﻿namespace MsbRpc.Messaging;
 
-public enum ReceiveReturnCode
+public enum ListenForMessagesReturnCode
 {
-    Success = 0,
+    Canceled = 0,
     ConnectionClosed = 1,
     ConnectionClosedUnexpectedly = 2
 }

@@ -18,11 +18,11 @@ public class PrimitiveSerializationTest : Test
         IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
-        var serializer = new PrimitiveSerializer();
+        var primitiveSerializer = new PrimitiveSerializer();
 
         const Int32 value = 531234;
 
-        serializer.WriteInt32(value, buffer);
+        primitiveSerializer.WriteInt32(value, buffer);
 
         Socket clientSocket = NetworkUtility.CreateSocket();
         await clientSocket.ConnectAsync(ep, CancellationToken);
@@ -43,7 +43,7 @@ public class PrimitiveSerializationTest : Test
         IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
-        var serializer = new PrimitiveSerializer();
+        var primitiveSerializer = new PrimitiveSerializer();
 
         const Boolean trueBooleanValue = true;
         const Boolean falseBooleanValue = false;
@@ -71,40 +71,40 @@ public class PrimitiveSerializationTest : Test
 
         buffer[offset++] = byteValue;
 
-        serializer.WriteChar(charYValue, buffer, offset);
+        primitiveSerializer.WriteChar(charYValue, buffer, offset);
         offset += PrimitiveSerializer.CharSize;
 
-        serializer.WriteChar(charAeValue, buffer, offset);
+        primitiveSerializer.WriteChar(charAeValue, buffer, offset);
         offset += PrimitiveSerializer.CharSize;
 
-        serializer.WriteDecimal(decimalValue, buffer, offset);
+        primitiveSerializer.WriteDecimal(decimalValue, buffer, offset);
         offset += PrimitiveSerializer.DecimalSize;
 
-        serializer.WriteDouble(doubleValue, buffer, offset);
+        primitiveSerializer.WriteDouble(doubleValue, buffer, offset);
         offset += PrimitiveSerializer.DoubleSize;
 
-        serializer.WriteInt16(int16Value, buffer, offset);
+        primitiveSerializer.WriteInt16(int16Value, buffer, offset);
         offset += PrimitiveSerializer.Int16Size;
 
-        serializer.WriteInt32(int32Value, buffer, offset);
+        primitiveSerializer.WriteInt32(int32Value, buffer, offset);
         offset += PrimitiveSerializer.Int32Size;
 
-        serializer.WriteInt64(int64Value, buffer, offset);
+        primitiveSerializer.WriteInt64(int64Value, buffer, offset);
         offset += PrimitiveSerializer.Int64Size;
 
         PrimitiveSerializer.WriteSByte(sByteValue, buffer, offset);
         offset += PrimitiveSerializer.SByteSize;
 
-        serializer.WriteSingle(singleValue, buffer, offset);
+        primitiveSerializer.WriteSingle(singleValue, buffer, offset);
         offset += PrimitiveSerializer.SingleSize;
 
-        serializer.WriteUInt16(uint16Value, buffer, offset);
+        primitiveSerializer.WriteUInt16(uint16Value, buffer, offset);
         offset += PrimitiveSerializer.UInt16Size;
 
-        serializer.WriteUInt32(uint32Value, buffer, offset);
+        primitiveSerializer.WriteUInt32(uint32Value, buffer, offset);
         offset += PrimitiveSerializer.UInt32Size;
 
-        serializer.WriteUInt64(uint64Value, buffer, offset);
+        primitiveSerializer.WriteUInt64(uint64Value, buffer, offset);
         offset += PrimitiveSerializer.UInt64Size;
 
         int byteCount = offset;
@@ -137,7 +137,7 @@ public class PrimitiveSerializationTest : Test
         Char charAeResult = PrimitiveSerializer.ReadChar(result, offset);
         offset += PrimitiveSerializer.CharSize;
 
-        Decimal decimalResult = serializer.ReadDecimal(result, offset);
+        Decimal decimalResult = primitiveSerializer.ReadDecimal(result, offset);
         offset += PrimitiveSerializer.DecimalSize;
 
         Double doubleResult = PrimitiveSerializer.ReadDouble(result, offset);

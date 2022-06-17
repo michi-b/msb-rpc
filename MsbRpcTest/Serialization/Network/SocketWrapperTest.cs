@@ -2,6 +2,7 @@
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
+using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -16,16 +17,16 @@ public class SocketWrapperTest : Test
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
-        //byte[] message = Array.Empty<byte>();
-        //await clientRpcSocket.SendMessageAsync(message);
         clientRpcSocket.Close();
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
-        Assert.IsTrue(serverResult.ReturnCode == ListenReturnCode.ConnectionClosed);
+
+        Assert.IsTrue(serverResult.ForMessagesReturnCode == ListenForMessagesReturnCode.ConnectionClosed);
+        Assert.AreEqual(0, serverResult.Messages.Count);
     }
 
     [TestMethod]
-    public async Task SingleByteMessagesGetsReceived()
+    public async Task SingleByteMessagesIsDelivered()
     {
         IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
@@ -41,17 +42,15 @@ public class SocketWrapperTest : Test
 
         Log(serverResult);
 
-        Assert.IsTrue(serverResult.ReturnCode == ListenReturnCode.ConnectionClosed);
+        Assert.IsTrue(serverResult.ForMessagesReturnCode == ListenForMessagesReturnCode.ConnectionClosed);
 
         List<byte[]> receivedMessages = serverResult.Messages;
-
-        Assert.IsTrue(receivedMessages.Count > 0);
-
+        Assert.IsTrue(receivedMessages.Count == 1);
         Assert.AreEqual(value, receivedMessages[0][0]);
     }
 
     [TestMethod]
-    public async Task EmptyMessageGetsReceived()
+    public async Task EmptyMessageIsDelivered()
     {
         IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
@@ -62,11 +61,39 @@ public class SocketWrapperTest : Test
         clientRpcSocket.Close();
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
+
         Log(serverResult);
-        Assert.IsTrue(serverResult.ReturnCode == ListenReturnCode.ConnectionClosed);
+
+        Assert.IsTrue(serverResult.ForMessagesReturnCode == ListenForMessagesReturnCode.ConnectionClosed);
+
         List<byte[]> receivedMessages = serverResult.Messages;
-        Assert.IsTrue(receivedMessages.Count > 0);
+        Assert.IsTrue(receivedMessages.Count == 1);
         Assert.IsTrue(receivedMessages[0].Length == 0);
+    }
+
+    [TestMethod]
+    public async Task IntMessageIsDelivered()
+    {
+        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        await clientRpcSocket.ConnectAsync(ep);
+
+        const int value = -912347287;
+        byte[] message = BitConverter.GetBytes(value);
+
+        await clientRpcSocket.SendAsync(message);
+        clientRpcSocket.Close();
+
+        TestSocketWrapper.ListenResult serverResult = await serverTask;
+
+        Log(serverResult);
+
+        Assert.IsTrue(serverResult.ForMessagesReturnCode == ListenForMessagesReturnCode.ConnectionClosed);
+
+        List<byte[]> receivedMessages = serverResult.Messages;
+        Assert.IsTrue(receivedMessages.Count == 1);
+        Assert.AreEqual(value, BitConverter.ToInt32(receivedMessages[0], 0));
     }
 
     private static void Log(TestSocketWrapper.ListenResult serverResult)
@@ -75,7 +102,7 @@ public class SocketWrapperTest : Test
 
         using var writer = new IndentedTextWriter(Console.Out);
 
-        writer.WriteLine($"server result has return type: {serverResult.ReturnCode}");
+        writer.WriteLine($"server result has return type: {serverResult.ForMessagesReturnCode}");
 
         writer.Indent++;
         writer.WriteLine($"received {receivedMessages.Count} messages:");

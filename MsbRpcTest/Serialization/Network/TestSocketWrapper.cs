@@ -11,7 +11,7 @@ public class TestSocketWrapper : SocketWrapper
 
     public readonly struct ListenResult
     {
-        public ListenReturnCode ReturnCode { get; init; }
+        public ListenForMessagesReturnCode ForMessagesReturnCode { get; init; }
         public List<byte[]> Messages { get; init; }
     }
 
@@ -19,7 +19,7 @@ public class TestSocketWrapper : SocketWrapper
     {
         List<byte[]> messages = new();
 
-        ListenReturnCode returnCode = await ListenAsync
+        ListenForMessagesReturnCode forMessagesReturnCode = await ListenForMessagesAsync
         (
             count =>
             {
@@ -37,17 +37,21 @@ public class TestSocketWrapper : SocketWrapper
         return new ListenResult
         {
             Messages = messages,
-            ReturnCode = returnCode
+            ForMessagesReturnCode = forMessagesReturnCode
         };
     }
 
-    public async Task SendAsync(byte[] bytes)
+    public async Task SendAsync(byte[] bytes) => await SendAsync(bytes, 0, bytes.Length);
+
+    public async Task SendAsync(byte[] bytes, int offset, int count)
     {
-        int count = bytes.Length;
         Reserve(count);
-        for (int offset = 0; offset < count; offset++)
+
+        int end = offset + count;
+
+        for (int currentByteOffset = offset; currentByteOffset < end; currentByteOffset++)
         {
-            WriteByte(bytes[offset], offset);
+            WriteByte(bytes[currentByteOffset], currentByteOffset);
         }
 
         await SendMessageAsync(count);
