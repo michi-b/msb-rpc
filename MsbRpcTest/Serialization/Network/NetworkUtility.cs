@@ -1,13 +1,13 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using MsbRpc;
 using MsbRpc.Concurrent;
+using MsbRpc.Messaging;
 
 namespace MsbRpcTest.Serialization.Network;
 
 public static class NetworkUtility
 {
-    public const int DefaultBufferSize = RpcSocket.DefaultCapacity;
+    public const int DefaultBufferSize = SocketWrapper.DefaultCapacity;
 
     public static readonly IPAddress LocalHost;
 
@@ -26,13 +26,13 @@ public static class NetworkUtility
 
     public static Socket CreateSocket() => MsbRpc.NetworkUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
-    public static async Task<RpcTestSocket.ListenResult> ReceiveMessagesAsync
+    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync
         (IPEndPoint ep, CancellationToken cancellationToken) =>
         await ReceiveMessagesAsync(ep, DefaultBufferSize, cancellationToken);
 
-    public static async Task<RpcTestSocket.ListenResult> ReceiveMessagesAsync(IPEndPoint ep, int capacity, CancellationToken cancellationToken)
+    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(IPEndPoint ep, int capacity, CancellationToken cancellationToken)
     {
-        var socket = new RpcTestSocket(await AcceptAsync(ep, cancellationToken), capacity);
+        var socket = new TestSocketWrapper(await AcceptAsync(ep, cancellationToken), capacity);
         return await socket.ListenAsync(cancellationToken);
     }
 

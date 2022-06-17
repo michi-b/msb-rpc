@@ -1,17 +1,17 @@
 ﻿using System.Net.Sockets;
-using MsbRpc;
+using MsbRpc.Messaging;
 
 namespace MsbRpcTest.Serialization.Network;
 
-public class RpcTestSocket : RpcSocket
+public class TestSocketWrapper : SocketWrapper
 {
-    public RpcTestSocket(AddressFamily addressFamily, int capacity = DefaultCapacity) : base(addressFamily, capacity) { }
+    public TestSocketWrapper(AddressFamily addressFamily, int capacity = DefaultCapacity) : base(addressFamily, capacity) { }
 
-    public RpcTestSocket(Socket socket, int capacity = DefaultCapacity) : base(socket, capacity) { }
+    public TestSocketWrapper(Socket socket, int capacity = DefaultCapacity) : base(socket, capacity) { }
 
     public readonly struct ListenResult
     {
-        public ListenReturnType ReturnType { get; init; }
+        public ListenReturnCode ReturnCode { get; init; }
         public List<byte[]> Messages { get; init; }
     }
 
@@ -19,7 +19,7 @@ public class RpcTestSocket : RpcSocket
     {
         List<byte[]> messages = new();
 
-        ListenReturnType returnType = await ListenAsync
+        ListenReturnCode returnCode = await ListenAsync
         (
             count =>
             {
@@ -37,7 +37,7 @@ public class RpcTestSocket : RpcSocket
         return new ListenResult
         {
             Messages = messages,
-            ReturnType = returnType
+            ReturnCode = returnCode
         };
     }
 
@@ -50,6 +50,6 @@ public class RpcTestSocket : RpcSocket
             WriteByte(bytes[offset], offset);
         }
 
-        await SendAsync(count);
+        await SendMessageAsync(count);
     }
 }
