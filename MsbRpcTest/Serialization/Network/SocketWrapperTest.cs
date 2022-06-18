@@ -1,5 +1,6 @@
 ﻿using System.CodeDom.Compiler;
 using System.Net;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Primitives;
@@ -91,7 +92,7 @@ public class SocketWrapperTest : Test
     }
 
     [TestMethod]
-    public async Task IncompleteMessageReturnsConnectionClosedUnexpectedly()
+    public async Task TooFewBytesReturnsConnectionClosedUnexpectedly()
     {
         IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
@@ -108,6 +109,30 @@ public class SocketWrapperTest : Test
         Log(serverResult);
         Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosedUnexpectedly, serverResult.ForMessagesReturnCode);
         Assert.AreEqual(0, serverResult.Messages.Count);
+
+    }
+
+    [TestMethod]
+    public async Task TooManyBytesReturnsConnectionClosedUnexpectedly()
+    {
+        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        await clientRpcSocket.ConnectAsync(ep);
+
+        const int value = 96192;
+        byte[] valueBytes = BitConverter.GetBytes(value);
+        int valueLength = valueBytes.Length;
+        byte[] message = new byte[valueLength + 1];
+        Buffer.BlockCopy(valueBytes, 0, message, 0, valueLength);
+
+        await clientRpcSocket.SendAsync(message, valueLength);
+        clientRpcSocket.Close();
+
+        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        Log(serverResult);
+        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosedUnexpectedly, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(1, serverResult.Messages.Count);
 
     }
 
