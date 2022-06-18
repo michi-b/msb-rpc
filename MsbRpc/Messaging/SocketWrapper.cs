@@ -38,6 +38,9 @@ public abstract class SocketWrapper : IDisposable
         await _socket.ConnectAsync(ep);
     }
 
+    public int SendBufferSize => _socket.SendBufferSize;
+    public int ReceiveBufferSize => _socket.ReceiveBufferSize;
+
     public void Close()
     {
         _socket.Close();
@@ -48,7 +51,7 @@ public abstract class SocketWrapper : IDisposable
         _socket.Dispose();
     }
 
-    protected async Task<ListenForMessagesReturnCode> ListenForMessagesAsync(Action<int> onMessageReceived, CancellationToken cancellationToken)
+    protected async Task<ListenForMessagesReturnCode> ListenForMessagesAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -56,7 +59,7 @@ public abstract class SocketWrapper : IDisposable
             switch (receiveMessageResult.MessageReturnCode)
             {
                 case ReceiveMessageReturnCode.Success:
-                    onMessageReceived(receiveMessageResult.Count);
+                    ConsumeMessage(new ArraySegment<byte>(_buffer, 0, receiveMessageResult.Length));
                     break;
                 case ReceiveMessageReturnCode.ConnectionClosed:
                     return ListenForMessagesReturnCode.ConnectionClosed;
@@ -70,9 +73,11 @@ public abstract class SocketWrapper : IDisposable
         return ListenForMessagesReturnCode.Canceled;
     }
 
+    protected abstract void ConsumeMessage(ArraySegment<byte> message);
+
     protected async Task<ReceiveMessageResult> ReceiveMessageAsync()
     {
-        switch (await ReceiveFixedSizeAsync(_countBuffer, PrimitiveSerializer.Int32Size))
+        switch (await ReceiveFixedLengthAsync(_countBuffer, PrimitiveSerializer.Int32Size))
         {
             case ReceiveFixedSizeReturnCode.Success:
                 break;
@@ -87,7 +92,7 @@ public abstract class SocketWrapper : IDisposable
         int count = PrimitiveSerializer.ReadInt32(_countBuffer);
         return count == 0
             ? new ReceiveMessageResult(0, ReceiveMessageReturnCode.Success)
-            : await ReceiveFixedSizeAsync(count) switch
+            : await ReceiveFixedLengthAsync(count) switch
             {
                 ReceiveFixedSizeReturnCode.Success
                     => new ReceiveMessageResult(count, ReceiveMessageReturnCode.Success),
@@ -99,9 +104,17 @@ public abstract class SocketWrapper : IDisposable
             };
     }
 
-    protected async Task<SendMessageReturnCode> SendMessageAsync(int size)
+    protected async Task<SendMessageReturnCode> SendMessageAsync(int length) => await SendMessageAsync(length, length);
+
+    /// <summary>
+    /// do not use!!! exposed for testing unexpected connection loss only
+    /// </summary>
+    /// <param name="indicatedLength">value of the length header of the message</param>
+    /// <param name="actualLength">how many bytes are actually sent</param>
+    /// <see cref="SendMessageAsync(int)"/>
+    protected async Task<SendMessageReturnCode>SendMessageAsync(int indicatedLength, int actualLength)
     {
-        _primitiveSerializer.WriteInt32(size, _countBuffer);
+        _primitiveSerializer.WriteInt32(indicatedLength, _countBuffer);
 
         int count = await _socket.SendAsync(new ArraySegment<byte>(_countBuffer, 0, PrimitiveSerializer.Int32Size), SocketFlags.None);
 
@@ -110,23 +123,23 @@ public abstract class SocketWrapper : IDisposable
             return SendMessageReturnCode.Fail;
         }
 
-        count = await _socket.SendAsync(new ArraySegment<byte>(_buffer, 0, size), SocketFlags.None);
+        count = await _socket.SendAsync(new ArraySegment<byte>(_buffer, 0, actualLength), SocketFlags.None);
 
-        return count == size ? SendMessageReturnCode.Success : SendMessageReturnCode.Fail;
+        return count == actualLength ? SendMessageReturnCode.Success : SendMessageReturnCode.Fail;
     }
 
-    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedSizeAsync(int size)
+    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(int length)
     {
-        Reserve(size);
-        return await ReceiveFixedSizeAsync(_buffer, size);
+        Reserve(length);
+        return await ReceiveFixedLengthAsync(_buffer, length);
     }
 
-    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedSizeAsync(byte[] buffer, int size)
+    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(byte[] buffer, int length)
     {
         int totalCount = 0;
-        while (totalCount < size)
+        while (totalCount < length)
         {
-            int totalRemainingCount = size - totalCount;
+            int totalRemainingCount = length - totalCount;
             var arraySegment = new ArraySegment<byte>(buffer, totalCount, totalRemainingCount);
             int count = await _socket.ReceiveAsync(arraySegment, SocketFlags.None);
 
@@ -138,18 +151,18 @@ public abstract class SocketWrapper : IDisposable
             totalCount += count;
         }
 
-        return totalCount == size //order of these checks might be important, as 0 could be the expected size
+        return totalCount == length //order of these checks might be important, as 0 could be the expected indicatedLength
             ? ReceiveFixedSizeReturnCode.Success
             : totalCount == 0
                 ? ReceiveFixedSizeReturnCode.ConnectionClosed
                 : ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly;
     }
 
-    protected void Reserve(int size)
+    protected void Reserve(int length)
     {
-        if (_buffer.Length < size)
+        if (_buffer.Length < length)
         {
-            _buffer = new byte[size];
+            _buffer = new byte[length];
         }
     }
 

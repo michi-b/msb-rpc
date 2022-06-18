@@ -26,13 +26,26 @@ public static class NetworkUtility
 
     public static Socket CreateSocket() => MsbRpc.NetworkUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
-    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync
-        (IPEndPoint ep, CancellationToken cancellationToken) =>
-        await ReceiveMessagesAsync(ep, DefaultBufferSize, cancellationToken);
+    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(IPEndPoint ep, CancellationToken cancellationToken) =>
+        await ReceiveMessagesAsync
+        (
+            ep,
+            DefaultBufferSize,
+            MsbRpc.NetworkUtility.DefaultSocketSendBufferSize,
+            MsbRpc.NetworkUtility.DefaultSocketReceiveBufferSize,
+            cancellationToken
+        );
 
-    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(IPEndPoint ep, int capacity, CancellationToken cancellationToken)
+    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync
+    (
+        IPEndPoint ep,
+        int initialCapacity,
+        int socketSendBufferSize,
+        int socketReceiveBufferSize,
+        CancellationToken cancellationToken
+    )
     {
-        var socket = new TestSocketWrapper(await AcceptAsync(ep, cancellationToken), capacity);
+        var socket = new TestSocketWrapper(await AcceptAsync(ep, cancellationToken), initialCapacity);
         return await socket.ListenAsync(cancellationToken);
     }
 
@@ -41,17 +54,28 @@ public static class NetworkUtility
         IPEndPoint ep,
         CancellationToken cancellationToken
     ) =>
-        ReceiveBufferAsync(ep, DefaultBufferSize, cancellationToken);
+        ReceiveBufferAsync
+        (
+            ep,
+            DefaultBufferSize,
+            MsbRpc.NetworkUtility.DefaultSocketSendBufferSize,
+            MsbRpc.NetworkUtility.DefaultSocketReceiveBufferSize,
+            cancellationToken
+        );
 
     public static async Task<byte[]> ReceiveBufferAsync
     (
         IPEndPoint ep,
         int bufferSize,
+        int socketSendBufferSize,
+        int socketReceiveBufferSize,
         CancellationToken cancellationToken
     )
     {
         byte[] buffer = new byte[bufferSize];
         Socket handler = await AcceptAsync(ep, cancellationToken);
+        handler.SendBufferSize = socketSendBufferSize;
+        handler.ReceiveBufferSize = socketReceiveBufferSize;
         int position = 0;
         while (true)
         {

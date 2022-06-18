@@ -1,10 +1,13 @@
-﻿using System.Net.Sockets;
+﻿using System.Collections.Concurrent;
+using System.Net.Sockets;
 using MsbRpc.Messaging;
 
 namespace MsbRpcTest.Serialization.Network;
 
 public class TestSocketWrapper : SocketWrapper
 {
+    private readonly ConcurrentQueue<ArraySegment<byte>> _messages = new();
+
     public TestSocketWrapper(AddressFamily addressFamily, int capacity = DefaultCapacity) : base(addressFamily, capacity) { }
 
     public TestSocketWrapper(Socket socket, int capacity = DefaultCapacity) : base(socket, capacity) { }
@@ -17,43 +20,47 @@ public class TestSocketWrapper : SocketWrapper
 
     public async Task<ListenResult> ListenAsync(CancellationToken cancellationToken)
     {
-        List<byte[]> messages = new();
+        ListenForMessagesReturnCode listenForMessagesReturnCode = await ListenForMessagesAsync(cancellationToken);
 
-        ListenForMessagesReturnCode forMessagesReturnCode = await ListenForMessagesAsync
-        (
-            count =>
-            {
-                byte[] buffer = new byte[count];
-                for (int offset = 0; offset < count; offset++)
-                {
-                    buffer[offset] = ReadByte(offset);
-                }
-
-                messages.Add(buffer);
-            },
-            cancellationToken
-        );
+        var messages = new List<byte[]>();
+        while (_messages.TryDequeue(out ArraySegment<byte> message))
+        {
+            messages.Add(message.ToArray());
+        }
 
         return new ListenResult
         {
             Messages = messages,
-            ForMessagesReturnCode = forMessagesReturnCode
+            ForMessagesReturnCode = listenForMessagesReturnCode
         };
     }
 
-    public async Task SendAsync(byte[] bytes) => await SendAsync(bytes, 0, bytes.Length);
-
-    public async Task SendAsync(byte[] bytes, int offset, int count)
+    public async Task<SendMessageReturnCode> SendAsync(ArraySegment<byte> bytes)
     {
+        int count = bytes.Count;
         Reserve(count);
+        WriteBytes(bytes);
+        return await SendMessageAsync(count);
+    }
 
-        int end = offset + count;
+    public async Task<SendMessageReturnCode> SendAsync(ArraySegment<byte> bytes, int indicatedLength)
+    {
+        int count = bytes.Count;
+        Reserve(count);
+        WriteBytes(bytes);
+        return await SendMessageAsync(indicatedLength, count);
+    }
 
-        for (int currentByteOffset = offset; currentByteOffset < end; currentByteOffset++)
+    private void WriteBytes(ArraySegment<byte> bytes)
+    {
+        for (int i = 0; i < bytes.Count; i++)
         {
-            WriteByte(bytes[currentByteOffset], currentByteOffset);
+            WriteByte(bytes[i], i);
         }
+    }
 
-        await SendMessageAsync(count);
+    protected override void ConsumeMessage(ArraySegment<byte> message)
+    {
+        _messages.Enqueue(message);
     }
 }
