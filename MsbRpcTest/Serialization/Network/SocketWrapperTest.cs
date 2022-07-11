@@ -22,7 +22,7 @@ public class SocketWrapperTest : Test
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
 
-        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosed, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
         Assert.AreEqual(0, serverResult.Messages.Count);
     }
 
@@ -41,7 +41,7 @@ public class SocketWrapperTest : Test
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
         Log(serverResult);
-        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosed, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
 
         List<byte[]> receivedMessages = serverResult.Messages;
         Assert.IsTrue(receivedMessages.Count == 1);
@@ -61,7 +61,7 @@ public class SocketWrapperTest : Test
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
         Log(serverResult);
-        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosed, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
 
         List<byte[]> receivedMessages = serverResult.Messages;
         Assert.IsTrue(receivedMessages.Count == 1);
@@ -84,7 +84,7 @@ public class SocketWrapperTest : Test
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
         Log(serverResult);
-        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosed, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
 
         List<byte[]> receivedMessages = serverResult.Messages;
         Assert.IsTrue(receivedMessages.Count == 1);
@@ -107,7 +107,7 @@ public class SocketWrapperTest : Test
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
         Log(serverResult);
-        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosedUnexpectedly, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
         Assert.AreEqual(0, serverResult.Messages.Count);
 
     }
@@ -131,7 +131,7 @@ public class SocketWrapperTest : Test
 
         TestSocketWrapper.ListenResult serverResult = await serverTask;
         Log(serverResult);
-        Assert.AreEqual(ListenForMessagesReturnCode.ConnectionClosedUnexpectedly, serverResult.ForMessagesReturnCode);
+        Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
         Assert.AreEqual(1, serverResult.Messages.Count);
 
     }
@@ -142,7 +142,7 @@ public class SocketWrapperTest : Test
 
         using var writer = new IndentedTextWriter(Console.Out);
 
-        writer.WriteLine($"server result has return type: {serverResult.ForMessagesReturnCode}");
+        writer.WriteLine($"server result has return type: {serverResult.ReturnCode}");
 
         writer.Indent++;
         writer.WriteLine($"received {receivedMessages.Count} messages:");

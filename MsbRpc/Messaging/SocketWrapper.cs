@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using MsbRpc.Serialization.Primitives;
@@ -18,11 +19,19 @@ public abstract class SocketWrapper : IDisposable
     }
 
     public const int DefaultCapacity = 1024;
+    private readonly byte[] _buffer;
 
-    private readonly byte[] _countBuffer = new byte[sizeof(int)];
+    private readonly SemaphoreSlim _bufferLock = new(1);
+
+    private readonly byte[] _countBuffer = new byte[PrimitiveSerializer.Int32Size];
     private readonly Socket _socket;
-    private byte[] _buffer;
     private PrimitiveSerializer _primitiveSerializer;
+
+    private SemaphoreSlim _availableMessagesCount = new(0);
+    private ConcurrentQueue<byte[]> _availableMessages = new ConcurrentQueue<byte[]>();
+
+    public int SendBufferSize => _socket.SendBufferSize;
+    public int ReceiveBufferSize => _socket.ReceiveBufferSize;
 
     protected SocketWrapper(AddressFamily addressFamily, int capacity = DefaultCapacity)
         : this(NetworkUtility.CreateTcpSocket(addressFamily), capacity) { }
@@ -38,9 +47,6 @@ public abstract class SocketWrapper : IDisposable
         await _socket.ConnectAsync(ep);
     }
 
-    public int SendBufferSize => _socket.SendBufferSize;
-    public int ReceiveBufferSize => _socket.ReceiveBufferSize;
-
     public void Close()
     {
         _socket.Close();
@@ -51,68 +57,69 @@ public abstract class SocketWrapper : IDisposable
         _socket.Dispose();
     }
 
-    protected async Task<ListenForMessagesReturnCode> ListenForMessagesAsync(CancellationToken cancellationToken)
+    public async Task<ListenReturnCode> Listen()
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (true) //listens until the connection is closed by the remote
         {
             ReceiveMessageResult receiveMessageResult = await ReceiveMessageAsync();
             switch (receiveMessageResult.MessageReturnCode)
             {
                 case ReceiveMessageReturnCode.Success:
-                    ConsumeMessage(new ArraySegment<byte>(_buffer, 0, receiveMessageResult.Length));
-                    break;
+                    _availableMessages.Enqueue(receiveMessageResult.Bytes);
+                    _availableMessagesCount.Release();
+                    continue;
                 case ReceiveMessageReturnCode.ConnectionClosed:
-                    return ListenForMessagesReturnCode.ConnectionClosed;
+                    return ListenReturnCode.ConnectionClosed;
                 case ReceiveMessageReturnCode.ConnectionClosedUnexpectedly:
-                    return ListenForMessagesReturnCode.ConnectionClosedUnexpectedly;
+                    return ListenReturnCode.ConnectionClosedUnexpectedly;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        return ListenForMessagesReturnCode.Canceled;
     }
-
-    protected abstract void ConsumeMessage(ArraySegment<byte> message);
 
     protected async Task<ReceiveMessageResult> ReceiveMessageAsync()
     {
-        switch (await ReceiveFixedLengthAsync(_countBuffer, PrimitiveSerializer.Int32Size))
+
+        switch (await ReceiveFixedLengthAsync(_countBuffer))
         {
             case ReceiveFixedSizeReturnCode.Success:
                 break;
             case ReceiveFixedSizeReturnCode.ConnectionClosed:
-                return new ReceiveMessageResult(0, ReceiveMessageReturnCode.ConnectionClosed);
+                return new ReceiveMessageResult(Array.Empty<byte>(), ReceiveMessageReturnCode.ConnectionClosed);
             case ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly:
-                return new ReceiveMessageResult(0, ReceiveMessageReturnCode.ConnectionClosedUnexpectedly);
+                return new ReceiveMessageResult(Array.Empty<byte>(), ReceiveMessageReturnCode.ConnectionClosedUnexpectedly);
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
-        int count = PrimitiveSerializer.ReadInt32(_countBuffer);
-        return count == 0
-            ? new ReceiveMessageResult(0, ReceiveMessageReturnCode.Success)
-            : await ReceiveFixedLengthAsync(count) switch
-            {
-                ReceiveFixedSizeReturnCode.Success
-                    => new ReceiveMessageResult(count, ReceiveMessageReturnCode.Success),
-                ReceiveFixedSizeReturnCode.ConnectionClosed
-                    => new ReceiveMessageResult(count, ReceiveMessageReturnCode.ConnectionClosedUnexpectedly),
-                ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly
-                    => new ReceiveMessageResult(count, ReceiveMessageReturnCode.ConnectionClosedUnexpectedly),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+        int messageLength = PrimitiveSerializer.ReadInt32(_countBuffer);
+
+        byte[] bytes = new byte[messageLength];
+
+        if (messageLength == 0)
+        {
+            return new ReceiveMessageResult(bytes, ReceiveMessageReturnCode.Success);
+        }
+
+        return new ReceiveMessageResult(bytes, await ReceiveFixedLengthAsync(bytes) switch
+        {
+            ReceiveFixedSizeReturnCode.Success => ReceiveMessageReturnCode.Success,
+            ReceiveFixedSizeReturnCode.ConnectionClosed => ReceiveMessageReturnCode.ConnectionClosedUnexpectedly,
+            ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly => ReceiveMessageReturnCode.ConnectionClosedUnexpectedly,
+            _ => throw new ArgumentOutOfRangeException()
+        });
     }
 
     protected async Task<SendMessageReturnCode> SendMessageAsync(int length) => await SendMessageAsync(length, length);
 
     /// <summary>
-    /// do not use!!! exposed for testing unexpected connection loss only
+    ///     do not use!!! exposed for testing unexpected connection loss only
     /// </summary>
     /// <param name="indicatedLength">value of the length header of the message</param>
     /// <param name="actualLength">how many bytes are actually sent</param>
-    /// <see cref="SendMessageAsync(int)"/>
-    protected async Task<SendMessageReturnCode>SendMessageAsync(int indicatedLength, int actualLength)
+    /// <see cref="SendMessageAsync(int)" />
+    protected async Task<SendMessageReturnCode> SendMessageAsync(int indicatedLength, int actualLength)
     {
         _primitiveSerializer.WriteInt32(indicatedLength, _countBuffer);
 
@@ -128,15 +135,10 @@ public abstract class SocketWrapper : IDisposable
         return count == actualLength ? SendMessageReturnCode.Success : SendMessageReturnCode.Fail;
     }
 
-    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(int length)
-    {
-        Reserve(length);
-        return await ReceiveFixedLengthAsync(_buffer, length);
-    }
-
-    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(byte[] buffer, int length)
+    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(byte[] buffer)
     {
         int totalCount = 0;
+        int length = buffer.Length;
         while (totalCount < length)
         {
             int totalRemainingCount = length - totalCount;
@@ -156,14 +158,6 @@ public abstract class SocketWrapper : IDisposable
             : totalCount == 0
                 ? ReceiveFixedSizeReturnCode.ConnectionClosed
                 : ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly;
-    }
-
-    protected void Reserve(int length)
-    {
-        if (_buffer.Length < length)
-        {
-            _buffer = new byte[length];
-        }
     }
 
     #region Read Primitives

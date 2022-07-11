@@ -14,13 +14,13 @@ public class TestSocketWrapper : SocketWrapper
 
     public readonly struct ListenResult
     {
-        public ListenForMessagesReturnCode ForMessagesReturnCode { get; init; }
+        public ListenReturnCode ReturnCode { get; init; }
         public List<byte[]> Messages { get; init; }
     }
 
     public async Task<ListenResult> ListenAsync(CancellationToken cancellationToken)
     {
-        ListenForMessagesReturnCode listenForMessagesReturnCode = await ListenForMessagesAsync(cancellationToken);
+        ListenReturnCode listenReturnCode = await ListenForMessagesAsync(cancellationToken);
 
         var messages = new List<byte[]>();
         while (_messages.TryDequeue(out ArraySegment<byte> message))
@@ -31,7 +31,7 @@ public class TestSocketWrapper : SocketWrapper
         return new ListenResult
         {
             Messages = messages,
-            ForMessagesReturnCode = listenForMessagesReturnCode
+            ReturnCode = listenReturnCode
         };
     }
 

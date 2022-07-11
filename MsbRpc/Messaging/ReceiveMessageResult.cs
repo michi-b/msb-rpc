@@ -2,12 +2,12 @@
 
 public readonly struct ReceiveMessageResult
 {
-    public ReceiveMessageResult(int length, ReceiveMessageReturnCode messageReturnCode)
+    public ReceiveMessageResult(byte[] bytes, ReceiveMessageReturnCode messageReturnCode)
     {
-        Length = length;
+        Bytes = bytes;
         MessageReturnCode = messageReturnCode;
     }
 
-    public int Length { get; }
+    public byte[] Bytes { get; }
     public ReceiveMessageReturnCode MessageReturnCode { get; }
 }
