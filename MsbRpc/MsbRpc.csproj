@@ -9,4 +9,8 @@
     <Description>A Roslyn source generator based remote procedure call framework</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
 </Project>

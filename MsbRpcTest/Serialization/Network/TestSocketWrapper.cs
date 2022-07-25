@@ -20,18 +20,18 @@ public class TestSocketWrapper : SocketWrapper
 
     public async Task<ListenResult> ListenAsync(CancellationToken cancellationToken)
     {
-        ListenReturnCode listenReturnCode = await ListenForMessagesAsync(cancellationToken);
+        Task<ListenReturnCode> listen = Listen();
+        List<byte[]> messages = new();
 
-        var messages = new List<byte[]>();
-        while (_messages.TryDequeue(out ArraySegment<byte> message))
+        while (!cancellationToken.IsCancellationRequested && listen.Status == TaskStatus.Running || IsMessageAvailable)
         {
-            messages.Add(message.ToArray());
+            messages.Add(await AwaitNextMessage(cancellationToken));
         }
 
         return new ListenResult
         {
             Messages = messages,
-            ReturnCode = listenReturnCode
+            ReturnCode = await listen
         };
     }
 
@@ -57,10 +57,5 @@ public class TestSocketWrapper : SocketWrapper
         {
             WriteByte(bytes[i], i);
         }
-    }
-
-    protected override void ConsumeMessage(ArraySegment<byte> message)
-    {
-        _messages.Enqueue(message);
     }
 }

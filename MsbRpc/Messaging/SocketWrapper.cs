@@ -33,6 +33,9 @@ public abstract class SocketWrapper : IDisposable
     public int SendBufferSize => _socket.SendBufferSize;
     public int ReceiveBufferSize => _socket.ReceiveBufferSize;
 
+    private SemaphoreSlim _listenLock = new(0);
+    private SemaphoreSlim _messagesAvailable = new(0);
+
     protected SocketWrapper(AddressFamily addressFamily, int capacity = DefaultCapacity)
         : this(NetworkUtility.CreateTcpSocket(addressFamily), capacity) { }
 
@@ -57,27 +60,43 @@ public abstract class SocketWrapper : IDisposable
         _socket.Dispose();
     }
 
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public async Task<ListenReturnCode> Listen()
     {
-        while (true) //listens until the connection is closed by the remote
+        if (await _listenLock.WaitAsync(0))
         {
-            ReceiveMessageResult receiveMessageResult = await ReceiveMessageAsync();
-            switch (receiveMessageResult.MessageReturnCode)
+            try
             {
-                case ReceiveMessageReturnCode.Success:
-                    _availableMessages.Enqueue(receiveMessageResult.Bytes);
-                    _availableMessagesCount.Release();
-                    continue;
-                case ReceiveMessageReturnCode.ConnectionClosed:
-                    return ListenReturnCode.ConnectionClosed;
-                case ReceiveMessageReturnCode.ConnectionClosedUnexpectedly:
-                    return ListenReturnCode.ConnectionClosedUnexpectedly;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                while (true) //listens until the connection is closed by the remote
+                {
+                    ReceiveMessageResult receiveMessageResult = await ReceiveMessageAsync();
+                    switch (receiveMessageResult.MessageReturnCode)
+                    {
+                        case ReceiveMessageReturnCode.Success:
+                            _availableMessages.Enqueue(receiveMessageResult.Bytes);
+                            _availableMessagesCount.Release();
+                            continue;
+                        case ReceiveMessageReturnCode.ConnectionClosed:
+                            return ListenReturnCode.ConnectionClosed;
+                        case ReceiveMessageReturnCode.ConnectionClosedUnexpectedly:
+                            return ListenReturnCode.ConnectionClosedUnexpectedly;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
             }
+            finally
+            {
+                _listenLock.Release();
+            }
+        }
+        else
+        {
+            throw new AlreadyListeningException();
         }
     }
 
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     protected async Task<ReceiveMessageResult> ReceiveMessageAsync()
     {
 
@@ -123,16 +142,16 @@ public abstract class SocketWrapper : IDisposable
     {
         _primitiveSerializer.WriteInt32(indicatedLength, _countBuffer);
 
-        int count = await _socket.SendAsync(new ArraySegment<byte>(_countBuffer, 0, PrimitiveSerializer.Int32Size), SocketFlags.None);
+        int sentCount = await _socket.SendAsync(new ArraySegment<byte>(_countBuffer, 0, PrimitiveSerializer.Int32Size), SocketFlags.None);
 
-        if (count != PrimitiveSerializer.Int32Size)
+        if (sentCount != PrimitiveSerializer.Int32Size)
         {
             return SendMessageReturnCode.Fail;
         }
 
-        count = await _socket.SendAsync(new ArraySegment<byte>(_buffer, 0, actualLength), SocketFlags.None);
+        sentCount = await _socket.SendAsync(new ArraySegment<byte>(_buffer, 0, actualLength), SocketFlags.None);
 
-        return count == actualLength ? SendMessageReturnCode.Success : SendMessageReturnCode.Fail;
+        return sentCount == actualLength ? SendMessageReturnCode.Success : SendMessageReturnCode.Fail;
     }
 
     private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(byte[] buffer)
@@ -190,6 +209,27 @@ public abstract class SocketWrapper : IDisposable
     protected void WriteUInt16(ushort value, int offset = 0) => _primitiveSerializer.WriteUInt16(value, _buffer, offset);
     protected void WriteUint32(uint value, int offset = 0) => _primitiveSerializer.WriteUInt32(value, _buffer, offset);
     protected void WriteUint64(ulong value, int offset = 0) => _primitiveSerializer.WriteUInt64(value, _buffer, offset);
+
+    protected async Task<byte[]> AwaitNextMessage(CancellationToken cancellationToken)
+    {
+        await _messagesAvailable.WaitAsync(cancellationToken);
+        return ConsumeNextMessage();
+    }
+
+        /// <exception cref="NoMessageAvailableException"></exception>
+    protected byte[] ConsumeNextMessage()
+    {
+        if (_availableMessages.TryDequeue(out var message))
+        {
+            return message;
+        }
+        else
+        {
+            throw new NoMessageAvailableException();
+        }
+    }
+
+    protected bool IsMessageAvailable => _messagesAvailable.CurrentCount > 0;
 
     #endregion
 }
