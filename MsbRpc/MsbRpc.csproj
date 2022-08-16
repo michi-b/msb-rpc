@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>true</ImplicitUsings>
-    <LangVersion>latest</LangVersion>
-    <PackageId>MsbRps</PackageId>
-    <Description>A Roslyn source generator based remote procedure call framework</Description>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <PackageId>MsbRps</PackageId>
+        <Description>A Roslyn source generator based remote procedure call framework</Description>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Exceptions\"/>
+    </ItemGroup>
 
 </Project>

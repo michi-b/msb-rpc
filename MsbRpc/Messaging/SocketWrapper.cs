@@ -11,30 +11,23 @@ namespace MsbRpc.Messaging;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public abstract class SocketWrapper : IDisposable
 {
-    public enum ReceiveFixedSizeReturnCode
-    {
-        Success = 0,
-        ConnectionClosed = 1,
-        ConnectionClosedUnexpectedly = 2
-    }
-
     public const int DefaultCapacity = 1024;
-    private readonly byte[] _buffer;
+    private readonly ConcurrentQueue<byte[]> _availableMessages = new();
+
+    private readonly SemaphoreSlim _availableMessagesCount = new(0);
 
     private readonly SemaphoreSlim _bufferLock = new(1);
 
     private readonly byte[] _countBuffer = new byte[PrimitiveSerializer.Int32Size];
-    private readonly Socket _socket;
-    private PrimitiveSerializer _primitiveSerializer;
 
-    private SemaphoreSlim _availableMessagesCount = new(0);
-    private ConcurrentQueue<byte[]> _availableMessages = new ConcurrentQueue<byte[]>();
+    private readonly SemaphoreSlim _listenLock = new(1);
+    private readonly SemaphoreSlim _messagesAvailable = new(0);
+    private readonly Socket _socket;
+    private byte[] _buffer;
+    private PrimitiveSerializer _primitiveSerializer;
 
     public int SendBufferSize => _socket.SendBufferSize;
     public int ReceiveBufferSize => _socket.ReceiveBufferSize;
-
-    private SemaphoreSlim _listenLock = new(0);
-    private SemaphoreSlim _messagesAvailable = new(0);
 
     protected SocketWrapper(AddressFamily addressFamily, int capacity = DefaultCapacity)
         : this(NetworkUtility.CreateTcpSocket(addressFamily), capacity) { }
@@ -45,7 +38,7 @@ public abstract class SocketWrapper : IDisposable
         _socket = socket;
     }
 
-    public async Task ConnectAsync(IPEndPoint ep)
+    public async Task ConnectAsync(EndPoint ep)
     {
         await _socket.ConnectAsync(ep);
     }
@@ -61,7 +54,7 @@ public abstract class SocketWrapper : IDisposable
     }
 
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public async Task<ListenReturnCode> Listen()
+    protected async Task<ListenReturnCode> Listen()
     {
         if (await _listenLock.WaitAsync(0))
         {
@@ -90,16 +83,14 @@ public abstract class SocketWrapper : IDisposable
                 _listenLock.Release();
             }
         }
-        else
-        {
-            throw new AlreadyListeningException();
-        }
+
+        throw new AlreadyListeningException();
+
     }
 
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    protected async Task<ReceiveMessageResult> ReceiveMessageAsync()
+    private async Task<ReceiveMessageResult> ReceiveMessageAsync()
     {
-
         switch (await ReceiveFixedLengthAsync(_countBuffer))
         {
             case ReceiveFixedSizeReturnCode.Success:
@@ -121,13 +112,17 @@ public abstract class SocketWrapper : IDisposable
             return new ReceiveMessageResult(bytes, ReceiveMessageReturnCode.Success);
         }
 
-        return new ReceiveMessageResult(bytes, await ReceiveFixedLengthAsync(bytes) switch
-        {
-            ReceiveFixedSizeReturnCode.Success => ReceiveMessageReturnCode.Success,
-            ReceiveFixedSizeReturnCode.ConnectionClosed => ReceiveMessageReturnCode.ConnectionClosedUnexpectedly,
-            ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly => ReceiveMessageReturnCode.ConnectionClosedUnexpectedly,
-            _ => throw new ArgumentOutOfRangeException()
-        });
+        return new ReceiveMessageResult
+        (
+            bytes,
+            await ReceiveFixedLengthAsync(bytes) switch
+            {
+                ReceiveFixedSizeReturnCode.Success => ReceiveMessageReturnCode.Success,
+                ReceiveFixedSizeReturnCode.ConnectionClosed => ReceiveMessageReturnCode.ConnectionClosedUnexpectedly,
+                ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly => ReceiveMessageReturnCode.ConnectionClosedUnexpectedly,
+                _ => throw new ArgumentOutOfRangeException()
+            }
+        );
     }
 
     protected async Task<SendMessageReturnCode> SendMessageAsync(int length) => await SendMessageAsync(length, length);
@@ -154,14 +149,22 @@ public abstract class SocketWrapper : IDisposable
         return sentCount == actualLength ? SendMessageReturnCode.Success : SendMessageReturnCode.Fail;
     }
 
+    protected void Reserve(int count)
+    {
+        if (_buffer.Length < count)
+        {
+            _buffer = new byte[count];
+        }
+    }
+
     private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(byte[] buffer)
     {
-        int totalCount = 0;
+        int receivedCount = 0;
         int length = buffer.Length;
-        while (totalCount < length)
+        while (receivedCount < length)
         {
-            int totalRemainingCount = length - totalCount;
-            var arraySegment = new ArraySegment<byte>(buffer, totalCount, totalRemainingCount);
+            int totalRemainingCount = length - receivedCount;
+            var arraySegment = new ArraySegment<byte>(buffer, receivedCount, totalRemainingCount);
             int count = await _socket.ReceiveAsync(arraySegment, SocketFlags.None);
 
             if (count == 0) //no bytes received means connection closed
@@ -169,14 +172,21 @@ public abstract class SocketWrapper : IDisposable
                 break;
             }
 
-            totalCount += count;
+            receivedCount += count;
         }
 
-        return totalCount == length //order of these checks might be important, as 0 could be the expected indicatedLength
+        return receivedCount == length //order of these checks might be important, as 0 could be the expected indicatedLength
             ? ReceiveFixedSizeReturnCode.Success
-            : totalCount == 0
+            : receivedCount == 0
                 ? ReceiveFixedSizeReturnCode.ConnectionClosed
                 : ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly;
+    }
+
+    private enum ReceiveFixedSizeReturnCode
+    {
+        Success = 0,
+        ConnectionClosed = 1,
+        ConnectionClosedUnexpectedly = 2
     }
 
     #region Read Primitives
@@ -216,17 +226,15 @@ public abstract class SocketWrapper : IDisposable
         return ConsumeNextMessage();
     }
 
-        /// <exception cref="NoMessageAvailableException"></exception>
+    /// <exception cref="NoMessageAvailableException"></exception>
     protected byte[] ConsumeNextMessage()
     {
-        if (_availableMessages.TryDequeue(out var message))
+        if (_availableMessages.TryDequeue(out byte[]? message))
         {
             return message;
         }
-        else
-        {
-            throw new NoMessageAvailableException();
-        }
+
+        throw new NoMessageAvailableException();
     }
 
     protected bool IsMessageAvailable => _messagesAvailable.CurrentCount > 0;

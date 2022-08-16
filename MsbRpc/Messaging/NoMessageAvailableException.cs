@@ -1,7 +1,6 @@
-﻿namespace MsbRpc.Messaging
+﻿namespace MsbRpc.Messaging;
+
+public class NoMessageAvailableException : Exception
 {
-    public class NoMessageAvailableException : System.Exception
-    {
-        public NoMessageAvailableException() : base("trying to consume a message while none is available") { }
-    }
+    public NoMessageAvailableException() : base("trying to consume a message while none is available") { }
 }

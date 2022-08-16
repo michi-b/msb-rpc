@@ -12,10 +12,12 @@ public static class NetworkUtility
 
     public static UniqueIntProvider CreateUniquePortProvider(bool shuffle) => new(DynamicPortRangeMin, DynamicPortRangeMax, shuffle);
 
-    public static Socket CreateTcpSocket(
-        AddressFamily addressFamily, 
+    public static Socket CreateTcpSocket
+    (
+        AddressFamily addressFamily,
         int sendBufferSize = DefaultSocketSendBufferSize,
-        int receiveBufferSize = DefaultSocketReceiveBufferSize)
+        int receiveBufferSize = DefaultSocketReceiveBufferSize
+    )
     {
         Socket socket = new(addressFamily, SocketType.Stream, ProtocolType.Tcp);
         socket.SendBufferSize = sendBufferSize;

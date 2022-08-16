@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net.Sockets;
 using MsbRpc.Messaging;
 
@@ -6,6 +7,13 @@ namespace MsbRpcTest.Serialization.Network;
 
 public class TestSocketWrapper : SocketWrapper
 {
+    public enum ListenReturnCode
+    {
+        ConnectionClosed = 1,
+        ConnectionClosedUnexpectedly = 2,
+        Timout = 3
+    }
+
     private readonly ConcurrentQueue<ArraySegment<byte>> _messages = new();
 
     public TestSocketWrapper(AddressFamily addressFamily, int capacity = DefaultCapacity) : base(addressFamily, capacity) { }
@@ -18,21 +26,39 @@ public class TestSocketWrapper : SocketWrapper
         public List<byte[]> Messages { get; init; }
     }
 
-    public async Task<ListenResult> ListenAsync(CancellationToken cancellationToken)
+    public async Task<ListenResult> ListenAsync(CancellationToken cancellationToken, int timeout = 1000)
     {
-        Task<ListenReturnCode> listen = Listen();
+        Task<MsbRpc.Messaging.ListenReturnCode> listen = Listen();
         List<byte[]> messages = new();
 
-        while (!cancellationToken.IsCancellationRequested && listen.Status == TaskStatus.Running || IsMessageAvailable)
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        try
         {
-            messages.Add(await AwaitNextMessage(cancellationToken));
-        }
+            cts.CancelAfter(timeout);
+            listen.ConfigureAwait(true).GetAwaiter().OnCompleted(cts.Cancel);
+            
+            CancellationToken ct = cts.Token;
 
-        return new ListenResult
+            while (! listen.IsCompleted || IsMessageAvailable)
+            {
+                messages.Add(await AwaitNextMessage(cancellationToken));
+            }
+
+            return new ListenResult
+            {
+                Messages = messages,
+                ReturnCode = (ListenReturnCode)await listen
+            };
+        }
+        catch (OperationCanceledException e)
         {
-            Messages = messages,
-            ReturnCode = await listen
-        };
+            Debug.Assert(e.CancellationToken == cts.Token);
+            return new ListenResult
+            {
+                Messages = messages,
+                ReturnCode = ListenReturnCode.Timout
+            };
+        }
     }
 
     public async Task<SendMessageReturnCode> SendAsync(ArraySegment<byte> bytes)

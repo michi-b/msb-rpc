@@ -11,47 +11,30 @@ public static class NetworkUtility
 
     public static readonly IPAddress LocalHost;
 
-    public static readonly UniqueIntProvider UniquePortProvider = MsbRpc.NetworkUtility.CreateUniquePortProvider(false);
+    private static readonly UniqueIntProvider UniquePortProvider = MsbRpc.NetworkUtility.CreateUniquePortProvider(false);
 
     static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
 
-    public static IPEndPoint GetLocalEndPoint()
+    public static EndPoint GetLocalEndPoint()
     {
         int port = UniquePortProvider.Get();
         Console.WriteLine($"using port {port}");
         return GetLocalEndPoint(port);
     }
 
-    public static IPEndPoint GetLocalEndPoint(int port) => new(LocalHost, port);
-
     public static Socket CreateSocket() => MsbRpc.NetworkUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
-    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(IPEndPoint ep, CancellationToken cancellationToken) =>
+    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken) =>
         await ReceiveMessagesAsync
         (
             ep,
             DefaultBufferSize,
-            MsbRpc.NetworkUtility.DefaultSocketSendBufferSize,
-            MsbRpc.NetworkUtility.DefaultSocketReceiveBufferSize,
             cancellationToken
         );
 
-    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync
-    (
-        IPEndPoint ep,
-        int initialCapacity,
-        int socketSendBufferSize,
-        int socketReceiveBufferSize,
-        CancellationToken cancellationToken
-    )
-    {
-        var socket = new TestSocketWrapper(await AcceptAsync(ep, cancellationToken), initialCapacity);
-        return await socket.ListenAsync(cancellationToken);
-    }
-
     public static Task<byte[]> ReceiveBufferAsync
     (
-        IPEndPoint ep,
+        EndPoint ep,
         CancellationToken cancellationToken
     ) =>
         ReceiveBufferAsync
@@ -63,9 +46,23 @@ public static class NetworkUtility
             cancellationToken
         );
 
-    public static async Task<byte[]> ReceiveBufferAsync
+    private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
+
+    private static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync
     (
-        IPEndPoint ep,
+        EndPoint ep,
+        int initialCapacity,
+        CancellationToken cancellationToken
+    )
+    {
+        var socket = new TestSocketWrapper(await AcceptAsync(ep, cancellationToken), initialCapacity);
+        TestSocketWrapper.ListenResult ret = await socket.ListenAsync(cancellationToken);
+        return ret;
+    }
+
+    private static async Task<byte[]> ReceiveBufferAsync
+    (
+        EndPoint ep,
         int bufferSize,
         int socketSendBufferSize,
         int socketReceiveBufferSize,
@@ -99,7 +96,7 @@ public static class NetworkUtility
         return buffer;
     }
 
-    public static async Task<Socket> AcceptAsync(IPEndPoint ep, CancellationToken cancellationToken)
+    private static async Task<Socket> AcceptAsync(EndPoint ep, CancellationToken cancellationToken)
     {
         Socket listenSocket = CreateSocket();
         listenSocket.Bind(ep);

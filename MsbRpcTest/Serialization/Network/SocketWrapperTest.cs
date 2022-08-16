@@ -1,9 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using System.Net;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
-using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -13,7 +11,7 @@ public class SocketWrapperTest : Test
     [TestMethod]
     public async Task ClosingConnectionStopsListening()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
@@ -29,7 +27,7 @@ public class SocketWrapperTest : Test
     [TestMethod]
     public async Task SingleByteMessagesIsDelivered()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
@@ -51,7 +49,7 @@ public class SocketWrapperTest : Test
     [TestMethod]
     public async Task EmptyMessageIsDelivered()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
@@ -71,7 +69,7 @@ public class SocketWrapperTest : Test
     [TestMethod]
     public async Task IntMessageIsDelivered()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
@@ -94,7 +92,7 @@ public class SocketWrapperTest : Test
     [TestMethod]
     public async Task TooFewBytesReturnsConnectionClosedUnexpectedly()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
@@ -109,13 +107,12 @@ public class SocketWrapperTest : Test
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
         Assert.AreEqual(0, serverResult.Messages.Count);
-
     }
 
     [TestMethod]
     public async Task TooManyBytesReturnsConnectionClosedUnexpectedly()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
         var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
@@ -133,7 +130,6 @@ public class SocketWrapperTest : Test
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
         Assert.AreEqual(1, serverResult.Messages.Count);
-
     }
 
     private static void Log(TestSocketWrapper.ListenResult serverResult)

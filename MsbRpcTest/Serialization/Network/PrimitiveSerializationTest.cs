@@ -15,7 +15,7 @@ public class PrimitiveSerializationTest : Test
     [TestMethod]
     public async Task PreservesInt32()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var primitiveSerializer = new PrimitiveSerializer();
@@ -40,7 +40,7 @@ public class PrimitiveSerializationTest : Test
     [TestMethod]
     public async Task PreservesAllPrimitives()
     {
-        IPEndPoint ep = NetworkUtility.GetLocalEndPoint();
+        EndPoint ep = NetworkUtility.GetLocalEndPoint();
         using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var primitiveSerializer = new PrimitiveSerializer();
