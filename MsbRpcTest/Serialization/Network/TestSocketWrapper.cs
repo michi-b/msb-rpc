@@ -35,11 +35,10 @@ public class TestSocketWrapper : SocketWrapper
         try
         {
             cts.CancelAfter(timeout);
-            listen.ConfigureAwait(true).GetAwaiter().OnCompleted(cts.Cancel);
-            
+
             CancellationToken ct = cts.Token;
 
-            while (! listen.IsCompleted || IsMessageAvailable)
+            while (!listen.IsCompleted || IsMessageAvailable)
             {
                 messages.Add(await AwaitNextMessage(cancellationToken));
             }

@@ -22,7 +22,7 @@ public static class NetworkUtility
         return GetLocalEndPoint(port);
     }
 
-    public static Socket CreateSocket() => MsbRpc.NetworkUtility.CreateTcpSocket(LocalHost.AddressFamily);
+    public static Socket CreateSocket() => SocketUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
     public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken) =>
         await ReceiveMessagesAsync
@@ -41,8 +41,8 @@ public static class NetworkUtility
         (
             ep,
             DefaultBufferSize,
-            MsbRpc.NetworkUtility.DefaultSocketSendBufferSize,
-            MsbRpc.NetworkUtility.DefaultSocketReceiveBufferSize,
+            SocketUtility.DefaultSocketSendBufferSize,
+            SocketUtility.DefaultSocketReceiveBufferSize,
             cancellationToken
         );
 
