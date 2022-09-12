@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Messaging;
+﻿namespace MsbRpc.Messaging.Sockets;
 
 public readonly struct ReceiveMessageResult
 {

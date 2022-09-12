@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using MsbRpc.Concurrent;
 using MsbRpc.Messaging;
+using MsbRpc.Messaging.Sockets;
 
 namespace MsbRpcTest.Serialization.Network;
 

@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Net.Sockets;
 using JetBrains.Annotations;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpc.Messaging;
+namespace MsbRpc.Messaging.Sockets;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
