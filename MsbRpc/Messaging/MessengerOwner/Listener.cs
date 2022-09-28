@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using JetBrains.Annotations;
-using MsbRpc.Messaging.Sockets;
+using MsbRpc.Messaging.Messenger;
 using MsbRpc.Utility.Generic;
 
 namespace MsbRpc.Messaging.SocketOwners;
@@ -8,7 +8,7 @@ namespace MsbRpc.Messaging.SocketOwners;
 using StateUtility = EnumUtility<Listener.State>;
 
 [PublicAPI]
-public class Listener : SocketWrapperOwner, IDisposable
+public class Listener : MessengerOwner, IDisposable
 {
     public enum ReturnCode
     {
@@ -21,7 +21,7 @@ public class Listener : SocketWrapperOwner, IDisposable
     private readonly AutoResetEvent _stateLock = new(true);
     private State _state = State.Initial;
 
-    public Listener(SocketWrapper socket, int capacity) : base(socket) { }
+    public Listener(Messenger.Messenger messenger, int capacity) : base(messenger) { }
 
     /// <exception cref="InvalidStateException{TEnum}"></exception>
     public void Dispose()
@@ -39,7 +39,7 @@ public class Listener : SocketWrapperOwner, IDisposable
 
         while (true) //listens until the connection is closed by the remote
         {
-            ReceiveMessageResult receiveMessageResult = await Socket.ReceiveMessageAsync();
+            ReceiveMessageResult receiveMessageResult = await Messenger.ReceiveMessageAsync();
             switch (receiveMessageResult.MessageReturnCode)
             {
                 case ReceiveMessageReturnCode.Success:

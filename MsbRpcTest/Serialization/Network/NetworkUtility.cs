@@ -2,13 +2,13 @@
 using System.Net.Sockets;
 using MsbRpc.Concurrent;
 using MsbRpc.Messaging;
-using MsbRpc.Messaging.Sockets;
+using MsbRpc.Messaging.Messenger;
 
 namespace MsbRpcTest.Serialization.Network;
 
 public static class NetworkUtility
 {
-    public const int DefaultBufferSize = SocketWrapper.DefaultCapacity;
+    public const int DefaultBufferSize = Messenger.DefaultCapacity;
 
     public static readonly IPAddress LocalHost;
 
@@ -25,7 +25,7 @@ public static class NetworkUtility
 
     public static Socket CreateSocket() => SocketUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
-    public static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken) =>
+    public static async Task<TestMessenger.ListenResult> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken) =>
         await ReceiveMessagesAsync
         (
             ep,
@@ -49,15 +49,15 @@ public static class NetworkUtility
 
     private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
 
-    private static async Task<TestSocketWrapper.ListenResult> ReceiveMessagesAsync
+    private static async Task<TestMessenger.ListenResult> ReceiveMessagesAsync
     (
         EndPoint ep,
         int initialCapacity,
         CancellationToken cancellationToken
     )
     {
-        var socket = new TestSocketWrapper(await AcceptAsync(ep, cancellationToken), initialCapacity);
-        TestSocketWrapper.ListenResult ret = await socket.ListenAsync(cancellationToken);
+        var socket = new TestMessenger(await AcceptAsync(ep, cancellationToken), initialCapacity);
+        TestMessenger.ListenResult ret = await socket.ListenAsync(cancellationToken);
         return ret;
     }
 

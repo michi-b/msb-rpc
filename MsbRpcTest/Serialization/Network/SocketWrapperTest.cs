@@ -12,13 +12,13 @@ public class SocketWrapperTest : Test
     public async Task ClosingConnectionStopsListening()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        using Task<TestMessenger.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestMessenger(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
         clientRpcSocket.Close();
 
-        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        TestMessenger.ListenResult serverResult = await serverTask;
 
         Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
         Assert.AreEqual(0, serverResult.Messages.Count);
@@ -28,8 +28,8 @@ public class SocketWrapperTest : Test
     public async Task SingleByteMessagesIsDelivered()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        using Task<TestMessenger.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestMessenger(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
         const byte value = 123;
@@ -37,7 +37,7 @@ public class SocketWrapperTest : Test
         await clientRpcSocket.SendAsync(message);
         clientRpcSocket.Close();
 
-        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        TestMessenger.ListenResult serverResult = await serverTask;
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
 
@@ -50,14 +50,14 @@ public class SocketWrapperTest : Test
     public async Task EmptyMessageIsDelivered()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        using Task<TestMessenger.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestMessenger(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
         await clientRpcSocket.SendAsync(Array.Empty<byte>());
         clientRpcSocket.Close();
 
-        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        TestMessenger.ListenResult serverResult = await serverTask;
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
 
@@ -70,8 +70,8 @@ public class SocketWrapperTest : Test
     public async Task IntMessageIsDelivered()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        using Task<TestMessenger.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestMessenger(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
         const int value = -912347287;
@@ -80,7 +80,7 @@ public class SocketWrapperTest : Test
         await clientRpcSocket.SendAsync(message);
         clientRpcSocket.Close();
 
-        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        TestMessenger.ListenResult serverResult = await serverTask;
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
 
@@ -93,8 +93,8 @@ public class SocketWrapperTest : Test
     public async Task TooFewBytesReturnsConnectionClosedUnexpectedly()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        using Task<TestMessenger.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestMessenger(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
         const int value = 96192;
@@ -103,7 +103,7 @@ public class SocketWrapperTest : Test
         await clientRpcSocket.SendAsync(new ArraySegment<byte>(message, 0, 3), 4);
         clientRpcSocket.Close();
 
-        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        TestMessenger.ListenResult serverResult = await serverTask;
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
         Assert.AreEqual(0, serverResult.Messages.Count);
@@ -113,8 +113,8 @@ public class SocketWrapperTest : Test
     public async Task TooManyBytesReturnsConnectionClosedUnexpectedly()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<TestSocketWrapper.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-        var clientRpcSocket = new TestSocketWrapper(NetworkUtility.LocalHost.AddressFamily);
+        using Task<TestMessenger.ListenResult> serverTask = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
+        var clientRpcSocket = new TestMessenger(NetworkUtility.LocalHost.AddressFamily);
         await clientRpcSocket.ConnectAsync(ep);
 
         const int value = 96192;
@@ -126,13 +126,13 @@ public class SocketWrapperTest : Test
         await clientRpcSocket.SendAsync(message, valueLength);
         clientRpcSocket.Close();
 
-        TestSocketWrapper.ListenResult serverResult = await serverTask;
+        TestMessenger.ListenResult serverResult = await serverTask;
         Log(serverResult);
         Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
         Assert.AreEqual(1, serverResult.Messages.Count);
     }
 
-    private static void Log(TestSocketWrapper.ListenResult serverResult)
+    private static void Log(TestMessenger.ListenResult serverResult)
     {
         List<byte[]> receivedMessages = serverResult.Messages;
 

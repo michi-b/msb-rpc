@@ -1,8 +1,8 @@
-﻿namespace MsbRpc.Messaging.Sockets;
+﻿namespace MsbRpc.Messaging.Messenger;
 
 public readonly struct ReceiveMessageResult
 {
-    public ReceiveMessageResult(byte[] bytes, ReceiveMessageReturnCode messageReturnCode)
+    public ReceiveMessageResult(ArraySegment<byte> bytes, ReceiveMessageReturnCode messageReturnCode)
     {
         Bytes = bytes;
         MessageReturnCode = messageReturnCode;
