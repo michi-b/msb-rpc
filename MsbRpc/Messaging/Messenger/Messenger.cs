@@ -1,18 +1,19 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using JetBrains.Annotations;
-using MsbRpc.Buffer;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.Messaging.Messenger;
 
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public abstract class Messenger : IDisposable
+public class Messenger : IDisposable
 {
     [PublicAPI] public const int DefaultCapacity = 1024;
 
-    private readonly ArraySegment<byte> _countBuffer;
+    private readonly byte[] _countBuffer;
+    private readonly ArraySegment<byte> _countBufferSegment;
 
     private readonly byte[] _countBytes = new byte[PrimitiveSerializer.Int32Size];
     private readonly Socket _socket;
@@ -23,20 +24,13 @@ public abstract class Messenger : IDisposable
     ///     a connected socket that this wrapper can take ownership of
     ///     (it may no longer be used otherwise and will be disposed along with the wrapper)
     /// </param>
-    /// <param name="buffer">the buffer this messenger uses for memory allocation</param>
-    /// <param name="capacity">
-    ///     capacity of the internal receive buffer, should be the maximum amount of expected bytes per
-    ///     message
-    /// </param>
     /// <exception cref="ArgumentException">if the socket is not connected</exception>
-    protected Messenger(Socket connectedSocket, IBuffer buffer, int capacity = DefaultCapacity)
+    public Messenger(Socket connectedSocket)
     {
-        if (!connectedSocket.Connected)
-        {
-            throw new ArgumentException("socket needs to be connected for this constructor", nameof(connectedSocket));
-        }
-
-        _countBuffer = new ArraySegment<byte>(_countBytes);
+        Debug.Assert(connectedSocket.Connected, "socket needs to be connected for this constructor");
+        
+        _countBuffer = new byte[PrimitiveSerializer.Int32Size];
+        _countBufferSegment = new ArraySegment<byte>(_countBytes);
         _socket = connectedSocket;
     }
 
@@ -52,15 +46,18 @@ public abstract class Messenger : IDisposable
         _disposed = true;
     }
 
+    [PublicAPI]
+    public async Task<SendMessageReturnCode> SendMessageAsync(byte[] message) => await SendMessageAsync(new ArraySegment<byte>(message));
+
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     [PublicAPI]
     public async Task<SendMessageReturnCode> SendMessageAsync(ArraySegment<byte> message)
     {
         int messageLength = message.Count;
 
-        _primitiveSerializer.WriteInt32(messageLength, _countBuffer.Array!);
+        _primitiveSerializer.WriteInt32(messageLength, _countBuffer);
 
-        int sendCountSendCount = await _socket.SendAsync(_countBuffer, SocketFlags.None);
+        int sendCountSendCount = await _socket.SendAsync(_countBufferSegment, SocketFlags.None);
 
         if (sendCountSendCount != PrimitiveSerializer.Int32Size)
         {
@@ -73,23 +70,23 @@ public abstract class Messenger : IDisposable
     }
 
     [PublicAPI]
-    protected async Task<ReceiveMessageResult> ReceiveMessageAsync(IBuffer buffer)
+    public async Task<ReceiveMessageResult> ReceiveMessageAsync()
     {
         switch (await ReceiveFixedLengthAsync(_countBuffer))
         {
             case ReceiveFixedSizeReturnCode.Success:
                 break;
             case ReceiveFixedSizeReturnCode.ConnectionClosed:
-                return new ReceiveMessageResult(Memory.Empty, ReceiveMessageReturnCode.ConnectionClosed);
+                return new ReceiveMessageResult(Array.Empty<byte>(), ReceiveMessageReturnCode.ConnectionClosed);
             case ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly:
-                return new ReceiveMessageResult(Memory.Empty, ReceiveMessageReturnCode.ConnectionClosedUnexpectedly);
+                return new ReceiveMessageResult(Array.Empty<byte>(), ReceiveMessageReturnCode.ConnectionClosedUnexpectedly);
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
         int messageLength = PrimitiveSerializer.ReadInt32(_countBuffer);
 
-        ArraySegment<byte> bytes = buffer.Borrow(messageLength);
+        byte[] bytes = new byte[messageLength];
 
         if (messageLength == 0)
         {
@@ -109,7 +106,7 @@ public abstract class Messenger : IDisposable
         );
     }
 
-    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(ArraySegment<byte> buffer)
+    private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(byte[] buffer)
     {
         int receivedCount = 0;
         int length = buffer.Length;

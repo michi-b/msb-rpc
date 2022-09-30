@@ -4,6 +4,7 @@ using MsbRpc.Concurrent;
 using MsbRpc.Messaging;
 using MsbRpc.Messaging.Messenger;
 
+
 namespace MsbRpcTest.Serialization.Network;
 
 public static class NetworkUtility
@@ -13,7 +14,7 @@ public static class NetworkUtility
     public static readonly IPAddress LocalHost;
 
     private static readonly UniqueIntProvider UniquePortProvider = MsbRpc.NetworkUtility.CreateUniquePortProvider(false);
-
+    
     static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
 
     public static EndPoint GetLocalEndPoint()
@@ -25,76 +26,24 @@ public static class NetworkUtility
 
     public static Socket CreateSocket() => SocketUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
-    public static async Task<TestMessenger.ListenResult> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken) =>
-        await ReceiveMessagesAsync
-        (
-            ep,
-            DefaultBufferSize,
-            cancellationToken
-        );
-
-    public static Task<byte[]> ReceiveBufferAsync
-    (
-        EndPoint ep,
-        CancellationToken cancellationToken
-    ) =>
-        ReceiveBufferAsync
-        (
-            ep,
-            DefaultBufferSize,
-            SocketUtility.DefaultSocketSendBufferSize,
-            SocketUtility.DefaultSocketReceiveBufferSize,
-            cancellationToken
-        );
-
-    private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
-
-    private static async Task<TestMessenger.ListenResult> ReceiveMessagesAsync
-    (
-        EndPoint ep,
-        int initialCapacity,
-        CancellationToken cancellationToken
-    )
+    public static async Task<Socket> CreateConnectedSocket(EndPoint ep)
     {
-        var socket = new TestMessenger(await AcceptAsync(ep, cancellationToken), initialCapacity);
-        TestMessenger.ListenResult ret = await socket.ListenAsync(cancellationToken);
-        return ret;
+        Socket socket = CreateSocket();
+        await socket.ConnectAsync(ep);
+        return socket;
     }
+    
+   private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
 
-    private static async Task<byte[]> ReceiveBufferAsync
+    public static async Task<SingleConnectionMessageReceiver.ListenResult> ReceiveMessagesAsync
     (
         EndPoint ep,
-        int bufferSize,
-        int socketSendBufferSize,
-        int socketReceiveBufferSize,
         CancellationToken cancellationToken
     )
     {
-        byte[] buffer = new byte[bufferSize];
-        Socket handler = await AcceptAsync(ep, cancellationToken);
-        handler.SendBufferSize = socketSendBufferSize;
-        handler.ReceiveBufferSize = socketReceiveBufferSize;
-        int position = 0;
-        while (true)
-        {
-            ArraySegment<byte> targetSegment = new(buffer, position, bufferSize - position);
-
-            int bytesRead = await handler.ReceiveAsync
-            (
-                targetSegment,
-                SocketFlags.None,
-                cancellationToken
-            );
-
-            if (bytesRead == 0)
-            {
-                break;
-            }
-
-            position += bytesRead;
-        }
-
-        return buffer;
+        var socket = new SingleConnectionMessageReceiver(new Messenger(await AcceptAsync(ep, cancellationToken)));
+        SingleConnectionMessageReceiver.ListenResult ret = await socket.ListenAsync(cancellationToken);
+        return ret;
     }
 
     private static async Task<Socket> AcceptAsync(EndPoint ep, CancellationToken cancellationToken)

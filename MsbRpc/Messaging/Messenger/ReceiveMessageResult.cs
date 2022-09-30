@@ -2,7 +2,7 @@
 
 public readonly struct ReceiveMessageResult
 {
-    public ReceiveMessageResult(ArraySegment<byte> bytes, ReceiveMessageReturnCode messageReturnCode)
+    public ReceiveMessageResult(byte[] bytes, ReceiveMessageReturnCode messageReturnCode)
     {
         Bytes = bytes;
         MessageReturnCode = messageReturnCode;
