@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
+using MsbRpcTest.Serialization.Network.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -10,29 +11,34 @@ namespace MsbRpcTest.Serialization.Network;
 [TestClass]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public class PrimitiveSerializationTest : Test
+public class PrimitivesSerializationTest : Test
 {
     [TestMethod]
     public async Task PreservesInt32()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
-        byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
+
+        using Task<byte[]> listenTask
+            = NetworkUtility.ReceiveBytesAsync(ep, CancellationToken);
+
+        byte[] bytes = new byte[NetworkUtility.DefaultBufferSize];
         var primitiveSerializer = new PrimitiveSerializer();
 
         const Int32 value = 531234;
 
-        primitiveSerializer.WriteInt32(value, buffer);
+        primitiveSerializer.WriteInt32(value, bytes);
 
         Socket clientSocket = NetworkUtility.CreateSocket();
         await clientSocket.ConnectAsync(ep, CancellationToken);
 
-        await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, sizeof(Int32)), SocketFlags.None);
+        Assert.IsTrue(clientSocket.Connected);
+
+        await clientSocket.SendAsync(new ArraySegment<byte>(bytes, 0, sizeof(Int32)), SocketFlags.None);
         clientSocket.Close();
 
-        byte[] serverReceivedBytes = await serverTask;
+        byte[] receivedBytes = await listenTask;
 
-        Int32 result = PrimitiveSerializer.ReadInt32(serverReceivedBytes);
+        Int32 result = PrimitiveSerializer.ReadInt32(receivedBytes);
 
         Assert.AreEqual(value, result);
     }
@@ -41,7 +47,9 @@ public class PrimitiveSerializationTest : Test
     public async Task PreservesAllPrimitives()
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
-        using Task<byte[]> serverTask = NetworkUtility.ReceiveBufferAsync(ep, CancellationToken);
+
+        using Task<byte[]> listenTask = NetworkUtility.ReceiveBytesAsync(ep, CancellationToken);
+
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
         var primitiveSerializer = new PrimitiveSerializer();
 
@@ -117,54 +125,54 @@ public class PrimitiveSerializationTest : Test
         await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount), SocketFlags.None);
         clientSocket.Close();
 
-        byte[] result = await serverTask;
+        byte[] bytes = await listenTask;
 
-        Assert.IsTrue(result.Length >= byteCount);
+        Assert.IsTrue(bytes.Length == byteCount);
 
         offset = 0;
 
-        bool trueBooleanResult = PrimitiveSerializer.ReadBoolean(result, offset);
+        bool trueBooleanResult = PrimitiveSerializer.ReadBoolean(bytes, offset);
         offset += PrimitiveSerializer.BooleanSize;
 
-        bool falseBooleanResult = PrimitiveSerializer.ReadBoolean(result, offset);
+        bool falseBooleanResult = PrimitiveSerializer.ReadBoolean(bytes, offset);
         offset += PrimitiveSerializer.BooleanSize;
 
-        byte byteResult = result[offset++];
+        byte byteResult = bytes[offset++];
 
-        Char charYResult = PrimitiveSerializer.ReadChar(result, offset);
+        Char charYResult = PrimitiveSerializer.ReadChar(bytes, offset);
         offset += PrimitiveSerializer.CharSize;
 
-        Char charAeResult = PrimitiveSerializer.ReadChar(result, offset);
+        Char charAeResult = PrimitiveSerializer.ReadChar(bytes, offset);
         offset += PrimitiveSerializer.CharSize;
 
-        Decimal decimalResult = primitiveSerializer.ReadDecimal(result, offset);
+        Decimal decimalResult = primitiveSerializer.ReadDecimal(bytes, offset);
         offset += PrimitiveSerializer.DecimalSize;
 
-        Double doubleResult = PrimitiveSerializer.ReadDouble(result, offset);
+        Double doubleResult = PrimitiveSerializer.ReadDouble(bytes, offset);
         offset += PrimitiveSerializer.DoubleSize;
 
-        Int16 int16Result = PrimitiveSerializer.ReadInt16(result, offset);
+        Int16 int16Result = PrimitiveSerializer.ReadInt16(bytes, offset);
         offset += PrimitiveSerializer.Int16Size;
 
-        Int32 int32Result = PrimitiveSerializer.ReadInt32(result, offset);
+        Int32 int32Result = PrimitiveSerializer.ReadInt32(bytes, offset);
         offset += PrimitiveSerializer.Int32Size;
 
-        Int64 int64Result = PrimitiveSerializer.ReadInt64(result, offset);
+        Int64 int64Result = PrimitiveSerializer.ReadInt64(bytes, offset);
         offset += PrimitiveSerializer.Int64Size;
 
-        SByte sByteResult = PrimitiveSerializer.ReadSByte(result, offset);
+        SByte sByteResult = PrimitiveSerializer.ReadSByte(bytes, offset);
         offset += PrimitiveSerializer.SByteSize;
 
-        Single singleResult = PrimitiveSerializer.ReadSingle(result, offset);
+        Single singleResult = PrimitiveSerializer.ReadSingle(bytes, offset);
         offset += PrimitiveSerializer.SingleSize;
 
-        UInt16 uint16Result = PrimitiveSerializer.ReadUInt16(result, offset);
+        UInt16 uint16Result = PrimitiveSerializer.ReadUInt16(bytes, offset);
         offset += PrimitiveSerializer.UInt16Size;
 
-        UInt32 uint32Result = PrimitiveSerializer.ReadUInt32(result, offset);
+        UInt32 uint32Result = PrimitiveSerializer.ReadUInt32(bytes, offset);
         offset += PrimitiveSerializer.UInt32Size;
 
-        UInt64 uint64Result = PrimitiveSerializer.ReadUInt64(result, offset);
+        UInt64 uint64Result = PrimitiveSerializer.ReadUInt64(bytes, offset);
         offset += PrimitiveSerializer.UInt64Size;
 
         Assert.AreEqual(byteCount, offset);

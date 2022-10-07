@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using MsbRpc.Concurrent;
 using MsbRpc.Messaging;
 using MsbRpc.Messaging.Messenger;
-
+using MsbRpcTest.Serialization.Network.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -14,7 +14,7 @@ public static class NetworkUtility
     public static readonly IPAddress LocalHost;
 
     private static readonly UniqueIntProvider UniquePortProvider = MsbRpc.NetworkUtility.CreateUniquePortProvider(false);
-    
+
     static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
 
     public static EndPoint GetLocalEndPoint()
@@ -32,19 +32,16 @@ public static class NetworkUtility
         await socket.ConnectAsync(ep);
         return socket;
     }
-    
-   private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
 
-    public static async Task<SingleConnectionMessageReceiver.ListenResult> ReceiveMessagesAsync
-    (
-        EndPoint ep,
-        CancellationToken cancellationToken
-    )
-    {
-        var socket = new SingleConnectionMessageReceiver(new Messenger(await AcceptAsync(ep, cancellationToken)));
-        SingleConnectionMessageReceiver.ListenResult ret = await socket.ListenAsync(cancellationToken);
-        return ret;
-    }
+    public static async Task<byte[]> ReceiveBytesAsync
+        (EndPoint ep, CancellationToken cancellationToken) =>
+        await new BytesListener(await AcceptAsync(ep, cancellationToken)).Listen(cancellationToken);
+
+    public static async Task<MessagesListener.ListenResult> ReceiveMessagesAsync
+        (EndPoint ep, CancellationToken cancellationToken) =>
+        await new MessagesListener(new Messenger(await AcceptAsync(ep, cancellationToken))).ListenAsync(cancellationToken);
+
+    private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
 
     private static async Task<Socket> AcceptAsync(EndPoint ep, CancellationToken cancellationToken)
     {

@@ -1,13 +1,11 @@
-﻿using System.Net.Sockets;
-using JetBrains.Annotations;
-using MsbRpc.Messaging.Messenger;
+﻿using MsbRpc.Messaging.Messenger;
 using MsbRpc.Messaging.SocketOwners;
 
-namespace MsbRpcTest.Serialization.Network;
+namespace MsbRpcTest.Serialization.Network.Listeners;
 
-public class SingleConnectionMessageReceiver : MessengerOwner
+public class MessagesListener : MessengerOwner
 {
-    public SingleConnectionMessageReceiver(Messenger messenger) : base(messenger) { }
+    public MessagesListener(Messenger messenger) : base(messenger) { }
 
     public readonly struct ListenResult
     {
