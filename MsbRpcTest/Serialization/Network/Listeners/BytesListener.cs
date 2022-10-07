@@ -17,6 +17,8 @@ public class BytesListener
         int receivedCount;
         while ((receivedCount = await _socket.ReceiveAsync(bufferSegment, SocketFlags.None)) > 0)
         {
+            // ReSharper disable once HeapView.BoxingAllocation
+            // yeah, don't care, this is testing only
             bytes.AddRange(bufferSegment[..receivedCount]);
         }
 
