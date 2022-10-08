@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using MsbRpc.Concurrent;
 using MsbRpc.Messaging;
-using MsbRpc.Messaging.Messenger;
+using MsbRpc.Messaging.Listeners;
 using MsbRpcTest.Serialization.Network.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
@@ -37,9 +37,18 @@ public static class NetworkUtility
         (EndPoint ep, CancellationToken cancellationToken) =>
         await new BytesListener(await AcceptAsync(ep, cancellationToken)).Listen(cancellationToken);
 
-    public static async Task<MessagesListener.ListenResult> ReceiveMessagesAsync
-        (EndPoint ep, CancellationToken cancellationToken) =>
-        await new MessagesListener(new Messenger(await AcceptAsync(ep, cancellationToken))).ListenAsync(cancellationToken);
+    public static async Task<List<ArraySegment<byte>>> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken)
+    {
+        var listener = new LazyListener(new Messenger(await AcceptAsync(ep, cancellationToken)));
+        await listener.Listen(cancellationToken);
+        List<ArraySegment<byte>> result = new();
+        while (listener.HasMessageAvailable)
+        {
+            result.Add(listener.ConsumeNextMessage());
+        }
+
+        return result;
+    }
 
     private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
 

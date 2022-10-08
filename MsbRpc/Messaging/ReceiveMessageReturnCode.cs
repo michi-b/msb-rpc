@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Messaging.Messenger;
+﻿namespace MsbRpc.Messaging;
 
 public enum ReceiveMessageReturnCode
 {

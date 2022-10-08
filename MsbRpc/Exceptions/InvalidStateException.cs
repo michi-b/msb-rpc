@@ -11,9 +11,9 @@ public class InvalidStateException<TEnum> : InvalidOperationException where TEnu
             "operation "
             + OperationNameOrEmpty(operationName)
             + "is only available in state "
-            + $"'{EnumUtility<TEnum>.GetName(expectedState)}' "
+            + $"'{StateUtility<TEnum>.GetName(expectedState)}' "
             + "but was called in state "
-            + $"'{EnumUtility<TEnum>.GetName(actualState)}'"
+            + $"'{StateUtility<TEnum>.GetName(actualState)}'"
         ) { }
 
     public InvalidStateException(TEnum[] allowedStates, TEnum actualState, [CallerMemberName] string? operationName = null)
@@ -22,9 +22,9 @@ public class InvalidStateException<TEnum> : InvalidOperationException where TEnu
             "operation "
             + OperationNameOrEmpty(operationName)
             + "is only available in states {"
-            + string.Join(", ", allowedStates.Select(state => $"'{EnumUtility<TEnum>.GetName(state)}'"))
+            + string.Join(", ", allowedStates.Select(state => $"'{StateUtility<TEnum>.GetName(state)}'"))
             + "but was called in state "
-            + $"'{EnumUtility<TEnum>.GetName(actualState)}'"
+            + $"'{StateUtility<TEnum>.GetName(actualState)}'"
         ) { }
 
     private static string OperationNameOrEmpty(string? operationName) => operationName != null ? $"'{operationName}' " : string.Empty;

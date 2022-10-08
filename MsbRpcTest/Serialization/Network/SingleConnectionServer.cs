@@ -1,14 +1,15 @@
 ﻿using System.Net;
-using MsbRpc.Messaging.Messenger;
+using MsbRpc.Messaging;
+using MsbRpc.Messaging.Listeners;
 using MsbRpcTest.Serialization.Network.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
 
-using ListenTask = Task<MessagesListener.ListenResult>;
+using ListenTask = Task<Listener.ReturnCode>;
 
 public readonly struct SingleConnectionServer
 {
-    public ListenTask ListenTask { get; }
+    public Task<List<ArraySegment<byte>>> ListenTask { get; }
 
     private EndPoint EndPoint { get; }
 

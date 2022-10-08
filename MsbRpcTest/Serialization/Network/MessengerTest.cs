@@ -1,9 +1,7 @@
 ﻿using System.CodeDom.Compiler;
-using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Messaging.Messenger;
-using MsbRpc.Serialization;
-using MsbRpcTest.Serialization.Network.Listeners;
+using MsbRpc.Messaging;
+using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -18,10 +16,8 @@ public class MessengerTest : Test
         {
             //do nothing, just close connection
         }
-        MessagesListener.ListenResult serverResult = await server.ListenTask;
-
-        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
-        Assert.AreEqual(0, serverResult.Messages.Count);
+        MessageList messages = await server.ListenTask;
+        Assert.AreEqual(0, messages.Count);
     }
 
     [TestMethod]
@@ -33,17 +29,14 @@ public class MessengerTest : Test
         var server = new SingleConnectionServer(CancellationToken);
         using (Messenger client = await server.Connect())
         {
-            SendMessageReturnCode sendReturnCode = await client.SendMessageAsync(new[] { value });
-            Assert.AreEqual(SendMessageReturnCode.Success, sendReturnCode);
+            await client.SendMessageAsync(new[] { value }, CancellationToken);
         }
-        MessagesListener.ListenResult serverResult = await server.ListenTask;
+        MessageList messages = await server.ListenTask;
 
-        Log(serverResult);
-        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
-
-        List<byte[]> receivedMessages = serverResult.Messages;
-        Assert.IsTrue(receivedMessages.Count == 1);  
-        Assert.AreEqual(value, receivedMessages[0][0]);
+        Log(messages);
+        
+        Assert.IsTrue(messages.Count == 1);  
+        Assert.AreEqual(value, messages[0][0]);
     }
 
     [TestMethod]
@@ -53,16 +46,14 @@ public class MessengerTest : Test
         using (Messenger client = await server.Connect())
         {
             byte[] message = Array.Empty<byte>();
-            await client.SendMessageAsync(message);
+            await client.SendMessageAsync(message, CancellationToken);
         }
-        MessagesListener.ListenResult serverResult = await server.ListenTask;
+        MessageList messages = await server.ListenTask;
         
-        Log(serverResult);
-        Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
-
-        List<byte[]> receivedMessages = serverResult.Messages;
-        Assert.IsTrue(receivedMessages.Count == 1);
-        Assert.IsTrue(receivedMessages[0].Length == 0);
+        Log(messages);
+    
+        Assert.IsTrue(messages.Count == 1);
+        Assert.IsTrue(messages[0].Count == 0);
     }
 
     // [TestMethod]
@@ -128,22 +119,18 @@ public class MessengerTest : Test
     //     Assert.AreEqual(1, serverResult.Messages.Count);
     // }
 
-    private static void Log(MessagesListener.ListenResult serverResult)
+    private static void Log(MessageList messages)
     {
-        List<byte[]> receivedMessages = serverResult.Messages;
-
         using var writer = new IndentedTextWriter(Console.Out);
 
-        writer.WriteLine($"server result has return type: {serverResult.ReturnCode}");
+        writer.Indent++;
+        writer.WriteLine($"received {messages.Count} messages:");
 
         writer.Indent++;
-        writer.WriteLine($"received {receivedMessages.Count} messages:");
-
-        writer.Indent++;
-        for (int i = 0; i < receivedMessages.Count; i++)
+        for (int i = 0; i < messages.Count; i++)
         {
-            byte[] message = receivedMessages[i];
-            writer.WriteLine($"message {i} is {message.Length} bytes:");
+            ArraySegment<byte> message = messages[i];
+            writer.WriteLine($"message {i} is {message.Count} bytes:");
 
             writer.Indent++;
             writer.WriteLine($"{{{string.Join(',', message)}}}");
