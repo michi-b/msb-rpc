@@ -31,9 +31,10 @@ public class MessengerTest : Test
         const byte value = 123;
         
         var server = new SingleConnectionServer(CancellationToken);
-        using (await server.Connect())
+        using (Messenger client = await server.Connect())
         {
-            //do nothing, just close connection
+            SendMessageReturnCode sendReturnCode = await client.SendMessageAsync(new[] { value });
+            Assert.AreEqual(SendMessageReturnCode.Success, sendReturnCode);
         }
         MessagesListener.ListenResult serverResult = await server.ListenTask;
 
@@ -48,12 +49,10 @@ public class MessengerTest : Test
     [TestMethod]
     public async Task EmptyMessageIsDelivered()
     {
-        const byte value = 123;
-        
         var server = new SingleConnectionServer(CancellationToken);
         using (Messenger client = await server.Connect())
         {
-            byte[] message = { value };
+            byte[] message = Array.Empty<byte>();
             await client.SendMessageAsync(message);
         }
         MessagesListener.ListenResult serverResult = await server.ListenTask;

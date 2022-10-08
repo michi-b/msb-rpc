@@ -12,10 +12,9 @@ public class Messenger : IDisposable
 {
     [PublicAPI] public const int DefaultCapacity = 1024;
 
-    private readonly byte[] _countBuffer;
+    private readonly byte[] _countBuffer = new byte[PrimitiveSerializer.Int32Size];
     private readonly ArraySegment<byte> _countBufferSegment;
 
-    private readonly byte[] _countBytes = new byte[PrimitiveSerializer.Int32Size];
     private readonly Socket _socket;
     private bool _disposed;
     private PrimitiveSerializer _primitiveSerializer;
@@ -29,8 +28,7 @@ public class Messenger : IDisposable
     {
         Debug.Assert(connectedSocket.Connected, "socket needs to be connected for this constructor");
         
-        _countBuffer = new byte[PrimitiveSerializer.Int32Size];
-        _countBufferSegment = new ArraySegment<byte>(_countBytes);
+        _countBufferSegment = new ArraySegment<byte>(_countBuffer);
         _socket = connectedSocket;
     }
 
