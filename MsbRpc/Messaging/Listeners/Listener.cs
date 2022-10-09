@@ -50,6 +50,7 @@ public abstract class Listener : IDisposable
 
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <exception cref="InvalidStateException{TEnum}"></exception>
+    /// <param name="cancellationToken">token to abort the whole connection and dispose the listener when canceled</param>
     public async Task<ReturnCode> Listen(CancellationToken cancellationToken)
     {
         //impossible to cancel socket reads without closing the socket ... sad

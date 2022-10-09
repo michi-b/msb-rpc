@@ -6,12 +6,12 @@ using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
 namespace MsbRpcTest.Serialization.Network;
 
 [TestClass]
-public class MessengerTest : Test
+public class LazyListenerTest : Test
 {
     [TestMethod]
     public async Task ClosingConnectionStopsListening()
     {
-        var server = new SingleConnectionServer(CancellationToken);
+        var server = new LazySingleConnectionMessageListener(CancellationToken);
         using (Messenger client = await server.Connect())
         {
             //do nothing, just close connection
@@ -26,7 +26,7 @@ public class MessengerTest : Test
        
         const byte value = 123;
         
-        var server = new SingleConnectionServer(CancellationToken);
+        var server = new LazySingleConnectionMessageListener(CancellationToken);
         using (Messenger client = await server.Connect())
         {
             await client.SendMessageAsync(new[] { value }, CancellationToken);
@@ -42,7 +42,7 @@ public class MessengerTest : Test
     [TestMethod]
     public async Task EmptyMessageIsDelivered()
     {
-        var server = new SingleConnectionServer(CancellationToken);
+        var server = new LazySingleConnectionMessageListener(CancellationToken);
         using (Messenger client = await server.Connect())
         {
             byte[] message = Array.Empty<byte>();

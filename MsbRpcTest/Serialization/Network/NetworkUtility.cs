@@ -37,7 +37,7 @@ public static class NetworkUtility
         (EndPoint ep, CancellationToken cancellationToken) =>
         await new BytesListener(await AcceptAsync(ep, cancellationToken)).Listen(cancellationToken);
 
-    public static async Task<List<ArraySegment<byte>>> ReceiveMessagesAsync(EndPoint ep, CancellationToken cancellationToken)
+    public static async Task<List<ArraySegment<byte>>> ReceiveMessagesLazyAsync(EndPoint ep, CancellationToken cancellationToken)
     {
         var listener = new LazyListener(new Messenger(await AcceptAsync(ep, cancellationToken)));
         await listener.Listen(cancellationToken);
@@ -46,7 +46,6 @@ public static class NetworkUtility
         {
             result.Add(listener.ConsumeNextMessage());
         }
-
         return result;
     }
 

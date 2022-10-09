@@ -8,7 +8,7 @@ public class BytesListener
 
     public BytesListener(Socket socket) => _socket = socket;
 
-    public async Task<byte[]> Listen(CancellationToken cancellationToken, int bufferSize = 1024, int timeout = 1000)
+    public async Task<byte[]> Listen(CancellationToken cancellationToken, int bufferSize = 1024)
     {
         var bytes = new List<byte>(bufferSize);
         byte[] buffer = new byte[bufferSize];

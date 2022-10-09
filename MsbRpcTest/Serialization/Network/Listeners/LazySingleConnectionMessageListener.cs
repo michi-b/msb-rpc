@@ -7,16 +7,16 @@ namespace MsbRpcTest.Serialization.Network;
 
 using ListenTask = Task<Listener.ReturnCode>;
 
-public readonly struct SingleConnectionServer
+public readonly struct LazySingleConnectionMessageListener
 {
     public Task<List<ArraySegment<byte>>> ListenTask { get; }
 
     private EndPoint EndPoint { get; }
 
-    public SingleConnectionServer(CancellationToken cancellationToken)
+    public LazySingleConnectionMessageListener(CancellationToken cancellationToken)
     {
         EndPoint = NetworkUtility.GetLocalEndPoint();
-        ListenTask = NetworkUtility.ReceiveMessagesAsync(EndPoint, cancellationToken);
+        ListenTask = NetworkUtility.ReceiveMessagesLazyAsync(EndPoint, cancellationToken);
     }
 
     public async Task<Messenger> Connect() => new(await NetworkUtility.CreateConnectedSocket(EndPoint));
