@@ -1,6 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
+using MsbRpc.Serialization.Primitives;
 using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
 
 namespace MsbRpcTest.Serialization.Network;
@@ -16,6 +17,7 @@ public class LazyListenerTest : Test
         {
             //do nothing, just close connection
         }
+
         MessageList messages = await server.ListenTask;
         Assert.AreEqual(0, messages.Count);
     }
@@ -23,19 +25,19 @@ public class LazyListenerTest : Test
     [TestMethod]
     public async Task SingleByteMessagesIsDelivered()
     {
-       
         const byte value = 123;
-        
+
         var server = new LazySingleConnectionMessageListener(CancellationToken);
         using (Messenger client = await server.Connect())
         {
             await client.SendMessageAsync(new[] { value }, CancellationToken);
         }
+
         MessageList messages = await server.ListenTask;
 
         Log(messages);
-        
-        Assert.IsTrue(messages.Count == 1);  
+
+        Assert.IsTrue(messages.Count == 1);
         Assert.AreEqual(value, messages[0][0]);
     }
 
@@ -48,35 +50,40 @@ public class LazyListenerTest : Test
             byte[] message = Array.Empty<byte>();
             await client.SendMessageAsync(message, CancellationToken);
         }
+
         MessageList messages = await server.ListenTask;
-        
+
         Log(messages);
-    
+
         Assert.IsTrue(messages.Count == 1);
         Assert.IsTrue(messages[0].Count == 0);
     }
 
-    // [TestMethod]
-    // public async Task IntMessageIsDelivered()
-    // {
-    //     const int value = -912347287;
-    //     
-    //     var server = new SingleConnectionServer(CancellationToken);
-    //     using (Messenger client = await server.Connect())
-    //     {
-    //         byte[] message = Memory.Empty;
-    //         await client.SendMessageAsync(message);
-    //     }
-    //     SingleConnectionMessageReceiver.ListenResult serverResult = await server.ListenTask;
-    //
-    //     Log(serverResult);
-    //     
-    //     Assert.AreEqual(ListenReturnCode.ConnectionClosed, serverResult.ReturnCode);
-    //
-    //     List<byte[]> receivedMessages = serverResult.Messages;
-    //     Assert.IsTrue(receivedMessages.Count == 1);
-    //     Assert.AreEqual(value, BitConverter.ToInt32(receivedMessages[0], 0));
-    // }
+    [TestMethod]
+    public async Task IntMessageIsDelivered()
+    {
+        const int value = -912347287;
+
+        var server = new LazySingleConnectionMessageListener(CancellationToken);
+
+        PrimitiveSerializer primitiveSerializer = new();
+
+        using (Messenger client = await server.Connect())
+        {
+            byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
+            primitiveSerializer.WriteInt32(value, messageOut);
+            await client.SendMessageAsync(messageOut);
+        }
+
+        MessageList messagesIn = await server.ListenTask;
+        Log(messagesIn);
+
+        Assert.AreEqual(1, messagesIn.Count);
+
+        int valueReceived = PrimitiveSerializer.ReadInt32(messagesIn[0].Array!);
+
+        Assert.AreEqual(value, valueReceived);
+    }
     //
     // [TestMethod]
     // public async Task TooFewBytesReturnsConnectionClosedUnexpectedly()
