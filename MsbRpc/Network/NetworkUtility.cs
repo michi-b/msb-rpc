@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using MsbRpc.Concurrent;
 
-namespace MsbRpc;
+namespace MsbRpc.Network;
 
 public static class NetworkUtility
 {

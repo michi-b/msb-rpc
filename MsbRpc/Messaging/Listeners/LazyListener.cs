@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace MsbRpc.Messaging.Listeners;
 
-public class LazyListener : Listener
+public class LazyListener : AListener
 {
     private readonly BlockingCollection<ArraySegment<byte>> _available = new(new ConcurrentQueue<ArraySegment<byte>>());
 
@@ -21,5 +21,5 @@ public class LazyListener : Listener
         _available?.Add(message);
     }
 
-    protected override Task<byte[]> Allocate(int count) => Task.FromResult(new byte[count]);
+    protected override Task<ArraySegment<byte>> Allocate(int count) => Task.FromResult(new ArraySegment<byte>(new byte[count]));
 }

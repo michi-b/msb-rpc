@@ -1,12 +1,13 @@
 ﻿using JetBrains.Annotations;
+using MsbRpc.Exceptions;
 using MsbRpc.Utility.Generic;
 
 namespace MsbRpc.Messaging.Listeners;
 
-using StateUtility = StateUtility<Listener.State>;
+using StateUtility = StateUtility<AListener.State>;
 
 [PublicAPI]
-public abstract class Listener : IDisposable
+public abstract class AListener : IDisposable
 {
     public enum ReturnCode
     {
@@ -23,15 +24,15 @@ public abstract class Listener : IDisposable
     private readonly Messenger _messenger;
 
     private readonly AutoResetEvent _stateLock = new(true);
-    private Func<int, Task<byte[]>> _allocate;
+    private Func<int, Task<ArraySegment<byte>>> _allocate;
 
     private State _state = State.Initial;
 
-    protected Listener(Messenger messenger)
+    protected AListener(Messenger messenger)
     {
         _messenger = messenger;
 
-        _allocate = Allocate;
+        _allocate = count => Allocate(count);
 
         _dispose = () => { _messenger.Dispose(); };
     }
@@ -82,7 +83,7 @@ public abstract class Listener : IDisposable
 
     protected abstract void ReceiveMessage(ArraySegment<byte> message);
 
-    protected abstract Task<byte[]> Allocate(int count);
+    protected abstract Task<ArraySegment<byte>> Allocate(int count);
 
     internal enum State
     {

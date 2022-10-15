@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using MsbRpc.Utility.Generic;
 
-namespace MsbRpc;
+namespace MsbRpc.Exceptions;
 
 public class InvalidStateException<TEnum> : InvalidOperationException where TEnum : Enum
 {

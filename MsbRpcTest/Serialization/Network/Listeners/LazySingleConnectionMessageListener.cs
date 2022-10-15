@@ -1,11 +1,7 @@
 ﻿using System.Net;
 using MsbRpc.Messaging;
-using MsbRpc.Messaging.Listeners;
-using MsbRpcTest.Serialization.Network.Listeners;
 
-namespace MsbRpcTest.Serialization.Network;
-
-using ListenTask = Task<Listener.ReturnCode>;
+namespace MsbRpcTest.Serialization.Network.Listeners;
 
 public readonly struct LazySingleConnectionMessageListener
 {

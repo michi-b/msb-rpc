@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Primitives;
+using MsbRpcTest.Serialization.Network.Listeners;
 using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
 
 namespace MsbRpcTest.Serialization.Network;
@@ -84,47 +85,6 @@ public class LazyListenerTest : Test
 
         Assert.AreEqual(value, valueReceived);
     }
-    //
-    // [TestMethod]
-    // public async Task TooFewBytesReturnsConnectionClosedUnexpectedly()
-    // {
-    //     EndPoint ep = NetworkUtility.GetLocalEndPoint();
-    //     using Task<SingleConnectionMessageReceiver.ListenResult> listen = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-    //     var client = new SingleConnectionMessageReceiver(await NetworkUtility.CreateConnectedSocket(ep));
-    //
-    //     const int value = 96192;
-    //     byte[] message = BitConverter.GetBytes(value);
-    //
-    //     await clientRpcSocket.SendAsync(new ArraySegment<byte>(message, 0, 3), 4);
-    //     clientRpcSocket.Close();
-    //
-    //     SingleConnectionMessageReceiver.ListenResult serverResult = await serverTask;
-    //     Log(serverResult);
-    //     Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
-    //     Assert.AreEqual(0, serverResult.Messages.Count);
-    // }
-    //
-    // [TestMethod]
-    // public async Task TooManyBytesReturnsConnectionClosedUnexpectedly()
-    // {
-    //     EndPoint ep = NetworkUtility.GetLocalEndPoint();
-    //     using Task<SingleConnectionMessageReceiver.ListenResult> listen = NetworkUtility.ReceiveMessagesAsync(ep, CancellationToken);
-    //     var client = new SingleConnectionMessageReceiver(await NetworkUtility.CreateConnectedSocket(ep));
-    //
-    //     const int value = 96192;
-    //     byte[] valueBytes = BitConverter.GetBytes(value);
-    //     int valueLength = valueBytes.Length;
-    //     byte[] message = new byte[valueLength + 1];
-    //     Buffer.BlockCopy(valueBytes, 0, message, 0, valueLength);
-    //
-    //     await clientRpcSocket.SendAsync(message, valueLength);
-    //     clientRpcSocket.Close();
-    //
-    //     SingleConnectionMessageReceiver.ListenResult serverResult = await serverTask;
-    //     Log(serverResult);
-    //     Assert.AreEqual(ListenReturnCode.ConnectionClosedUnexpectedly, serverResult.ReturnCode);
-    //     Assert.AreEqual(1, serverResult.Messages.Count);
-    // }
 
     private static void Log(MessageList messages)
     {

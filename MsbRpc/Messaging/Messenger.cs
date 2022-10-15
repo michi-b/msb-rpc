@@ -11,8 +11,6 @@ namespace MsbRpc.Messaging;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class Messenger : IDisposable
 {
-    [PublicAPI] public const int DefaultCapacity = 1024;
-
     private readonly byte[] _countBytes = new byte[PrimitiveSerializer.Int32Size];
     private readonly ArraySegment<byte> _countBytesSegment;
 
@@ -63,7 +61,7 @@ public class Messenger : IDisposable
     }
 
     [PublicAPI]
-    public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, Task<byte[]>> allocate)
+    public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, Task<ArraySegment<byte>>> allocate)
     {
         switch (await ReceiveFixedLengthAsync(_countBytesSegment))
         {
@@ -79,7 +77,7 @@ public class Messenger : IDisposable
 
         int messageLength = PrimitiveSerializer.ReadInt32(_countBytes);
 
-        var bytesSegment = new ArraySegment<byte>(await allocate(messageLength));
+        ArraySegment<byte> bytesSegment = await allocate(messageLength);
 
         if (messageLength == 0)
         {

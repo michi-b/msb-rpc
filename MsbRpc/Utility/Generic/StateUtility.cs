@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using MsbRpc.Exceptions;
 
 namespace MsbRpc.Utility.Generic;
 

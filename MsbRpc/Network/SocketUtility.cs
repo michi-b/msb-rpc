@@ -2,10 +2,13 @@
 using System.Net.Sockets;
 using JetBrains.Annotations;
 
-namespace MsbRpc.Messaging;
+namespace MsbRpc.Network;
 
 public static class SocketUtility
 {
+    [PublicAPI] public const int DefaultSocketSendBufferSize = 8192;
+    [PublicAPI] public const int DefaultSocketReceiveBufferSize = 8192;
+
     public static Socket CreateTcpSocket
     (
         AddressFamily addressFamily,
@@ -19,16 +22,15 @@ public static class SocketUtility
         return socket;
     }
 
-    public static async Task<Socket> Connect(EndPoint remote,
+    public static async Task<Socket> Connect
+    (
+        EndPoint remote,
         int sendBufferSize = DefaultSocketSendBufferSize,
         int receiveBufferSize = DefaultSocketReceiveBufferSize
     )
     {
-        Socket socket = SocketUtility.CreateTcpSocket(remote.AddressFamily, sendBufferSize, receiveBufferSize);
+        Socket socket = CreateTcpSocket(remote.AddressFamily, sendBufferSize, receiveBufferSize);
         await socket.ConnectAsync(remote);
         return socket;
     }
-
-    [PublicAPI] public const int DefaultSocketSendBufferSize = 8192;
-    [PublicAPI] public const int DefaultSocketReceiveBufferSize = 8192;
 }
