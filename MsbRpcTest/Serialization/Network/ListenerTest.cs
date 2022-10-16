@@ -83,6 +83,38 @@ public abstract class ListenerTest : Test
         Assert.AreEqual(value, valueReceived);
     }
 
+    protected async Task TestMultipleIntMessagesAreDelivered()
+    {
+        int[] values = { -912347287, 1, 0, -1, int.MaxValue, int.MinValue };
+
+        SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
+
+        PrimitiveSerializer primitiveSerializer = new();
+
+        using (Messenger client = await server.Connect())
+        {
+            byte[] message = new byte[PrimitiveSerializer.Int32Size];
+            foreach (int value in values)
+            {
+                primitiveSerializer.WriteInt32(value, message);
+                await client.SendMessageAsync(message);
+            }
+        }
+
+        MessageList messagesIn = await server.ListenTask;
+        Log(messagesIn);
+
+        Assert.AreEqual(values.Length, messagesIn.Count);
+
+        for (int i = 0; i < messagesIn.Count; i++)
+        {
+            ArraySegment<byte> message = messagesIn[i];
+            int value = values[i];
+            int valueReceived = PrimitiveSerializer.ReadInt32(message.Array!, message.Offset);
+            Assert.AreEqual(value, valueReceived);
+        }
+    }
+
     private SingleConnectionListener CreateSingleConnectionListener
         (CancellationToken cancellationToken) =>
         new(CreateGetReceiveMessagesTask(), cancellationToken);

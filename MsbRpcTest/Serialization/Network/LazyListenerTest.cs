@@ -30,5 +30,11 @@ public class LazyListenerTest : ListenerTest
         await TestIntMessageIsDelivered();
     }
 
+    [TestMethod]
+    public async Task MultipleIntMessagesAreDelivered()
+    {
+        await TestMultipleIntMessagesAreDelivered();
+    }
+
     protected override SingleConnectionListener.GetReceiveMessagesTask CreateGetReceiveMessagesTask() => NetworkUtility.ReceiveMessagesLazyAsync;
 }
