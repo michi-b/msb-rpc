@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using MsbRpc.Concurrent;
+using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Messaging.Listeners;
 using MsbRpc.Network;
@@ -47,7 +48,7 @@ public static class NetworkUtility
         var listener = new ActiveListener
         (
             new Messenger(await AcceptAsync(ep, cancellationToken)),
-            arb => result.Add(arb),
+            arb => result.Add(arb.Copy()),
             bufferSize
         );
         await listener.Listen(cancellationToken);
