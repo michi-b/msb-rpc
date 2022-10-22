@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace MsbRpc.Messaging.Listeners;
 
-public class LazyListener : AListener
+public class LazyListener : Listener
 {
     private readonly BlockingCollection<ArraySegment<byte>> _available = new(new ConcurrentQueue<ArraySegment<byte>>());
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿#if false
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Misbat.CodeAnalysis.Test.CodeTest;
@@ -38,3 +39,4 @@ public partial struct Test {}";
         Assert.AreEqual(1, serializationGeneratorResult.GeneratedTrees.Length);
     }
 }
+#endif

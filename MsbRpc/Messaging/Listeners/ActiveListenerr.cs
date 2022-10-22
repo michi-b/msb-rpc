@@ -2,12 +2,26 @@
 
 namespace MsbRpc.Messaging.Listeners;
 
-public class ActiveListener : AListener
+public class ActiveListener : Listener
 {
     public const int DefaultBufferSize = 1024;
+    private readonly AutoResetEvent _mayReuseBuffer;
     private readonly Action<ArraySegment<byte>> _receiveMessage;
     private byte[] _buffer;
-    private readonly AutoResetEvent _mayReuseBuffer;
+
+    private bool CanReuseBuffer
+    {
+        get
+        {
+            bool canReuseBuffer = _mayReuseBuffer.WaitOne(0);
+            if (canReuseBuffer)
+            {
+                _mayReuseBuffer.Set();
+            }
+
+            return canReuseBuffer;
+        }
+    }
 
     public ActiveListener(Messenger messenger, Action<ArraySegment<byte>> receiveMessage, int bufferSize = DefaultBufferSize) : base(messenger)
     {
@@ -23,23 +37,10 @@ public class ActiveListener : AListener
         _mayReuseBuffer.Set();
     }
 
-    private bool CanReuseBuffer
-    {
-        get
-        {
-            bool canReuseBuffer = _mayReuseBuffer.WaitOne(0);
-            if (canReuseBuffer)
-            {
-                _mayReuseBuffer.Set();
-            }
-            return canReuseBuffer;
-        }
-    }
-
     protected override Task<ArraySegment<byte>> Allocate(int count)
     {
         _mayReuseBuffer.WaitOne();
-        
+
         if (_buffer.Length < count)
         {
             _buffer = new byte[count];

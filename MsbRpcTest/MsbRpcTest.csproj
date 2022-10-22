@@ -9,19 +9,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-        <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
-        <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
-        <PackageReference Include="coverlet.collector" Version="3.1.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="2.2.7"/>
+        <PackageReference Include="MSTest.TestFramework" Version="2.2.7"/>
+        <PackageReference Include="coverlet.collector" Version="3.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj" />
-        <ProjectReference Include="..\MsbRpc.GeneratorAttributes\MsbRpc.GeneratorAttributes.csproj" />
-        <ProjectReference Include="..\MsbRpc.Generator\MsbRpc.Generator.csproj" />
-        <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
+        <ProjectReference Include="..\Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj"/>
+        <ProjectReference Include="..\MsbRpc.GeneratorAttributes\MsbRpc.GeneratorAttributes.csproj"/>
+        <ProjectReference Include="..\MsbRpc.Generator\MsbRpc.Generator.csproj"/>
+        <ProjectReference Include="..\MsbRpc\MsbRpc.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Serialization\ManualRpcTest\Incrementer"/>
     </ItemGroup>
 
 </Project>

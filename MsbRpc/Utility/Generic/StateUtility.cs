@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using MsbRpc.Exceptions;
 
@@ -61,15 +62,9 @@ public static class StateUtility<TState> where TState : Enum
         [CallerMemberName] string? operationName = null
     )
     {
-        if (allowedStatesFrom.Contains(state))
-        {
-            action?.Invoke();
-            state = stateTo;
-        }
-        else
-        {
-            throw new InvalidStateException<TState>(allowedStatesFrom, state, operationName);
-        }
+        AssertIsAmong(allowedStatesFrom, state, operationName);
+        action?.Invoke();
+        state = stateTo;
     }
 
     [PublicAPI]
@@ -82,14 +77,28 @@ public static class StateUtility<TState> where TState : Enum
         [CallerMemberName] string? operationName = null
     )
     {
-        if (state.Equals(stateFrom))
+        AssertIs(state, stateFrom);
+        action?.Invoke();
+        state = stateTo;
+    }
+
+    [PublicAPI]
+    [Conditional("DEBUG")]
+    public static void AssertIs(TState expected, TState actual, [CallerMemberName] string? operationName = null)
+    {
+        if (!actual.Equals(expected))
         {
-            action?.Invoke();
-            state = stateTo;
+            throw new InvalidStateException<TState>(expected, actual, operationName);
         }
-        else
+    }
+
+    [PublicAPI]
+    [Conditional("DEBUG")]
+    public static void AssertIsAmong(TState[] expected, TState actual, [CallerMemberName] string? operationName = null)
+    {
+        if (!expected.Contains(actual))
         {
-            throw new InvalidStateException<TState>(stateFrom, state, operationName);
+            throw new InvalidStateException<TState>(expected, actual, operationName);
         }
     }
 

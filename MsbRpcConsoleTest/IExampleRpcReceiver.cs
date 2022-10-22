@@ -2,7 +2,7 @@
 
 namespace MsbRpcConsoleTest;
 
-[RpcInterface]
+[RpcContract]
 public interface IExampleRpcReceiver
 {
     void SendInt(int value);
