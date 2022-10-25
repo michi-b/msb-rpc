@@ -2,17 +2,15 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpcTest.Serialization.Primitives;
+namespace MsbRpcTest.Serialization.Primitives.ByteArray;
 
 [TestClass]
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyleForMemberAccess")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public class CharSerializationTest : PrimitiveSerializationTest<Char>
+public class CharSerializationTest : PrimitiveByteArraySerializationTest<Char>
 {
-    protected override int ElementSize => sizeof(Char);
-
     [TestMethod]
     public void PreservesA()
     {

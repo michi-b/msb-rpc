@@ -2,14 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpcTest.Serialization.Primitives;
+namespace MsbRpcTest.Serialization.Primitives.ByteArray;
 
 [TestClass]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
-public class SByteSerializationTest : PrimitiveSerializationTest<SByte>
+public class SByteSerializationTest : PrimitiveByteArraySerializationTest<SByte>
 {
-    protected override int ElementSize { get; } = sizeof(Boolean);
-
     [TestMethod]
     public void PreservesMinValue()
     {

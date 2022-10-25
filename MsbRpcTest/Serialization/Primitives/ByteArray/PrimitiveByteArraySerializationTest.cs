@@ -1,15 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpcTest.Serialization.Primitives;
+namespace MsbRpcTest.Serialization.Primitives.ByteArray;
 
-public abstract class PrimitiveSerializationTest<T>
+public abstract class PrimitiveByteArraySerializationTest<TPrimitive> where TPrimitive : struct
 {
     protected byte[] SingleElementBuffer { get; private set; } = null!;
 
+    // ReSharper disable once RedundantDefaultMemberInitializer
+    // this is just for shortcut access
     protected PrimitiveSerializer Serializer { get; } = new();
 
-    protected abstract int ElementSize { get; }
+    private static int ElementSize => PrimitiveSerializer.GetSizeOf<TPrimitive>();
 
     [TestInitialize]
     public void Setup()
@@ -23,14 +25,14 @@ public abstract class PrimitiveSerializationTest<T>
         SingleElementBuffer = null!;
     }
 
-    protected abstract void WriteSingleElement(T value);
+    protected abstract void WriteSingleElement(TPrimitive value);
 
-    protected abstract T ReadSingleElement();
+    protected abstract TPrimitive ReadSingleElement();
 
-    protected void TestPreserves(T value)
+    protected void TestPreserves(TPrimitive value)
     {
         WriteSingleElement(value);
-        T result = ReadSingleElement();
+        TPrimitive result = ReadSingleElement();
         Assert.AreEqual(value, result);
     }
 

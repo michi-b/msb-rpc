@@ -138,4 +138,28 @@ public struct PrimitiveSerializer
     public const int UInt16Size = 2;
 
     #endregion
+
+    public static int GetSizeOf<TPrimitive>() where TPrimitive : struct =>
+        Type.GetTypeCode(typeof(TPrimitive)) switch
+        {
+            TypeCode.Boolean => BooleanSize,
+            TypeCode.Byte => ByteSize,
+            TypeCode.Char => CharSize,
+            TypeCode.DateTime => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.DBNull => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.Decimal => DecimalSize,
+            TypeCode.Double => DoubleSize,
+            TypeCode.Empty => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.Int16 => Int16Size,
+            TypeCode.Int32 => Int32Size,
+            TypeCode.Int64 => Int64Size,
+            TypeCode.Object => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.SByte => SByteSize,
+            TypeCode.Single => SingleSize,
+            TypeCode.String => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.UInt16 => UInt16Size,
+            TypeCode.UInt32 => UInt32Size,
+            TypeCode.UInt64 => UInt64Size,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 }

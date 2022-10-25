@@ -6,6 +6,7 @@ namespace MsbRpc.Serialization.Primitives;
 [StructLayout(LayoutKind.Explicit)]
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+[SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 internal struct Union
 {
