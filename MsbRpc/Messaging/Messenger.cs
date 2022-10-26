@@ -13,7 +13,6 @@ public class Messenger : IDisposable
 {
     private readonly byte[] _countBytes = new byte[PrimitiveSerializer.Int32Size];
     private readonly ArraySegment<byte> _countBytesSegment;
-    private readonly PrimitiveSerializer _serializer;
 
     private readonly Socket _socket;
     private bool _disposed;
@@ -54,7 +53,7 @@ public class Messenger : IDisposable
     {
         int messageLength = message.Count;
 
-        _serializer.WriteInt32(messageLength, _countBytesSegment.Array!);
+        PrimitiveSerializer.WriteInt32(messageLength, _countBytesSegment.Array!);
 
         await SendAsync(_countBytesSegment);
         await SendAsync(message);

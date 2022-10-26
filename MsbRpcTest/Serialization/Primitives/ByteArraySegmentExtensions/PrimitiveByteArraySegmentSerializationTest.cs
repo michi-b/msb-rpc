@@ -1,15 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpcTest.Serialization.Primitives.ByteArrayExtensions;
+namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;
 
 public abstract class PrimitiveByteArraySegmentSerializationTest<TPrimitive> where TPrimitive : struct
 {
     protected ArraySegment<byte> SingleElementBuffer { get; private set; } = null!;
-
-    // ReSharper disable once UnusedMember.Global
-    // this is just for shortcut access
-    protected PrimitiveSerializer Serializer { get; } = new();
 
     private static int ElementSize => PrimitiveSerializer.GetSizeOf<TPrimitive>();
 

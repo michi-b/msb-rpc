@@ -53,7 +53,7 @@ public class Int16SerializationTest : PrimitiveByteArraySerializationTest<Int16>
         const Int16 value = -3;
         const int offset = 7;
         byte[] buffer = GetBuffer(5);
-        Serializer.WriteInt16(value, buffer, offset);
+        PrimitiveSerializer.WriteInt16(value, buffer, offset);
         Int16 result = PrimitiveSerializer.ReadInt16(buffer, offset);
         Assert.AreEqual(value, result);
     }
@@ -67,9 +67,9 @@ public class Int16SerializationTest : PrimitiveByteArraySerializationTest<Int16>
 
         byte[] buffer = GetBuffer(3);
 
-        Serializer.WriteInt16(value0, buffer, GetOffset(0));
-        Serializer.WriteInt16(value1, buffer, GetOffset(1));
-        Serializer.WriteInt16(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.WriteInt16(value0, buffer, GetOffset(0));
+        PrimitiveSerializer.WriteInt16(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.WriteInt16(value2, buffer, GetOffset(2));
 
         Int16 result0 = PrimitiveSerializer.ReadInt16(buffer, GetOffset(0));
         Int16 result1 = PrimitiveSerializer.ReadInt16(buffer, GetOffset(1));
@@ -82,7 +82,7 @@ public class Int16SerializationTest : PrimitiveByteArraySerializationTest<Int16>
 
     protected override void WriteSingleElement(Int16 value)
     {
-        Serializer.WriteInt16(value, SingleElementBuffer);
+        PrimitiveSerializer.WriteInt16(value, SingleElementBuffer);
     }
 
     protected override Int16 ReadSingleElement() => PrimitiveSerializer.ReadInt16(SingleElementBuffer);

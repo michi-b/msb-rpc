@@ -7,10 +7,6 @@ public abstract class PrimitiveByteArraySerializationTest<TPrimitive> where TPri
 {
     protected byte[] SingleElementBuffer { get; private set; } = null!;
 
-    // ReSharper disable once RedundantDefaultMemberInitializer
-    // this is just for shortcut access
-    protected PrimitiveSerializer Serializer { get; } = new();
-
     private static int ElementSize => PrimitiveSerializer.GetSizeOf<TPrimitive>();
 
     [TestInitialize]

@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization;
 
-namespace MsbRpcTest.Serialization.Primitives.ByteArrayExtensions;
+namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;
 
 [TestClass]
 public class BooleanSerializationTest : PrimitiveByteArraySegmentSerializationTest<bool>

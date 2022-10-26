@@ -1,7 +1,6 @@
 ﻿using System.Net.Sockets;
 using MsbRpc.Messaging;
 using MsbRpc.Messaging.Listeners;
-using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Implementation.Generated;
 
@@ -17,13 +16,10 @@ public abstract class GeneratedIncrementerServer : IIncrementerServer
     ///     because the serializer is not thread-safe (which is why it is a instance and not a static class in the first place)
     /// </remarks>
     /// >
-    private readonly PrimitiveSerializer _serializer;
-
     protected GeneratedIncrementerServer(Socket connectedSocket, CancellationToken cancellationToken)
     {
         var messenger = new Messenger(connectedSocket);
         var listener = new ActiveListener(messenger, ReceiveMessage);
-        _serializer = new PrimitiveSerializer();
         _listenTask = listener.Listen(cancellationToken);
     }
 

@@ -53,7 +53,7 @@ public class Int64SerializationTest : PrimitiveByteArraySerializationTest<Int64>
         const Int64 value = -3;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        Serializer.WriteInt64(value, buffer, offset);
+        PrimitiveSerializer.WriteInt64(value, buffer, offset);
         Int64 result = PrimitiveSerializer.ReadInt64(buffer, offset);
         Assert.AreEqual(value, result);
     }
@@ -67,9 +67,9 @@ public class Int64SerializationTest : PrimitiveByteArraySerializationTest<Int64>
 
         byte[] buffer = GetBuffer(3);
 
-        Serializer.WriteInt64(value0, buffer, GetOffset(0));
-        Serializer.WriteInt64(value1, buffer, GetOffset(1));
-        Serializer.WriteInt64(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.WriteInt64(value0, buffer, GetOffset(0));
+        PrimitiveSerializer.WriteInt64(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.WriteInt64(value2, buffer, GetOffset(2));
 
         Int64 result0 = PrimitiveSerializer.ReadInt64(buffer, GetOffset(0));
         Int64 result1 = PrimitiveSerializer.ReadInt64(buffer, GetOffset(1));
@@ -82,7 +82,7 @@ public class Int64SerializationTest : PrimitiveByteArraySerializationTest<Int64>
 
     protected override void WriteSingleElement(Int64 value)
     {
-        Serializer.WriteInt64(value, SingleElementBuffer);
+        PrimitiveSerializer.WriteInt64(value, SingleElementBuffer);
     }
 
     protected override Int64 ReadSingleElement() => PrimitiveSerializer.ReadInt64(SingleElementBuffer);

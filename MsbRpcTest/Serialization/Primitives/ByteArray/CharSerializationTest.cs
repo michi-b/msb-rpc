@@ -41,7 +41,7 @@ public class CharSerializationTest : PrimitiveByteArraySerializationTest<Char>
         const Char value = 'o';
         const int offset = 13;
         byte[] buffer = GetBuffer(8);
-        Serializer.WriteChar(value, buffer, offset);
+        PrimitiveSerializer.WriteChar(value, buffer, offset);
         int result = PrimitiveSerializer.ReadChar(buffer, offset);
         Assert.AreEqual(value, result);
     }
@@ -55,9 +55,9 @@ public class CharSerializationTest : PrimitiveByteArraySerializationTest<Char>
 
         byte[] buffer = GetBuffer(3);
 
-        Serializer.WriteChar(value0, buffer, GetOffset(0));
-        Serializer.WriteChar(value1, buffer, GetOffset(1));
-        Serializer.WriteChar(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.WriteChar(value0, buffer, GetOffset(0));
+        PrimitiveSerializer.WriteChar(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.WriteChar(value2, buffer, GetOffset(2));
 
         Char result0 = PrimitiveSerializer.ReadChar(buffer, GetOffset(0));
         Char result1 = PrimitiveSerializer.ReadChar(buffer, GetOffset(1));
@@ -70,7 +70,7 @@ public class CharSerializationTest : PrimitiveByteArraySerializationTest<Char>
 
     protected override void WriteSingleElement(Char value)
     {
-        Serializer.WriteChar(value, SingleElementBuffer);
+        PrimitiveSerializer.WriteChar(value, SingleElementBuffer);
     }
 
     protected override Char ReadSingleElement() => PrimitiveSerializer.ReadChar(SingleElementBuffer);

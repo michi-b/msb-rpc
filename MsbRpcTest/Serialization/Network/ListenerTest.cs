@@ -64,12 +64,10 @@ public abstract class ListenerTest : Test
 
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
 
-        PrimitiveSerializer primitiveSerializer = new();
-
         using (Messenger client = await server.Connect())
         {
             byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
-            primitiveSerializer.WriteInt32(value, messageOut);
+            PrimitiveSerializer.WriteInt32(value, messageOut);
             await client.SendMessageAsync(messageOut);
         }
 
@@ -89,14 +87,12 @@ public abstract class ListenerTest : Test
 
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
 
-        PrimitiveSerializer primitiveSerializer = new();
-
         using (Messenger client = await server.Connect())
         {
             byte[] message = new byte[PrimitiveSerializer.Int32Size];
             foreach (int value in values)
             {
-                primitiveSerializer.WriteInt32(value, message);
+                PrimitiveSerializer.WriteInt32(value, message);
                 await client.SendMessageAsync(message);
             }
         }

@@ -41,7 +41,7 @@ public class UInt32SerializationTest : PrimitiveByteArraySerializationTest<UInt3
         const UInt32 value = 5142;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        Serializer.WriteUInt32(value, buffer, offset);
+        PrimitiveSerializer.WriteUInt32(value, buffer, offset);
         UInt32 result = PrimitiveSerializer.ReadUInt32(buffer, offset);
         Assert.AreEqual(value, result);
     }
@@ -55,9 +55,9 @@ public class UInt32SerializationTest : PrimitiveByteArraySerializationTest<UInt3
 
         byte[] buffer = GetBuffer(3);
 
-        Serializer.WriteUInt32(value0, buffer, GetOffset(0));
-        Serializer.WriteUInt32(value1, buffer, GetOffset(1));
-        Serializer.WriteUInt32(value2, buffer, GetOffset(2));
+        PrimitiveSerializer.WriteUInt32(value0, buffer, GetOffset(0));
+        PrimitiveSerializer.WriteUInt32(value1, buffer, GetOffset(1));
+        PrimitiveSerializer.WriteUInt32(value2, buffer, GetOffset(2));
 
         UInt32 result0 = PrimitiveSerializer.ReadUInt32(buffer, GetOffset(0));
         UInt32 result1 = PrimitiveSerializer.ReadUInt32(buffer, GetOffset(1));
@@ -70,7 +70,7 @@ public class UInt32SerializationTest : PrimitiveByteArraySerializationTest<UInt3
 
     protected override void WriteSingleElement(UInt32 value)
     {
-        Serializer.WriteUInt32(value, SingleElementBuffer);
+        PrimitiveSerializer.WriteUInt32(value, SingleElementBuffer);
     }
 
     protected override UInt32 ReadSingleElement() => PrimitiveSerializer.ReadUInt32(SingleElementBuffer);
