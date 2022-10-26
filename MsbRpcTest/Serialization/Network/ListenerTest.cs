@@ -67,7 +67,7 @@ public abstract class ListenerTest : Test
         using (Messenger client = await server.Connect())
         {
             byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
-            PrimitiveSerializer.WriteInt32(value, messageOut);
+            messageOut.WriteInt32(value);
             await client.SendMessageAsync(messageOut);
         }
 
@@ -76,7 +76,7 @@ public abstract class ListenerTest : Test
 
         Assert.AreEqual(1, messagesIn.Count);
 
-        int valueReceived = PrimitiveSerializer.ReadInt32(messagesIn[0].Array!);
+        int valueReceived = messagesIn[0].Array!.ReadInt32();
 
         Assert.AreEqual(value, valueReceived);
     }
@@ -92,7 +92,7 @@ public abstract class ListenerTest : Test
             byte[] message = new byte[PrimitiveSerializer.Int32Size];
             foreach (int value in values)
             {
-                PrimitiveSerializer.WriteInt32(value, message);
+                message.WriteInt32(value);
                 await client.SendMessageAsync(message);
             }
         }
@@ -106,7 +106,7 @@ public abstract class ListenerTest : Test
         {
             ArraySegment<byte> message = messagesIn[i];
             int value = values[i];
-            int valueReceived = PrimitiveSerializer.ReadInt32(message.Array!, message.Offset);
+            int valueReceived = message.Array!.ReadInt32(message.Offset);
             Assert.AreEqual(value, valueReceived);
         }
     }

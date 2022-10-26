@@ -11,13 +11,13 @@ public static class ByteArraySegmentExtensions
     public static Boolean ReadBoolean(this ArraySegment<byte> target, int offset = 0)
     {
         target.AssertContains<byte>(offset);
-        return PrimitiveSerializer.ReadBoolean(target.Array!, target.Offset + offset);
+        return target.Array!.ReadBoolean(target.Offset + offset);
     }
 
     public static void WriteBoolean(this ArraySegment<byte> target, bool value, int offset = 0)
     {
         target.AssertContains<byte>(offset);
-        PrimitiveSerializer.WriteBoolean(value, target.Array!, offset);
+        target.Array!.WriteBoolean(value, offset);
     }
 
     [AssertionMethod, Conditional("DEBUG")]

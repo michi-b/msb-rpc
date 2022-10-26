@@ -53,7 +53,7 @@ public class Messenger : IDisposable
     {
         int messageLength = message.Count;
 
-        PrimitiveSerializer.WriteInt32(messageLength, _countBytesSegment.Array!);
+        _countBytesSegment.Array!.WriteInt32(messageLength);
 
         await SendAsync(_countBytesSegment);
         await SendAsync(message);
@@ -74,7 +74,7 @@ public class Messenger : IDisposable
                 throw new ArgumentOutOfRangeException();
         }
 
-        int messageLength = PrimitiveSerializer.ReadInt32(_countBytes);
+        int messageLength = _countBytes.ReadInt32();
 
         ArraySegment<byte> bytesSegment = await allocate(messageLength);
 

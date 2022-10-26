@@ -77,8 +77,8 @@ public class DoubleSerializationTest : PrimitiveByteArraySerializationTest<Doubl
         const Double value = -3.1234;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        PrimitiveSerializer.WriteDouble(value, buffer, offset);
-        Double result = PrimitiveSerializer.ReadDouble(buffer, offset);
+        buffer.WriteDouble(value, offset);
+        Double result = buffer.ReadDouble(offset);
         Assert.AreEqual(value, result);
     }
 
@@ -91,13 +91,13 @@ public class DoubleSerializationTest : PrimitiveByteArraySerializationTest<Doubl
 
         byte[] buffer = GetBuffer(3);
 
-        PrimitiveSerializer.WriteDouble(value0, buffer, GetOffset(0));
-        PrimitiveSerializer.WriteDouble(value1, buffer, GetOffset(1));
-        PrimitiveSerializer.WriteDouble(value2, buffer, GetOffset(2));
+        buffer.WriteDouble(value0, GetOffset(0));
+        buffer.WriteDouble(value1, GetOffset(1));
+        buffer.WriteDouble(value2, GetOffset(2));
 
-        Double result0 = PrimitiveSerializer.ReadDouble(buffer, GetOffset(0));
-        Double result1 = PrimitiveSerializer.ReadDouble(buffer, GetOffset(1));
-        Double result2 = PrimitiveSerializer.ReadDouble(buffer, GetOffset(2));
+        Double result0 = buffer.ReadDouble(GetOffset(0));
+        Double result1 = buffer.ReadDouble(GetOffset(1));
+        Double result2 = buffer.ReadDouble(GetOffset(2));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -106,8 +106,8 @@ public class DoubleSerializationTest : PrimitiveByteArraySerializationTest<Doubl
 
     protected override void WriteSingleElement(Double value)
     {
-        PrimitiveSerializer.WriteDouble(value, SingleElementBuffer);
+        SingleElementBuffer.WriteDouble(value);
     }
 
-    protected override Double ReadSingleElement() => PrimitiveSerializer.ReadDouble(SingleElementBuffer);
+    protected override Double ReadSingleElement() => SingleElementBuffer.ReadDouble();
 }
