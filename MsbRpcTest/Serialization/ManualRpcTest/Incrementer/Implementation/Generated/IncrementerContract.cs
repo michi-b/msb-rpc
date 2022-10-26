@@ -1,6 +1,6 @@
 ﻿namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Implementation.Generated;
 
-public class IncrementerContract
+public enum IncrementerProcedure
 {
-    public const int IncrementProcedureId = 0;
+    Increment = 0
 }

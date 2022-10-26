@@ -11,8 +11,9 @@ namespace MsbRpc.Messaging;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class Messenger : IDisposable
 {
-    private readonly byte[] _countBytes = new byte[PrimitiveSerializer.Int32Size];
-    private readonly ArraySegment<byte> _countBytesSegment;
+    private readonly byte[] _receiveCountBytes = new byte[PrimitiveSerializer.Int32Size];
+    private readonly ArraySegment<byte> _receiveCountBytesSegment;
+    private readonly byte[] _sendCountBytes = new byte[PrimitiveSerializer.Int32Size];
 
     private readonly Socket _socket;
     private bool _disposed;
@@ -27,7 +28,7 @@ public class Messenger : IDisposable
         Debug.Assert(connectedSocket.Connected, "socket needs to be connected for this constructor");
 
         _socket = connectedSocket;
-        _countBytesSegment = new ArraySegment<byte>(_countBytes);
+        _receiveCountBytesSegment = new ArraySegment<byte>(_receiveCountBytes);
     }
 
     public void Dispose()
@@ -43,26 +44,22 @@ public class Messenger : IDisposable
     }
 
     [PublicAPI]
-    public async Task SendMessageAsync
-        (byte[] message, CancellationToken cancellationToken) =>
-        await SendMessageAsync(new ArraySegment<byte>(message));
-
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    [PublicAPI]
-    public async Task SendMessageAsync(ArraySegment<byte> message)
+    public void SendMessage(ref ArraySegment<byte> message)
     {
-        int messageLength = message.Count;
-
-        _countBytesSegment.Array!.WriteInt32(messageLength);
-
-        await SendAsync(_countBytesSegment);
-        await SendAsync(message);
+        SendCount(message.Count);
+        Send(ref message);
+    }
+    
+    private void SendCount(int count)
+    {
+        _sendCountBytes.WriteInt32(count);
+        Send(_sendCountBytes);
     }
 
     [PublicAPI]
-    public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, Task<ArraySegment<byte>>> allocate)
+    public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, byte[]> allocate)
     {
-        switch (await ReceiveFixedLengthAsync(_countBytesSegment))
+        switch (await ReceiveFixedLengthAsync(_receiveCountBytesSegment))
         {
             case ReceiveFixedSizeReturnCode.Success:
                 break;
@@ -74,10 +71,11 @@ public class Messenger : IDisposable
                 throw new ArgumentOutOfRangeException();
         }
 
-        int messageLength = _countBytes.ReadInt32();
+        int messageLength = _receiveCountBytes.ReadInt32();
 
-        ArraySegment<byte> bytesSegment = await allocate(messageLength);
-
+        byte[] bytes = allocate(messageLength);
+        var bytesSegment = new ArraySegment<byte>(bytes, 0, messageLength);
+        
         if (messageLength == 0)
         {
             return new ReceiveMessageResult(bytesSegment, ReceiveMessageReturnCode.Success);
@@ -120,13 +118,16 @@ public class Messenger : IDisposable
                 : ReceiveFixedSizeReturnCode.ConnectionClosedUnexpectedly;
     }
 
-    private Task SendAsync(ArraySegment<byte> bytes)
+    private void Send(ref ArraySegment<byte> bytes)
     {
-        int count = _socket.Send(bytes.Array!, bytes.Offset, bytes.Count, SocketFlags.None);
-        Debug.Assert(count == bytes.Count);
-        return Task.CompletedTask;
+        _socket.Send(bytes.Array!, bytes.Offset, bytes.Count, SocketFlags.None);
     }
 
+    private void Send(byte[] bytes)
+    {
+        _socket.Send(bytes);
+    }
+    
     private Task<int> ReceiveAsync(ArraySegment<byte> bytes) => _socket.ReceiveAsync(bytes, SocketFlags.None);
 
     private enum ReceiveFixedSizeReturnCode

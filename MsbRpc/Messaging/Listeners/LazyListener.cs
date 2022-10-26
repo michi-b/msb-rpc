@@ -21,5 +21,5 @@ public class LazyListener : Listener
         _available?.Add(message);
     }
 
-    protected override Task<ArraySegment<byte>> Allocate(int count) => Task.FromResult(new ArraySegment<byte>(new byte[count]));
+    protected override byte[] Allocate(int count) => new byte[count];
 }

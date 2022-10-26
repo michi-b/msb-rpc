@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 using MsbRpc.Concurrent;
 using MsbRpc.Extensions;
@@ -45,10 +46,17 @@ public static class NetworkUtility
     public static async Task<List<ArraySegment<byte>>> ReceiveMessagesActiveAsync(EndPoint ep, int bufferSize, CancellationToken cancellationToken)
     {
         List<ArraySegment<byte>> result = new();
+        var canReceiveNextMessageEvent = new AutoResetEvent(true);
         var listener = new ActiveListener
         (
             new Messenger(await AcceptAsync(ep, cancellationToken)),
-            arb => result.Add(arb.Copy()),
+            arb =>
+            {
+                Debug.Assert(!canReceiveNextMessageEvent.WaitOne(0));
+                result.Add(arb.Copy());
+                canReceiveNextMessageEvent.Set();
+            },
+            canReceiveNextMessageEvent,
             bufferSize
         );
         await listener.Listen(cancellationToken);

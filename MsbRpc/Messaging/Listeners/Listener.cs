@@ -22,15 +22,14 @@ public abstract class Listener : IDisposable
 
     private readonly Action _dispose;
     private readonly Messenger _messenger;
-    private readonly AutoResetEvent _stateLock = new(true);
-    private Func<int, Task<ArraySegment<byte>>> _allocate;
+    private Func<int, byte[]> _allocate;
 
     private ListenerState _state = ListenerState.Initial;
+    private AutoResetEvent _stateLock = new(true);
 
     protected Listener(Messenger messenger)
     {
         _messenger = messenger;
-
         _allocate = Allocate;
         _dispose = () => { _messenger.Dispose(); };
     }
@@ -38,13 +37,13 @@ public abstract class Listener : IDisposable
     /// <exception cref="InvalidStateException{TEnum}"></exception>
     public void Dispose()
     {
-        StateUtility.Transition(ref _state, DisposableStates, ListenerState.Disposed, _stateLock, _dispose);
+        StateUtility.Transition(ref _state, _stateLock, DisposableStates, ListenerState.Disposed, _dispose);
     }
 
     /// <exception cref="InvalidStateException{TEnum}"></exception>
     public void ExtractMessenger()
     {
-        StateUtility.Transition(ref _state, ExtractableStates, ListenerState.Disposed, _stateLock, _dispose);
+        StateUtility.Transition(ref _state, _stateLock, ExtractableStates, ListenerState.Disposed, _dispose);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -55,7 +54,7 @@ public abstract class Listener : IDisposable
         //impossible to cancel socket reads without closing the socket ... sad
         cancellationToken.Register(Dispose);
 
-        StateUtility.Transition(ref _state, ListenerState.Initial, ListenerState.Listening, _stateLock);
+        StateUtility.Transition(ref _state, _stateLock, ListenerState.Initial, ListenerState.Listening);
 
         while (!cancellationToken.IsCancellationRequested) //listens until the connection is closed by the remote
         {
@@ -66,10 +65,10 @@ public abstract class Listener : IDisposable
                     ReceiveMessage(receiveMessageResult.Message);
                     continue;
                 case ReceiveMessageReturnCode.ConnectionClosed:
-                    StateUtility.Transition(ref _state, ListenerState.Listening, ListenerState.Finished, _stateLock);
+                    StateUtility.Transition(ref _state, _stateLock, ListenerState.Listening, ListenerState.Finished);
                     return ReturnCode.ConnectionClosed;
                 case ReceiveMessageReturnCode.ConnectionClosedUnexpectedly:
-                    StateUtility.Transition(ref _state, ListenerState.Listening, ListenerState.Finished, _stateLock);
+                    StateUtility.Transition(ref _state, _stateLock, ListenerState.Listening, ListenerState.Finished);
                     return ReturnCode.ConnectionClosedUnexpectedly;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -81,5 +80,5 @@ public abstract class Listener : IDisposable
 
     protected abstract void ReceiveMessage(ArraySegment<byte> message);
 
-    protected abstract Task<ArraySegment<byte>> Allocate(int count);
+    protected abstract byte[] Allocate(int count);
 }

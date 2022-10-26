@@ -1,51 +1,49 @@
-﻿using System.Diagnostics;
-
-namespace MsbRpc.Messaging.Listeners;
+﻿namespace MsbRpc.Messaging.Listeners;
 
 public class ActiveListener : Listener
 {
     public const int DefaultBufferSize = 1024;
-    private readonly AutoResetEvent _mayReuseBuffer;
+    private readonly AutoResetEvent _canReceiveNextMessage;
     private readonly Action<ArraySegment<byte>> _receiveMessage;
     private byte[] _buffer;
 
-    private bool CanReuseBuffer
-    {
-        get
-        {
-            bool canReuseBuffer = _mayReuseBuffer.WaitOne(0);
-            if (canReuseBuffer)
-            {
-                _mayReuseBuffer.Set();
-            }
-
-            return canReuseBuffer;
-        }
-    }
-
-    public ActiveListener(Messenger messenger, Action<ArraySegment<byte>> receiveMessage, int bufferSize = DefaultBufferSize) : base(messenger)
+    /// <param name="messenger">the messenger used by the listener to receive messages</param>
+    /// <param name="receiveMessage">
+    ///     The action that deals with a received message, usually always in the same recycle byte
+    ///     buffer.
+    /// </param>
+    /// <param name="canReceiveNextMessage">
+    ///     An event that is always awaited before reading the next message into the buffer
+    ///     that is passed in each call to _receiveMessage.
+    /// </param>
+    /// <param name="bufferSize">initial size of the message buffer, </param>
+    public ActiveListener
+    (
+        Messenger messenger,
+        Action<ArraySegment<byte>> receiveMessage,
+        AutoResetEvent canReceiveNextMessage,
+        int bufferSize = DefaultBufferSize
+    ) : base(messenger)
     {
         _receiveMessage = receiveMessage;
+        _canReceiveNextMessage = canReceiveNextMessage;
         _buffer = new byte[bufferSize];
-        _mayReuseBuffer = new AutoResetEvent(true);
     }
 
     protected override void ReceiveMessage(ArraySegment<byte> message)
     {
-        Debug.Assert(!CanReuseBuffer);
         _receiveMessage.Invoke(message);
-        _mayReuseBuffer.Set();
     }
 
-    protected override Task<ArraySegment<byte>> Allocate(int count)
+    protected override byte[] Allocate(int count)
     {
-        _mayReuseBuffer.WaitOne();
-
+        _canReceiveNextMessage.WaitOne();
+        
         if (_buffer.Length < count)
         {
             _buffer = new byte[count];
         }
 
-        return Task.FromResult(new ArraySegment<byte>(_buffer, 0, count));
+        return _buffer;
     }
 }

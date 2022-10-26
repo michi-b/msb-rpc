@@ -30,7 +30,8 @@ public abstract class ListenerTest : Test
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
         using (Messenger client = await server.Connect())
         {
-            await client.SendMessageAsync(new[] { value }, CancellationToken);
+            ArraySegment<byte> message = new(new[]{value});
+            client.SendMessage(ref message);
         }
 
         MessageList messages = await server.ListenTask;
@@ -46,8 +47,8 @@ public abstract class ListenerTest : Test
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
         using (Messenger client = await server.Connect())
         {
-            byte[] message = Array.Empty<byte>();
-            await client.SendMessageAsync(message, CancellationToken);
+            var message = new ArraySegment<byte>(Array.Empty<byte>());
+            client.SendMessage(ref message);
         }
 
         MessageList messages = await server.ListenTask;
@@ -68,7 +69,8 @@ public abstract class ListenerTest : Test
         {
             byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
             messageOut.WriteInt32(value);
-            await client.SendMessageAsync(messageOut);
+            var messageOutSegment = new ArraySegment<byte>(messageOut);
+            client.SendMessage(ref messageOutSegment);
         }
 
         MessageList messagesIn = await server.ListenTask;
@@ -93,7 +95,8 @@ public abstract class ListenerTest : Test
             foreach (int value in values)
             {
                 message.WriteInt32(value);
-                await client.SendMessageAsync(message);
+                var messageSegment = new ArraySegment<byte>(message);
+                client.SendMessage(ref messageSegment);
             }
         }
 

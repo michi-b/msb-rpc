@@ -11,32 +11,9 @@ public static class StateUtility<TState> where TState : Enum
     public static void Transition
     (
         ref TState state,
-        TState stateFrom,
-        TState stateTo,
         AutoResetEvent stateLock,
-        Action? action = null,
-        [CallerMemberName] string? operationName = null
-    )
-    {
-        stateLock.WaitOne();
-        try
-        {
-            action?.Invoke();
-            Transition(ref state, stateFrom, stateTo, action, operationName);
-        }
-        finally
-        {
-            stateLock.Set();
-        }
-    }
-
-    [PublicAPI]
-    public static void Transition
-    (
-        ref TState state,
         TState[] allowedStatesFrom,
         TState stateTo,
-        AutoResetEvent stateLock,
         Action? action = null,
         [CallerMemberName] string? operationName = null
     )
@@ -56,30 +33,22 @@ public static class StateUtility<TState> where TState : Enum
     public static void Transition
     (
         ref TState state,
-        TState[] allowedStatesFrom,
-        TState stateTo,
-        Action? action = null,
-        [CallerMemberName] string? operationName = null
-    )
-    {
-        AssertIsAmong(allowedStatesFrom, state, operationName);
-        action?.Invoke();
-        state = stateTo;
-    }
-
-    [PublicAPI]
-    public static void Transition
-    (
-        ref TState state,
+        AutoResetEvent stateLock,
         TState stateFrom,
         TState stateTo,
         Action? action = null,
         [CallerMemberName] string? operationName = null
     )
     {
-        AssertIs(state, stateFrom);
-        action?.Invoke();
-        state = stateTo;
+        stateLock.WaitOne();
+        try
+        {
+            Transition(ref state, stateFrom, stateTo, action, operationName);
+        }
+        finally
+        {
+            stateLock.Set();
+        }
     }
 
     [PublicAPI]
@@ -102,7 +71,20 @@ public static class StateUtility<TState> where TState : Enum
         }
     }
 
-    public static string GetName
-        (TState value) =>
-        Enum.GetName(typeof(TState), value) ?? throw new ArgumentException($"value must be fo type {typeof(TState).FullName}", nameof(value));
+    [PublicAPI]
+    public static void Transition(ref TState state, TState stateFrom, TState stateTo, Action? action, [CallerMemberName] string? operationName = null)
+    {
+        AssertIs(state, stateFrom, operationName);
+        action?.Invoke();
+        state = stateTo;
+    }
+
+    [PublicAPI]
+    public static void Transition
+        (ref TState state, TState[] allowedStatesFrom, TState stateTo, Action? action, [CallerMemberName] string? operationName = null)
+    {
+        AssertIsAmong(allowedStatesFrom, state, operationName);
+        action?.Invoke();
+        state = stateTo;
+    }
 }
