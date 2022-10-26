@@ -7,7 +7,7 @@ public abstract class PrimitiveByteArraySegmentSerializationTest<TPrimitive> whe
 {
     protected ArraySegment<byte> SingleElementBuffer { get; private set; } = null!;
 
-    private static int ElementSize => PrimitiveSerializer.GetSizeOf<TPrimitive>();
+    private static int ElementSize => PrimitiveSerializer.SizeOf<TPrimitive>();
 
     [TestInitialize]
     public void Setup()
@@ -34,5 +34,7 @@ public abstract class PrimitiveByteArraySegmentSerializationTest<TPrimitive> whe
 
     protected int GetOffset(int elementIndex) => elementIndex * ElementSize;
 
-    protected ArraySegment<byte> GetBuffer(int elementCount) => new(new byte[GetOffset(elementCount)]);
+    protected ArraySegment<byte> GetByteArraySegment(int elementCount) => new(new byte[GetOffset(elementCount)]);
+
+    protected ArraySegment<byte> GetBuffer(int elementCount) => new byte[GetOffset(elementCount)];
 }

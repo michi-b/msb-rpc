@@ -7,7 +7,7 @@ public abstract class PrimitiveByteArraySerializationTest<TPrimitive> where TPri
 {
     protected byte[] SingleElementBuffer { get; private set; } = null!;
 
-    private static int ElementSize => PrimitiveSerializer.GetSizeOf<TPrimitive>();
+    private static int ElementSize => PrimitiveSerializer.SizeOf<TPrimitive>();
 
     [TestInitialize]
     public void Setup()

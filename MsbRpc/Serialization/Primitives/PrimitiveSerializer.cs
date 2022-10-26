@@ -199,7 +199,7 @@ public static partial class PrimitiveSerializer
 
     #endregion
 
-    public static int GetSizeOf<TPrimitive>() where TPrimitive : struct =>
+    public static int SizeOf<TPrimitive>() where TPrimitive : struct =>
         Type.GetTypeCode(typeof(TPrimitive)) switch
         {
             TypeCode.Boolean => BooleanSize,
