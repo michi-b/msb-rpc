@@ -24,8 +24,4 @@
         <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Serialization\ManualRpcTest\Incrementer" />
-    </ItemGroup>
-
 </Project>

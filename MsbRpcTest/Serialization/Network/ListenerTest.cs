@@ -14,7 +14,7 @@ public abstract class ListenerTest : Test
     protected async Task TestClosingConnectionStopsListening()
     {
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
-        using (Messenger client = await server.Connect())
+        using (Messenger client = await server.Connect(CancellationToken))
         {
             //do nothing, just close connection
         }
@@ -28,7 +28,7 @@ public abstract class ListenerTest : Test
         const byte value = 123;
 
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
-        using (Messenger client = await server.Connect())
+        using (Messenger client = await server.Connect(CancellationToken))
         {
             ArraySegment<byte> message = new(new[]{value});
             client.SendMessage(ref message);
@@ -45,7 +45,7 @@ public abstract class ListenerTest : Test
     protected async Task TestEmptyMessageIsDelivered()
     {
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
-        using (Messenger client = await server.Connect())
+        using (Messenger client = await server.Connect(CancellationToken))
         {
             var message = new ArraySegment<byte>(Array.Empty<byte>());
             client.SendMessage(ref message);
@@ -65,7 +65,7 @@ public abstract class ListenerTest : Test
 
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
 
-        using (Messenger client = await server.Connect())
+        using (Messenger client = await server.Connect(CancellationToken))
         {
             byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
             messageOut.WriteInt32(value);
@@ -89,7 +89,7 @@ public abstract class ListenerTest : Test
 
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
 
-        using (Messenger client = await server.Connect())
+        using (Messenger client = await server.Connect(CancellationToken))
         {
             byte[] message = new byte[PrimitiveSerializer.Int32Size];
             foreach (int value in values)

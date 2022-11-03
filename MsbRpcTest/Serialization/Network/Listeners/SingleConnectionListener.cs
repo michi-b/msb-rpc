@@ -22,5 +22,5 @@ public readonly struct SingleConnectionListener
         ListenTask = getReceiveMessagesTask(EndPoint, cancellationToken);
     }
 
-    public async Task<Messenger> Connect() => new(await NetworkUtility.CreateConnectedSocket(EndPoint));
+    public async Task<Messenger> Connect(CancellationToken cancellationToken) => new(await NetworkUtility.ConnectAsync(EndPoint, cancellationToken));
 }

@@ -13,8 +13,7 @@ namespace MsbRpcTest.Serialization.Network;
 public static class NetworkUtility
 {
     public const int DefaultBufferSize = ActiveListener.DefaultBufferSize;
-    public static readonly IPAddress LocalHost;
-
+    private static readonly IPAddress LocalHost;
     private static readonly UniqueIntProvider UniquePortProvider = MsbRpc.Network.NetworkUtility.CreateUniquePortProvider(false);
 
     static NetworkUtility() => LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
@@ -28,20 +27,20 @@ public static class NetworkUtility
 
     public static Socket CreateSocket() => SocketUtility.CreateTcpSocket(LocalHost.AddressFamily);
 
-    public static async Task<Socket> CreateConnectedSocket(EndPoint ep)
+    public static async Task<Socket> ConnectAsync(EndPoint ep, CancellationToken cancellationToken)
     {
         Socket socket = CreateSocket();
-        await socket.ConnectAsync(ep);
+        await socket.ConnectAsync(ep, cancellationToken);
         return socket;
     }
 
     public static async Task<byte[]> ReceiveBytesAsync
-        (EndPoint ep, CancellationToken cancellationToken) =>
-        await new BytesListener(await AcceptAsync(ep, cancellationToken)).Listen(cancellationToken);
+        (EndPoint ep, CancellationToken cancellationToken)
+        => await new BytesListener(await AcceptAsync(ep, cancellationToken)).Listen(cancellationToken);
 
     public static async Task<List<ArraySegment<byte>>> ReceiveMessagesActiveAsync
-        (EndPoint ep, CancellationToken cancellationToken) =>
-        await ReceiveMessagesActiveAsync(ep, DefaultBufferSize, cancellationToken);
+        (EndPoint ep, CancellationToken cancellationToken)
+        => await ReceiveMessagesActiveAsync(ep, DefaultBufferSize, cancellationToken);
 
     public static async Task<List<ArraySegment<byte>>> ReceiveMessagesActiveAsync(EndPoint ep, int bufferSize, CancellationToken cancellationToken)
     {
@@ -76,13 +75,13 @@ public static class NetworkUtility
         return result;
     }
 
-    private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
-
-    private static async Task<Socket> AcceptAsync(EndPoint ep, CancellationToken cancellationToken)
+    public static async Task<Socket> AcceptAsync(EndPoint ep, CancellationToken cancellationToken)
     {
         Socket listenSocket = CreateSocket();
         listenSocket.Bind(ep);
         listenSocket.Listen(1);
         return await listenSocket.AcceptAsync(cancellationToken);
     }
+
+    private static EndPoint GetLocalEndPoint(int port) => new IPEndPoint(LocalHost, port);
 }

@@ -9,7 +9,7 @@ public class IncrementerServerEndPoint : RpcServerEndPoint
 {
     private readonly IIncrementerServer _incrementerServerImplementation;
 
-    protected IncrementerServerEndPoint(Socket connectedSocket, IIncrementerServer incrementerServerImplementation)
+    public IncrementerServerEndPoint(Socket connectedSocket, IIncrementerServer incrementerServerImplementation)
         : base(connectedSocket)
         => _incrementerServerImplementation = incrementerServerImplementation;
 
