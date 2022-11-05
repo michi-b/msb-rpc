@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using MsbRpc.EndPoints;
 using MsbRpc.Serialization;
+using MsbRpc.Serialization.ByteArraySegment;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Implementation.Generated;
@@ -13,7 +14,7 @@ public class IncrementerServerEndPoint : RpcServerEndPoint
         : base(connectedSocket)
         => _incrementerServerImplementation = incrementerServerImplementation;
 
-    protected override void ReceiveProcedureCall(int procedure, ref ByteArraySegmentReader messageReader)
+    protected override void ReceiveProcedureCall(int procedure, ref SequentialReader messageReader)
     {
         switch ((IncrementerProcedure)procedure)
         {
@@ -25,7 +26,7 @@ public class IncrementerServerEndPoint : RpcServerEndPoint
         }
     }
 
-    private void ScheduleIncrement(ref ByteArraySegmentReader messageReader)
+    private void ScheduleIncrement(ref SequentialReader messageReader)
     {
         //todo: keep track of current stage and handle exceptions properly
         

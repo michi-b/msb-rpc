@@ -6,7 +6,7 @@ namespace MsbRpcTest.Serialization.Network;
 
 public readonly struct Connection
 {
-    [PublicAPI] public readonly Socket ServerSocket { get; private init; }
+    [PublicAPI] public Socket ServerSocket { get; private init; }
     [PublicAPI] public Socket ClientSocket { get; private init; }
 
     public Connection(Socket serverSocket, Socket clientSocket)

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization;
+using MsbRpc.Serialization.ByteArraySegment;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;

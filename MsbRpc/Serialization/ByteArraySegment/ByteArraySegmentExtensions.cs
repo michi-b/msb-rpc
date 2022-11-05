@@ -5,10 +5,16 @@ using JetBrains.Annotations;
 using MsbRpc.Serialization.Exceptions;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpc.Serialization;
+namespace MsbRpc.Serialization.ByteArraySegment;
 
 public static class ByteArraySegmentExtensions
 {
+    public static string CreateContentString(this ArraySegment<byte> target)
+    {
+        byte[] array = target.Array!;
+        return array.CreateContentString(target.Offset, target.Count);
+    }
+
     #region Boolean
 
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
@@ -63,7 +69,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<sbyte>(offset);
         return target.Array!.ReadSByte(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -85,7 +91,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<char>(offset);
         return target.Array!.ReadChar(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -107,7 +113,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<decimal>(offset);
         return target.Array!.ReadDecimal(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -129,7 +135,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<double>(offset);
         return target.Array!.ReadDouble(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -151,7 +157,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<float>(offset);
         return target.Array!.ReadSingle(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -173,7 +179,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<int>(offset);
         return target.Array!.ReadInt32(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -195,7 +201,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<uint>(offset);
         return target.Array!.ReadUInt32(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -217,7 +223,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<long>(offset);
         return target.Array!.ReadInt64(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -239,7 +245,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<ulong>(offset);
         return target.Array!.ReadUInt64(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -261,7 +267,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<short>(offset);
         return target.Array!.ReadInt16(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -283,7 +289,7 @@ public static class ByteArraySegmentExtensions
         target.AssertContains<ushort>(offset);
         return target.Array!.ReadUInt16(target.Offset + offset);
     }
-    
+
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
     /// <exception cref="ByteArraySegmentHasNoArrayException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -294,7 +300,7 @@ public static class ByteArraySegmentExtensions
     }
 
     #endregion
-    
+
     #region Assertions
 
     /// <exception cref="OutOfByteArraySegmentBoundsException"></exception>
@@ -308,6 +314,7 @@ public static class ByteArraySegmentExtensions
         {
             throw new ArgumentOutOfRangeException(nameof(offset), offset, "Offset must be greater than or equal to zero.");
         }
+
         target.AssertHasArray();
         target.AssertDoesNotEndBefore<TPrimitive>(offset);
     }

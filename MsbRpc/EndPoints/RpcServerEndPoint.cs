@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using MsbRpc.Messaging.Listeners;
 using MsbRpc.Serialization;
+using MsbRpc.Serialization.ByteArraySegment;
 
 namespace MsbRpc.EndPoints;
 
@@ -22,7 +23,7 @@ public abstract class RpcServerEndPoint : RpcEndPoint
 
     private void ReceiveMessage(ArraySegment<byte> message)
     {
-        ByteArraySegmentReader messageReader = new(message);
+        SequentialReader messageReader = new(message);
         int procedure = messageReader.ReadInt32();
         ReceiveProcedureCall(procedure, ref messageReader);
     }
@@ -64,5 +65,5 @@ public abstract class RpcServerEndPoint : RpcEndPoint
     ///     If there is a long running task, make sure to finish utilizing the message reader before returning,
     ///     as it's bytes may afterwards be recycled by the listener.
     /// </remarks>
-    protected abstract void ReceiveProcedureCall(int procedure, ref ByteArraySegmentReader messageReader);
+    protected abstract void ReceiveProcedureCall(int procedure, ref SequentialReader messageReader);
 }

@@ -1,9 +1,10 @@
 ﻿using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
 using MsbRpc.RpcSocket.Exceptions;
 
 namespace MsbRpc.RpcSocket;
 
-public class RpcSocket : IRpcSocket
+public partial class RpcSocket : IRpcSocket
 {
     private readonly Socket _socket;
     private bool _isDisposed;
@@ -14,9 +15,8 @@ public class RpcSocket : IRpcSocket
             || socket.SocketType != SocketType.Stream
             || !socket.Connected)
         {
-            throw new InvalidRpcSocketConstructorSocketException(socket);
+            throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
-
         _socket = socket;
     }
 
@@ -76,6 +76,9 @@ public class RpcSocket : IRpcSocket
             _isDisposed = true;
         }
     }
+
+    [LoggerMessage(EventId = 1, Level = LogLevel.Critical, Message = "Socket is not connected or is not a TCP streaming socket.")]
+    static partial void LogMisconfiguredSocket(ILogger logger);
 
     /// <exception cref="RpcSocketSendException"></exception>
     private async Task SendAsync(ArraySegment<byte> bytes)
