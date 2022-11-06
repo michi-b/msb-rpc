@@ -30,7 +30,7 @@ public abstract class ListenerTest : Test
         SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
         using (Messenger client = await server.Connect(CancellationToken))
         {
-            ArraySegment<byte> message = new(new[]{value});
+            ArraySegment<byte> message = new(new[] { value });
             client.SendMessage(ref message);
         }
 
@@ -115,8 +115,8 @@ public abstract class ListenerTest : Test
     }
 
     private SingleConnectionListener CreateSingleConnectionListener
-        (CancellationToken cancellationToken) =>
-        new(CreateGetReceiveMessagesTask(), cancellationToken);
+        (CancellationToken cancellationToken)
+        => new(CreateGetReceiveMessagesTask(), cancellationToken);
 
     private static void Log(IReadOnlyList<ArraySegment<byte>> messages)
     {

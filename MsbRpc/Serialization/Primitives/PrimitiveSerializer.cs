@@ -9,9 +9,33 @@ namespace MsbRpc.Serialization.Primitives;
 public static partial class PrimitiveSerializer
 {
     /// <summary>
-    /// shortcut access for <see cref="BitConverter"/>.IsLittleEndian
+    ///     shortcut access for <see cref="BitConverter" />.IsLittleEndian
     /// </summary>
     private static readonly bool IsLittleEndian = BitConverter.IsLittleEndian;
+
+    public static int SizeOf<TPrimitive>() where TPrimitive : struct
+        => Type.GetTypeCode(typeof(TPrimitive)) switch
+        {
+            TypeCode.Boolean => BooleanSize,
+            TypeCode.Byte => ByteSize,
+            TypeCode.Char => CharSize,
+            TypeCode.DateTime => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.DBNull => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.Decimal => DecimalSize,
+            TypeCode.Double => DoubleSize,
+            TypeCode.Empty => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.Int16 => Int16Size,
+            TypeCode.Int32 => Int32Size,
+            TypeCode.Int64 => Int64Size,
+            TypeCode.Object => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.SByte => SByteSize,
+            TypeCode.Single => SingleSize,
+            TypeCode.String => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
+            TypeCode.UInt16 => UInt16Size,
+            TypeCode.UInt32 => UInt32Size,
+            TypeCode.UInt64 => UInt64Size,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
     #region Boolean
 
@@ -19,8 +43,7 @@ public static partial class PrimitiveSerializer
 
     public static Boolean ReadBoolean(this byte[] buffer, int offset = 0) => buffer[offset] == 1;
 
-    [PublicAPI]
-    public const int BooleanSize = 1;
+    [PublicAPI] public const int BooleanSize = 1;
 
     #endregion
 
@@ -30,8 +53,7 @@ public static partial class PrimitiveSerializer
 
     public static Byte ReadByte(this byte[] buffer, int offset = 0) => buffer[offset];
 
-    [PublicAPI]
-    public const int ByteSize = 1;
+    [PublicAPI] public const int ByteSize = 1;
 
     #endregion
 
@@ -41,8 +63,7 @@ public static partial class PrimitiveSerializer
 
     public static SByte ReadSByte(this byte[] buffer, int offset = 0) => (sbyte)buffer[offset];
 
-    [PublicAPI]
-    public const int SByteSize = 1;
+    [PublicAPI] public const int SByteSize = 1;
 
     #endregion
 
@@ -56,8 +77,7 @@ public static partial class PrimitiveSerializer
 
     public static Char ReadChar(this byte[] buffer, int offset = 0) => BitConverter.ToChar(buffer, offset);
 
-    [PublicAPI]
-    public const int CharSize = 2;
+    [PublicAPI] public const int CharSize = 2;
 
     #endregion
 
@@ -75,8 +95,7 @@ public static partial class PrimitiveSerializer
         return converter16.Read();
     }
 
-    [PublicAPI]
-    public const int DecimalSize = 16;
+    [PublicAPI] public const int DecimalSize = 16;
 
     #endregion
 
@@ -104,8 +123,7 @@ public static partial class PrimitiveSerializer
 
     public static Single ReadSingle(this byte[] buffer, int offset = 0) => BitConverter.ToSingle(buffer, offset);
 
-    [PublicAPI]
-    public const int SingleSize = 8;
+    [PublicAPI] public const int SingleSize = 8;
 
     #endregion
 
@@ -119,8 +137,7 @@ public static partial class PrimitiveSerializer
 
     public static Int32 ReadInt32(this byte[] buffer, int offset = 0) => BitConverter.ToInt32(buffer, offset);
 
-    [PublicAPI]
-    public const int Int32Size = 4;
+    [PublicAPI] public const int Int32Size = 4;
 
     #endregion
 
@@ -134,8 +151,7 @@ public static partial class PrimitiveSerializer
 
     public static UInt32 ReadUInt32(this byte[] buffer, int offset = 0) => BitConverter.ToUInt32(buffer, offset);
 
-    [PublicAPI]
-    public const int UInt32Size = 4;
+    [PublicAPI] public const int UInt32Size = 4;
 
     #endregion
 
@@ -149,8 +165,7 @@ public static partial class PrimitiveSerializer
 
     public static Int64 ReadInt64(this byte[] buffer, int offset = 0) => BitConverter.ToInt64(buffer, offset);
 
-    [PublicAPI]
-    public const int Int64Size = 8;
+    [PublicAPI] public const int Int64Size = 8;
 
     #endregion
 
@@ -164,8 +179,7 @@ public static partial class PrimitiveSerializer
 
     public static UInt64 ReadUInt64(this byte[] buffer, int offset = 0) => BitConverter.ToUInt64(buffer, offset);
 
-    [PublicAPI]
-    public const int UInt64Size = 8;
+    [PublicAPI] public const int UInt64Size = 8;
 
     #endregion
 
@@ -179,8 +193,7 @@ public static partial class PrimitiveSerializer
 
     public static Int16 ReadInt16(this byte[] buffer, int offset = 0) => BitConverter.ToInt16(buffer, offset);
 
-    [PublicAPI]
-    public const int Int16Size = 2;
+    [PublicAPI] public const int Int16Size = 2;
 
     #endregion
 
@@ -190,36 +203,11 @@ public static partial class PrimitiveSerializer
     {
         var converter2 = new ByteConverter2(value);
         converter2.Write(buffer, offset);
-    }   
+    }
 
     public static UInt16 ReadUInt16(this byte[] buffer, int offset = 0) => BitConverter.ToUInt16(buffer, offset);
 
-    [PublicAPI]
-    public const int UInt16Size = 2;
+    [PublicAPI] public const int UInt16Size = 2;
 
     #endregion
-
-    public static int SizeOf<TPrimitive>() where TPrimitive : struct =>
-        Type.GetTypeCode(typeof(TPrimitive)) switch
-        {
-            TypeCode.Boolean => BooleanSize,
-            TypeCode.Byte => ByteSize,
-            TypeCode.Char => CharSize,
-            TypeCode.DateTime => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.DBNull => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.Decimal => DecimalSize,
-            TypeCode.Double => DoubleSize,
-            TypeCode.Empty => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.Int16 => Int16Size,
-            TypeCode.Int32 => Int32Size,
-            TypeCode.Int64 => Int64Size,
-            TypeCode.Object => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.SByte => SByteSize,
-            TypeCode.Single => SingleSize,
-            TypeCode.String => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.UInt16 => UInt16Size,
-            TypeCode.UInt32 => UInt32Size,
-            TypeCode.UInt64 => UInt64Size,
-            _ => throw new ArgumentOutOfRangeException()
-        };
 }

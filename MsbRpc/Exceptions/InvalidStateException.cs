@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using MsbRpc.Utility.Generic;
 
 namespace MsbRpc.Exceptions;
 
@@ -11,7 +10,7 @@ public class InvalidStateException<TEnum> : InvalidOperationException where TEnu
             "operation "
             + OperationNameOrEmpty(operationName)
             + "is only available in state "
-            + $"'{(string)(Enum.GetName(typeof(TEnum), expectedState) ?? throw new ArgumentException($"value must be fo type {typeof(TEnum).FullName}", nameof(expectedState)))}' "
+            + $"'{Enum.GetName(typeof(TEnum), expectedState) ?? throw new ArgumentException($"value must be fo type {typeof(TEnum).FullName}", nameof(expectedState))}' "
             + "but was called in state "
             + $"'{(string)(Enum.GetName(typeof(TEnum), actualState) ?? throw new ArgumentException($"value must be fo type {typeof(TEnum).FullName}", nameof(actualState)))}'"
         ) { }
@@ -22,7 +21,15 @@ public class InvalidStateException<TEnum> : InvalidOperationException where TEnu
             "operation "
             + OperationNameOrEmpty(operationName)
             + "is only available in states {"
-            + string.Join(", ", allowedStates.Select(state => $"'{(string)(Enum.GetName(typeof(TEnum), state) ?? throw new ArgumentException($"value must be fo type {typeof(TEnum).FullName}", nameof(state)))}'"))
+            + string.Join
+            (
+                ", ",
+                allowedStates.Select
+                (
+                    state
+                        => $"'{(string)(Enum.GetName(typeof(TEnum), state) ?? throw new ArgumentException($"value must be fo type {typeof(TEnum).FullName}", nameof(state)))}'"
+                )
+            )
             + "but was called in state "
             + $"'{(string)(Enum.GetName(typeof(TEnum), actualState) ?? throw new ArgumentException($"value must be fo type {typeof(TEnum).FullName}", nameof(actualState)))}'"
         ) { }

@@ -17,6 +17,7 @@ public partial class RpcSocket : IRpcSocket
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
+
         _socket = socket;
     }
 

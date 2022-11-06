@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 #pragma warning disable CS0649
 
 namespace MsbRpc.Serialization.Primitives;

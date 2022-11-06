@@ -1,6 +1,5 @@
 ﻿using System.Net.Sockets;
 using MsbRpc.EndPoints;
-using MsbRpc.Serialization;
 using MsbRpc.Serialization.ByteArraySegment;
 using MsbRpc.Serialization.Primitives;
 
@@ -29,7 +28,7 @@ public class IncrementerServerEndPoint : RpcServerEndPoint
     private void ScheduleIncrement(ref SequentialReader messageReader)
     {
         //todo: keep track of current stage and handle exceptions properly
-        
+
         int value = messageReader.ReadInt32();
         Task.Run(() => ExecuteIncrement(value));
     }
@@ -37,7 +36,7 @@ public class IncrementerServerEndPoint : RpcServerEndPoint
     private Task ExecuteIncrement(int value)
     {
         //todo: keep track of current stage and handle exceptions properly
-        
+
         EnterExecutionStage();
 
         int result = _incrementerServerImplementation.Increment(value);

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
 using MsbRpc.Messaging.Listeners;
-using MsbRpc.Serialization;
 using MsbRpc.Serialization.ByteArraySegment;
 
 namespace MsbRpc.EndPoints;

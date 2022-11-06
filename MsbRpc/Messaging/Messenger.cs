@@ -49,12 +49,6 @@ public class Messenger : IDisposable
         SendCount(message.Count);
         Send(ref message);
     }
-    
-    private void SendCount(int count)
-    {
-        _sendCountBytes.WriteInt32(count);
-        Send(_sendCountBytes);
-    }
 
     [PublicAPI]
     public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, byte[]> allocate)
@@ -75,7 +69,7 @@ public class Messenger : IDisposable
 
         byte[] bytes = allocate(messageLength);
         var bytesSegment = new ArraySegment<byte>(bytes, 0, messageLength);
-        
+
         if (messageLength == 0)
         {
             return new ReceiveMessageResult(bytesSegment, ReceiveMessageReturnCode.Success);
@@ -92,6 +86,12 @@ public class Messenger : IDisposable
                 _ => throw new ArgumentOutOfRangeException()
             }
         );
+    }
+
+    private void SendCount(int count)
+    {
+        _sendCountBytes.WriteInt32(count);
+        Send(_sendCountBytes);
     }
 
     private async Task<ReceiveFixedSizeReturnCode> ReceiveFixedLengthAsync(ArraySegment<byte> bytes)
@@ -127,7 +127,7 @@ public class Messenger : IDisposable
     {
         _socket.Send(bytes);
     }
-    
+
     private Task<int> ReceiveAsync(ArraySegment<byte> bytes) => _socket.ReceiveAsync(bytes, SocketFlags.None);
 
     private enum ReceiveFixedSizeReturnCode
