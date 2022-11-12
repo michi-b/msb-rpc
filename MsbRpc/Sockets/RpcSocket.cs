@@ -1,8 +1,8 @@
 ﻿using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
-using MsbRpc.RpcSocket.Exceptions;
+using MsbRpc.Sockets.Exceptions;
 
-namespace MsbRpc.RpcSocket;
+namespace MsbRpc.Sockets;
 
 public partial class RpcSocket : IRpcSocket
 {

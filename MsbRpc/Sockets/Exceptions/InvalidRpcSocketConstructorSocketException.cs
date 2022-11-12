@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace MsbRpc.RpcSocket.Exceptions;
+namespace MsbRpc.Sockets.Exceptions;
 
 public class InvalidRpcSocketConstructorSocketException : ArgumentException
 {

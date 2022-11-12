@@ -2,11 +2,11 @@
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.RpcSocket;
-using MsbRpc.RpcSocket.Exceptions;
 using MsbRpc.Serialization;
 using MsbRpc.Serialization.ByteArraySegment;
 using MsbRpc.Serialization.Primitives;
+using MsbRpc.Sockets;
+using MsbRpc.Sockets.Exceptions;
 using Serilog;
 using Serilog.Core;
 

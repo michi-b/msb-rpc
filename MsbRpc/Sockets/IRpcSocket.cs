@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.RpcSocket;
+﻿namespace MsbRpc.Sockets;
 
 public interface IRpcSocket : IDisposable
 {
