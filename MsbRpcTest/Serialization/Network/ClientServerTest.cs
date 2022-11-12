@@ -3,7 +3,4 @@
 namespace MsbRpcTest.Serialization.Network;
 
 [TestClass]
-public abstract class ClientServerTest : Test
-{
-    
-}
+public abstract class ClientServerTest : Test { }

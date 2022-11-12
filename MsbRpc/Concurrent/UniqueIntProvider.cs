@@ -32,6 +32,7 @@ public class UniqueIntProvider
         {
             return result;
         }
+
         throw new UniqueIntProviderRanOutOfOptionsException();
     }
 

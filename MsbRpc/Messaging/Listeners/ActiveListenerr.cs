@@ -38,7 +38,7 @@ public class ActiveListener : Listener
     protected override byte[] Allocate(int count)
     {
         _canReceiveNextMessage.WaitOne();
-        
+
         if (_buffer.Length < count)
         {
             _buffer = new byte[count];

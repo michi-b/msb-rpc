@@ -11,7 +11,6 @@ public class IncrementerTest : Test
     public async Task IncrementOnce()
     {
         Connection connection = await Connection.ConnectAsync(CancellationToken);
-        IncrementerServerEndPoint server = new IncrementerServerEndPoint(connection.ServerSocket, new Implementation.Incrementer());
-        
+        var server = new IncrementerServerEndPoint(connection.ServerSocket, new Implementation.Incrementer());
     }
 }
