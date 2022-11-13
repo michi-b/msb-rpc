@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿//todo: implement
+#if false
+using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator;
 
@@ -19,3 +21,4 @@ public class Symbols
         return _instance ??= new Symbols(compilation);
     }
 }
+#endif

@@ -3,6 +3,5 @@
 public enum ReceiveMessageReturnCode
 {
     Success = 0,
-    ConnectionClosed = 1,
-    Error = 2
+    ConnectionClosed = 1
 }

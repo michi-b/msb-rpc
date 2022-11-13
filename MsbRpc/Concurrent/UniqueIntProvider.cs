@@ -17,7 +17,7 @@ public class UniqueIntProvider
         if (shuffle)
         {
             var rnd = new Random();
-            _values = new ConcurrentQueue<int>(linear.OrderBy(element => rnd.Next()));
+            _values = new ConcurrentQueue<int>(linear.OrderBy(_ => rnd.Next()));
         }
         else
         {

@@ -1,4 +1,6 @@
-﻿using System.CodeDom.Compiler;
+﻿//todo: implement
+#if false
+using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -73,3 +75,4 @@ public class RpcGenerator : IIncrementalGenerator
         return stringWriter.ToString();
     }
 }
+#endif
