@@ -72,7 +72,7 @@ public class Messenger : IDisposable
         bool hasReceivedCount = await _socket.ReceiveAllAsync(_receiveCountSegment, cancellationToken);
         if (!hasReceivedCount)
         {
-            return new ReceiveMessageResult(BufferUtility.EmptySegment, ReceiveMessageReturnCode.ConnectionClosed);
+            return new ReceiveMessageResult(BufferUtility.Empty, ReceiveMessageReturnCode.ConnectionClosed);
         }
 
         int messageLength = _receiveCountSegment.ReadInt32();

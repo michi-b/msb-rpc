@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffer;
@@ -8,8 +7,6 @@ using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 using MsbRpc.Sockets.Exceptions;
 using MsbRpcTest.Serialization.Network.Utility;
-using Serilog;
-using Serilog.Core;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -78,7 +75,7 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await ConnectAsync(cancellationToken);
+        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
 
         const byte value = 123;
         var sendSegment = new ArraySegment<byte>(new[] { value });
@@ -100,7 +97,7 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await ConnectAsync(cancellationToken);
+        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
 
         const byte value0 = 123;
         const byte value1 = 234;
@@ -129,7 +126,7 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await ConnectAsync(cancellationToken);
+        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
 
         const byte value0 = 64;
         const byte value1 = 0;
@@ -162,7 +159,7 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await ConnectAsync(cancellationToken);
+        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
 
         const byte value0 = 3;
         const byte value1 = 1;
@@ -200,7 +197,7 @@ public class RpcSocketTest : Test
     public async Task TransfersMultipleDifferentValues()
     {
         CancellationToken cancellationToken = CancellationToken;
-        (RpcSocket sender, RpcSocket receiver) = await ConnectAsync(cancellationToken);
+        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
 
         const int intValue = 1235234134;
         const decimal decimalValue = 3124312323.123489087m;
@@ -249,46 +246,8 @@ public class RpcSocketTest : Test
         Assert.AreEqual(sByteValue, receivedSByteValue);
     }
 
-    private static async Task<(RpcSocket sender, RpcSocket receiver)> ConnectAsync(CancellationToken cancellationToken)
-    {
-        var connection = await TransferConnection.CreateAsync(cancellationToken);
-        RpcSocket sender = connection.Sender;
-        RpcSocket receiver = connection.Receiver;
-        return (sender, receiver);
-    }
-
     private static void LogReceived(string byteString)
     {
         Console.WriteLine($"Received: {byteString}");
-    }
-
-    private static ILoggerFactory CreateLoggerFactory()
-    {
-        Logger serilog = new LoggerConfiguration().WriteTo.Console().CreateLogger();
-        ILoggerFactory loggerFactory = new LoggerFactory().AddSerilog(serilog);
-        return loggerFactory;
-    }
-
-    private struct TransferConnection
-    {
-        public RpcSocket Sender { get; }
-        public RpcSocket Receiver { get; }
-
-        private TransferConnection(RpcSocket sender, RpcSocket receiver)
-        {
-            Sender = sender;
-            Receiver = receiver;
-        }
-
-        public static async Task<TransferConnection> CreateAsync(CancellationToken cancellationToken)
-        {
-            ILoggerFactory loggerFactory = CreateLoggerFactory();
-            Connection connection = await Connection.ConnectAsync(cancellationToken);
-            return new TransferConnection
-            (
-                new RpcSocket(connection.ClientSocket),
-                new RpcSocket(connection.ServerSocket)
-            );
-        }
     }
 }

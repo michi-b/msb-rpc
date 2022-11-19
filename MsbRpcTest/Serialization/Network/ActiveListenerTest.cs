@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Messaging;
+using MsbRpcTest.Serialization.Network.Utility.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -34,5 +36,7 @@ public class ActiveListenerTest : ListenerTest
     {
         await TestMultipleIntMessagesAreDelivered();
     }
-    protected override Task<List<ArraySegment<byte>>> GetReceiveMessagesTask(CancellationToken cancellationToken) => throw new NotImplementedException();
+
+    protected override Task<List<ArraySegment<byte>>> ListenAsync(Messenger messenger, CancellationToken cancellationToken)
+        => MessagesListener.ListenAsync(messenger, cancellationToken);
 }

@@ -1,42 +1,45 @@
 ﻿using System.CodeDom.Compiler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
+using MsbRpc.Serialization.Buffer;
 using MsbRpc.Serialization.Primitives;
+using MsbRpcTest.Serialization.Network.Utility;
 using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
 
 namespace MsbRpcTest.Serialization.Network;
 
 public abstract class ListenerTest : Test
 {
-    protected abstract Task<List<ArraySegment<byte>>> GetReceiveMessagesTask(CancellationToken cancellationToken);
+    protected abstract Task<List<ArraySegment<byte>>> ListenAsync(Messenger messenger, CancellationToken cancellationToken);
 
     protected async Task TestClosingConnectionStopsListening()
     {
-        SingleConnectionListener server = CreateSingleConnectionListener(CancellationToken);
-        
-        // ReSharper disable once UnusedVariable
-        using (Messenger client = await server.Connect(CancellationToken))
-        {
-            //do nothing, just close connection
-        }
-
-        MessageList messages = await server.ListenTask;
+        CancellationToken cancellationToken = CancellationToken;
+        (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
+        client.Dispose();
+        MessageList messages = await listen;
         Assert.AreEqual(0, messages.Count);
+    }
+
+    private async Task<(Messenger client, Task<List<ArraySegment<byte>>> listen)> Setup(CancellationToken cancellationToken)
+    {
+        (Messenger client, Messenger server) = await Connection.ConnectMessengersAsync(cancellationToken);
+        return (client, ListenAsync(server, cancellationToken));
     }
 
     protected async Task TestSingleByteMessagesIsDelivered()
     {
         const byte value = 123;
-
+        ArraySegment<byte> message = BufferUtility.Create(value);
         CancellationToken cancellationToken = CancellationToken;
-        SingleConnectionListener server = CreateSingleConnectionListener(cancellationToken);
-        using (Messenger client = await server.Connect(cancellationToken))
+        
+        (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
+        using (client)
         {
-            ArraySegment<byte> message = new(new[] { value });
             await client.SendMessageAsync(message, cancellationToken);
         }
 
-        MessageList messages = await server.ListenTask;
+        MessageList messages = await listen;
 
         Log(messages);
 
@@ -47,14 +50,14 @@ public abstract class ListenerTest : Test
     protected async Task TestEmptyMessageIsDelivered()
     {
         CancellationToken cancellationToken = CancellationToken;
-        SingleConnectionListener server = CreateSingleConnectionListener(cancellationToken);
-        using (Messenger client = await server.Connect(cancellationToken))
+        
+        (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
+        using (client)
         {
-            var message = new ArraySegment<byte>(Array.Empty<byte>());
-            await client.SendMessageAsync(message, cancellationToken);
+            await client.SendMessageAsync(BufferUtility.Empty, cancellationToken);
         }
 
-        MessageList messages = await server.ListenTask;
+        MessageList messages = await listen;
 
         Log(messages);
 
@@ -67,17 +70,18 @@ public abstract class ListenerTest : Test
         const int value = -912347287;
 
         CancellationToken cancellationToken = CancellationToken;
-        SingleConnectionListener server = CreateSingleConnectionListener(cancellationToken);
 
-        using (Messenger client = await server.Connect(cancellationToken))
+        byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
+        messageOut.WriteInt32(value);
+        var messageOutSegment = new ArraySegment<byte>(messageOut);
+        
+        (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
+        using (client)
         {
-            byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
-            messageOut.WriteInt32(value);
-            var messageOutSegment = new ArraySegment<byte>(messageOut);
             await client.SendMessageAsync(messageOutSegment, cancellationToken);
         }
 
-        MessageList messagesIn = await server.ListenTask;
+        MessageList messagesIn = await listen;
         Log(messagesIn);
 
         Assert.AreEqual(1, messagesIn.Count);
@@ -92,9 +96,10 @@ public abstract class ListenerTest : Test
         int[] values = { -912347287, 1, 0, -1, int.MaxValue, int.MinValue };
 
         CancellationToken cancellationToken = CancellationToken;
-        SingleConnectionListener server = CreateSingleConnectionListener(cancellationToken);
+        
+        (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
 
-        using (Messenger client = await server.Connect(cancellationToken))
+        using (client)
         {
             byte[] message = new byte[PrimitiveSerializer.Int32Size];
             foreach (int value in values)
@@ -105,7 +110,7 @@ public abstract class ListenerTest : Test
             }
         }
 
-        MessageList messagesIn = await server.ListenTask;
+        MessageList messagesIn = await listen;
         Log(messagesIn);
 
         Assert.AreEqual(values.Length, messagesIn.Count);
@@ -118,10 +123,6 @@ public abstract class ListenerTest : Test
             Assert.AreEqual(value, valueReceived);
         }
     }
-
-    private SingleConnectionListener CreateSingleConnectionListener
-        (CancellationToken cancellationToken)
-        => new(CreateGetReceiveMessagesTask(), cancellationToken);
 
     private static void Log(IReadOnlyList<ArraySegment<byte>> messages)
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpcTest.Serialization.Network.Utility;
+using MsbRpc.Messaging;
+using MsbRpcTest.Serialization.Network.Utility.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -36,5 +37,6 @@ public class LazyListenerTest : ListenerTest
         await TestMultipleIntMessagesAreDelivered();
     }
 
-    protected override SingleConnectionListener.GetReceiveMessagesTask CreateGetReceiveMessagesTask() => NetworkUtility.ReceiveMessagesLazyAsync;
+    protected override Task<List<ArraySegment<byte>>> ListenAsync(Messenger messenger, CancellationToken cancellationToken)
+        => MessagesListener.ListenAsync(messenger, cancellationToken);
 }

@@ -21,7 +21,7 @@ public static class ByteArrayListener
             receivedBuffers.Add(buffer.ExtractSubSegmentCopy(count));
         }
 
-        int sum = receivedBuffers.Aggregate(0, (sum, current) => sum += current.Count);
+        int sum = receivedBuffers.Aggregate(0, (sum, current) => sum + current.Count);
         byte[] ret = new byte[sum];
         int bufferOffset = 0;
         foreach (ArraySegment<byte> currentBuffer in receivedBuffers)
