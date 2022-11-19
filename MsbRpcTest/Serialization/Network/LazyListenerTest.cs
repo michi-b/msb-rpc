@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpcTest.Serialization.Network.Listeners;
+using MsbRpcTest.Serialization.Network.Utility;
 
 namespace MsbRpcTest.Serialization.Network;
 

@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
+using MsbRpcTest.Serialization.Network.Utility;
+using MsbRpcTest.Serialization.Network.Utility.Listeners;
 
 namespace MsbRpcTest.Serialization.Network;
 
@@ -17,8 +19,9 @@ public class PrimitivesSerializationTest : Test
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
 
+        CancellationToken cancellationToken = CancellationToken;
         using Task<byte[]> listenTask
-            = NetworkUtility.ReceiveBytesAsync(ep, CancellationToken);
+            = ByteArrayListener.ListenAsync(ep, cancellationToken);
 
         byte[] bytes = new byte[NetworkUtility.DefaultBufferSize];
 
@@ -27,7 +30,7 @@ public class PrimitivesSerializationTest : Test
         bytes.WriteInt32(value);
 
         Socket clientSocket = NetworkUtility.CreateSocket();
-        await clientSocket.ConnectAsync(ep, CancellationToken);
+        await clientSocket.ConnectAsync(ep, cancellationToken);
 
         Assert.IsTrue(clientSocket.Connected);
 
@@ -46,7 +49,8 @@ public class PrimitivesSerializationTest : Test
     {
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
 
-        using Task<byte[]> listenTask = NetworkUtility.ReceiveBytesAsync(ep, CancellationToken);
+        CancellationToken cancellationToken = CancellationToken;
+        using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(ep, cancellationToken);
 
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
 

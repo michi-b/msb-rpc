@@ -1,14 +1,14 @@
 ﻿using JetBrains.Annotations;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
-namespace MsbRpc.Serialization.ByteArraySegment;
+namespace MsbRpc.Serialization.Buffer;
 
-public struct SequentialReader
+public struct BufferReader
 {
     private readonly ArraySegment<byte> _segment;
     private int _position;
 
-    public SequentialReader(ArraySegment<byte> segment)
+    public BufferReader(ArraySegment<byte> segment)
     {
         _position = 0;
         _segment = segment;

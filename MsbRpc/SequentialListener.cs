@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization;
-using MsbRpc.Serialization.ByteArraySegment;
+using MsbRpc.Serialization.Buffer;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc;

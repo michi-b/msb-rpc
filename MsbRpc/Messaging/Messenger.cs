@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
-using MsbRpc.Serialization;
-using MsbRpc.Serialization.ByteArraySegment;
+using MsbRpc.Serialization.Buffer;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 
@@ -15,8 +14,8 @@ public class Messenger : IDisposable
     }
 
     private const int CountSize = PrimitiveSerializer.Int32Size;
-    private readonly ArraySegment<byte> _receiveCountSegment = Memory.Create(CountSize);
-    private readonly ArraySegment<byte> _sendCountSegment = Memory.Create(CountSize);
+    private readonly ArraySegment<byte> _receiveCountSegment = BufferUtility.Create(CountSize);
+    private readonly ArraySegment<byte> _sendCountSegment = BufferUtility.Create(CountSize);
     private readonly RpcSocket _socket;
     private bool _disposed;
 
@@ -70,10 +69,10 @@ public class Messenger : IDisposable
     [PublicAPI]
     public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, ArraySegment<byte>> allocate, CancellationToken cancellationToken)
     {
-        bool hasReceivedCount = await _socket.ReceiveAsync(_receiveCountSegment, cancellationToken);
+        bool hasReceivedCount = await _socket.ReceiveAllAsync(_receiveCountSegment, cancellationToken);
         if (!hasReceivedCount)
         {
-            return new ReceiveMessageResult(Memory.EmptySegment, ReceiveMessageReturnCode.ConnectionClosed);
+            return new ReceiveMessageResult(BufferUtility.EmptySegment, ReceiveMessageReturnCode.ConnectionClosed);
         }
 
         int messageLength = _receiveCountSegment.ReadInt32();
@@ -85,7 +84,7 @@ public class Messenger : IDisposable
             return new ReceiveMessageResult(bytesSegment, ReceiveMessageReturnCode.Success);
         }
 
-        await _socket.ReceiveAsync(bytesSegment, cancellationToken);
+        await _socket.ReceiveAllAsync(bytesSegment, cancellationToken);
 
         return new ReceiveMessageResult
         (

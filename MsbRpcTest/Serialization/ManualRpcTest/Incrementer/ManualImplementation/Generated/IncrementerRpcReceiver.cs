@@ -1,6 +1,6 @@
 ﻿using MsbRpc;
 using MsbRpc.Serialization;
-using MsbRpc.Serialization.ByteArraySegment;
+using MsbRpc.Serialization.Buffer;
 using MsbRpc.Serialization.Primitives;
 using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.ManualImplementation.Input;
 
@@ -23,7 +23,7 @@ public class IncrementerRpcReceiver : ISequentialRpcReceiver
     private ArraySegment<byte> Increment(ArraySegment<byte> arguments, RecycledBuffer recycledBuffer)
     {
         //read
-        var reader = new SequentialReader(arguments);
+        var reader = new BufferReader(arguments);
         int value = reader.ReadInt32();
 
         //execute        
@@ -31,7 +31,7 @@ public class IncrementerRpcReceiver : ISequentialRpcReceiver
 
         //return
         ArraySegment<byte> resultSegment = recycledBuffer.Get(PrimitiveSerializer.Int32Size);
-        var writer = new SequentialWriter(resultSegment);
+        var writer = new BufferWriter(resultSegment);
         writer.Write(result);
         return resultSegment;
     }

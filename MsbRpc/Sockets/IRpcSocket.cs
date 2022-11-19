@@ -17,5 +17,5 @@ public interface IRpcSocket : IDisposable
     ///     if more than zero bytes but less than specified via the array segment were received
     /// </exception>
     /// <exception cref="OperationCanceledException"></exception>
-    Task<bool> ReceiveAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken);
+    Task<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken);
 }

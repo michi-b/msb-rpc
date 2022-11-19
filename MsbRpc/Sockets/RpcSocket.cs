@@ -1,10 +1,10 @@
 ﻿using System.Net.Sockets;
-using Microsoft.Extensions.Logging;
+using JetBrains.Annotations;
 using MsbRpc.Sockets.Exceptions;
 
 namespace MsbRpc.Sockets;
 
-public partial class RpcSocket : IRpcSocket
+public class RpcSocket : IRpcSocket
 {
     private readonly Socket _socket;
     private bool _isDisposed;
@@ -22,6 +22,7 @@ public partial class RpcSocket : IRpcSocket
     }
 
     /// <inheritdoc cref="IRpcSocket.SendAsync" />
+    [PublicAPI]
     public async Task SendAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken)
     {
         using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
@@ -41,14 +42,57 @@ public partial class RpcSocket : IRpcSocket
         }
     }
 
-    /// <inheritdoc cref="IRpcSocket.ReceiveAsync" />
-    public async Task<bool> ReceiveAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken)
+    /// <exception cref="RpcSocketReceiveException">
+    ///     Thrown when an error occurs while receiving data,
+    ///     for example when some bytes but not all could be read before the connection was closed.
+    /// </exception>
+    /// <summary>Awaits and fills all bytes of the provided buffer with next bytes read from the socket.</summary>
+    /// <param name="buffer">Buffer to receive bytes into.</param>
+    /// <param name="cancellationToken">Cancels the operation and disposes the socket.</param>
+    /// <returns>
+    ///     true if the whole buffer was filled with bytes from the socket,
+    ///     false if the connection was closed before any bytes could be read
+    /// </returns>
+    [PublicAPI]
+    public async Task<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
     {
         using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
 
         try
         {
-            return await ReceiveAsync(bytes);
+            return await ReceiveAllAsync(buffer);
+        }
+        catch (RpcSocketReceiveException)
+        {
+            ThrowIfOperationIsCancelled(cancellationToken);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            ThrowIfOperationIsCancelled(cancellationToken);
+            throw new RpcSocketReceiveException(this, exception);
+        }
+    }
+
+    /// <exception cref="RpcSocketReceiveException">
+    ///     Thrown when an error occurs while receiving data.
+    /// </exception>
+    /// <summary>Fills the provided buffer with next currently available bytes read from the socket.</summary>
+    /// <param name="buffer">Buffer to receive bytes into. It's size limits how much bytes will be received at maximum.</param>
+    /// <param name="cancellationToken">Cancels the operation and disposes the socket.</param>
+    /// <returns>
+    ///     The count of bytes that were received.
+    ///     Zero if the connection was closed before any bytes could be read.
+    ///     Otherwise any positive number lower than the size of the provided byffer.
+    /// </returns>
+    [PublicAPI]
+    public async Task<int> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+    {
+        using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
+
+        try
+        {
+            return await ReceiveAsync(buffer);
         }
         catch (RpcSocketReceiveException)
         {
@@ -69,6 +113,7 @@ public partial class RpcSocket : IRpcSocket
     ///     and it probably means the socket should no longer be used anyway,
     ///     without reconnecting at least, which is not in the scope of this class
     /// </summary>
+    [PublicAPI]
     public void Dispose()
     {
         if (!_isDisposed)
@@ -77,9 +122,6 @@ public partial class RpcSocket : IRpcSocket
             _isDisposed = true;
         }
     }
-
-    [LoggerMessage(EventId = 1, Level = LogLevel.Critical, Message = "Socket is not connected or is not a TCP streaming socket.")]
-    static partial void LogMisconfiguredSocket(ILogger logger);
 
     /// <exception cref="RpcSocketSendException"></exception>
     private async Task SendAsync(ArraySegment<byte> bytes)
@@ -93,15 +135,15 @@ public partial class RpcSocket : IRpcSocket
     }
 
     /// <exception cref="RpcSocketReceiveException"></exception>
-    private async Task<bool> ReceiveAsync(ArraySegment<byte> bytes)
+    private async Task<bool> ReceiveAllAsync(ArraySegment<byte> buffer)
     {
         int receivedCount = 0;
-        int length = bytes.Count;
+        int length = buffer.Count;
         while (receivedCount < length)
         {
             int remainingCount = length - receivedCount;
-            var remaining = new ArraySegment<byte>(bytes.Array!, bytes.Offset + receivedCount, remainingCount);
-            int count = await _socket.ReceiveAsync(remaining, SocketFlags.None);
+            var remaining = new ArraySegment<byte>(buffer.Array!, buffer.Offset + receivedCount, remainingCount);
+            int count = await ReceiveAsync(remaining);
 
             if (count == 0) //no bytes received means connection closed
             {
@@ -126,6 +168,8 @@ public partial class RpcSocket : IRpcSocket
         Dispose();
         throw new RpcSocketReceiveException(this, length, receivedCount);
     }
+
+    private async Task<int> ReceiveAsync(ArraySegment<byte> buffer) => await _socket.ReceiveAsync(buffer, SocketFlags.None);
 
     private void ThrowIfOperationIsCancelled(CancellationToken cancellationToken)
     {

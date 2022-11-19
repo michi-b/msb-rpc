@@ -3,10 +3,11 @@ using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization;
-using MsbRpc.Serialization.ByteArraySegment;
+using MsbRpc.Serialization.Buffer;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 using MsbRpc.Sockets.Exceptions;
+using MsbRpcTest.Serialization.Network.Utility;
 using Serilog;
 using Serilog.Core;
 
@@ -84,7 +85,7 @@ public class RpcSocketTest : Test
         await sender.SendAsync(sendSegment, cancellationToken);
 
         var receiveSegment = new ArraySegment<byte>(new byte[] { 0 });
-        bool success = await receiver.ReceiveAsync(receiveSegment, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
         Assert.IsTrue(success);
 
         byte receivedValue = receiveSegment[0];
@@ -108,8 +109,8 @@ public class RpcSocketTest : Test
         var sendSegment = new ArraySegment<byte>(new[] { value0, value1, value2 });
         await sender.SendAsync(sendSegment, cancellationToken);
 
-        ArraySegment<byte> receiveSegment = Memory.Create(3);
-        bool success = await receiver.ReceiveAsync(receiveSegment, cancellationToken);
+        ArraySegment<byte> receiveSegment = BufferUtility.Create(3);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
         Assert.IsTrue(success);
 
         byte receivedValue0 = receiveSegment[0];
@@ -141,8 +142,8 @@ public class RpcSocketTest : Test
         sendSegment.Array![0] = value2;
         await sender.SendAsync(sendSegment, cancellationToken);
 
-        ArraySegment<byte> receiveSegment = Memory.Create(3);
-        bool success = await receiver.ReceiveAsync(receiveSegment, cancellationToken);
+        ArraySegment<byte> receiveSegment = BufferUtility.Create(3);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
         Assert.IsTrue(success);
 
         byte receivedValue0 = receiveSegment[0];
@@ -174,21 +175,21 @@ public class RpcSocketTest : Test
         sendSegment.Array![0] = value2;
         await sender.SendAsync(sendSegment, cancellationToken);
 
-        ArraySegment<byte> receiveSegment = Memory.Create(1);
+        ArraySegment<byte> receiveSegment = BufferUtility.Create(1);
 
-        bool success = await receiver.ReceiveAsync(receiveSegment, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
         Assert.IsTrue(success);
         byte receivedValue0 = receiveSegment[0];
 
-        success = await receiver.ReceiveAsync(receiveSegment, cancellationToken);
+        success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
         Assert.IsTrue(success);
         byte receivedValue1 = receiveSegment[0];
 
-        success = await receiver.ReceiveAsync(receiveSegment, cancellationToken);
+        success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
         Assert.IsTrue(success);
         byte receivedValue2 = receiveSegment[0];
 
-        LogReceived(Memory.CreateByteString(receivedValue0, receivedValue1, receivedValue2));
+        LogReceived(MemoryUtility.ToString(receivedValue0, receivedValue1, receivedValue2));
 
         Assert.AreEqual(value0, receivedValue0);
         Assert.AreEqual(value1, receivedValue1);
@@ -213,9 +214,9 @@ public class RpcSocketTest : Test
                               + PrimitiveSerializer.BooleanSize
                               + PrimitiveSerializer.SByteSize;
 
-        ArraySegment<byte> sendBytes = Memory.Create(arraySize);
+        ArraySegment<byte> sendBytes = BufferUtility.Create(arraySize);
 
-        SequentialWriter sendBytesWriter = new(sendBytes);
+        BufferWriter sendBytesWriter = new(sendBytes);
 
         sendBytesWriter.Write(intValue);
         sendBytesWriter.Write(decimalValue);
@@ -225,15 +226,15 @@ public class RpcSocketTest : Test
 
         await sender.SendAsync(sendBytes, cancellationToken);
 
-        ArraySegment<byte> receiveBytes = Memory.Create(arraySize);
+        ArraySegment<byte> receiveBytes = BufferUtility.Create(arraySize);
 
-        bool success = await receiver.ReceiveAsync(receiveBytes, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveBytes, cancellationToken);
 
         Assert.IsTrue(success);
 
         LogReceived(receiveBytes.CreateContentString());
 
-        SequentialReader receiveBytesReader = new(receiveBytes);
+        BufferReader receiveBytesReader = new(receiveBytes);
 
         int receivedIntValue = receiveBytesReader.ReadInt32();
         decimal receivedDecimalValue = receiveBytesReader.ReadDecimal();

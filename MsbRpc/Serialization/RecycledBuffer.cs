@@ -9,7 +9,7 @@ public class RecycledBuffer
     public RecycledBuffer(int count)
     {
         Debug.Assert(count >= 0);
-        _bytes = count == 0 ? Memory.Empty : new byte[count];
+        _bytes = count == 0 ? MemoryUtility.Empty : new byte[count];
     }
 
     public ArraySegment<byte> Get(int count)

@@ -1,8 +1,8 @@
 ﻿using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpc.Serialization.ByteArraySegment;
+namespace MsbRpc.Serialization.Buffer;
 
-public static partial class ByteArraySegmentExtensions
+public static partial class BufferExtensions
 {
     #region Boolean
 
