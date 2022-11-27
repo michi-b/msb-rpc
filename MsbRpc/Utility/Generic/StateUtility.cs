@@ -72,7 +72,14 @@ public static class StateUtility<TState> where TState : Enum
     }
 
     [PublicAPI]
-    public static void Transition(ref TState state, TState stateFrom, TState stateTo, Action? action, [CallerMemberName] string? operationName = null)
+    public static void Transition
+    (
+        ref TState state,
+        TState stateFrom,
+        TState stateTo,
+        Action? action = null,
+        [CallerMemberName] string? operationName = null
+    )
     {
         AssertIs(state, stateFrom, operationName);
         action?.Invoke();
@@ -81,7 +88,13 @@ public static class StateUtility<TState> where TState : Enum
 
     [PublicAPI]
     public static void Transition
-        (ref TState state, TState[] allowedStatesFrom, TState stateTo, Action? action, [CallerMemberName] string? operationName = null)
+    (
+        ref TState state,
+        TState[] allowedStatesFrom,
+        TState stateTo,
+        Action? action = null,
+        [CallerMemberName] string? operationName = null
+    )
     {
         AssertIsAmong(allowedStatesFrom, state, operationName);
         action?.Invoke();

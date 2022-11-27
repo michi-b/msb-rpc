@@ -7,10 +7,28 @@ namespace MsbRpc.Messaging;
 
 public class Messenger : IDisposable
 {
+    /// <summary>
+    ///     receive delegate for asynchronous listen method
+    ///     that is invoked each time a message is received
+    /// </summary>
+    /// <param name="message">the received message</param>
+    /// <returns>true if listening should be continued, otherwise false</returns>
+    public delegate Task<bool> ReceiveDelegate(ArraySegment<byte> message, CancellationToken cancellationToken);
+
     public enum ListenReturnCode
     {
+        /// <summary>
+        /// listening stopped by connection close
+        /// </summary>
         ConnectionClosed,
-        OperationCanceled
+        /// <summary>
+        /// listening stopped because the operation was canceled
+        /// </summary>
+        OperationCanceled,
+        /// <summary>
+        /// listening stopped because the receive delegate returned true
+        /// </summary>
+        OperationDiscontinued
     }
 
     private const int CountSize = PrimitiveSerializer.Int32Size;
@@ -36,8 +54,7 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async Task<ListenReturnCode> ListenAsync
-        (RecycledBuffer buffer, Func<ArraySegment<byte>, CancellationToken, Task> receiveAsync, CancellationToken cancellationToken)
+    public async Task<ListenReturnCode> ListenAsync(RecycledBuffer buffer, ReceiveDelegate receiveAsync, CancellationToken cancellationToken)
     {
         try
         {
@@ -47,7 +64,10 @@ public class Messenger : IDisposable
                 switch (receiveResult.ReturnCode)
                 {
                     case ReceiveMessageReturnCode.Success:
-                        await receiveAsync(receiveResult.Message, cancellationToken);
+                        if (await receiveAsync(receiveResult.Message, cancellationToken))
+                        {
+                            return ListenReturnCode.OperationDiscontinued;
+                        }
                         break;
                     case ReceiveMessageReturnCode.ConnectionClosed:
                         return ListenReturnCode.ConnectionClosed;
