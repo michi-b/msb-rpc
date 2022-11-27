@@ -1,26 +1,25 @@
 ﻿using MsbRpc;
-using MsbRpc.Serialization;
-using MsbRpc.Serialization.Buffer;
+using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
-using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.ManualImplementation.Input;
+using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
 
-namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.ManualImplementation.Generated;
+namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 
 public class IncrementerRpcReceiver : ISequentialRpcReceiver
 {
     private readonly IIncrementer _incrementer;
     public IncrementerRpcReceiver(IIncrementer incrementer) => _incrementer = incrementer;
 
-    public ArraySegment<byte> Receive(int procedureId, ArraySegment<byte> arguments, RecycledBuffer recycledBuffer)
+    public ArraySegment<byte> Receive(int procedureId, ArraySegment<byte> arguments, RecycledBuffer argumentsBuffer)
     {
         return (IncrementerProcedure)procedureId switch
         {
-            IncrementerProcedure.Increment => Increment(arguments, recycledBuffer),
+            IncrementerProcedure.Increment => Increment(arguments, argumentsBuffer),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
-    private ArraySegment<byte> Increment(ArraySegment<byte> arguments, RecycledBuffer recycledBuffer)
+    private ArraySegment<byte> Increment(ArraySegment<byte> arguments, RecycledBuffer argumentsBuffer)
     {
         //read
         var reader = new BufferReader(arguments);
@@ -30,7 +29,7 @@ public class IncrementerRpcReceiver : ISequentialRpcReceiver
         int result = _incrementer.Increment(value);
 
         //return
-        ArraySegment<byte> resultSegment = recycledBuffer.Get(PrimitiveSerializer.Int32Size);
+        ArraySegment<byte> resultSegment = argumentsBuffer.Get(PrimitiveSerializer.Int32Size);
         var writer = new BufferWriter(resultSegment);
         writer.Write(result);
         return resultSegment;

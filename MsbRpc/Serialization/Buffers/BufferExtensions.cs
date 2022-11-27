@@ -3,7 +3,7 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace MsbRpc.Serialization.Buffer;
+namespace MsbRpc.Serialization.Buffers;
 
 public static partial class BufferExtensions
 {
@@ -20,12 +20,12 @@ public static partial class BufferExtensions
         return new ArraySegment<byte>(target.Array!, target.Offset + offset, count);
     }
 
-    public static ArraySegment<byte> ExtractSubSegmentCopy(this ArraySegment<byte> source, int count) => source.ExtractSubSegmentCopy(0, count);
+    public static ArraySegment<byte> CopySubSegment(this ArraySegment<byte> source, int count) => source.CopySubSegment(0, count);
 
-    public static ArraySegment<byte> ExtractSubSegmentCopy(this ArraySegment<byte> source, int sourceOffset, int count)
+    public static ArraySegment<byte> CopySubSegment(this ArraySegment<byte> source, int sourceOffset, int count)
     {
         var ret = new ArraySegment<byte>(new byte[count], 0, count);
-        System.Buffer.BlockCopy(source.Array!, source.Offset + sourceOffset, ret.Array!, 0, count);
+        Buffer.BlockCopy(source.Array!, source.Offset + sourceOffset, ret.Array!, 0, count);
         return ret;
     }
 

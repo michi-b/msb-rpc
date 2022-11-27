@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using MsbRpc.Serialization.Buffer;
+using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
 
 namespace MsbRpcTest.Serialization.Network.Utility.Listeners;
@@ -18,7 +18,7 @@ public static class ByteArrayListener
         int count;
         while ((count = await socket.ReceiveAsync(buffer, cancellationToken)) > 0)
         {
-            receivedBuffers.Add(buffer.ExtractSubSegmentCopy(count));
+            receivedBuffers.Add(buffer.CopySubSegment(count));
         }
 
         int sum = receivedBuffers.Aggregate(0, (sum, current) => sum + current.Count);

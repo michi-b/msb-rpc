@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpc.Serialization.Buffer;
+namespace MsbRpc.Serialization.Buffers;
 
 public static partial class BufferExtensions
 {

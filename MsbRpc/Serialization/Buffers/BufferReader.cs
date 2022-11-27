@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
-namespace MsbRpc.Serialization.Buffer;
+namespace MsbRpc.Serialization.Buffers;
 
 public struct BufferReader
 {

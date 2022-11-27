@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization;
-using MsbRpc.Serialization.Buffer;
+using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 using MsbRpc.Sockets.Exceptions;
@@ -186,7 +186,7 @@ public class RpcSocketTest : Test
         Assert.IsTrue(success);
         byte receivedValue2 = receiveSegment[0];
 
-        LogReceived(MemoryUtility.ToString(receivedValue0, receivedValue1, receivedValue2));
+        LogReceived(ByteArrayUtility.ToString(receivedValue0, receivedValue1, receivedValue2));
 
         Assert.AreEqual(value0, receivedValue0);
         Assert.AreEqual(value1, receivedValue1);

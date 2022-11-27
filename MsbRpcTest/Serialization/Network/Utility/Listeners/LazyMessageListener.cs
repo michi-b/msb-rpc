@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using MsbRpc.Extensions;
 using MsbRpc.Messaging;
-using MsbRpc.Serialization.Buffer;
+using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpcTest.Serialization.Network.Utility.Listeners;
 
@@ -11,10 +12,11 @@ public static class LazyMessagesListener
     {
         ReceiveMessageResult receiveMessageResult;
         List<ArraySegment<byte>> messages = new();
-        while ((receiveMessageResult = await messenger.ReceiveMessageAsync(BufferUtility.Create, cancellationToken)).ReturnCode
+        var buffer = new RecycledBuffer();
+        while ((receiveMessageResult = await messenger.ReceiveMessageAsync(buffer, cancellationToken)).ReturnCode
                == ReceiveMessageReturnCode.Success)
         {
-            messages.Add(receiveMessageResult.Message);
+            messages.Add(receiveMessageResult.Message.Copy());
         }
 
         return messages;

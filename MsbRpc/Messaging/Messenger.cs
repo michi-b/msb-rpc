@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using MsbRpc.Serialization.Buffer;
+using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 
@@ -37,13 +37,13 @@ public class Messenger : IDisposable
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
     public async Task<ListenReturnCode> ListenAsync
-        (Func<int, ArraySegment<byte>> allocate, Func<ArraySegment<byte>, CancellationToken, Task> receiveAsync, CancellationToken cancellationToken)
+        (RecycledBuffer buffer, Func<ArraySegment<byte>, CancellationToken, Task> receiveAsync, CancellationToken cancellationToken)
     {
         try
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                ReceiveMessageResult receiveResult = await ReceiveMessageAsync(allocate, cancellationToken);
+                ReceiveMessageResult receiveResult = await ReceiveMessageAsync(buffer, cancellationToken);
                 switch (receiveResult.ReturnCode)
                 {
                     case ReceiveMessageReturnCode.Success:
@@ -67,7 +67,7 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async Task<ReceiveMessageResult> ReceiveMessageAsync(Func<int, ArraySegment<byte>> allocate, CancellationToken cancellationToken)
+    public async Task<ReceiveMessageResult> ReceiveMessageAsync(RecycledBuffer buffer, CancellationToken cancellationToken)
     {
         bool hasReceivedCount = await _socket.ReceiveAllAsync(_receiveCountSegment, cancellationToken);
         if (!hasReceivedCount)
@@ -77,7 +77,7 @@ public class Messenger : IDisposable
 
         int messageLength = _receiveCountSegment.ReadInt32();
 
-        ArraySegment<byte> bytesSegment = allocate(messageLength);
+        ArraySegment<byte> bytesSegment = buffer.Get(messageLength);
 
         if (messageLength == 0)
         {

@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using MsbRpc.Serialization.Exceptions;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpc.Serialization.Buffer;
+namespace MsbRpc.Serialization.Buffers;
 
 public static partial class BufferExtensions
 {
@@ -11,7 +11,7 @@ public static partial class BufferExtensions
     [Conditional("DEBUG")]
     private static void AssertContains<TPrimitive>(this ArraySegment<byte> target, int offset) where TPrimitive : struct
     {
-        Debug.Assert(offset > 0);
+        Debug.Assert(offset >= 0);
         target.AssertHasArray();
         target.AssertEndsAtOrBefore<TPrimitive>(offset);
     }

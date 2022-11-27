@@ -1,7 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
-using MsbRpc.Serialization.Buffer;
+using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using MsbRpcTest.Serialization.Network.Utility;
 using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
