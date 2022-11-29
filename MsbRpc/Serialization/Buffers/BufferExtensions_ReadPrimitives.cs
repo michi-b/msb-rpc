@@ -4,7 +4,7 @@ namespace MsbRpc.Serialization.Buffers;
 
 public static partial class BufferExtensions
 {
-    public static int Offset(this ArraySegment<byte> target, int offset) => target.Offset + offset;
+    private static int Offset(this ArraySegment<byte> target, int offset) => target.Offset + offset;
 
     #region Boolean
 
