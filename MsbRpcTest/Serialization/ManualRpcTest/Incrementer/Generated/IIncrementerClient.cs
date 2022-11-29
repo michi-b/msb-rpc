@@ -16,7 +16,7 @@ public class IncrementerClient : RpcClient<IncrementerProcedure>
         ArraySegment<byte> requestBytes = GetRequestMemory(PrimitiveSerializer.Int32Size);
 
         var writer = new BufferWriter(requestBytes);
-        requestBytes.WriteInt32(value);
+        writer.Write(value);
 
         ArraySegment<byte> responseBytes = await SendRequest(IncrementerProcedure.Increment, requestBytes, cancellationToken);
 

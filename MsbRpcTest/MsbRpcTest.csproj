@@ -27,8 +27,4 @@
         <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Serialization\Network\Listeners" />
-    </ItemGroup>
-
 </Project>
