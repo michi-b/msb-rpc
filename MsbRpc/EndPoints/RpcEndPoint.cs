@@ -7,7 +7,9 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class RpcEndPoint<TProcedureId> : IDisposable where TProcedureId : Enum
+public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisposable
+    where TInboundProcedure : Enum
+    where TOutboundProcedure : Enum
 {
     [PublicAPI] public const int DefaultBufferSize = BufferUtility.DefaultSize;
 
@@ -88,7 +90,8 @@ public abstract class RpcEndPoint<TProcedureId> : IDisposable where TProcedureId
     /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestMemory" />.</param>
     /// <param name="cancellationToken">Token for operation cancellation.</param>
     /// <returns>the response message</returns>
-    protected async Task<ArraySegment<byte>> SendRequest(TProcedureId procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
+    protected async Task<ArraySegment<byte>> SendRequest
+        (TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
         //get request memory makes sure to leave space for the procedure id in front of the buffer
         request = new ArraySegment<byte>
@@ -107,7 +110,7 @@ public abstract class RpcEndPoint<TProcedureId> : IDisposable where TProcedureId
         return result.ReturnCode switch
         {
             ReceiveMessageReturnCode.Success => result.Message,
-            ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedureId>
+            ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TOutboundProcedure>
                 (procedure, "connection closed while waiting for the response"),
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -127,7 +130,7 @@ public abstract class RpcEndPoint<TProcedureId> : IDisposable where TProcedureId
     {
         int procedureIdValue = message.ReadInt32();
 
-        TProcedureId procedure = GetProcedure(procedureIdValue);
+        TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
 
         ArraySegment<byte> response = HandleRequest(procedure, message.GetOffsetSubSegment(PrimitiveSerializer.Int32Size));
 
@@ -136,22 +139,22 @@ public abstract class RpcEndPoint<TProcedureId> : IDisposable where TProcedureId
         return GetDirectionAfterRequest(procedure) == Direction.Outbound;
     }
 
-    private static int GetProcedureIdValue(TProcedureId value)
+    private static TInboundProcedure GetInboundProcedure(int id)
     {
-        Debug.Assert(Enum.GetUnderlyingType(typeof(TProcedureId)) == typeof(int));
-        return Unsafe.As<TProcedureId, int>(ref value);
+        Debug.Assert(Enum.GetUnderlyingType(typeof(TInboundProcedure)) == typeof(int));
+        return Unsafe.As<int, TInboundProcedure>(ref id);
     }
 
-    private static TProcedureId GetProcedure(int id)
+    private static int GetProcedureIdValue(TOutboundProcedure value)
     {
-        Debug.Assert(Enum.GetUnderlyingType(typeof(TProcedureId)) == typeof(int));
-        return Unsafe.As<int, TProcedureId>(ref id);
+        Debug.Assert(Enum.GetUnderlyingType(typeof(TOutboundProcedure)) == typeof(int));
+        return Unsafe.As<TOutboundProcedure, int>(ref value);
     }
 
     /// <param name="procedure">id of the procedure to call</param>
     /// <param name="argumentsBuffer">bytes of the arguments in recycled memory for the procedure to call</param>
     /// <returns>bytes of the return value of the called procedure, may be in recycled memory as well</returns>
-    protected abstract ArraySegment<byte> HandleRequest(TProcedureId procedure, ArraySegment<byte> argumentsBuffer);
+    protected abstract ArraySegment<byte> HandleRequest(TInboundProcedure procedure, ArraySegment<byte> argumentsBuffer);
 
-    protected abstract Direction GetDirectionAfterRequest(TProcedureId procedure);
+    protected abstract Direction GetDirectionAfterRequest(TInboundProcedure procedure);
 }

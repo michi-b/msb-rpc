@@ -6,28 +6,28 @@ using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerServer : RpcServer<IncrementerProcedure>
+public class IncrementerServer : RpcEndPoint<IncrementerServerProcedure, IncrementerClientProcedure>
 {
     private readonly IIncrementer _incrementer;
 
     public IncrementerServer(Messenger messenger, IIncrementer incrementer, int bufferSize = DefaultBufferSize)
-        : base(messenger, bufferSize)
+        : base(messenger, Direction.Inbound, bufferSize)
         => _incrementer = incrementer;
 
-    protected override ArraySegment<byte> HandleRequest(IncrementerProcedure procedure, ArraySegment<byte> arguments)
+    protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, ArraySegment<byte> arguments)
     {
-        return procedure switch
+        return serverProcedure switch
         {
-            IncrementerProcedure.Increment => Increment(arguments),
+            IncrementerServerProcedure.Increment => Increment(arguments),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
-    protected override Direction GetDirectionAfterRequest(IncrementerProcedure procedure)
+    protected override Direction GetDirectionAfterRequest(IncrementerServerProcedure serverProcedure)
     {
-        return procedure switch
+        return serverProcedure switch
         {
-            IncrementerProcedure.Increment => Direction.Inbound,
+            IncrementerServerProcedure.Increment => Direction.Inbound,
             _ => throw new ArgumentOutOfRangeException()
         };
     }

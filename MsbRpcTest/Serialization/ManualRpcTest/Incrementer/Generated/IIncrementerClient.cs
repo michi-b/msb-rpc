@@ -5,9 +5,10 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerClient : RpcClient<IncrementerProcedure>
+public class IncrementerClient : RpcEndPoint<IncrementerClientProcedure, IncrementerServerProcedure>
 {
-    public IncrementerClient(Messenger messenger, int initialBufferSize = DefaultBufferSize) : base(messenger, initialBufferSize) { }
+    public IncrementerClient(Messenger messenger, int initialBufferSize = DefaultBufferSize) : base
+        (messenger, Direction.Outbound, initialBufferSize) { }
 
     public async Task<int> IncrementAsync(int value, CancellationToken cancellationToken)
     {
@@ -18,7 +19,7 @@ public class IncrementerClient : RpcClient<IncrementerProcedure>
         var writer = new BufferWriter(requestBytes);
         writer.Write(value);
 
-        ArraySegment<byte> responseBytes = await SendRequest(IncrementerProcedure.Increment, requestBytes, cancellationToken);
+        ArraySegment<byte> responseBytes = await SendRequest(IncrementerServerProcedure.Increment, requestBytes, cancellationToken);
 
         var reader = new BufferReader(responseBytes);
         int response = reader.ReadInt32();
@@ -28,19 +29,7 @@ public class IncrementerClient : RpcClient<IncrementerProcedure>
         return response;
     }
 
-    protected override ArraySegment<byte> HandleRequest(IncrementerProcedure procedure, ArraySegment<byte> arguments)
-    {
-        return procedure switch
-        {
-            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
-        };
-    }
+    protected override ArraySegment<byte> HandleRequest(IncrementerClientProcedure procedure, ArraySegment<byte> arguments) => BufferUtility.Empty;
 
-    protected override Direction GetDirectionAfterRequest(IncrementerProcedure procedure)
-    {
-        return procedure switch
-        {
-            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
-        };
-    }
+    protected override Direction GetDirectionAfterRequest(IncrementerClientProcedure procedure) => Direction.Outbound;
 }

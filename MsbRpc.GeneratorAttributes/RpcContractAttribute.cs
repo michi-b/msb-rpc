@@ -5,19 +5,7 @@ namespace MsbRpc.GeneratorAttributes;
 
 public class RpcContractAttribute : Attribute
 {
-    [PublicAPI] public readonly string? ClientName;
-    [PublicAPI] public readonly RpcDirection Direction;
-    [PublicAPI] public readonly string? ServerName;
+    [PublicAPI] public readonly RpcDirection InitialDirection;
 
-    public RpcContractAttribute
-    (
-        RpcDirection direction = RpcDirection.ClientToServer,
-        string? serverName = null,
-        string? clientName = null
-    )
-    {
-        Direction = direction;
-        ServerName = serverName;
-        ClientName = clientName;
-    }
+    public RpcContractAttribute(RpcDirection initialDirection = RpcDirection.ClientToServer) => InitialDirection = initialDirection;
 }
