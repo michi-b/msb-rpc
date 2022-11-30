@@ -4,7 +4,7 @@ public enum State
 {
     IdleInbound,
     IdleOutbound,
-    ListeningForRequests,
-    SendingRequest,
+    Listening,
+    Calling,
     Disposed
 }

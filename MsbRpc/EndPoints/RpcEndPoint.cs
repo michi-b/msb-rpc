@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
@@ -11,17 +13,25 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
     where TInboundProcedure : Enum
     where TOutboundProcedure : Enum
 {
-    [PublicAPI] public const int DefaultBufferSize = BufferUtility.DefaultSize;
-
+    protected const int DefaultBufferSize = BufferUtility.DefaultSize;
     private readonly RecycledBuffer _buffer;
-
     private readonly Messenger _messenger;
     private State _state;
+    // ReSharper disable once NotAccessedField.Local
+    //todo: use
+    private ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> _logger;
 
     [PublicAPI] public State State => _state;
 
-    protected RpcEndPoint(Messenger messenger, Direction direction, int bufferSize = DefaultBufferSize)
+    protected RpcEndPoint
+    (
+        Messenger messenger,
+        Direction direction,
+        ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>>? logger = null,
+        int bufferSize = DefaultBufferSize
+    )
     {
+        _logger = logger ?? new NullLogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>>();
         _messenger = messenger;
         _buffer = new RecycledBuffer(bufferSize);
         _state = direction switch
@@ -34,13 +44,13 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
 
     public async Task<Messenger.ListenReturnCode> ListenAsync(CancellationToken cancellationToken)
     {
-        _state.Transition(State.IdleInbound, State.ListeningForRequests);
+        _state.Transition(State.IdleInbound, State.Listening);
         Messenger.ListenReturnCode listenReturnCode = await _messenger.ListenAsync(_buffer, ReceiveMessageAsync, cancellationToken);
 
         // receive message callback will only discontinue listening if procedure results in outbound state
         if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
         {
-            _state.Transition(State.ListeningForRequests, State.IdleOutbound);
+            _state.Transition(State.Listening, State.IdleOutbound);
         }
         // otherwise, connection has got to be lost
         else
@@ -116,14 +126,23 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
         };
     }
 
-    protected void EnterSending()
+    protected void EnterCalling()
     {
-        _state.Transition(State.IdleOutbound, State.SendingRequest);
+        _state.Transition(State.IdleOutbound, State.Calling);
     }
 
-    protected void ExitSending()
+    protected void ExitCalling(TOutboundProcedure procedure)
     {
-        _state.Transition(State.SendingRequest, State.IdleOutbound);
+        _state.Transition
+        (
+            State.Calling,
+            GetDirectionAfterCalling(procedure) switch
+            {
+                Direction.Inbound => State.IdleInbound,
+                Direction.Outbound => State.IdleOutbound,
+                _ => throw new ArgumentOutOfRangeException()
+            }
+        );
     }
 
     private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
@@ -136,7 +155,7 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
 
         await _messenger.SendMessageAsync(response, cancellationToken);
 
-        return GetDirectionAfterRequest(procedure) == Direction.Outbound;
+        return GetDirectionAfterHandling(procedure) == Direction.Outbound;
     }
 
     private static TInboundProcedure GetInboundProcedure(int id)
@@ -156,5 +175,28 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
     /// <returns>bytes of the return value of the called procedure, may be in recycled memory as well</returns>
     protected abstract ArraySegment<byte> HandleRequest(TInboundProcedure procedure, ArraySegment<byte> argumentsBuffer);
 
-    protected abstract Direction GetDirectionAfterRequest(TInboundProcedure procedure);
+    protected abstract Direction GetDirectionAfterHandling(TInboundProcedure procedure);
+
+    protected abstract Direction GetDirectionAfterCalling(TOutboundProcedure procedure);
+
+    protected class NoProceduresDefinedException
+        : InvalidOperationException
+    {
+        public NoProceduresDefinedException(RpcEndPoint<TInboundProcedure, TOutboundProcedure> endPoint, Direction direction)
+            : base
+            (
+                $"There are no procedures defined for this endpoint {{{endPoint.GetType().Name}}} given the direction {{{direction}}}."
+                + $" See the generated enum {{{GetProcedureEnumName(direction)}}}"
+            ) { }
+
+        private static string GetProcedureEnumName(Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Inbound => typeof(TInboundProcedure).Name,
+                Direction.Outbound => typeof(TOutboundProcedure).Name,
+                _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            };
+        }
+    }
 }

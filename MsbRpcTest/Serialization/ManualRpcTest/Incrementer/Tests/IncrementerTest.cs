@@ -14,7 +14,7 @@ public class IncrementerTest : Test
         CancellationToken cancellationToken = CancellationToken;
         (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
         var serverImplementation = new Implementation.Incrementer();
-        var server = new IncrementerServer(serverMessenger, serverImplementation);
+        var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation);
         
         Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
         
@@ -34,11 +34,11 @@ public class IncrementerTest : Test
         CancellationToken cancellationToken = CancellationToken;
         (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
         var serverImplementation = new Implementation.Incrementer();
-        var server = new IncrementerServer(serverMessenger, serverImplementation);
+        var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation);
         
         Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
         
-        var client = new IncrementerClient(clientMessenger);
+        var client = new IncrementerClientEndPoint(clientMessenger);
         int result = await client.IncrementAsync(testValue, cancellationToken);
         
         clientMessenger.Dispose();
@@ -59,11 +59,11 @@ public class IncrementerTest : Test
         CancellationToken cancellationToken = CancellationToken;
         (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
         var serverImplementation = new Implementation.Incrementer();
-        var server = new IncrementerServer(serverMessenger, serverImplementation);
+        var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation);
         
         Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
         
-        var client = new IncrementerClient(clientMessenger);
+        var client = new IncrementerClientEndPoint(clientMessenger);
         int result = await client.IncrementAsync(testValue, cancellationToken);
         
         clientMessenger.Dispose();
@@ -82,11 +82,11 @@ public class IncrementerTest : Test
         CancellationToken cancellationToken = CancellationToken;
         (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
         var serverImplementation = new Implementation.Incrementer();
-        var server = new IncrementerServer(serverMessenger, serverImplementation);
+        var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation);
         
         Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
         
-        var client = new IncrementerClient(clientMessenger);
+        var client = new IncrementerClientEndPoint(clientMessenger);
         int result = await client.IncrementAsync(testValue, cancellationToken);
         
         clientMessenger.Dispose();
@@ -105,11 +105,11 @@ public class IncrementerTest : Test
         CancellationToken cancellationToken = CancellationToken;
         (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
         var serverImplementation = new Implementation.Incrementer();
-        var server = new IncrementerServer(serverMessenger, serverImplementation);
+        var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation);
         
         Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
         
-        var client = new IncrementerClient(clientMessenger);
+        var client = new IncrementerClientEndPoint(clientMessenger);
         
         int lastResult = testValue;
         for (int i = 0; i < expectedResult-testValue; i++)

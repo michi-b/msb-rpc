@@ -1,8 +1,8 @@
-﻿using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
+﻿using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Implementation;
 
-internal class Incrementer : IIncrementer
+internal class Incrementer : IIncrementerServer
 {
     public int Increment(int value) => value + 1;
 }

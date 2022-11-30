@@ -1,17 +1,29 @@
-﻿using MsbRpc.EndPoints;
+﻿using Microsoft.Extensions.Logging;
+using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
-using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerServer : RpcEndPoint<IncrementerServerProcedure, IncrementerClientProcedure>
+public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure, IncrementerClientProcedure>
 {
-    private readonly IIncrementer _incrementer;
+    private readonly IIncrementerServer _incrementer;
 
-    public IncrementerServer(Messenger messenger, IIncrementer incrementer, int bufferSize = DefaultBufferSize)
-        : base(messenger, Direction.Inbound, bufferSize)
+    public IncrementerServerEndPoint
+    (
+        Messenger messenger,
+        IIncrementerServer incrementer,
+        ILoggerFactory? loggerFactory = null,
+        int bufferSize = DefaultBufferSize
+    )
+        : base
+        (
+            messenger,
+            Direction.Inbound,
+            loggerFactory?.CreateLogger<IncrementerServerEndPoint>(),
+            bufferSize
+        )
         => _incrementer = incrementer;
 
     protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, ArraySegment<byte> arguments)
@@ -23,7 +35,7 @@ public class IncrementerServer : RpcEndPoint<IncrementerServerProcedure, Increme
         };
     }
 
-    protected override Direction GetDirectionAfterRequest(IncrementerServerProcedure serverProcedure)
+    protected override Direction GetDirectionAfterHandling(IncrementerServerProcedure serverProcedure)
     {
         return serverProcedure switch
         {
@@ -31,6 +43,9 @@ public class IncrementerServer : RpcEndPoint<IncrementerServerProcedure, Increme
             _ => throw new ArgumentOutOfRangeException()
         };
     }
+
+    protected override Direction GetDirectionAfterCalling(IncrementerClientProcedure procedure)
+        => throw new NoProceduresDefinedException(this, Direction.Outbound);
 
     private ArraySegment<byte> Increment(ArraySegment<byte> argumentsBuffer)
     {

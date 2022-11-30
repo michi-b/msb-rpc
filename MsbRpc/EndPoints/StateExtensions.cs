@@ -38,6 +38,6 @@ public static class StateExtensions
 #endif
     }
 
-    private static State[] _respondingStates = new[] { State.ListeningForRequests };
-    private static State[] _requestingStates = new[] { State.SendingRequest };
+    private static State[] _respondingStates = new[] { State.Listening };
+    private static State[] _requestingStates = new[] { State.Calling };
 }

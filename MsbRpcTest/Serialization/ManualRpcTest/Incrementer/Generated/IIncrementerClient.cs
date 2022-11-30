@@ -1,37 +1,60 @@
-﻿using MsbRpc.EndPoints;
-using MsbRpc.EndPoints.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerClient : RpcEndPoint<IncrementerClientProcedure, IncrementerServerProcedure>
+public class IncrementerClientEndPoint : RpcEndPoint<IncrementerClientProcedure, IncrementerServerProcedure>
 {
-    public IncrementerClient(Messenger messenger, int initialBufferSize = DefaultBufferSize) : base
-        (messenger, Direction.Outbound, initialBufferSize) { }
+    public IncrementerClientEndPoint
+    (
+        Messenger messenger,
+        ILoggerFactory? loggerFactory = null,
+        int initialBufferSize = DefaultBufferSize
+    )
+        : base
+        (
+            messenger,
+            Direction.Outbound,
+            loggerFactory?.CreateLogger<IncrementerClientEndPoint>(),
+            initialBufferSize
+        ) { }
 
     public async Task<int> IncrementAsync(int value, CancellationToken cancellationToken)
     {
-        EnterSending();
+        EnterCalling();
+
+        const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
 
         ArraySegment<byte> requestBytes = GetRequestMemory(PrimitiveSerializer.Int32Size);
 
         var writer = new BufferWriter(requestBytes);
         writer.Write(value);
 
-        ArraySegment<byte> responseBytes = await SendRequest(IncrementerServerProcedure.Increment, requestBytes, cancellationToken);
+        ArraySegment<byte> responseBytes = await SendRequest(procedure, requestBytes, cancellationToken);
 
         var reader = new BufferReader(responseBytes);
         int response = reader.ReadInt32();
 
-        ExitSending();
+        ExitCalling(procedure);
 
         return response;
     }
 
     protected override ArraySegment<byte> HandleRequest(IncrementerClientProcedure procedure, ArraySegment<byte> arguments)
-        => throw new ThereAreNoRequestsDefinedException();
+        => throw new NoProceduresDefinedException(this, Direction.Inbound);
 
-    protected override Direction GetDirectionAfterRequest(IncrementerClientProcedure procedure) => throw new ThereAreNoRequestsDefinedException();
+    protected override Direction GetDirectionAfterHandling(IncrementerClientProcedure procedure) 
+        => throw new NoProceduresDefinedException(this, Direction.Inbound);
+
+    protected override Direction GetDirectionAfterCalling(IncrementerServerProcedure procedure)
+    {
+        return procedure switch
+        {
+            IncrementerServerProcedure.Increment => Direction.Outbound,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
 }
