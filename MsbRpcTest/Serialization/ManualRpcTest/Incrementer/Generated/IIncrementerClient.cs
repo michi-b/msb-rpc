@@ -1,4 +1,5 @@
 ﻿using MsbRpc.EndPoints;
+using MsbRpc.EndPoints.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
@@ -29,7 +30,8 @@ public class IncrementerClient : RpcEndPoint<IncrementerClientProcedure, Increme
         return response;
     }
 
-    protected override ArraySegment<byte> HandleRequest(IncrementerClientProcedure procedure, ArraySegment<byte> arguments) => BufferUtility.Empty;
+    protected override ArraySegment<byte> HandleRequest(IncrementerClientProcedure procedure, ArraySegment<byte> arguments)
+        => throw new ThereAreNoRequestsDefinedException();
 
-    protected override Direction GetDirectionAfterRequest(IncrementerClientProcedure procedure) => Direction.Outbound;
+    protected override Direction GetDirectionAfterRequest(IncrementerClientProcedure procedure) => throw new ThereAreNoRequestsDefinedException();
 }
