@@ -9,17 +9,19 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisposable
+public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisposable
     where TInboundProcedure : Enum
     where TOutboundProcedure : Enum
 {
     protected const int DefaultBufferSize = BufferUtility.DefaultSize;
     private readonly RecycledBuffer _buffer;
+
     private readonly Messenger _messenger;
+    private readonly string _typeName;
+
+    [PublicAPI] protected readonly ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> Logger;
+
     private State _state;
-    // ReSharper disable once NotAccessedField.Local
-    //todo: use
-    private ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> _logger;
 
     [PublicAPI] public State State => _state;
 
@@ -31,7 +33,8 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
         int bufferSize = DefaultBufferSize
     )
     {
-        _logger = logger ?? new NullLogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>>();
+        _typeName = GetType().Name;
+        Logger = logger ?? new NullLogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>>();
         _messenger = messenger;
         _buffer = new RecycledBuffer(bufferSize);
         _state = direction switch
@@ -65,6 +68,25 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
     {
         _messenger.Dispose();
         _state = State.Disposed;
+    }
+
+    protected abstract string GetName(TInboundProcedure procedure);
+
+    private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
+    {
+        int procedureIdValue = message.ReadInt32();
+
+        TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
+
+        ArraySegment<byte> arguments = message.GetOffsetSubSegment(PrimitiveSerializer.Int32Size);
+
+        LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
+
+        ArraySegment<byte> response = HandleRequest(procedure, arguments);
+
+        await _messenger.SendMessageAsync(response, cancellationToken);
+
+        return GetDirectionAfterHandling(procedure) == Direction.Outbound;
     }
 
     /// <summary>
@@ -143,19 +165,6 @@ public abstract class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisp
                 _ => throw new ArgumentOutOfRangeException()
             }
         );
-    }
-
-    private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
-    {
-        int procedureIdValue = message.ReadInt32();
-
-        TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
-
-        ArraySegment<byte> response = HandleRequest(procedure, message.GetOffsetSubSegment(PrimitiveSerializer.Int32Size));
-
-        await _messenger.SendMessageAsync(response, cancellationToken);
-
-        return GetDirectionAfterHandling(procedure) == Direction.Outbound;
     }
 
     private static TInboundProcedure GetInboundProcedure(int id)

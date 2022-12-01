@@ -26,6 +26,8 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
         )
         => _incrementer = incrementer;
 
+    protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
+
     protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, ArraySegment<byte> arguments)
     {
         return serverProcedure switch

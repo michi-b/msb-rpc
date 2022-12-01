@@ -43,6 +43,8 @@ public class IncrementerClientEndPoint : RpcEndPoint<IncrementerClientProcedure,
         return response;
     }
 
+    protected override string GetName(IncrementerClientProcedure procedure) => procedure.GetName();
+
     protected override ArraySegment<byte> HandleRequest(IncrementerClientProcedure procedure, ArraySegment<byte> arguments)
         => throw new NoProceduresDefinedException(this, Direction.Inbound);
 
