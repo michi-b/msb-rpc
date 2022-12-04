@@ -71,6 +71,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     }
 
     protected abstract string GetName(TInboundProcedure procedure);
+    protected abstract string GetName(TOutboundProcedure procedure);
 
     private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
@@ -125,17 +126,21 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     protected async Task<ArraySegment<byte>> SendRequest
         (TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
+        int argumentByteCount = request.Count;
+
         //get request memory makes sure to leave space for the procedure id in front of the buffer
         request = new ArraySegment<byte>
         (
             request.Array!,
             request.Offset - PrimitiveSerializer.Int32Size,
-            request.Count + PrimitiveSerializer.Int32Size
+            argumentByteCount + PrimitiveSerializer.Int32Size
         );
 
         request.WriteInt32(GetProcedureIdValue(procedure));
 
         await _messenger.SendMessageAsync(request, cancellationToken);
+
+        LogSentCall(_typeName, GetName(procedure), argumentByteCount);
 
         ReceiveMessageResult result = await _messenger.ReceiveMessageAsync(_buffer, cancellationToken);
 

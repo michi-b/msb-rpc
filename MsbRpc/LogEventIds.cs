@@ -2,5 +2,6 @@
 
 public enum LogEventIds
 {
-    RpcEndPointReceivedCall = 0
+    RpcEndPointReceivedCall = 0,
+    RpcEndPointSentCall = 1
 }

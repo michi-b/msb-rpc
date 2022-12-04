@@ -127,7 +127,7 @@ public class IncrementerTest : Test
             var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation, LoggerFactory);
 
             Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
-            var client = new IncrementerClientEndPoint(clientMessenger);
+            var client = new IncrementerClientEndPoint(clientMessenger, LoggerFactory);
             return new Setup(client, server, serverListenTask);
         }
 
