@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc", "MsbRpc\MsbRpc.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.Generator", "MsbRpc.Generator\MsbRpc.Generator.csproj", "{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.GeneratorAttributes", "MsbRpc.GeneratorAttributes\MsbRpc.GeneratorAttributes.csproj", "{7506B616-A0D1-415F-A102-576BE6E91D1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.Generator.Attributes", "MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj", "{7506B616-A0D1-415F-A102-576BE6E91D1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
