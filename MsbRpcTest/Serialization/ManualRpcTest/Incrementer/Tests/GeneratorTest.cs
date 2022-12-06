@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Misbat.CodeAnalysis.Test.CodeTest;
 using Misbat.CodeAnalysis.Test.Utility;
 using MsbRpc.Generator;
-using MsbRpc.GeneratorAttributes;
+using MsbRpc.Generator.Attributes;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Tests;
 
@@ -32,13 +32,12 @@ public interface IIncrementer
                 )
             ).WithAdditionalGenerators(new RpcGenerator())
         )
-        .WithAddedNamespaceImports("MsbRps.GeneratorAttributes")
+        .WithAddedNamespaceImports("MsbRpc.Generator.Attributes")
         .WithCode(Code);
     
     [TestMethod]
     public async Task GeneratorRuns()
     {
-
         CodeTestResult result = (await CodeTest.Run(CancellationToken)).Result;
         Assert.IsTrue(result.GeneratorResults.ContainsKey(typeof(RpcGenerator)));
     }

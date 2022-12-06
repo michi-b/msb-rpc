@@ -1,11 +1,13 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace MsbRpc.GeneratorAttributes;
-
-public class RpcContractAttribute : Attribute
+namespace MsbRpc.Generator.Attributes
 {
-    [PublicAPI] public readonly RpcDirection InitialDirection;
+    public class RpcContractAttribute : Attribute
+    {
+        [PublicAPI] public readonly RpcDirection InitialDirection;
 
-    public RpcContractAttribute(RpcDirection initialDirection = RpcDirection.ClientToServer) => InitialDirection = initialDirection;
+        public RpcContractAttribute(RpcDirection initialDirection = RpcDirection.ClientToServer) => InitialDirection = initialDirection;
+    }
 }
+

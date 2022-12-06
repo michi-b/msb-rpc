@@ -1,4 +1,4 @@
-﻿using MsbRpc.GeneratorAttributes;
+﻿using MsbRpc.Generator.Attributes;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
 

@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.GeneratorAttributes;
+﻿namespace MsbRpc.Generator.Attributes;
 
 public enum RpcDirection
 {
