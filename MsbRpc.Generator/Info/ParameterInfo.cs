@@ -1,13 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace MsbRpc.Generator;
+namespace MsbRpc.Generator.Info;
 
-public readonly record struct RpcParameter
+public readonly struct ParameterInfo
 {
     public string Name { get; }
     public string Type { get; }
 
-    public RpcParameter(IParameterSymbol parameter)
+    public ParameterInfo(IParameterSymbol parameter)
     {
         Name = parameter.Name;
         Type = parameter.Type.OriginalDefinition.Name;

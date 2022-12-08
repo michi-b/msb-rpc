@@ -30,7 +30,7 @@ public interface IIncrementer
                     MetadataReferenceUtility.NetStandard,
                     MetadataReferenceUtility.GetAssemblyReference<RpcContractAttribute>()
                 )
-            ).WithAdditionalGenerators(new RpcGenerator())
+            ).WithAdditionalGenerators(new Generator())
         )
         .WithAddedNamespaceImports("MsbRpc.Generator.Attributes")
         .WithCode(Code);
@@ -39,7 +39,7 @@ public interface IIncrementer
     public async Task GeneratorRuns()
     {
         CodeTestResult result = (await CodeTest.Run(CancellationToken)).Result;
-        Assert.IsTrue(result.GeneratorResults.ContainsKey(typeof(RpcGenerator)));
+        Assert.IsTrue(result.GeneratorResults.ContainsKey(typeof(Generator)));
     }
 
     [TestMethod]
@@ -76,6 +76,6 @@ public interface IIncrementer
     private async Task<GeneratorDriverRunResult> RunRpcGenerator()
     {
         CodeTestResult result = (await CodeTest.Run(CancellationToken)).Result;
-        return result.GeneratorResults[typeof(RpcGenerator)].GetRunResult();
+        return result.GeneratorResults[typeof(Generator)].GetRunResult();
     }
 }
