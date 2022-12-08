@@ -22,7 +22,7 @@ public class Generator : IIncrementalGenerator
 
         IncrementalValuesProvider<ContractInfo> rpcContracts = rpcContractDeclarationSyntaxNodes
             .Collect()
-            .SelectMany((infos, _) => infos.Distinct(ContractInfo.SourceSymbolComparer.Instance));
+            .SelectMany((infos, _) => infos.Distinct(ContractInfoTargetComparer.Instance));
 
         context.RegisterSourceOutput(rpcContracts, (sourceProductionContext, contract) => contract.Generate(sourceProductionContext));
     }
@@ -52,7 +52,7 @@ public class Generator : IIncrementalGenerator
         // check that interfaceSymbol has the RpcContract attribute
         return contractInterface.GetAttributes()
             .Select(attributeData => attributeData.AttributeClass!)
-            .Any(WellKnownTypes.IsRpcContractAttribute)
+            .Any(WellKnownAttributes.IsRpcContractAttribute)
             ? new ContractInfo(contractInterface)
             : null;
     }

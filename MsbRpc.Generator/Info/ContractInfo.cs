@@ -4,10 +4,10 @@ using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
-public class ContractInfo
+public class ContractInfo : IEquatable<ContractInfo>
 {
-    private string Name { get; }
-    private string Namespace { get; }
+    public string Name { get; }
+    public string Namespace { get; }
     private ImmutableArray<ProcedureInfo> Procedures { get; }
 
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
@@ -45,22 +45,20 @@ public class ContractInfo
         writer.Indent--;
     }
 
-    public class SourceSymbolComparer : IEqualityComparer<ContractInfo>
+    public bool Equals(ContractInfo other) => Name == other.Name
+                                              && Namespace == other.Namespace
+                                              && Procedures.SequenceEqual(other.Procedures);
+
+    public override bool Equals(object obj) => Equals((ContractInfo)obj);
+
+    public override int GetHashCode()
     {
-        public static SourceSymbolComparer Instance { get; } = new();
-
-        public bool Equals(ContractInfo x, ContractInfo y)
-            => x.Name == y.Name
-               && x.Namespace == y.Namespace;
-
-        public int GetHashCode(ContractInfo obj)
+        unchecked
         {
-            unchecked
-            {
-                int hashCode = obj.Name.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.Namespace.GetHashCode();
-                return hashCode;
-            }
+            int hashCode = Name.GetHashCode();
+            hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
+            hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
+            return hashCode;
         }
     }
 }
