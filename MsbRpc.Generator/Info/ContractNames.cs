@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator;
+﻿namespace MsbRpc.Generator.Info;
 
 public readonly struct ContractNames
 {

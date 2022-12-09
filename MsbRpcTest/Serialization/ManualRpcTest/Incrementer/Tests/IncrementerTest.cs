@@ -1,27 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
 using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
 using MsbRpcTest.Serialization.Network.Utility;
-using Serilog;
-using Serilog.Core;
 
 namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Tests;
 
 [TestClass]
 public class IncrementerTest : Test
 {
-    private static readonly ILoggerFactory LoggerFactory;
-
-    static IncrementerTest()
-    {
-        Logger logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.Console()
-            .CreateLogger();
-        LoggerFactory = new LoggerFactory().AddSerilog(logger);
-    }
-
     [TestMethod]
     public async Task CanServerListen()
     {
