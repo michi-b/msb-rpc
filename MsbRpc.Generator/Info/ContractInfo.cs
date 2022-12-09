@@ -4,10 +4,10 @@ using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
-public class ContractInfo : IEquatable<ContractInfo>
+public partial class ContractInfo : IEquatable<ContractInfo>
 {
-    public string Name { get; }
-    public string Namespace { get; }
+    private string Name { get; }
+    private string Namespace { get; }
     private ImmutableArray<ProcedureInfo> Procedures { get; }
 
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
@@ -45,9 +45,10 @@ public class ContractInfo : IEquatable<ContractInfo>
         writer.Indent--;
     }
 
-    public bool Equals(ContractInfo other) => Name == other.Name
-                                              && Namespace == other.Namespace
-                                              && Procedures.SequenceEqual(other.Procedures);
+    public bool Equals(ContractInfo other)
+        => Name == other.Name
+           && Namespace == other.Namespace
+           && Procedures.SequenceEqual(other.Procedures);
 
     public override bool Equals(object obj) => Equals((ContractInfo)obj);
 
@@ -61,4 +62,26 @@ public class ContractInfo : IEquatable<ContractInfo>
             return hashCode;
         }
     }
+
+    public string GenerateServerInterface(ContractNames names)
+    {
+        var writer = new IndentedTextWriter(new StringWriter());
+
+        writer.WriteLine("namespace {0}\n", names.GeneratedNamespace);
+        writer.WriteLine("public interface {0}", names.ServerInterfaceName);
+
+        writer.WriteLine("{");
+        writer.Indent++;
+        foreach (ProcedureInfo procedure in Procedures)
+        {
+            procedure.GenerateInterface(writer);
+        }
+
+        writer.Indent--;
+        writer.WriteLine("}");
+
+        return writer.ToString();
+    }
+
+    public ContractNames CreateNames() => new(Name, Namespace);
 }

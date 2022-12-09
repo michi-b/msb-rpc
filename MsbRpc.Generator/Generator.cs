@@ -22,9 +22,9 @@ public class Generator : IIncrementalGenerator
 
         IncrementalValuesProvider<ContractInfo> rpcContracts = rpcContractDeclarationSyntaxNodes
             .Collect()
-            .SelectMany((infos, _) => infos.Distinct(ContractInfoTargetComparer.Instance));
+            .SelectMany((infos, _) => infos.Distinct(ContractInfo.TargetComparer.Instance));
 
-        context.RegisterSourceOutput(rpcContracts, (sourceProductionContext, contract) => contract.Generate(sourceProductionContext));
+        context.RegisterSourceOutput(rpcContracts, Generate);
     }
 
     private static bool GetIsAttributedInterfaceDeclarationSyntax(SyntaxNode syntaxNode, CancellationToken cancellationToken)
@@ -55,5 +55,11 @@ public class Generator : IIncrementalGenerator
             .Any(WellKnownAttributes.IsRpcContractAttribute)
             ? new ContractInfo(contractInterface)
             : null;
+    }
+
+    private static void Generate(SourceProductionContext context, ContractInfo contract)
+    {
+        ContractNames names = contract.CreateNames();
+        context.AddSource(contract.GenerateServerInterface(names), names.ServerInterfaceFileName);
     }
 }

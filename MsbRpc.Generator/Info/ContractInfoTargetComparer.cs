@@ -1,20 +1,23 @@
 ﻿namespace MsbRpc.Generator.Info;
 
-public class ContractInfoTargetComparer : IEqualityComparer<ContractInfo>
+public partial class ContractInfo
 {
-    public static ContractInfoTargetComparer Instance { get; } = new();
-
-    public bool Equals(ContractInfo x, ContractInfo y)
-        => x.Name == y.Name
-           && x.Namespace == y.Namespace;
-
-    public int GetHashCode(ContractInfo obj)
+    public class TargetComparer : IEqualityComparer<ContractInfo>
     {
-        unchecked
+        public static TargetComparer Instance { get; } = new();
+
+        public bool Equals(ContractInfo x, ContractInfo y)
+            => x.Name == y.Name
+               && x.Namespace == y.Namespace;
+
+        public int GetHashCode(ContractInfo obj)
         {
-            int hashCode = obj.Name.GetHashCode();
-            hashCode = (hashCode * 397) ^ obj.Namespace.GetHashCode();
-            return hashCode;
+            unchecked
+            {
+                int hashCode = obj.Name.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.Namespace.GetHashCode();
+                return hashCode;
+            }
         }
     }
 }
