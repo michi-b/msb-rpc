@@ -9,7 +9,7 @@ namespace MsbRpcTest;
 
 public class Test
 {
-    [PublicAPI] protected static readonly ILoggerFactory LoggerFactory;
+    [PublicAPI] protected static readonly ILoggerFactory? LoggerFactory;
 
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global

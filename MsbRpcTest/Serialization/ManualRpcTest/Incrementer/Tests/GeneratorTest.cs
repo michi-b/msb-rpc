@@ -38,7 +38,7 @@ public interface IIncrementer
     [TestMethod]
     public async Task GeneratorRuns()
     {
-        CodeTestResult result = (await CodeTest.Run(LoggerFactory, CancellationToken)).Result;
+        CodeTestResult result = (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
         Assert.IsTrue(result.GeneratorResults.ContainsKey(typeof(Generator)));
     }
 
@@ -75,7 +75,7 @@ public interface IIncrementer
 
     private async Task<GeneratorDriverRunResult> RunRpcGenerator()
     {
-        CodeTestResult result = (await CodeTest.Run(LoggerFactory, CancellationToken)).Result;
+        CodeTestResult result = (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
         return result.GeneratorResults[typeof(Generator)].GetRunResult();
     }
 }
