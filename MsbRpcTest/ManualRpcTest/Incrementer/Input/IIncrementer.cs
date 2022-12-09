@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Generator.Attributes;
 
-namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
+namespace MsbRpcTest.ManualRpcTest.Incrementer.Input;
 
 [RpcContract]
 public interface IIncrementer

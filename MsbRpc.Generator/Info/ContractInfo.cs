@@ -78,9 +78,10 @@ public partial class ContractInfo : IEquatable<ContractInfo>
         }
 
         writer.Indent--;
-        writer.WriteLine("}");
+        writer.Write("}");
 
-        return writer.ToString();
+        string result = writer.InnerWriter.ToString();
+        return result;
     }
 
     public ContractNames CreateNames() => new(Name, Namespace);

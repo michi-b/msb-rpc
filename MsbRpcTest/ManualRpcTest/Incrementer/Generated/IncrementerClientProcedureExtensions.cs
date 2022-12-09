@@ -1,4 +1,4 @@
-﻿namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
+﻿namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
 public static class IncrementerClientProcedureExtensions
 {

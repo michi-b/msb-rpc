@@ -4,7 +4,7 @@ using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
+namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
 public class IncrementerClientEndPoint : RpcEndPoint<IncrementerClientProcedure, IncrementerServerProcedure>
 {

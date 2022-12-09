@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
-using MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Generated;
+using MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 using MsbRpcTest.Serialization.Network.Utility;
 
-namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Tests;
+namespace MsbRpcTest.ManualRpcTest.Incrementer.Tests;
 
 [TestClass]
 public class IncrementerTest : Test

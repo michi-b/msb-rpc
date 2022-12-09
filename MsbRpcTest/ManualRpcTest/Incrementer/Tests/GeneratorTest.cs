@@ -6,14 +6,12 @@ using Misbat.CodeAnalysis.Test.Utility;
 using MsbRpc.Generator;
 using MsbRpc.Generator.Attributes;
 
-namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Tests;
+namespace MsbRpcTest.ManualRpcTest.Incrementer.Tests;
 
 [TestClass]
 public class GeneratorTest : Test
 {
-    private const string Code = @"namespace MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input;
-
-[RpcContract]
+    private const string Code = @"[RpcContract]
 public interface IIncrementer
 {
     int Increment(int value);
@@ -33,8 +31,9 @@ public interface IIncrementer
             ).WithAdditionalGenerators(new Generator())
         )
         .WithAddedNamespaceImports("MsbRpc.Generator.Attributes")
+        .InNamespace("MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input")
         .WithCode(Code);
-    
+
     [TestMethod]
     public async Task GeneratorRuns()
     {
@@ -54,7 +53,7 @@ public interface IIncrementer
     {
         GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
-        Assert.AreEqual(null, rpcGeneratorResult.Exception);    
+        Assert.AreEqual(null, rpcGeneratorResult.Exception);
     }
 
     [TestMethod]
@@ -65,7 +64,7 @@ public interface IIncrementer
         ImmutableArray<Diagnostic> diagnostics = rpcGeneratorResult.Diagnostics;
         Assert.AreEqual(0, diagnostics.Length);
     }
-    
+
     [TestMethod]
     public async Task GeneratesOneOrMoreTrees()
     {

@@ -60,6 +60,6 @@ public class Generator : IIncrementalGenerator
     private static void Generate(SourceProductionContext context, ContractInfo contract)
     {
         ContractNames names = contract.CreateNames();
-        context.AddSource(contract.GenerateServerInterface(names), names.ServerInterfaceFileName);
+        context.AddSource(names.ServerInterfaceFileName, contract.GenerateServerInterface(names));
     }
 }
