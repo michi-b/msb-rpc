@@ -71,10 +71,10 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     }
 
     //to be implemented by derived classes for defined procedure enums
-    protected virtual string GetName(TInboundProcedure procedure) => throw new UndefinedProcedureException();
-    
+    protected virtual string GetName(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
+
     //to be implemented by derived classes for defined procedure enums
-    protected virtual string GetName(TOutboundProcedure procedure) => throw new UndefinedProcedureException();
+    protected virtual string GetName(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
     private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
@@ -174,7 +174,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
             }
         );
     }
-    
+
     private static TInboundProcedure GetInboundProcedure(int id)
     {
         Debug.Assert(Enum.GetUnderlyingType(typeof(TInboundProcedure)) == typeof(int));
@@ -190,11 +190,17 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <param name="procedure">id of the procedure to call</param>
     /// <param name="argumentsBuffer">bytes of the arguments in recycled memory for the procedure to call</param>
     /// <returns>bytes of the return value of the called procedure, may be in recycled memory as well</returns>
-    protected virtual ArraySegment<byte> HandleRequest(TInboundProcedure procedure, ArraySegment<byte> argumentsBuffer) => throw new UndefinedProcedureException();
+    protected virtual ArraySegment<byte> HandleRequest
+        (TInboundProcedure procedure, ArraySegment<byte> argumentsBuffer)
+        => throw CreateUndefinedProcedureException();
 
-    protected virtual Direction GetDirectionAfterHandling(TInboundProcedure procedure) => throw new UndefinedProcedureException();
+    protected virtual Direction GetDirectionAfterHandling(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
-    protected virtual Direction GetDirectionAfterCalling(TOutboundProcedure procedure) => throw new UndefinedProcedureException();
+    protected virtual Direction GetDirectionAfterCalling(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
+
+    private UndefinedProcedureException<TInboundProcedure, TOutboundProcedure> CreateUndefinedProcedureException
+        ([CallerMemberName] string? callerMemberName = null)
+        => new(this, callerMemberName);
 
     protected class NoProceduresDefinedException
         : InvalidOperationException
