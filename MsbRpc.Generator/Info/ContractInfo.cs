@@ -66,13 +66,13 @@ public partial class ContractInfo : IEquatable<ContractInfo>
 
     public string GenerateServerInterface(ContractNames names)
     {
-        var writer = new IndentedTextWriter(new StringWriter());
+        using IndentedTextWriter writer = CreateWriter();
 
         writer.WriteFileHeader(names.GeneratedNamespace);
-        
+
         writer.WriteLine("public interface {0}", names.ServerInterfaceName);
 
-        using (writer.EncloseInBlock())
+        using (writer.EncloseInBlock(false))
         {
             foreach (ProcedureInfo procedure in Procedures)
             {
@@ -80,9 +80,39 @@ public partial class ContractInfo : IEquatable<ContractInfo>
             }
         }
 
-        string result = writer.InnerWriter.ToString();
-        return result;
+        return writer.GetResult();
+    }
+
+    public string GenerateServerProcedureEnum(ContractNames names)
+    {
+        using IndentedTextWriter writer = CreateWriter();
+
+        writer.WriteFileHeader(names.GeneratedNamespace);
+
+        writer.WriteLine("public enum {0}", names.ServerProcedureEnumName);
+
+        using (writer.EncloseInBlock(false))
+        {
+            int lastIndex = Procedures.Length - 1;
+            for (int i = 0; i < Procedures.Length; i++)
+            {
+                ProcedureInfo procedureInfo = Procedures[i];
+
+                writer.Write("{0} = {1}", procedureInfo.Name, i);
+
+                if (i < lastIndex)
+                {
+                    writer.WriteCommaDelimiter();
+                }
+
+                writer.WriteLine();
+            }
+        }
+
+        return writer.GetResult();
     }
 
     public ContractNames CreateNames() => new(Name, Namespace);
+
+    private static IndentedTextWriter CreateWriter() => new(new StringWriter());
 }

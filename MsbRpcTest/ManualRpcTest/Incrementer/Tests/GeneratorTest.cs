@@ -78,6 +78,13 @@ public interface IIncrementer
         GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
         rpcGeneratorResults.GeneratedTrees.Any(tree => tree.FilePath.EndsWith("IIncrementerServer.cs"));
     }
+    
+    [TestMethod]
+    public async Task GeneratesServerProcedureEnum()
+    {
+        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
+        rpcGeneratorResults.GeneratedTrees.Any(tree => tree.FilePath.EndsWith("IncrementerServerProcedure.cs"));
+    }
 
     private async Task<GeneratorDriverRunResult> RunRpcGenerator()
     {

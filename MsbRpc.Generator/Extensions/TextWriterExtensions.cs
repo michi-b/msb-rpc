@@ -30,7 +30,7 @@ public static class TextWriterExtensions
 
     public static void WriteLineSemicolon(this TextWriter writer) => writer.WriteLine(";");
 
-    public static void WriteCommaDelimiter(this TextWriter writer) => writer.Write(", ");
+    public static void WriteCommaDelimiter(this TextWriter writer, bool withTrailingSpace = false) => writer.Write(withTrailingSpace ? ", " : ",");
 
     private static void WriteFileHeader(this TextWriter writer)
     {
