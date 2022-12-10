@@ -6,7 +6,7 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure, IncrementerClientProcedure>
+public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure, UndefinedProcedure>
 {
     private readonly IIncrementerServer _incrementer;
 
@@ -27,7 +27,7 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
         => _incrementer = incrementer;
 
     protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
-    protected override string GetName(IncrementerClientProcedure procedure) => procedure.GetName();
+    protected override string GetName(UndefinedProcedure procedure) => throw new InvalidOperationException();
 
     protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, ArraySegment<byte> arguments)
     {
@@ -46,9 +46,6 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-    protected override Direction GetDirectionAfterCalling(IncrementerClientProcedure procedure)
-        => throw new NoProceduresDefinedException(this, Direction.Outbound);
 
     private ArraySegment<byte> Increment(ArraySegment<byte> argumentsBuffer)
     {

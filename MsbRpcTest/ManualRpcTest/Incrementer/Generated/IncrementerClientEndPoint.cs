@@ -6,7 +6,7 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerClientEndPoint : RpcEndPoint<IncrementerClientProcedure, IncrementerServerProcedure>
+public class IncrementerClientEndPoint : RpcEndPoint<UndefinedProcedure, IncrementerServerProcedure>
 {
     public IncrementerClientEndPoint
     (
@@ -43,14 +43,7 @@ public class IncrementerClientEndPoint : RpcEndPoint<IncrementerClientProcedure,
         return response;
     }
 
-    protected override string GetName(IncrementerClientProcedure procedure) => procedure.GetName();
     protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
-
-    protected override ArraySegment<byte> HandleRequest(IncrementerClientProcedure procedure, ArraySegment<byte> arguments)
-        => throw new NoProceduresDefinedException(this, Direction.Inbound);
-
-    protected override Direction GetDirectionAfterHandling(IncrementerClientProcedure procedure) 
-        => throw new NoProceduresDefinedException(this, Direction.Inbound);
 
     protected override Direction GetDirectionAfterCalling(IncrementerServerProcedure procedure)
     {

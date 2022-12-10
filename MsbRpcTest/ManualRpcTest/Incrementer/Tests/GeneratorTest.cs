@@ -72,6 +72,13 @@ public interface IIncrementer
         Assert.IsTrue(rpcGeneratorResults.GeneratedTrees.Length > 0, "generates one or more trees");
     }
 
+    [TestMethod]
+    public async Task GeneratesServerInterface()
+    {
+        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
+        rpcGeneratorResults.GeneratedTrees.Any(tree => tree.FilePath.EndsWith("IIncrementerServer.cs"));
+    }
+
     private async Task<GeneratorDriverRunResult> RunRpcGenerator()
     {
         CodeTestResult result = (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
