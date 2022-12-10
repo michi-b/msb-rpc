@@ -201,25 +201,4 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     private UndefinedProcedureException<TInboundProcedure, TOutboundProcedure> CreateUndefinedProcedureException
         ([CallerMemberName] string? callerMemberName = null)
         => new(this, callerMemberName);
-
-    protected class NoProceduresDefinedException
-        : InvalidOperationException
-    {
-        public NoProceduresDefinedException(RpcEndPoint<TInboundProcedure, TOutboundProcedure> endPoint, Direction direction)
-            : base
-            (
-                $"There are no procedures defined for this endpoint {{{endPoint.GetType().Name}}} given the direction {{{direction}}}."
-                + $" See the generated enum {{{GetProcedureEnumName(direction)}}}"
-            ) { }
-
-        private static string GetProcedureEnumName(Direction direction)
-        {
-            return direction switch
-            {
-                Direction.Inbound => typeof(TInboundProcedure).Name,
-                Direction.Outbound => typeof(TOutboundProcedure).Name,
-                _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
-            };
-        }
-    }
 }
