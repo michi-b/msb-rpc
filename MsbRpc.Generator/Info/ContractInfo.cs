@@ -1,6 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.Extensions;
 
 namespace MsbRpc.Generator.Info;
 
@@ -67,18 +68,17 @@ public partial class ContractInfo : IEquatable<ContractInfo>
     {
         var writer = new IndentedTextWriter(new StringWriter());
 
-        writer.WriteLine("namespace {0}\n", names.GeneratedNamespace);
+        writer.WriteFileHeader(names.GeneratedNamespace);
+        
         writer.WriteLine("public interface {0}", names.ServerInterfaceName);
 
-        writer.WriteLine("{");
-        writer.Indent++;
-        foreach (ProcedureInfo procedure in Procedures)
+        using (writer.EncloseInBlock())
         {
-            procedure.GenerateInterface(writer);
+            foreach (ProcedureInfo procedure in Procedures)
+            {
+                procedure.GenerateInterface(writer);
+            }
         }
-
-        writer.Indent--;
-        writer.Write("}");
 
         string result = writer.InnerWriter.ToString();
         return result;
