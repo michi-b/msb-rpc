@@ -62,5 +62,6 @@ public class Generator : IIncrementalGenerator
         ContractNames names = contract.CreateNames();
         context.AddSource(names.ServerInterfaceFileName, contract.GenerateServerInterface(names));
         context.AddSource(names.ServerProcedureEnumFileName, contract.GenerateServerProcedureEnum(names));
+        context.AddSource(names.ServerProcedureEnumExtensionsFileName, contract.GenerateServerProcedureEnumExtensions(names));
     }
 }

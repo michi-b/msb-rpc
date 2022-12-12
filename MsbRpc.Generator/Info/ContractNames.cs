@@ -1,4 +1,7 @@
-﻿namespace MsbRpc.Generator.Info;
+﻿using System.CodeDom.Compiler;
+using MsbRpc.Generator.Extensions;
+
+namespace MsbRpc.Generator.Info;
 
 public readonly struct ContractNames
 {
@@ -28,13 +31,28 @@ public readonly struct ContractNames
 
         ServerProcedureEnumName = contractName + ServerPostfix + ProcedurePostfix;
         ServerProcedureEnumFileName = $"{GeneratedNamespace}.{ServerProcedureEnumName}{generatedFileEnding}";
+
+        ServerProcedureEnumExtensionsName = contractName + ServerPostfix + ProcedurePostfix + "Extensions";
+        ServerProcedureEnumExtensionsFileName = $"{GeneratedNamespace}.{ServerProcedureEnumExtensionsName}{generatedFileEnding}";
     }
 
-    public string GeneratedNamespace { get; }
+    public IndentedTextWriter CreateCodeWriter()
+    {
+        IndentedTextWriter writer = new(new StringWriter());
+
+        writer.WriteFileHeader(GeneratedNamespace);
+
+        return writer;
+    }
+
+    private string GeneratedNamespace { get; }
+
     public string ServerInterfaceName { get; }
     public string ServerInterfaceFileName { get; }
 
     public string ServerProcedureEnumName { get; }
-
     public string ServerProcedureEnumFileName { get; }
+
+    public string ServerProcedureEnumExtensionsName { get; }
+    public string ServerProcedureEnumExtensionsFileName { get; }
 }

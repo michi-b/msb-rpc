@@ -64,11 +64,11 @@ public partial class ContractInfo : IEquatable<ContractInfo>
         }
     }
 
+    public ContractNames CreateNames() => new(Name, Namespace);
+
     public string GenerateServerInterface(ContractNames names)
     {
-        using IndentedTextWriter writer = CreateWriter();
-
-        writer.WriteFileHeader(names.GeneratedNamespace);
+        using IndentedTextWriter writer = names.CreateCodeWriter();
 
         writer.WriteLine("public interface {0}", names.ServerInterfaceName);
 
@@ -85,9 +85,7 @@ public partial class ContractInfo : IEquatable<ContractInfo>
 
     public string GenerateServerProcedureEnum(ContractNames names)
     {
-        using IndentedTextWriter writer = CreateWriter();
-
-        writer.WriteFileHeader(names.GeneratedNamespace);
+        using IndentedTextWriter writer = names.CreateCodeWriter();
 
         writer.WriteLine("public enum {0}", names.ServerProcedureEnumName);
 
@@ -112,7 +110,36 @@ public partial class ContractInfo : IEquatable<ContractInfo>
         return writer.GetResult();
     }
 
-    public ContractNames CreateNames() => new(Name, Namespace);
+    public string GenerateServerProcedureEnumExtensions(ContractNames names)
+    {
+        using IndentedTextWriter writer = names.CreateCodeWriter();
 
-    private static IndentedTextWriter CreateWriter() => new(new StringWriter());
+        writer.WriteLine("public static class {0}", names.ServerProcedureEnumExtensionsName);
+
+        using (writer.EncloseInBlock(false))
+        {
+            const string procedureParameterName = "procedure";
+            writer.WriteLine
+            (
+                "public static string GetProcedureName(this {0} {1})",
+                names.ServerProcedureEnumName,
+                procedureParameterName
+            );
+            using (writer.EncloseInBlock())
+            {
+                writer.WriteLine("return procedure switch");
+                using (writer.EncloseInBlock())
+                {
+                    foreach (ProcedureInfo procedure in Procedures)
+                    {
+                        writer.WriteLine("{0} => nameof({0}),", names.ServerProcedureEnumName + "." + procedure.Name);
+                    }
+
+                    writer.WriteLine("_ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)");
+                }
+            }
+        }
+
+        return writer.GetResult();
+    }
 }
