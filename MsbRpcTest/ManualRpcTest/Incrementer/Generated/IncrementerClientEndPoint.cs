@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// ReSharper disable InlineTemporaryVariable
+
+using Microsoft.Extensions.Logging;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -26,16 +28,27 @@ public class IncrementerClientEndPoint : RpcEndPoint<UndefinedProcedure, Increme
     {
         EnterCalling();
 
-        const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
+        // Write request arguments
 
-        ArraySegment<byte> requestBytes = GetRequestMemory(PrimitiveSerializer.Int32Size);
+        const int valueArgumentSize = PrimitiveSerializer.Int32Size;
+
+        const int constantArgumentSizeSum = valueArgumentSize;
+
+        ArraySegment<byte> requestBytes = GetRequestMemory(constantArgumentSizeSum);
 
         var writer = new BufferWriter(requestBytes);
+
         writer.Write(value);
 
+        // Send request.
+
+        const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
         ArraySegment<byte> responseBytes = await SendRequest(procedure, requestBytes, cancellationToken);
 
+        // Read response.        
+
         var reader = new BufferReader(responseBytes);
+
         int response = reader.ReadInt32();
 
         ExitCalling(procedure);

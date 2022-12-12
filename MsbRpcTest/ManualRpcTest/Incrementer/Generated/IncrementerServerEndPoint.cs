@@ -49,17 +49,26 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
 
     private ArraySegment<byte> Increment(ArraySegment<byte> argumentsBuffer)
     {
-        //read
+        
+        // Read request arguments.
+
         var reader = new BufferReader(argumentsBuffer);
-        int value = reader.ReadInt32();
+        
+        int valueArgument = reader.ReadInt32();
 
-        //execute        
-        int result = _incrementer.Increment(value);
+        // Execute procedure.
+        int result = _incrementer.Increment(valueArgument);
 
-        //return
-        ArraySegment<byte> resultBuffer = GetResponseMemory(PrimitiveSerializer.Int32Size);
+        // Send response.
+
+        const int resultSize = PrimitiveSerializer.Int32Size;
+        
+        ArraySegment<byte> resultBuffer = GetResponseMemory(resultSize);
+        
         var writer = new BufferWriter(resultBuffer);
+        
         writer.Write(result);
+        
         return resultBuffer;
     }
 }
