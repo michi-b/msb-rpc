@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Misbat.CodeAnalysis.Test.CodeTest;
+using Misbat.CodeAnalysis.Test.Extensions;
 using Misbat.CodeAnalysis.Test.Utility;
 using MsbRpc.Generator;
 using MsbRpc.Generator.Attributes;
@@ -44,14 +45,14 @@ public interface IIncrementer
     [TestMethod]
     public async Task GeneratorHasSingleResult()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
-        Assert.AreEqual(1, rpcGeneratorResults.Results.Length);
+        CodeTestResult result = await RunCodeTest();
+        Assert.AreEqual(1, result.GeneratorResults.Count);
     }
 
     [TestMethod]
     public async Task GeneratorThrowsNoException()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
+        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator();
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         Assert.AreEqual(null, rpcGeneratorResult.Exception);
     }
@@ -59,36 +60,36 @@ public interface IIncrementer
     [TestMethod]
     public async Task GeneratorReportsNoDiagnostics()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
+        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator();
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         ImmutableArray<Diagnostic> diagnostics = rpcGeneratorResult.Diagnostics;
         Assert.AreEqual(0, diagnostics.Length);
     }
 
     [TestMethod]
-    public async Task GeneratesOneOrMoreTrees()
-    {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
-        Assert.IsTrue(rpcGeneratorResults.GeneratedTrees.Length > 0, "generates one or more trees");
-    }
+    public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator());
 
     [TestMethod]
     public async Task GeneratesServerInterface()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
-        rpcGeneratorResults.GeneratedTrees.Any(tree => tree.FilePath.EndsWith("IIncrementerServer.cs"));
+        const string expectedTreeName = "IIncrementerServer.g.cs";
+        Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
     }
     
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunRpcGenerator();
-        rpcGeneratorResults.GeneratedTrees.Any(tree => tree.FilePath.EndsWith("IncrementerServerProcedure.cs"));
+        const string expectedTreeName = "IncrementerServerProcedure.g.cs";
+        Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
+    }
+    
+    [TestMethod]
+    public async Task GeneratesServerProcedureEnumExtensions()
+    {
+        const string expectedTreeName = "IncrementerServerProcedureExtensions.g.cs";
+        Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
     }
 
-    private async Task<GeneratorDriverRunResult> RunRpcGenerator()
-    {
-        CodeTestResult result = (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
-        return result.GeneratorResults[typeof(Generator)].GetRunResult();
-    }
+    private async Task<CodeTestResult> RunCodeTest() => (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
+    private async Task<GeneratorDriverRunResult> RunGenerator() => (await RunCodeTest()).GeneratorResults[typeof(Generator)].GetRunResult();
 }
