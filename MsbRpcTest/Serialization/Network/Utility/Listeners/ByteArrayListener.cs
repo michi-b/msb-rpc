@@ -7,13 +7,15 @@ namespace MsbRpcTest.Serialization.Network.Utility.Listeners;
 public static class ByteArrayListener
 {
     public static async Task<byte[]> ListenAsync
-        (EndPoint ep, CancellationToken cancellationToken)
-        => await ListenAsync(ep, NetworkUtility.DefaultBufferSize, cancellationToken);
+        (Task<RpcSocket> acceptClient, CancellationToken cancellationToken)
+        => await ListenAsync(acceptClient, NetworkUtility.DefaultBufferSize, cancellationToken);
 
-    private static async Task<byte[]> ListenAsync(EndPoint ep, int bufferSize, CancellationToken cancellationToken)
+    private static async Task<byte[]> ListenAsync(Task<RpcSocket> acceptClient, int bufferSize, CancellationToken cancellationToken)
     {
         ArraySegment<byte> buffer = new(new byte[bufferSize]);
-        RpcSocket socket = await NetworkUtility.AcceptAsync(ep, cancellationToken);
+
+        RpcSocket socket = await acceptClient;
+
         List<ArraySegment<byte>> receivedBuffers = new(1);
         int count;
         while ((count = await socket.ReceiveAsync(buffer, cancellationToken)) > 0)

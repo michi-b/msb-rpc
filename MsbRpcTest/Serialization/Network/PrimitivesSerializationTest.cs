@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
+using MsbRpc.Sockets;
 using MsbRpcTest.Serialization.Network.Utility;
 using MsbRpcTest.Serialization.Network.Utility.Listeners;
 
@@ -17,6 +18,7 @@ public class PrimitivesSerializationTest : Test
     [TestMethod]
     public async Task PreservesInt32()
     {
+        (IPEndPoint endPoint, Task<RpcSocket> acceptClient) = NetworkUtility.AcceptAsync(cancellationToken);
         EndPoint ep = NetworkUtility.GetLocalEndPoint();
 
         CancellationToken cancellationToken = CancellationToken;
