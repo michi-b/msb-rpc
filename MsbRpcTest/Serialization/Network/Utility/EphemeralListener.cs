@@ -6,8 +6,14 @@ namespace MsbRpcTest.Serialization.Network.Utility;
 
 public class EphemeralListener : IDisposable
 {
-    [PublicAPI] public IPEndPoint EndPoint { get; private init; }
-    private Socket ListenSocket { get; init; }
+    [PublicAPI] public IPEndPoint EndPoint { get; }
+    private Socket ListenSocket { get; }
+
+    public EphemeralListener(IPEndPoint endPoint, Socket listenSocket)
+    {
+        EndPoint = endPoint;
+        ListenSocket = listenSocket;
+    }
 
     public static async ValueTask<EphemeralListener> CreateAsync(CancellationToken cancellationToken) => await CreateAsync(1, cancellationToken);
 
@@ -29,10 +35,6 @@ public class EphemeralListener : IDisposable
         Console.WriteLine($"using port {listenEndPoint.Port}");
         listenSocket.Listen(backlogSize);
 
-        return new EphemeralListener
-        {
-            EndPoint = listenEndPoint,
-            ListenSocket = listenSocket
-        };
+        return new EphemeralListener(listenEndPoint, listenSocket);
     }
 }

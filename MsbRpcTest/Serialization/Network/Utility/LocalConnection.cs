@@ -34,7 +34,7 @@ public class LocalConnection : IDisposable
     }
 
     public Messenger CreateServerMessenger() => new(Server);
-    public Messenger CreateClientMessenger() => new(Server);
+    public Messenger CreateClientMessenger() => new(Client);
 
     public void Dispose()
     {

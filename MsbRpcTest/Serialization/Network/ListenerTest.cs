@@ -21,20 +21,12 @@ public abstract class ListenerTest : Test
         Assert.AreEqual(0, messages.Count);
     }
 
-    private async Task<(Messenger client, Task<List<ArraySegment<byte>>> listen)> Setup(CancellationToken cancellationToken)
-    {
-        LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
-        Messenger client = connection.CreateClientMessenger();
-        Messenger server = connection.CreateServerMessenger();
-        return (client, ListenAsync(server, cancellationToken));
-    }
-
     protected async Task TestSingleByteMessagesIsDelivered()
     {
         const byte value = 123;
         ArraySegment<byte> message = BufferUtility.Create(value);
         CancellationToken cancellationToken = CancellationToken;
-        
+
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
         using (client)
         {
@@ -52,8 +44,9 @@ public abstract class ListenerTest : Test
     protected async Task TestEmptyMessageIsDelivered()
     {
         CancellationToken cancellationToken = CancellationToken;
-        
+
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
+        
         using (client)
         {
             await client.SendMessageAsync(BufferUtility.Empty, cancellationToken);
@@ -76,7 +69,7 @@ public abstract class ListenerTest : Test
         byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
         messageOut.WriteInt32(value);
         var messageOutSegment = new ArraySegment<byte>(messageOut);
-        
+
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
         using (client)
         {
@@ -98,7 +91,7 @@ public abstract class ListenerTest : Test
         int[] values = { -912347287, 1, 0, -1, int.MaxValue, int.MinValue };
 
         CancellationToken cancellationToken = CancellationToken;
-        
+
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
 
         using (client)
@@ -124,6 +117,14 @@ public abstract class ListenerTest : Test
             int valueReceived = message.Array!.ReadInt32(message.Offset);
             Assert.AreEqual(value, valueReceived);
         }
+    }
+
+    private async Task<(Messenger client, Task<List<ArraySegment<byte>>> listen)> Setup(CancellationToken cancellationToken)
+    {
+        LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        Messenger client = connection.CreateClientMessenger();
+        Messenger server = connection.CreateServerMessenger();
+        return (client, ListenAsync(server, cancellationToken));
     }
 
     private static void Log(IReadOnlyList<ArraySegment<byte>> messages)
