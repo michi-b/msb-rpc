@@ -23,7 +23,9 @@ public abstract class ListenerTest : Test
 
     private async Task<(Messenger client, Task<List<ArraySegment<byte>>> listen)> Setup(CancellationToken cancellationToken)
     {
-        (Messenger client, Messenger server) = await Connection.ConnectMessengersAsync(cancellationToken);
+        LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        Messenger client = connection.CreateClientMessenger();
+        Messenger server = connection.CreateServerMessenger();
         return (client, ListenAsync(server, cancellationToken));
     }
 

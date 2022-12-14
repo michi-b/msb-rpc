@@ -12,13 +12,15 @@ public class IncrementerTest : Test
     public async Task CanServerListen()
     {
         CancellationToken cancellationToken = CancellationToken;
-        (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
+
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        
         var serverImplementation = new Implementation.Incrementer();
-        var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation);
+        var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation);
 
         Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
 
-        clientMessenger.Dispose();
+        connection.CreateClientMessenger().Dispose();
 
         await serverListenTask;
 
@@ -108,12 +110,14 @@ public class IncrementerTest : Test
 
         public static async Task<Setup> CreateAsync(CancellationToken cancellationToken)
         {
-            (Messenger clientMessenger, Messenger serverMessenger) = (await Connection.ConnectAsync(cancellationToken)).AsMessengers;
+            LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+            
             var serverImplementation = new Implementation.Incrementer();
-            var server = new IncrementerServerEndPoint(serverMessenger, serverImplementation, LoggerFactory);
+            var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation, LoggerFactory);
 
             Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
-            var client = new IncrementerClientEndPoint(clientMessenger, LoggerFactory);
+            var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
+            
             return new Setup(client, server, serverListenTask);
         }
 

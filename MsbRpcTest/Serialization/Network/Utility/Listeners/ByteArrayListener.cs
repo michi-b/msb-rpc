@@ -1,20 +1,19 @@
-﻿using System.Net;
-using MsbRpc.Serialization.Buffers;
+﻿using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
 
 namespace MsbRpcTest.Serialization.Network.Utility.Listeners;
 
 public static class ByteArrayListener
 {
-    public static async Task<byte[]> ListenAsync
-        (Task<RpcSocket> acceptClient, CancellationToken cancellationToken)
-        => await ListenAsync(acceptClient, NetworkUtility.DefaultBufferSize, cancellationToken);
+    private const int DefaultBufferSize = NetworkUtility.DefaultBufferSize;
 
-    private static async Task<byte[]> ListenAsync(Task<RpcSocket> acceptClient, int bufferSize, CancellationToken cancellationToken)
+    public static async Task<byte[]> ListenAsync
+        (RpcSocket socket, CancellationToken cancellationToken)
+        => await ListenAsync(socket, DefaultBufferSize, cancellationToken);
+
+    private static async Task<byte[]> ListenAsync(RpcSocket socket, int bufferSize, CancellationToken cancellationToken)
     {
         ArraySegment<byte> buffer = new(new byte[bufferSize]);
-
-        RpcSocket socket = await acceptClient;
 
         List<ArraySegment<byte>> receivedBuffers = new(1);
         int count;

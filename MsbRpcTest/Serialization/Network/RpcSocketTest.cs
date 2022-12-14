@@ -29,7 +29,10 @@ public class RpcSocketTest : Test
 
         CancellationToken cancellationToken = CancellationToken;
 
-        EndPoint serverEndPoint = NetworkUtility.GetLocalEndPoint();
+        IPAddress localHost = (await Dns.GetHostEntryAsync("localhost", cancellationToken)).AddressList[0];
+        
+        EndPoint serverEndPoint = new IPEndPoint(localHost, 0);
+        
         var listenSocket = new Socket(serverEndPoint.AddressFamily, SocketType.Stream, protocolType);
         listenSocket.Bind(serverEndPoint);
         listenSocket.Listen(1);
@@ -52,7 +55,10 @@ public class RpcSocketTest : Test
 
         CancellationToken cancellationToken = CancellationToken;
 
-        EndPoint serverEndPoint = NetworkUtility.GetLocalEndPoint();
+        IPAddress localHost = (await Dns.GetHostEntryAsync("localhost", cancellationToken)).AddressList[0];
+        
+        EndPoint serverEndPoint = new IPEndPoint(localHost, 0);
+        
         var listenSocket = new Socket(serverEndPoint.AddressFamily, socketType, ProtocolType.Tcp);
         listenSocket.Bind(serverEndPoint);
         listenSocket.Listen(1);
@@ -75,7 +81,9 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        RpcSocket sender = connection.Client;
+        RpcSocket receiver = connection.Server;
 
         const byte value = 123;
         var sendSegment = new ArraySegment<byte>(new[] { value });
@@ -97,8 +105,10 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
-
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        RpcSocket sender = connection.Client;
+        RpcSocket receiver = connection.Server;
+        
         const byte value0 = 123;
         const byte value1 = 234;
         const byte value2 = 98;
@@ -126,7 +136,9 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        RpcSocket sender = connection.Client;
+        RpcSocket receiver = connection.Server;
 
         const byte value0 = 64;
         const byte value1 = 0;
@@ -159,7 +171,9 @@ public class RpcSocketTest : Test
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        RpcSocket sender = connection.Client;
+        RpcSocket receiver = connection.Server;
 
         const byte value0 = 3;
         const byte value1 = 1;
@@ -197,7 +211,10 @@ public class RpcSocketTest : Test
     public async Task TransfersMultipleDifferentValues()
     {
         CancellationToken cancellationToken = CancellationToken;
-        (RpcSocket sender, RpcSocket receiver) = await Connection.ConnectSocketsAsync(cancellationToken);
+        
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        RpcSocket sender = connection.Client;
+        RpcSocket receiver = connection.Server;
 
         const int intValue = 1235234134;
         const decimal decimalValue = 3124312323.123489087m;

@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
-using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
@@ -18,12 +16,11 @@ public class PrimitivesSerializationTest : Test
     [TestMethod]
     public async Task PreservesInt32()
     {
-        (IPEndPoint endPoint, Task<RpcSocket> acceptClient) = NetworkUtility.AcceptAsync(cancellationToken);
-        EndPoint ep = NetworkUtility.GetLocalEndPoint();
-
         CancellationToken cancellationToken = CancellationToken;
-        using Task<byte[]> listenTask
-            = ByteArrayListener.ListenAsync(ep, cancellationToken);
+
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+        
+        using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(connection.Server, cancellationToken);
 
         byte[] bytes = new byte[NetworkUtility.DefaultBufferSize];
 
@@ -31,13 +28,8 @@ public class PrimitivesSerializationTest : Test
 
         bytes.WriteInt32(value);
 
-        Socket clientSocket = NetworkUtility.CreateSocket();
-        await clientSocket.ConnectAsync(ep, cancellationToken);
-
-        Assert.IsTrue(clientSocket.Connected);
-
-        await clientSocket.SendAsync(new ArraySegment<byte>(bytes, 0, sizeof(Int32)), SocketFlags.None);
-        clientSocket.Close();
+        await connection.Client.SendAsync(new ArraySegment<byte>(bytes, 0, sizeof(Int32)), cancellationToken);
+        connection.Client.Dispose();
 
         byte[] receivedBytes = await listenTask;
 
@@ -49,10 +41,11 @@ public class PrimitivesSerializationTest : Test
     [TestMethod]
     public async Task PreservesAllPrimitives()
     {
-        EndPoint ep = NetworkUtility.GetLocalEndPoint();
-
         CancellationToken cancellationToken = CancellationToken;
-        using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(ep, cancellationToken);
+        
+        using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
+
+        using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(connection.Server, cancellationToken);
 
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
 
@@ -123,11 +116,12 @@ public class PrimitivesSerializationTest : Test
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         Assert.IsTrue(byteCount <= buffer.Length);
 
-        Socket clientSocket = NetworkUtility.CreateSocket();
-        await clientSocket.ConnectAsync(ep);
-        await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount), SocketFlags.None);
-        clientSocket.Close();
-
+        using (RpcSocket clientSocket = connection.Client)
+        {
+            await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount), cancellationToken);
+            clientSocket.Dispose();
+        }
+ 
         byte[] bytes = await listenTask;
 
         Assert.IsTrue(bytes.Length == byteCount);
