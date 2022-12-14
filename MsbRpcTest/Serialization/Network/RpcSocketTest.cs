@@ -25,55 +25,27 @@ public class RpcSocketTest : Test
     [TestMethod]
     public async Task UnspecifiedSocketProtocolTypeThrowsException()
     {
-        const ProtocolType protocolType = ProtocolType.Unspecified;
+        Socket CreateSocket(AddressFamily addressFamily) => new(addressFamily, SocketType.Stream, ProtocolType.Unspecified);
 
-        CancellationToken cancellationToken = CancellationToken;
+        (Socket clientSocket, Socket serverSocket) = await CreateConnectionAsync(CreateSocket, CancellationToken);
 
-        IPAddress localHost = (await Dns.GetHostEntryAsync("localhost", cancellationToken)).AddressList[0];
-        
-        EndPoint serverEndPoint = new IPEndPoint(localHost, 0);
-        
-        var listenSocket = new Socket(serverEndPoint.AddressFamily, SocketType.Stream, protocolType);
-        listenSocket.Bind(serverEndPoint);
-        listenSocket.Listen(1);
-        ValueTask<Socket> accept = listenSocket.AcceptAsync(cancellationToken);
-
-        var senderSocket = new Socket(serverEndPoint.AddressFamily, SocketType.Stream, protocolType);
-        await senderSocket.ConnectAsync(serverEndPoint, cancellationToken);
-
-        //establish connection
-        Socket receiverSocket = await accept;
-
-        Assert.ThrowsException<InvalidRpcSocketConstructorSocketException>(() => new RpcSocket(senderSocket));
-        Assert.ThrowsException<InvalidRpcSocketConstructorSocketException>(() => new RpcSocket(receiverSocket));
+        Assert.ThrowsException<InvalidRpcSocketConstructorSocketException>(() => new RpcSocket(serverSocket));
+        Assert.ThrowsException<InvalidRpcSocketConstructorSocketException>(() => new RpcSocket(clientSocket));
     }
 
     [TestMethod]
     public async Task CorrectSocketConfigurationAllowsRpcSocketCreation()
     {
-        const SocketType socketType = SocketType.Stream;
+        Socket CreateSocket(AddressFamily addressFamily) => new(addressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        CancellationToken cancellationToken = CancellationToken;
-
-        IPAddress localHost = (await Dns.GetHostEntryAsync("localhost", cancellationToken)).AddressList[0];
-        
-        EndPoint serverEndPoint = new IPEndPoint(localHost, 0);
-        
-        var listenSocket = new Socket(serverEndPoint.AddressFamily, socketType, ProtocolType.Tcp);
-        listenSocket.Bind(serverEndPoint);
-        listenSocket.Listen(1);
-        ValueTask<Socket> accept = listenSocket.AcceptAsync(cancellationToken);
-
-        var senderSocket = new Socket(serverEndPoint.AddressFamily, socketType, ProtocolType.Tcp);
-        await senderSocket.ConnectAsync(serverEndPoint, cancellationToken);
-
-        //establish connection
-        Socket receiverSocket = await accept;
+        (Socket clientSocket, Socket serverSocket) = await CreateConnectionAsync(CreateSocket, CancellationToken);
 
         // ReSharper disable twice ObjectCreationAsStatement
         // this only tests that the constructor does not throw an exception
-        new RpcSocket(senderSocket);
-        new RpcSocket(receiverSocket);
+#pragma warning disable CA1806
+        new RpcSocket(clientSocket);
+        new RpcSocket(serverSocket);
+#pragma warning restore CA1806
     }
 
     [TestMethod]
@@ -108,7 +80,7 @@ public class RpcSocketTest : Test
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
         RpcSocket sender = connection.Client;
         RpcSocket receiver = connection.Server;
-        
+
         const byte value0 = 123;
         const byte value1 = 234;
         const byte value2 = 98;
@@ -211,7 +183,7 @@ public class RpcSocketTest : Test
     public async Task TransfersMultipleDifferentValues()
     {
         CancellationToken cancellationToken = CancellationToken;
-        
+
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
         RpcSocket sender = connection.Client;
         RpcSocket receiver = connection.Server;
@@ -261,6 +233,30 @@ public class RpcSocketTest : Test
         Assert.AreEqual(charValue, receivedCharValue);
         Assert.AreEqual(booleanValue, receivedBooleanValue);
         Assert.AreEqual(sByteValue, receivedSByteValue);
+    }
+
+    private static async Task<(Socket clientSocket, Socket serverSocket)> CreateConnectionAsync
+    (
+        Func<AddressFamily, Socket> createSocket,
+        CancellationToken cancellationToken
+    )
+    {
+        IPAddress localHost = await NetworkUtility.GetLocalHostAsync(cancellationToken);
+
+        using Socket listenSocket = createSocket(localHost.AddressFamily);
+        listenSocket.Bind(new IPEndPoint(localHost, 0));
+        var listenEndPoint = (IPEndPoint)listenSocket.LocalEndPoint!;
+        listenSocket.Listen(1);
+        Console.WriteLine("using port {0}", listenEndPoint.Port);
+        ValueTask<Socket> accept = listenSocket.AcceptAsync(cancellationToken);
+
+        Socket clientSocket = createSocket(localHost.AddressFamily);
+
+        await clientSocket.ConnectAsync(listenEndPoint, cancellationToken);
+
+        //establish connection
+        Socket serverSocket = await accept;
+        return (clientSocket, serverSocket);
     }
 
     private static void LogReceived(string byteString)
