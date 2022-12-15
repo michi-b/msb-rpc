@@ -4,8 +4,8 @@ namespace MsbRpc.Generator.Info;
 
 public readonly struct TypeInfo : IEquatable<TypeInfo>
 {
-    public string Name { get; }
-    public string Namespace { get; }
+    private string Name { get; }
+    private string Namespace { get; }
     public string FullName { get; }
     
     public TypeInfo(ISymbol symbol)

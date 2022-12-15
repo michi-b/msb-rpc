@@ -2,15 +2,13 @@
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator;
+namespace MsbRpc.Generator.Generators;
 
-public struct ContractGenerator
+public class ContractGenerator
 {
     private const string InterfacePrefix = "I";
     private const string ServerPostfix = "Server";
     private const string ProcedurePostfix = "Procedure";
-
-    private readonly ContractInfo _info;
 
     public string ServerProcedureEnumExtensionsFileName { get; }
     public string ServerProcedureEnumFileName { get; }
@@ -21,10 +19,10 @@ public struct ContractGenerator
     private string ServerInterfaceName { get; }
     private string GeneratedNamespace { get; }
 
+    private List<ProcedureGenerator> _procedures;
+
     public ContractGenerator(ContractInfo info)
     {
-        _info = info;
-
         string contractInterfaceName = info.Name;
         string namespaceName = info.Namespace;
 
@@ -51,6 +49,13 @@ public struct ContractGenerator
 
         ServerProcedureEnumExtensionsName = contractName + ServerPostfix + ProcedurePostfix + "Extensions";
         ServerProcedureEnumExtensionsFileName = $"{GeneratedNamespace}.{ServerProcedureEnumExtensionsName}{generatedFileEnding}";
+        
+        _procedures = new List<ProcedureGenerator>(info.Procedures.Length);
+
+        foreach (ProcedureInfo procedureInfo in info.Procedures)
+        {
+            _procedures.Add(new ProcedureGenerator(procedureInfo));
+        }
     }
 
     public string GenerateServerInterface()
@@ -61,7 +66,7 @@ public struct ContractGenerator
 
         using (writer.EncloseInBlock(false))
         {
-            foreach (ProcedureInfo procedure in _info.Procedures)
+            foreach (ProcedureGenerator procedure in _procedures)
             {
                 procedure.GenerateInterface(writer);
             }
@@ -78,19 +83,10 @@ public struct ContractGenerator
 
         using (writer.EncloseInBlock(false))
         {
-            int lastIndex = _info.Procedures.Length - 1;
-            for (int i = 0; i < _info.Procedures.Length; i++)
+            int lastIndex = _procedures.Count - 1;
+            for (int i = 0; i < _procedures.Count; i++)
             {
-                ProcedureInfo procedureInfo = _info.Procedures[i];
-
-                writer.Write("{0} = {1}", procedureInfo.Name, i);
-
-                if (i < lastIndex)
-                {
-                    writer.WriteCommaDelimiter();
-                }
-
-                writer.WriteLine();
+                _procedures[i].GenerateEnumField(writer, i, i < lastIndex);
             }
         }
 
@@ -117,9 +113,9 @@ public struct ContractGenerator
                 writer.WriteLine("return procedure switch");
                 using (writer.EncloseInBlock())
                 {
-                    foreach (ProcedureInfo procedure in _info.Procedures)
+                    foreach (ProcedureGenerator procedure in _procedures)
                     {
-                        writer.WriteLine("{0} => nameof({0}),", ServerProcedureEnumName + "." + procedure.Name);
+                        procedure.GenerateEnumToNameSwitchLine(writer, ServerProcedureEnumName);
                     }
 
                     writer.WriteLine("_ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)");
