@@ -59,9 +59,9 @@ public class Generator : IIncrementalGenerator
 
     private static void Generate(SourceProductionContext context, ContractInfo contract)
     {
-        ContractNames names = contract.CreateNames();
-        context.AddSource(names.ServerInterfaceFileName, contract.GenerateServerInterface(names));
-        context.AddSource(names.ServerProcedureEnumFileName, contract.GenerateServerProcedureEnum(names));
-        context.AddSource(names.ServerProcedureEnumExtensionsFileName, contract.GenerateServerProcedureEnumExtensions(names));
+        var generator = new ContractGenerator(contract);
+        context.AddSource(generator.ServerInterfaceFileName, generator.GenerateServerInterface());
+        context.AddSource(generator.ServerProcedureEnumFileName, generator.GenerateServerProcedureEnum());
+        context.AddSource(generator.ServerProcedureEnumExtensionsFileName, generator.GenerateServerProcedureEnumExtensions());
     }
 }

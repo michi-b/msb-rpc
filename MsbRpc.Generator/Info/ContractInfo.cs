@@ -1,15 +1,13 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.Extensions;
 
 namespace MsbRpc.Generator.Info;
 
 public partial class ContractInfo : IEquatable<ContractInfo>
 {
-    private string Name { get; }
-    private string Namespace { get; }
-    private ImmutableArray<ProcedureInfo> Procedures { get; }
+    public string Name { get; }
+    public string Namespace { get; }
+    public ImmutableArray<ProcedureInfo> Procedures { get; }
 
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
     public ContractInfo(INamedTypeSymbol interfaceSymbol)
@@ -21,29 +19,6 @@ public partial class ContractInfo : IEquatable<ContractInfo>
             .Where(m => m != null)
             .Select(m => new ProcedureInfo(m!))
             .ToImmutableArray();
-    }
-
-    public void Generate(SourceProductionContext context)
-    {
-        var writer = new IndentedTextWriter(Console.Out);
-        writer.WriteLine($"Generating for rpc contract {Name} in namespace {Namespace} which has {Procedures.Length} procedures:");
-
-        //output procedures
-        writer.Indent++;
-        foreach (ProcedureInfo procedure in Procedures)
-        {
-            writer.WriteLine($"Procedure {procedure.Name} has {procedure.Parameters.Length} parameters:");
-
-            writer.Indent++;
-            foreach (ParameterInfo parameter in procedure.Parameters)
-            {
-                writer.WriteLine($"Parameter {parameter.Name} has type {parameter.Type}");
-            }
-
-            writer.Indent--;
-        }
-
-        writer.Indent--;
     }
 
     public bool Equals(ContractInfo other)
@@ -62,84 +37,5 @@ public partial class ContractInfo : IEquatable<ContractInfo>
             hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
             return hashCode;
         }
-    }
-
-    public ContractNames CreateNames() => new(Name, Namespace);
-
-    public string GenerateServerInterface(ContractNames names)
-    {
-        using IndentedTextWriter writer = names.CreateCodeWriter();
-
-        writer.WriteLine("public interface {0}", names.ServerInterfaceName);
-
-        using (writer.EncloseInBlock(false))
-        {
-            foreach (ProcedureInfo procedure in Procedures)
-            {
-                procedure.GenerateInterface(writer);
-            }
-        }
-
-        return writer.GetResult();
-    }
-
-    public string GenerateServerProcedureEnum(ContractNames names)
-    {
-        using IndentedTextWriter writer = names.CreateCodeWriter();
-
-        writer.WriteLine("public enum {0}", names.ServerProcedureEnumName);
-
-        using (writer.EncloseInBlock(false))
-        {
-            int lastIndex = Procedures.Length - 1;
-            for (int i = 0; i < Procedures.Length; i++)
-            {
-                ProcedureInfo procedureInfo = Procedures[i];
-
-                writer.Write("{0} = {1}", procedureInfo.Name, i);
-
-                if (i < lastIndex)
-                {
-                    writer.WriteCommaDelimiter();
-                }
-
-                writer.WriteLine();
-            }
-        }
-
-        return writer.GetResult();
-    }
-
-    public string GenerateServerProcedureEnumExtensions(ContractNames names)
-    {
-        using IndentedTextWriter writer = names.CreateCodeWriter();
-
-        writer.WriteLine("public static class {0}", names.ServerProcedureEnumExtensionsName);
-
-        using (writer.EncloseInBlock(false))
-        {
-            const string procedureParameterName = "procedure";
-            writer.WriteLine
-            (
-                "public static string GetProcedureName(this {0} {1})",
-                names.ServerProcedureEnumName,
-                procedureParameterName
-            );
-            using (writer.EncloseInBlock())
-            {
-                writer.WriteLine("return procedure switch");
-                using (writer.EncloseInBlock())
-                {
-                    foreach (ProcedureInfo procedure in Procedures)
-                    {
-                        writer.WriteLine("{0} => nameof({0}),", names.ServerProcedureEnumName + "." + procedure.Name);
-                    }
-
-                    writer.WriteLine("_ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)");
-                }
-            }
-        }
-
-        return writer.GetResult();
     }
 }
