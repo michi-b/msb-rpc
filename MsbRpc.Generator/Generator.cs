@@ -21,6 +21,8 @@ public class Generator : IIncrementalGenerator
             .Where(contract => contract != null)
             .Select((c, _) => c!);
 
+        
+
         IncrementalValuesProvider<ContractInfo> rpcContracts = rpcContractDeclarationSyntaxNodes
             .Collect()
             .SelectMany((infos, _) => infos.Distinct(ContractInfo.TargetComparer.Instance));

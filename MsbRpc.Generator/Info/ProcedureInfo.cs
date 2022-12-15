@@ -15,7 +15,7 @@ public readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
         Name = method.Name;
         ImmutableArray<IParameterSymbol> parameters = method.Parameters;
         Parameters = parameters.Select(parameter => new ParameterInfo(parameter)).ToImmutableArray();
-        ReturnType = new TypeInfo(method.ReturnType);
+        ReturnType = new TypeInfo((INamedTypeSymbol)method.ReturnType);
     }
 
     public bool Equals(ProcedureInfo other)

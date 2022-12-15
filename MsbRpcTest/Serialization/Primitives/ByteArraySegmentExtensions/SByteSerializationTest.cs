@@ -6,7 +6,7 @@ namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;
 
 [TestClass]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
-public class SByteSerializationTest : PrimitiveByteArraySegmentSerializationTest<SByte>
+public class SByteSerializationTest : PrimitiveBufferSerializationTest<SByte>
 {
     [TestMethod]
     public void PreservesMinValue()

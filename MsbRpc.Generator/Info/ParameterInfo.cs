@@ -5,13 +5,13 @@ namespace MsbRpc.Generator.Info;
 
 public readonly struct ParameterInfo : IEquatable<ParameterInfo>
 {
-    public string Name { get; }
-    public TypeInfo Type { get; }
+    private string Name { get; }
+    private TypeInfo Type { get; }
 
     public ParameterInfo(IParameterSymbol parameter)
     {
         Name = parameter.Name;
-        Type = new TypeInfo(parameter.Type);
+        Type = new TypeInfo((INamedTypeSymbol)parameter.Type);
     }
 
     public bool Equals(ParameterInfo other) => Name == other.Name && Type.Equals(other.Type);

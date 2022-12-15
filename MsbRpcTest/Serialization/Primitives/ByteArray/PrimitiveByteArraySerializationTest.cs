@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.Primitives.ByteArray;
 
@@ -7,7 +6,7 @@ public abstract class PrimitiveByteArraySerializationTest<TPrimitive> where TPri
 {
     protected byte[] SingleElementBuffer { get; private set; } = null!;
 
-    private static int ElementSize => PrimitiveSerializer.SizeOf<TPrimitive>();
+    private static int ElementSize => PrimitivesUtility.GetSize(typeof(TPrimitive).FullName!);
 
     [TestInitialize]
     public void Setup()

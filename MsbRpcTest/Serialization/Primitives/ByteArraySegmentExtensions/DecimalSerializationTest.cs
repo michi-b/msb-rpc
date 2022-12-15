@@ -9,7 +9,7 @@ namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyleForMemberAccess")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public class DecimalSerializationTest : PrimitiveByteArraySegmentSerializationTest<Decimal>
+public class DecimalSerializationTest : PrimitiveBufferSerializationTest<Decimal>
 {
     [TestMethod]
     public void PreservesZero()

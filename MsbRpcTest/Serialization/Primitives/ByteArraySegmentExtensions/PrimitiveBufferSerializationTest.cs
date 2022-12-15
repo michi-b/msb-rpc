@@ -1,13 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;
 
-public abstract class PrimitiveByteArraySegmentSerializationTest<TPrimitive> where TPrimitive : struct
+public abstract class PrimitiveBufferSerializationTest<TPrimitive> where TPrimitive : struct
 {
     protected ArraySegment<byte> SingleElementBuffer { get; private set; } = null!;
 
-    private static int ElementSize => PrimitiveSerializer.SizeOf<TPrimitive>();
+    private static int ElementSize => PrimitivesUtility.GetSize(typeof(TPrimitive).FullName!);
 
     [TestInitialize]
     public void Setup()

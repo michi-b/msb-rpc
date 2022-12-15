@@ -10,13 +10,13 @@ public static partial class BufferExtensions
 
     public static bool ReadBoolean(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<byte>(offset);
+        target.AssertContains(PrimitiveSerializer.BooleanSize, offset);
         return target.Array!.ReadBoolean(target.Offset(offset));
     }
 
     public static void WriteBoolean(this ArraySegment<byte> target, bool value, int offset = 0)
     {
-        target.AssertContains<byte>(offset);
+        target.AssertContains(PrimitiveSerializer.BooleanSize, offset);
         target.Array!.WriteBoolean(value, target.Offset(offset));
     }
 
@@ -26,13 +26,13 @@ public static partial class BufferExtensions
 
     public static byte ReadByte(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<byte>(offset);
+        target.AssertContains(PrimitiveSerializer.ByteSize, offset);
         return target.Array!.ReadByte(target.Offset(offset));
     }
 
     public static void WriteByte(this ArraySegment<byte> target, byte value, int offset = 0)
     {
-        target.AssertContains<byte>(offset);
+        target.AssertContains(PrimitiveSerializer.ByteSize, offset);
         target.Array!.WriteByte(value, target.Offset(offset));
     }
 
@@ -42,13 +42,13 @@ public static partial class BufferExtensions
 
     public static sbyte ReadSByte(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<sbyte>(offset);
+        target.AssertContains(PrimitiveSerializer.SByteSize, offset);
         return target.Array!.ReadSByte(target.Offset(offset));
     }
 
     public static void WriteSByte(this ArraySegment<byte> target, sbyte value, int offset = 0)
     {
-        target.AssertContains<sbyte>(offset);
+        target.AssertContains(PrimitiveSerializer.SByteSize, offset);
         target.Array!.WriteSByte(value, target.Offset(offset));
     }
 
@@ -58,13 +58,13 @@ public static partial class BufferExtensions
 
     public static char ReadChar(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<char>(offset);
+        target.AssertContains(PrimitiveSerializer.CharSize, offset);
         return target.Array!.ReadChar(target.Offset(offset));
     }
 
     public static void WriteChar(this ArraySegment<byte> target, char value, int offset = 0)
     {
-        target.AssertContains<char>(offset);
+        target.AssertContains(PrimitiveSerializer.CharSize, offset);
         target.Array!.WriteChar(value, target.Offset(offset));
     }
 
@@ -74,13 +74,13 @@ public static partial class BufferExtensions
 
     public static decimal ReadDecimal(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<decimal>(offset);
+        target.AssertContains(PrimitiveSerializer.DecimalSize, offset);
         return target.Array!.ReadDecimal(target.Offset(offset));
     }
 
     public static void WriteDecimal(this ArraySegment<byte> target, decimal value, int offset = 0)
     {
-        target.AssertContains<decimal>(offset);
+        target.AssertContains(PrimitiveSerializer.DecimalSize, offset);
         target.Array!.WriteDecimal(value, target.Offset(offset));
     }
 
@@ -90,13 +90,13 @@ public static partial class BufferExtensions
 
     public static double ReadDouble(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<double>(offset);
+        target.AssertContains(PrimitiveSerializer.DoubleSize, offset);
         return target.Array!.ReadDouble(target.Offset(offset));
     }
 
     public static void WriteDouble(this ArraySegment<byte> target, double value, int offset = 0)
     {
-        target.AssertContains<double>(offset);
+        target.AssertContains(PrimitiveSerializer.DoubleSize, offset);
         target.Array!.WriteDouble(value, target.Offset(offset));
     }
 
@@ -106,13 +106,13 @@ public static partial class BufferExtensions
 
     public static float ReadSingle(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<float>(offset);
+        target.AssertContains(PrimitiveSerializer.SingleSize, offset);
         return target.Array!.ReadSingle(target.Offset(offset));
     }
 
     public static void WriteSingle(this ArraySegment<byte> target, float value, int offset = 0)
     {
-        target.AssertContains<float>(offset);
+        target.AssertContains(PrimitiveSerializer.SingleSize, offset);
         target.Array!.WriteSingle(value, target.Offset(offset));
     }
 
@@ -122,13 +122,13 @@ public static partial class BufferExtensions
 
     public static int ReadInt32(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<int>(offset);
+        target.AssertContains(PrimitiveSerializer.Int32Size, offset);
         return target.Array!.ReadInt32(target.Offset(offset));
     }
 
     public static void WriteInt32(this ArraySegment<byte> target, int value, int offset = 0)
     {
-        target.AssertContains<int>(offset);
+        target.AssertContains(PrimitiveSerializer.Int32Size, offset);
         target.Array!.WriteInt32(value, target.Offset(offset));
     }
 
@@ -138,13 +138,13 @@ public static partial class BufferExtensions
 
     public static uint ReadUInt32(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<uint>(offset);
+        target.AssertContains(PrimitiveSerializer.UInt32Size, offset);
         return target.Array!.ReadUInt32(target.Offset(offset));
     }
 
     public static void WriteUInt32(this ArraySegment<byte> target, uint value, int offset = 0)
     {
-        target.AssertContains<uint>(offset);
+        target.AssertContains(PrimitiveSerializer.UInt32Size, offset);
         target.Array!.WriteUInt32(value, target.Offset(offset));
     }
 
@@ -154,13 +154,13 @@ public static partial class BufferExtensions
 
     public static long ReadInt64(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<long>(offset);
+        target.AssertContains(PrimitiveSerializer.Int64Size, offset);
         return target.Array!.ReadInt64(target.Offset(offset));
     }
 
     public static void WriteInt64(this ArraySegment<byte> target, long value, int offset = 0)
     {
-        target.AssertContains<long>(offset);
+        target.AssertContains(PrimitiveSerializer.Int64Size, offset);
         target.Array!.WriteInt64(value, target.Offset(offset));
     }
 
@@ -170,13 +170,13 @@ public static partial class BufferExtensions
 
     public static ulong ReadUInt64(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<ulong>(offset);
+        target.AssertContains(PrimitiveSerializer.UInt64Size, offset);
         return target.Array!.ReadUInt64(target.Offset(offset));
     }
 
     public static void WriteUInt64(this ArraySegment<byte> target, ulong value, int offset = 0)
     {
-        target.AssertContains<ulong>(offset);
+        target.AssertContains(PrimitiveSerializer.UInt64Size, offset);
         target.Array!.WriteUInt64(value, target.Offset(offset));
     }
 
@@ -186,13 +186,13 @@ public static partial class BufferExtensions
 
     public static short ReadInt16(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<short>(offset);
+        target.AssertContains(PrimitiveSerializer.Int16Size, offset);
         return target.Array!.ReadInt16(target.Offset(offset));
     }
 
     public static void WriteInt16(this ArraySegment<byte> target, short value, int offset = 0)
     {
-        target.AssertContains<short>(offset);
+        target.AssertContains(PrimitiveSerializer.Int16Size, offset);
         target.Array!.WriteInt16(value, target.Offset(offset));
     }
 
@@ -202,13 +202,13 @@ public static partial class BufferExtensions
 
     public static ushort ReadUInt16(this ArraySegment<byte> target, int offset = 0)
     {
-        target.AssertContains<ushort>(offset);
+        target.AssertContains(PrimitiveSerializer.UInt16Size, offset);
         return target.Array!.ReadUInt16(target.Offset(offset));
     }
 
     public static void WriteUInt16(this ArraySegment<byte> target, ushort value, int offset = 0)
     {
-        target.AssertContains<ushort>(offset);
+        target.AssertContains(PrimitiveSerializer.UInt16Size, offset);
         target.Array!.WriteUInt16(value, target.Offset(offset));
     }
 

@@ -7,13 +7,15 @@ public readonly struct TypeInfo : IEquatable<TypeInfo>
     private string Name { get; }
     private string Namespace { get; }
     public string FullName { get; }
+    public SerializationInfo SerializationInfo { get; }
     
-    public TypeInfo(ISymbol symbol)
+    public TypeInfo(INamedTypeSymbol typeSymbol)
     {
-        var originalDefinition = (INamedTypeSymbol)symbol.OriginalDefinition;
+        INamedTypeSymbol originalDefinition = typeSymbol.OriginalDefinition;
         Name = originalDefinition.Name;
         Namespace = originalDefinition.ContainingNamespace.ToDisplayString();
         FullName = $"{Namespace}.{Name}";
+        SerializationInfo = new SerializationInfo(FullName);
     }
 
     public bool Equals(TypeInfo other) => Name == other.Name && Namespace == other.Namespace;

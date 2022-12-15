@@ -13,30 +13,27 @@ public static partial class PrimitiveSerializer
     /// </summary>
     private static readonly bool IsLittleEndian = BitConverter.IsLittleEndian;
 
-    public static int SizeOf<TPrimitive>() where TPrimitive : struct
-        => Type.GetTypeCode(typeof(TPrimitive)) switch
+    public static int GetSize(PrimitiveType primitiveType)
+    {
+        return primitiveType switch
         {
-            TypeCode.Boolean => BooleanSize,
-            TypeCode.Byte => ByteSize,
-            TypeCode.Char => CharSize,
-            TypeCode.DateTime => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.DBNull => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.Decimal => DecimalSize,
-            TypeCode.Double => DoubleSize,
-            TypeCode.Empty => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.Int16 => Int16Size,
-            TypeCode.Int32 => Int32Size,
-            TypeCode.Int64 => Int64Size,
-            TypeCode.Object => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.SByte => SByteSize,
-            TypeCode.Single => SingleSize,
-            TypeCode.String => throw new ArgumentOutOfRangeException(nameof(TPrimitive)),
-            TypeCode.UInt16 => UInt16Size,
-            TypeCode.UInt32 => UInt32Size,
-            TypeCode.UInt64 => UInt64Size,
-            _ => throw new ArgumentOutOfRangeException()
+            PrimitiveType.Boolean => BooleanSize,
+            PrimitiveType.Byte => ByteSize,
+            PrimitiveType.Char => CharSize,
+            PrimitiveType.Decimal => DecimalSize,
+            PrimitiveType.Double => DoubleSize,
+            PrimitiveType.Int16 => Int16Size,
+            PrimitiveType.Int32 => Int32Size,
+            PrimitiveType.Int64 => Int64Size,
+            PrimitiveType.SByte => SByteSize,
+            PrimitiveType.Single => SingleSize,
+            PrimitiveType.UInt16 => UInt16Size,
+            PrimitiveType.UInt32 => UInt32Size,
+            PrimitiveType.UInt64 => UInt64Size,
+            _ => throw new ArgumentOutOfRangeException(nameof(primitiveType), primitiveType, null)
         };
-
+    }
+    
     #region Boolean
 
     public static void WriteBoolean(this byte[] buffer, bool value, int offset = 0) => buffer[offset] = value ? (byte)1 : (byte)0;

@@ -21,7 +21,7 @@ public static partial class BufferExtensions
         Debug.Assert(offset > 0);
         Debug.Assert(count > 0);
         Debug.Assert(target.Array != null);
-        target.AssertEndsAtOrBefore(offset, count);
+        target.AssertContains(offset, count);
         return new ArraySegment<byte>(target.Array!, target.Offset + offset, count);
     }
 

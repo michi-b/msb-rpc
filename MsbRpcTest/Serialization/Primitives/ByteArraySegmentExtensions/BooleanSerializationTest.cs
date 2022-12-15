@@ -6,7 +6,7 @@ namespace MsbRpcTest.Serialization.Primitives.ByteArraySegmentExtensions;
 
 [TestClass]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
-public class BooleanSerializationTest : PrimitiveByteArraySegmentSerializationTest<bool>
+public class BooleanSerializationTest : PrimitiveBufferSerializationTest<bool>
 {
     [TestMethod]
     public void PreservesTrue()
