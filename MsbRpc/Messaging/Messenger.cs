@@ -13,7 +13,7 @@ public class Messenger : IDisposable
     /// </summary>
     /// <param name="message">the received message</param>
     /// <returns>true if listening should be continued, otherwise false</returns>
-    public delegate Task<bool> ReceiveDelegate(ArraySegment<byte> message, CancellationToken cancellationToken);
+    public delegate ValueTask<bool> ReceiveDelegate(ArraySegment<byte> message, CancellationToken cancellationToken);
 
     public enum ListenReturnCode
     {
@@ -54,7 +54,7 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async Task<ListenReturnCode> ListenAsync(RecycledBuffer buffer, ReceiveDelegate receiveAsync, CancellationToken cancellationToken)
+    public async ValueTask<ListenReturnCode> ListenAsync(RecycledBuffer buffer, ReceiveDelegate receiveAsync, CancellationToken cancellationToken)
     {
         try
         {
@@ -87,7 +87,7 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async Task<ReceiveMessageResult> ReceiveMessageAsync(RecycledBuffer buffer, CancellationToken cancellationToken)
+    public async ValueTask<ReceiveMessageResult> ReceiveMessageAsync(RecycledBuffer buffer, CancellationToken cancellationToken)
     {
         bool hasReceivedCount = await _socket.ReceiveAllAsync(_receiveCountSegment, cancellationToken);
         if (!hasReceivedCount)
@@ -116,7 +116,7 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketSendException</throws>
     [PublicAPI]
-    public async Task SendMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
+    public async ValueTask SendMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
         _sendCountSegment.WriteInt(message.Count);
         await _socket.SendAsync(_sendCountSegment, cancellationToken);

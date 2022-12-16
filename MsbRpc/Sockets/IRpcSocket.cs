@@ -7,7 +7,7 @@ public interface IRpcSocket : IDisposable
     /// </summary>
     /// <exception cref="Exceptions.RpcSocketSendException">if none or not all bytes were sent</exception>
     /// <exception cref="OperationCanceledException"></exception>
-    Task SendAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken);
+    ValueTask SendAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Receives exactly the bytes to fill the given array segment.
@@ -17,5 +17,5 @@ public interface IRpcSocket : IDisposable
     ///     if more than zero bytes but less than specified via the array segment were received
     /// </exception>
     /// <exception cref="OperationCanceledException"></exception>
-    Task<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken);
+    ValueTask<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken);
 }

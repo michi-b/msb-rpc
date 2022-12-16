@@ -1,5 +1,7 @@
 ﻿// ReSharper disable InlineTemporaryVariable
 
+// ReSharper disable RedundantNameQualifier
+
 namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
 public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.EndPoints.UndefinedProcedure, IncrementerServerProcedure>
@@ -20,7 +22,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
             initialBufferSize
         ) { }
 
-    public async Task<int> IncrementAsync(int value, CancellationToken cancellationToken)
+    public async System.Threading.Tasks.ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)
     {
         EnterCalling();
 

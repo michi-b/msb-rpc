@@ -23,7 +23,7 @@ public class RpcSocket : IRpcSocket
 
     /// <inheritdoc cref="IRpcSocket.SendAsync" />
     [PublicAPI]
-    public async Task SendAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken)
+    public async ValueTask SendAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken)
     {
         using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
         try
@@ -54,7 +54,7 @@ public class RpcSocket : IRpcSocket
     ///     false if the connection was closed before any bytes could be read
     /// </returns>
     [PublicAPI]
-    public async Task<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+    public async ValueTask<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
     {
         using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
 
@@ -86,7 +86,7 @@ public class RpcSocket : IRpcSocket
     ///     Otherwise any positive number lower than the size of the provided byffer.
     /// </returns>
     [PublicAPI]
-    public async Task<int> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+    public async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
     {
         using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
 
@@ -124,7 +124,7 @@ public class RpcSocket : IRpcSocket
     }
 
     /// <exception cref="RpcSocketSendException"></exception>
-    private async Task SendAsync(ArraySegment<byte> bytes)
+    private async ValueTask SendAsync(ArraySegment<byte> bytes)
     {
         int bytesSent = await _socket.SendAsync(bytes, SocketFlags.None);
         if (bytesSent != bytes.Count)
@@ -135,7 +135,7 @@ public class RpcSocket : IRpcSocket
     }
 
     /// <exception cref="RpcSocketReceiveException"></exception>
-    private async Task<bool> ReceiveAllAsync(ArraySegment<byte> buffer)
+    private async ValueTask<bool> ReceiveAllAsync(ArraySegment<byte> buffer)
     {
         int receivedCount = 0;
         int length = buffer.Count;
@@ -169,7 +169,7 @@ public class RpcSocket : IRpcSocket
         throw new RpcSocketReceiveException(this, length, receivedCount);
     }
 
-    private async Task<int> ReceiveAsync(ArraySegment<byte> buffer) => await _socket.ReceiveAsync(buffer, SocketFlags.None);
+    private async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer) => await _socket.ReceiveAsync(buffer, SocketFlags.None);
 
     private void ThrowIfOperationIsCancelled(CancellationToken cancellationToken)
     {

@@ -44,10 +44,10 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         };
     }
 
-    public async Task<Messenger.ListenReturnCode> ListenAsync(CancellationToken cancellationToken)
+    public async ValueTask<Messenger.ListenReturnCode> ListenAsync(CancellationToken cancellationToken)
     {
         _state.Transition(State.IdleInbound, State.Listening);
-        Messenger.ListenReturnCode listenReturnCode = await _messenger.ListenAsync(_buffer, ReceiveMessageAsync, cancellationToken);
+        Messenger.ListenReturnCode listenReturnCode = await _messenger.ListenAsync(_buffer, (message, cancellationToken1) => ReceiveMessageAsync(message, cancellationToken1), cancellationToken);
 
         // receive message callback will only discontinue listening if procedure results in outbound state
         if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
@@ -70,7 +70,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     }
 
     /// <returns>whether listening should stop</returns>
-    private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
+    private async ValueTask<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
         int procedureIdValue = message.ReadInt();
 

@@ -18,7 +18,7 @@ public static class MessagesListener
             (message, _) =>
             {
                 messages.Add(message.Copy());
-                return Task.FromResult(false);
+                return ValueTask.FromResult(false);
             },
             cancellationToken
         );

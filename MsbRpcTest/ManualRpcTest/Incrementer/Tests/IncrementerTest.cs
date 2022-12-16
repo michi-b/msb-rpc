@@ -18,7 +18,7 @@ public class IncrementerTest : Test
         var serverImplementation = new Implementation.Incrementer();
         var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation);
 
-        Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
+        ValueTask<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
 
         connection.CreateClientMessenger().Dispose();
 
@@ -99,9 +99,9 @@ public class IncrementerTest : Test
     {
         public IncrementerClientEndPoint Client { get; }
         private IncrementerServerEndPoint Server { get; }
-        private Task<Messenger.ListenReturnCode> ServerListenTask { get; }
+        private ValueTask<Messenger.ListenReturnCode> ServerListenTask { get; }
 
-        private Setup(IncrementerClientEndPoint client, IncrementerServerEndPoint server, Task<Messenger.ListenReturnCode> serverListenTask)
+        private Setup(IncrementerClientEndPoint client, IncrementerServerEndPoint server, ValueTask<Messenger.ListenReturnCode> serverListenTask)
         {
             Client = client;
             Server = server;
@@ -115,7 +115,7 @@ public class IncrementerTest : Test
             var serverImplementation = new Implementation.Incrementer();
             var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation, LoggerFactory);
 
-            Task<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
+            ValueTask<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
             var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
             
             return new Setup(client, server, serverListenTask);
@@ -126,7 +126,6 @@ public class IncrementerTest : Test
             Client.Dispose();
             await ServerListenTask;
             Server.Dispose();
-            ServerListenTask.Dispose();
         }
     }
 }
