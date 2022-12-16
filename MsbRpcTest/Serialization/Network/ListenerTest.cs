@@ -46,7 +46,7 @@ public abstract class ListenerTest : Test
         CancellationToken cancellationToken = CancellationToken;
 
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
-        
+
         using (client)
         {
             await client.SendMessageAsync(BufferUtility.Empty, cancellationToken);

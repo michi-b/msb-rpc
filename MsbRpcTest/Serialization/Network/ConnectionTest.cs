@@ -40,12 +40,12 @@ public class ConnectionTest : Test
 
         using var clientSocket = new Socket(ephemeralListener.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        ValueTask<Socket> listenTask = ephemeralListener.AcceptAsync(cancellationToken);        
-        
+        ValueTask<Socket> listenTask = ephemeralListener.AcceptAsync(cancellationToken);
+
         await clientSocket.ConnectAsync(ephemeralListener.EndPoint, cancellationToken);
 
         using Socket serverSocket = await listenTask;
-        
+
         Assert.IsTrue(clientSocket.Connected);
         Assert.IsTrue(serverSocket.Connected);
     }

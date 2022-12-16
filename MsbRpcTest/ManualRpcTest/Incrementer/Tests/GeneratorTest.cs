@@ -75,14 +75,14 @@ public interface IIncrementer
         const string expectedTreeName = "IIncrementerServer.g.cs";
         Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
     }
-    
+
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
     {
         const string expectedTreeName = "IncrementerServerProcedure.g.cs";
         Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
     }
-    
+
     [TestMethod]
     public async Task GeneratesServerProcedureEnumExtensions()
     {

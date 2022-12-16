@@ -18,15 +18,17 @@ public class Messenger : IDisposable
     public enum ListenReturnCode
     {
         /// <summary>
-        /// listening stopped by connection close
+        ///     listening stopped by connection close
         /// </summary>
         ConnectionClosed,
+
         /// <summary>
-        /// listening stopped because the operation was canceled
+        ///     listening stopped because the operation was canceled
         /// </summary>
         OperationCanceled,
+
         /// <summary>
-        /// listening stopped because the receive delegate returned true
+        ///     listening stopped because the receive delegate returned true
         /// </summary>
         OperationDiscontinued
     }
@@ -68,6 +70,7 @@ public class Messenger : IDisposable
                         {
                             return ListenReturnCode.OperationDiscontinued;
                         }
+
                         break;
                     case ReceiveMessageReturnCode.ConnectionClosed:
                         return ListenReturnCode.ConnectionClosed;

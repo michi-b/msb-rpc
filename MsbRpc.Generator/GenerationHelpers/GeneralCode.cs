@@ -7,7 +7,7 @@ public static class GeneralCode
 {
     public const string MessengerParameterLine = $"{MessengerType} {MessengerParameter},";
     public const string LoggerFactoryInterfaceParameter = $"{LoggerFactoryInterfaceType} {LoggerFactoryParameter},";
-    
+
     public static void WriteLoggerArgumentFromFactoryParameterLines(this IndentedTextWriter writer, string categoryTypeName)
     {
         writer.WriteLine($"{LoggerFactoryParameter} != null");

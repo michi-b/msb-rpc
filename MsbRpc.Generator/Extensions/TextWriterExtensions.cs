@@ -4,7 +4,7 @@ namespace MsbRpc.Generator.Extensions;
 
 public static class TextWriterExtensions
 {
-    public static TextWriterParenthesesEnclosure EncloseInParentheses(this IndentedTextWriter writer, bool withTrailingNewLine = false) 
+    public static TextWriterParenthesesEnclosure EncloseInParentheses(this IndentedTextWriter writer, bool withTrailingNewLine = false)
         => new(writer, withTrailingNewLine);
 
     public static void WriteFileHeader(this TextWriter writer, string fileScopedNamespace)

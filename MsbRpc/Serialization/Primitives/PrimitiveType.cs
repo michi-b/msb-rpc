@@ -14,5 +14,5 @@ public enum PrimitiveType
     Single,
     UInt16,
     UInt32,
-    UInt64,
+    UInt64
 }

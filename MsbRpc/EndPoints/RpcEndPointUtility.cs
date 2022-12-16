@@ -2,9 +2,5 @@
 
 public class RpcEndPointUtility
 {
-    internal static readonly State[] BufferRecyclableStates =
-    {
-        State.IdleInbound,
-        State.IdleOutbound
-    };
+    internal static readonly State[] BufferRecyclableStates = { State.IdleInbound, State.IdleOutbound };
 }

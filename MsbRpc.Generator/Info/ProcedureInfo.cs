@@ -9,7 +9,7 @@ public readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
     public ImmutableArray<ParameterInfo> Parameters { get; }
 
     public TypeInfo ReturnType { get; }
-    
+
     public bool InvertsDirection { get; }
 
     public ProcedureInfo(IMethodSymbol method)

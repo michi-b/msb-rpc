@@ -15,5 +15,5 @@ public enum SerializationType
     Ushort = 10,
     Float = 11,
     Double = 12,
-    Decimal = 13,
+    Decimal = 13
 }

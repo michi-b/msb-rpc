@@ -12,7 +12,7 @@ public readonly struct ProcedureGenerator
     private readonly TypeInfo _returnType;
     private readonly bool _invertsDirection;
 
-    public ProcedureGenerator(ProcedureInfo info, string serverProcedureEnumName)
+    public ProcedureGenerator(ProcedureInfo info, string procedureEnumName)
     {
         _name = info.Name;
 
@@ -23,10 +23,10 @@ public readonly struct ProcedureGenerator
         }
 
         _invertsDirection = info.InvertsDirection;
-        
+
         _returnType = info.ReturnType;
-        
-        _fullName = serverProcedureEnumName + '.' + _name;
+
+        _fullName = procedureEnumName + '.' + _name;
     }
 
     public void GenerateInterface(IndentedTextWriter writer)

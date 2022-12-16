@@ -22,7 +22,7 @@ public static class SerializationTypeExtensions
             _ => null
         };
     }
-    
+
     public static bool GetIsPrimitiveType(this SerializationType target)
     {
         return target switch

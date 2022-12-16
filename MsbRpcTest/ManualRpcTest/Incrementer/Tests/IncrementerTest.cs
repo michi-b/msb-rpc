@@ -14,7 +14,7 @@ public class IncrementerTest : Test
         CancellationToken cancellationToken = CancellationToken;
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
-        
+
         var serverImplementation = new Implementation.Incrementer();
         var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation);
 
@@ -111,13 +111,13 @@ public class IncrementerTest : Test
         public static async Task<Setup> CreateAsync(CancellationToken cancellationToken)
         {
             LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
-            
+
             var serverImplementation = new Implementation.Incrementer();
             var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation, LoggerFactory);
 
             ValueTask<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
             var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
-            
+
             return new Setup(client, server, serverListenTask);
         }
 

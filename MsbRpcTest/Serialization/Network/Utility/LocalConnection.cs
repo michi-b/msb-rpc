@@ -19,7 +19,7 @@ public class LocalConnection : IDisposable
     {
         Socket clientSocket;
         Socket serverSocket;
-        
+
         using (var listener = await EphemeralListener.CreateAsync(cancellationToken))
         {
             ValueTask<Socket> acceptClientTask = listener.AcceptAsync(cancellationToken);
@@ -29,7 +29,7 @@ public class LocalConnection : IDisposable
 
             serverSocket = await acceptClientTask;
         }
-        
+
         return new LocalConnection(new RpcSocket(clientSocket), new RpcSocket(serverSocket));
     }
 

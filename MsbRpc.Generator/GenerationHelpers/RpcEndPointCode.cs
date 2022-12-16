@@ -2,5 +2,5 @@
 
 public class RpcEndPointCode
 {
-    public const string BufferSizeParameterWithDefaultLine = $"int {RpcEndPointNames.BufferSizeParameter} = {RpcEndPointNames.DefaultBufferSizeConstant}";
+    public const string BufferSizeParameterWithDefaultLine = $"int {EndPointNames.BufferSizeParameter} = {EndPointNames.DefaultBufferSizeConstant}";
 }

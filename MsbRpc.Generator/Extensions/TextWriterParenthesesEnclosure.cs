@@ -18,7 +18,7 @@ public readonly ref struct TextWriterParenthesesEnclosure
     {
         if (_withTrailingNewline)
         {
-            _writer.WriteLine(')');            
+            _writer.WriteLine(')');
         }
         else
         {

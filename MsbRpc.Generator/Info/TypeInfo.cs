@@ -8,7 +8,7 @@ public readonly struct TypeInfo : IEquatable<TypeInfo>
     private string Namespace { get; }
     public string FullName { get; }
     public SerializationInfo SerializationInfo { get; }
-    
+
     public TypeInfo(INamedTypeSymbol typeSymbol)
     {
         INamedTypeSymbol originalDefinition = typeSymbol.OriginalDefinition;

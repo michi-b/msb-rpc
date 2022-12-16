@@ -62,9 +62,19 @@ public class Generator : IIncrementalGenerator
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
     {
         var generator = new ContractGenerator(ref contractInfo);
-        context.AddSource(generator.Names.ServerInterfaceFile, generator.GenerateServerInterface());
-        context.AddSource(generator.Names.ServerProcedureFile, generator.GenerateServerProcedureEnum());
-        context.AddSource(generator.Names.ServerProcedureEnumExtensionsFile, generator.GenerateServerProcedureEnumExtensions());
-        context.AddSource(generator.Names.ServerEndpointFile, generator.GenerateServerEndpoint());
+        GenerateEndPoint(context, generator, EndPointId.Client);
+        GenerateEndPoint(context, generator, EndPointId.Server);
+    }
+
+    private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointId target)
+    {
+        if (generator[target].HasProcedures)
+        {
+            context.AddSource(generator.Names[target].ProcedureFile, generator.GenerateProcedureEnum(target));
+            context.AddSource(generator.Names[target].ProcedureExtensionsFile, generator.GenerateProcedureEnumExtensions(target));
+            context.AddSource(generator.Names[target].InterfaceFile, generator.GenerateInterface(target));
+        }
+
+        context.AddSource(generator.Names[target].EndPointFile, generator.GenerateEndPoint(target));
     }
 }

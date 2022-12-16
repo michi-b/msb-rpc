@@ -19,7 +19,7 @@ public class PrimitivesSerializationTest : Test
         CancellationToken cancellationToken = CancellationToken;
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
-        
+
         using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(connection.Server, cancellationToken);
 
         byte[] bytes = new byte[NetworkUtility.DefaultBufferSize];
@@ -42,7 +42,7 @@ public class PrimitivesSerializationTest : Test
     public async Task PreservesAllPrimitives()
     {
         CancellationToken cancellationToken = CancellationToken;
-        
+
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
         using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(connection.Server, cancellationToken);
@@ -121,7 +121,7 @@ public class PrimitivesSerializationTest : Test
             await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount), cancellationToken);
             clientSocket.Dispose();
         }
- 
+
         byte[] bytes = await listenTask;
 
         Assert.IsTrue(bytes.Length == byteCount);
