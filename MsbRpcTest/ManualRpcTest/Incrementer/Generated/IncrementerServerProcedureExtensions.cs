@@ -10,4 +10,14 @@ public static class IncrementerServerProcedureExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
+
+    //todo: generated this
+    public static bool GetInvertsDirection(this IncrementerServerProcedure procedure)
+    {
+        return procedure switch
+        {
+            IncrementerServerProcedure.Increment => false,
+            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+        };
+    }
 }

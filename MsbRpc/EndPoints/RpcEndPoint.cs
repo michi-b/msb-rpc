@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
@@ -29,12 +28,12 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     (
         Messenger messenger,
         Direction direction,
-        ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>>? logger = null,
+        ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> logger,
         int bufferSize = DefaultBufferSize
     )
     {
         _typeName = GetType().Name;
-        Logger = logger ?? new NullLogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>>();
+        Logger = logger;
         _messenger = messenger;
         _buffer = new RecycledBuffer(bufferSize);
         _state = direction switch
@@ -70,12 +69,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         _state = State.Disposed;
     }
 
-    //to be implemented by derived classes for defined procedure enums
-    protected virtual string GetName(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
-
-    //to be implemented by derived classes for defined procedure enums
-    protected virtual string GetName(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
-
+    /// <returns>whether listening should stop</returns>
     private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
         int procedureIdValue = message.ReadInt32();
@@ -86,11 +80,17 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
 
-        ArraySegment<byte> response = HandleRequest(procedure, new BufferReader(arguments));
+        BufferWriter responseWriter = HandleRequest(procedure, new BufferReader(arguments));
 
-        await _messenger.SendMessageAsync(response, cancellationToken);
+        await _messenger.SendMessageAsync(responseWriter.Buffer, cancellationToken);
 
-        return GetDirectionAfterHandling(procedure) == Direction.Outbound;
+        bool invertsDirection = GetInvertsDirection(procedure);
+        if (invertsDirection)
+        {
+            _state = State.IdleOutbound;
+        }
+
+        return invertsDirection;
     }
 
     /// <summary>
@@ -126,8 +126,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestWriter" />.</param>
     /// <param name="cancellationToken">Token for operation cancellation.</param>
     /// <returns>the response message</returns>
-    protected async ValueTask<BufferReader> SendRequest
-        (TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
+    protected async ValueTask<BufferReader> SendRequest(TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
         int argumentByteCount = request.Count;
 
@@ -166,12 +165,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         _state.Transition
         (
             State.Calling,
-            GetDirectionAfterCalling(procedure) switch
-            {
-                Direction.Inbound => State.IdleInbound,
-                Direction.Outbound => State.IdleOutbound,
-                _ => throw new ArgumentOutOfRangeException()
-            }
+            GetInvertsDirection(procedure) ? State.IdleInbound : State.IdleOutbound
         );
     }
 
@@ -187,17 +181,23 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         return Unsafe.As<TOutboundProcedure, int>(ref value);
     }
 
+    //to be implemented by derived classes for defined procedure enums
+    protected abstract string GetName(TInboundProcedure procedure);
+
+    //to be implemented by derived classes for defined procedure enums
+    protected abstract string GetName(TOutboundProcedure procedure);
+
+    protected abstract bool GetInvertsDirection(TInboundProcedure procedure);
+
+    protected abstract bool GetInvertsDirection(TOutboundProcedure procedure);
+
     /// <param name="procedure">id of the procedure to call</param>
     /// <param name="argumentsBuffer">bytes of the arguments in recycled memory for the procedure to call</param>
     /// <returns>bytes of the return value of the called procedure, may be in recycled memory as well</returns>
-    protected virtual ArraySegment<byte> HandleRequest(TInboundProcedure procedure, BufferReader argumentsBuffer)
+    protected virtual BufferWriter HandleRequest(TInboundProcedure procedure, BufferReader argumentsBuffer)
         => throw CreateUndefinedProcedureException();
 
-    protected virtual Direction GetDirectionAfterHandling(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
-
-    protected virtual Direction GetDirectionAfterCalling(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
-
-    private UndefinedProcedureException<TInboundProcedure, TOutboundProcedure> CreateUndefinedProcedureException
+    protected UndefinedProcedureException<TInboundProcedure, TOutboundProcedure> CreateUndefinedProcedureException
         ([CallerMemberName] string? callerMemberName = null)
         => new(this, callerMemberName);
 }

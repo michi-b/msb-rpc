@@ -1,26 +1,22 @@
 ﻿// ReSharper disable InlineTemporaryVariable
 
-using Microsoft.Extensions.Logging;
-using MsbRpc.EndPoints;
-using MsbRpc.Messaging;
-using MsbRpc.Serialization.Buffers;
-using MsbRpc.Serialization.Primitives;
-
 namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
-public class IncrementerClientEndPoint : RpcEndPoint<UndefinedProcedure, IncrementerServerProcedure>
+public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.EndPoints.UndefinedProcedure, IncrementerServerProcedure>
 {
     public IncrementerClientEndPoint
     (
-        Messenger messenger,
-        ILoggerFactory? loggerFactory = null,
+        MsbRpc.Messaging.Messenger messenger,
+        Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultBufferSize
     )
         : base
         (
             messenger,
-            Direction.Outbound,
-            loggerFactory?.CreateLogger<IncrementerClientEndPoint>(),
+            MsbRpc.EndPoints.Direction.Outbound,
+            loggerFactory != null
+                ? Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<IncrementerClientEndPoint>(loggerFactory)
+                : new Microsoft.Extensions.Logging.Abstractions.NullLogger<IncrementerClientEndPoint>(),
             initialBufferSize
         ) { }
 
@@ -30,19 +26,19 @@ public class IncrementerClientEndPoint : RpcEndPoint<UndefinedProcedure, Increme
 
         // Write request arguments
 
-        const int valueArgumentSize = PrimitiveSerializer.Int32Size;
+        const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.Int32Size;
 
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        BufferWriter writer = GetRequestWriter(constantArgumentSizeSum);
+        MsbRpc.Serialization.Buffers.BufferWriter writer = GetRequestWriter(constantArgumentSizeSum);
 
         writer.Write(value);
 
         // Send request.
 
         const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
-        
-        BufferReader responseReader = await SendRequest(procedure, writer.Buffer, cancellationToken);
+
+        MsbRpc.Serialization.Buffers.BufferReader responseReader = await SendRequest(procedure, writer.Buffer, cancellationToken);
 
         // Read response.        
 
@@ -53,14 +49,11 @@ public class IncrementerClientEndPoint : RpcEndPoint<UndefinedProcedure, Increme
         return response;
     }
 
+    protected override string GetName(MsbRpc.EndPoints.UndefinedProcedure procedure) => throw CreateUndefinedProcedureException();
+
     protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
 
-    protected override Direction GetDirectionAfterCalling(IncrementerServerProcedure procedure)
-    {
-        return procedure switch
-        {
-            IncrementerServerProcedure.Increment => Direction.Outbound,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
+    protected override bool GetInvertsDirection(MsbRpc.EndPoints.UndefinedProcedure procedure) => throw CreateUndefinedProcedureException();
+
+    protected override bool GetInvertsDirection(IncrementerServerProcedure procedure) => procedure.GetInvertsDirection();
 }

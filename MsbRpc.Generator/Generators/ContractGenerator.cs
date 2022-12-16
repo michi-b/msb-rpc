@@ -131,9 +131,12 @@ public class ContractGenerator
         return writer.GetResult();
     }
 
+    // ReSharper disable once MemberCanBeMadeStatic.Global
     public string GenerateServerEndpoint()
     {
-        throw new NotImplementedException();
+        //todo: implements
+        // ReSharper disable once ArrangeMethodOrOperatorBody
+        return string.Empty;
     }
 
     private IndentedTextWriter CreateCodeWriter()
