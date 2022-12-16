@@ -95,7 +95,7 @@ public class Messenger : IDisposable
             return new ReceiveMessageResult(BufferUtility.Empty, ReceiveMessageReturnCode.ConnectionClosed);
         }
 
-        int messageLength = _receiveCountSegment.ReadInt32();
+        int messageLength = _receiveCountSegment.ReadInt();
 
         ArraySegment<byte> bytesSegment = buffer.Get(messageLength);
 
@@ -118,7 +118,7 @@ public class Messenger : IDisposable
     [PublicAPI]
     public async Task SendMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
-        _sendCountSegment.WriteInt32(message.Count);
+        _sendCountSegment.WriteInt(message.Count);
         await _socket.SendAsync(_sendCountSegment, cancellationToken);
         await _socket.SendAsync(message, cancellationToken);
     }

@@ -6,33 +6,30 @@ public readonly struct SerializationInfo : IEquatable<SerializationInfo>
 
     /// <param name="typeName">the full type name</param>
     public SerializationInfo(string typeName)
-        => SerializationType = GetIsPrimitive(typeName)
-            ? SerializationType.Primitive
+        => SerializationType = TryGetPrimitiveType(typeName, out SerializationType primitiveSerializationType)
+            ? primitiveSerializationType
             : SerializationType.Unresolved;
 
-    private static bool GetIsPrimitive(string name)
+    private static bool TryGetPrimitiveType(string name, out SerializationType serializationType)
     {
-        return name switch
+        serializationType = name switch
         {
-            "System.Boolean" => true,
-            "System.Byte" => true,
-            "System.Char" => true,
-            // "System.DateTime" => true,
-            "System.Decimal" => true,
-            "System.Double" => true,
-            // "System.Guid" => true,
-            "System.Int16" => true,
-            "System.Int32" => true,
-            "System.Int64" => true,
-            "System.SByte" => true,
-            "System.Single" => true,
-            // "System.String" => true,
-            // "System.TimeSpan" => true,
-            "System.UInt16" => true,
-            "System.UInt32" => true,
-            "System.UInt64" => true,
-            _ => false
+            "System.Byte" => SerializationType.Bool,
+            "System.SByte" => SerializationType.Byte,
+            "System.Boolean" => SerializationType.Sbyte,
+            "System.Char" => SerializationType.Char,
+            "System.Int32" => SerializationType.Int,
+            "System.Int64" => SerializationType.Long,
+            "System.Int16" => SerializationType.Short,
+            "System.UInt32" => SerializationType.Uint,
+            "System.UInt64" => SerializationType.Ulong,
+            "System.UInt16" => SerializationType.Ushort,
+            "System.Single" => SerializationType.Float,
+            "System.Double" => SerializationType.Double,
+            "System.Decimal" => SerializationType.Decimal,
+            _ => SerializationType.Unresolved
         };
+        return serializationType != SerializationType.Unresolved;
     }
 
     public bool Equals(SerializationInfo other) => SerializationType == other.SerializationType;

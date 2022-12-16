@@ -77,8 +77,8 @@ public class SingleSerializationTest : PrimitiveByteArraySerializationTest<Singl
         const Single value = -3.1234f;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        buffer.WriteSingle(value, offset);
-        Single result = buffer.ReadSingle(offset);
+        buffer.WriteFloat(value, offset);
+        Single result = buffer.ReadFloat(offset);
         Assert.AreEqual(value, result);
     }
 
@@ -91,13 +91,13 @@ public class SingleSerializationTest : PrimitiveByteArraySerializationTest<Singl
 
         byte[] buffer = GetBuffer(3);
 
-        buffer.WriteSingle(value0, GetOffset(0));
-        buffer.WriteSingle(value1, GetOffset(1));
-        buffer.WriteSingle(value2, GetOffset(2));
+        buffer.WriteFloat(value0, GetOffset(0));
+        buffer.WriteFloat(value1, GetOffset(1));
+        buffer.WriteFloat(value2, GetOffset(2));
 
-        Single result0 = buffer.ReadSingle(GetOffset(0));
-        Single result1 = buffer.ReadSingle(GetOffset(1));
-        Single result2 = buffer.ReadSingle(GetOffset(2));
+        Single result0 = buffer.ReadFloat(GetOffset(0));
+        Single result1 = buffer.ReadFloat(GetOffset(1));
+        Single result2 = buffer.ReadFloat(GetOffset(2));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -106,8 +106,8 @@ public class SingleSerializationTest : PrimitiveByteArraySerializationTest<Singl
 
     protected override void WriteSingleElement(Single value)
     {
-        SingleElementBuffer.WriteSingle(value);
+        SingleElementBuffer.WriteFloat(value);
     }
 
-    protected override Single ReadSingleElement() => SingleElementBuffer.ReadSingle();
+    protected override Single ReadSingleElement() => SingleElementBuffer.ReadFloat();
 }

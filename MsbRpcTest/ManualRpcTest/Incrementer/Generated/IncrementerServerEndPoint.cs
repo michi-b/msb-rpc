@@ -39,7 +39,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
     private MsbRpc.Serialization.Buffers.BufferWriter Increment(MsbRpc.Serialization.Buffers.BufferReader argumentsReader)
     {
         // Read request arguments.
-        int valueArgument = argumentsReader.ReadInt32();
+        int valueArgument = argumentsReader.ReadInt();
 
         // Execute procedure.
         int result = _incrementer.Increment(valueArgument);

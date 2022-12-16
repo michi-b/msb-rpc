@@ -222,11 +222,11 @@ public class RpcSocketTest : Test
 
         BufferReader receiveBytesReader = new(receiveBytes);
 
-        int receivedIntValue = receiveBytesReader.ReadInt32();
+        int receivedIntValue = receiveBytesReader.ReadInt();
         decimal receivedDecimalValue = receiveBytesReader.ReadDecimal();
         char receivedCharValue = receiveBytesReader.ReadChar();
-        bool receivedBooleanValue = receiveBytesReader.ReadBoolean();
-        sbyte receivedSByteValue = receiveBytesReader.ReadSByte();
+        bool receivedBooleanValue = receiveBytesReader.ReadBool();
+        sbyte receivedSByteValue = receiveBytesReader.ReadSbyte();
 
         Assert.AreEqual(intValue, receivedIntValue);
         Assert.AreEqual(decimalValue, receivedDecimalValue);

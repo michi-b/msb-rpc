@@ -26,8 +26,8 @@ public class BooleanSerializationTest : PrimitiveBufferSerializationTest<bool>
         const Boolean value = true;
         int offset = GetOffset(4);
         ArraySegment<byte> buffer = GetBuffer(10);
-        buffer.WriteBoolean(value, offset);
-        Boolean result = buffer.ReadBoolean(offset);
+        buffer.WriteBool(value, offset);
+        Boolean result = buffer.ReadBool(offset);
         Assert.AreEqual(value, result);
     }
 
@@ -37,8 +37,8 @@ public class BooleanSerializationTest : PrimitiveBufferSerializationTest<bool>
         const Boolean value = false;
         int offset = GetOffset(2);
         ArraySegment<byte> buffer = GetBuffer(3);
-        buffer.WriteBoolean(value, offset);
-        Boolean result = buffer.ReadBoolean(offset);
+        buffer.WriteBool(value, offset);
+        Boolean result = buffer.ReadBool(offset);
         Assert.AreEqual(value, result);
     }
 
@@ -53,17 +53,17 @@ public class BooleanSerializationTest : PrimitiveBufferSerializationTest<bool>
 
         ArraySegment<byte> buffer = GetBuffer(5);
 
-        buffer.WriteBoolean(value0);
-        buffer.WriteBoolean(value1, GetOffset(1));
-        buffer.WriteBoolean(value2, GetOffset(2));
-        buffer.WriteBoolean(value3, GetOffset(3));
-        buffer.WriteBoolean(value4, GetOffset(4));
+        buffer.WriteBool(value0);
+        buffer.WriteBool(value1, GetOffset(1));
+        buffer.WriteBool(value2, GetOffset(2));
+        buffer.WriteBool(value3, GetOffset(3));
+        buffer.WriteBool(value4, GetOffset(4));
 
-        Boolean result0 = buffer.ReadBoolean(GetOffset(0));
-        Boolean result1 = buffer.ReadBoolean(GetOffset(1));
-        Boolean result2 = buffer.ReadBoolean(GetOffset(2));
-        Boolean result3 = buffer.ReadBoolean(GetOffset(3));
-        Boolean result4 = buffer.ReadBoolean(GetOffset(4));
+        Boolean result0 = buffer.ReadBool(GetOffset(0));
+        Boolean result1 = buffer.ReadBool(GetOffset(1));
+        Boolean result2 = buffer.ReadBool(GetOffset(2));
+        Boolean result3 = buffer.ReadBool(GetOffset(3));
+        Boolean result4 = buffer.ReadBool(GetOffset(4));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -72,7 +72,7 @@ public class BooleanSerializationTest : PrimitiveBufferSerializationTest<bool>
         Assert.AreEqual(value4, result4);
     }
 
-    protected override void WriteSingleElement(bool value) => SingleElementBuffer.WriteBoolean(value);
+    protected override void WriteSingleElement(bool value) => SingleElementBuffer.WriteBool(value);
 
-    protected override bool ReadSingleElement() => SingleElementBuffer.ReadBoolean();
+    protected override bool ReadSingleElement() => SingleElementBuffer.ReadBool();
 }

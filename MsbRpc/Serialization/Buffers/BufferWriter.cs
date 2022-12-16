@@ -33,49 +33,61 @@ public struct BufferWriter
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(sbyte value)
     {
-        Buffer.WriteSByte(value, PostIncrementPosition(SByteSize));
+        Buffer.WriteSbyte(value, PostIncrementPosition(SByteSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public void Write(short value)
+    public void Write(bool value)
     {
-        Buffer.WriteInt16(value, PostIncrementPosition(Int16Size));
+        Buffer.WriteBool(value, PostIncrementPosition(BooleanSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public void Write(ushort value)
+    public void Write(char value)
     {
-        Buffer.WriteUInt16(value, PostIncrementPosition(UInt16Size));
+        Buffer.WriteChar(value, PostIncrementPosition(CharSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(int value)
     {
-        Buffer.WriteInt32(value, PostIncrementPosition(Int32Size));
-    }
-
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public void Write(uint value)
-    {
-        Buffer.WriteUInt32(value, PostIncrementPosition(UInt32Size));
+        Buffer.WriteInt(value, PostIncrementPosition(Int32Size));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(long value)
     {
-        Buffer.WriteInt64(value, PostIncrementPosition(Int64Size));
+        Buffer.WriteLong(value, PostIncrementPosition(Int64Size));
+    }
+
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    public void Write(short value)
+    {
+        Buffer.WriteShort(value, PostIncrementPosition(Int16Size));
+    }
+
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    public void Write(uint value)
+    {
+        Buffer.WriteUint(value, PostIncrementPosition(UInt32Size));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(ulong value)
     {
-        Buffer.WriteUInt64(value, PostIncrementPosition(UInt64Size));
+        Buffer.WriteUlong(value, PostIncrementPosition(UInt64Size));
+    }
+
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    public void Write(ushort value)
+    {
+        Buffer.WriteUshort(value, PostIncrementPosition(UInt16Size));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(float value)
     {
-        Buffer.WriteSingle(value, PostIncrementPosition(SingleSize));
+        Buffer.WriteFloat(value, PostIncrementPosition(SingleSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
@@ -88,17 +100,5 @@ public struct BufferWriter
     public void Write(decimal value)
     {
         Buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
-    }
-
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public void Write(bool value)
-    {
-        Buffer.WriteBoolean(value, PostIncrementPosition(BooleanSize));
-    }
-
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public void Write(char value)
-    {
-        Buffer.WriteChar(value, PostIncrementPosition(CharSize));
     }
 }

@@ -1,11 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace MsbRpc.Serialization.Primitives;
 
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-[SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
-#pragma warning restore IDE0079 // Remove unnecessary suppression
 public static partial class PrimitiveSerializer
 {
     /// <summary>
@@ -33,22 +29,12 @@ public static partial class PrimitiveSerializer
             _ => throw new ArgumentOutOfRangeException(nameof(primitiveType), primitiveType, null)
         };
     }
-    
-    #region Boolean
-
-    public static void WriteBoolean(this byte[] buffer, bool value, int offset = 0) => buffer[offset] = value ? (byte)1 : (byte)0;
-
-    public static Boolean ReadBoolean(this byte[] buffer, int offset = 0) => buffer[offset] == 1;
-
-    [PublicAPI] public const int BooleanSize = 1;
-
-    #endregion
 
     #region Byte
 
     public static void WriteByte(this byte[] buffer, byte value, int offset = 0) => buffer[offset] = value;
 
-    public static Byte ReadByte(this byte[] buffer, int offset = 0) => buffer[offset];
+    public static byte ReadByte(this byte[] buffer, int offset = 0) => buffer[offset];
 
     [PublicAPI] public const int ByteSize = 1;
 
@@ -56,11 +42,21 @@ public static partial class PrimitiveSerializer
 
     #region SByte
 
-    public static void WriteSByte(this byte[] buffer, sbyte value, int offset = 0) => buffer[offset] = (Byte)value;
+    public static void WriteSbyte(this byte[] buffer, sbyte value, int offset = 0) => buffer[offset] = (byte)value;
 
-    public static SByte ReadSByte(this byte[] buffer, int offset = 0) => (sbyte)buffer[offset];
+    public static sbyte ReadSbyte(this byte[] buffer, int offset = 0) => (sbyte)buffer[offset];
 
     [PublicAPI] public const int SByteSize = 1;
+
+    #endregion
+
+    #region Bool
+
+    public static void WriteBool(this byte[] buffer, bool value, int offset = 0) => buffer[offset] = value ? (byte)1 : (byte)0;
+
+    public static bool ReadBool(this byte[] buffer, int offset = 0) => buffer[offset] == 1;
+
+    [PublicAPI] public const int BooleanSize = 1;
 
     #endregion
 
@@ -72,27 +68,107 @@ public static partial class PrimitiveSerializer
         converter2.Write(buffer, offset);
     }
 
-    public static Char ReadChar(this byte[] buffer, int offset = 0) => BitConverter.ToChar(buffer, offset);
+    public static char ReadChar(this byte[] buffer, int offset = 0) => BitConverter.ToChar(buffer, offset);
 
     [PublicAPI] public const int CharSize = 2;
 
     #endregion
 
-    #region Decimal
+    #region Int
 
-    public static void WriteDecimal(this byte[] buffer, decimal value, int offset = 0)
+    public static void WriteInt(this byte[] buffer, int value, int offset = 0)
     {
-        var converter16 = new ByteConverter16(value);
-        converter16.Write(buffer, offset);
+        var converter4 = new ByteConverter4(value);
+        converter4.Write(buffer, offset);
     }
 
-    public static Decimal ReadDecimal(this byte[] buffer, int offset = 0)
+    public static int ReadInt(this byte[] buffer, int offset = 0) => BitConverter.ToInt32(buffer, offset);
+
+    [PublicAPI] public const int Int32Size = 4;
+
+    #endregion
+
+    #region Long
+
+    public static void WriteLong(this byte[] buffer, long value, int offset = 0)
     {
-        var converter16 = new ByteConverter16(buffer, offset);
-        return converter16.Read();
+        var converter8 = new ByteConverter8(value);
+        converter8.Write(buffer, offset);
     }
 
-    [PublicAPI] public const int DecimalSize = 16;
+    public static long ReadLong(this byte[] buffer, int offset = 0) => BitConverter.ToInt64(buffer, offset);
+
+    [PublicAPI] public const int Int64Size = 8;
+
+    #endregion
+
+    #region Short
+
+    public static void WriteShort(this byte[] buffer, short value, int offset = 0)
+    {
+        var converter2 = new ByteConverter2(value);
+        converter2.Write(buffer, offset);
+    }
+
+    public static short ReadShort(this byte[] buffer, int offset = 0) => BitConverter.ToInt16(buffer, offset);
+
+    [PublicAPI] public const int Int16Size = 2;
+
+    #endregion
+
+    #region UInt
+
+    public static void WriteUint(this byte[] buffer, uint value, int offset = 0)
+    {
+        var converter4 = new ByteConverter4(value);
+        converter4.Write(buffer, offset);
+    }
+
+    public static uint ReadUint(this byte[] buffer, int offset = 0) => BitConverter.ToUInt32(buffer, offset);
+
+    [PublicAPI] public const int UInt32Size = 4;
+
+    #endregion
+
+    #region ULong
+
+    public static void WriteUlong(this byte[] buffer, ulong value, int offset = 0)
+    {
+        var converter8 = new ByteConverter8(value);
+        converter8.Write(buffer, offset);
+    }
+
+    public static ulong ReadUlong(this byte[] buffer, int offset = 0) => BitConverter.ToUInt64(buffer, offset);
+
+    [PublicAPI] public const int UInt64Size = 8;
+
+    #endregion
+
+    #region UShort
+
+    public static void WriteUshort(this byte[] buffer, ushort value, int offset = 0)
+    {
+        var converter2 = new ByteConverter2(value);
+        converter2.Write(buffer, offset);
+    }
+
+    public static ushort ReadUshort(this byte[] buffer, int offset = 0) => BitConverter.ToUInt16(buffer, offset);
+
+    [PublicAPI] public const int UInt16Size = 2;
+
+    #endregion
+
+    #region Float
+
+    public static void WriteFloat(this byte[] buffer, float value, int offset = 0)
+    {
+        var converter4 = new ByteConverter4(value);
+        converter4.Write(buffer, offset);
+    }
+
+    public static float ReadFloat(this byte[] buffer, int offset = 0) => BitConverter.ToSingle(buffer, offset);
+
+    [PublicAPI] public const int SingleSize = 8;
 
     #endregion
 
@@ -104,107 +180,27 @@ public static partial class PrimitiveSerializer
         converter8.Write(buffer, offset);
     }
 
-    public static Double ReadDouble(this byte[] buffer, int offset = 0) => BitConverter.ToDouble(buffer, offset);
+    public static double ReadDouble(this byte[] buffer, int offset = 0) => BitConverter.ToDouble(buffer, offset);
 
     public const int DoubleSize = 8;
 
     #endregion
 
-    #region Single
+    #region Decimal
 
-    public static void WriteSingle(this byte[] buffer, float value, int offset = 0)
+    public static void WriteDecimal(this byte[] buffer, decimal value, int offset = 0)
     {
-        var converter4 = new ByteConverter4(value);
-        converter4.Write(buffer, offset);
+        var converter16 = new ByteConverter16(value);
+        converter16.Write(buffer, offset);
     }
 
-    public static Single ReadSingle(this byte[] buffer, int offset = 0) => BitConverter.ToSingle(buffer, offset);
-
-    [PublicAPI] public const int SingleSize = 8;
-
-    #endregion
-
-    #region Int32
-
-    public static void WriteInt32(this byte[] buffer, int value, int offset = 0)
+    public static decimal ReadDecimal(this byte[] buffer, int offset = 0)
     {
-        var converter4 = new ByteConverter4(value);
-        converter4.Write(buffer, offset);
+        var converter16 = new ByteConverter16(buffer, offset);
+        return converter16.Read();
     }
 
-    public static Int32 ReadInt32(this byte[] buffer, int offset = 0) => BitConverter.ToInt32(buffer, offset);
-
-    [PublicAPI] public const int Int32Size = 4;
-
-    #endregion
-
-    #region UInt32
-
-    public static void WriteUInt32(this byte[] buffer, uint value, int offset = 0)
-    {
-        var converter4 = new ByteConverter4(value);
-        converter4.Write(buffer, offset);
-    }
-
-    public static UInt32 ReadUInt32(this byte[] buffer, int offset = 0) => BitConverter.ToUInt32(buffer, offset);
-
-    [PublicAPI] public const int UInt32Size = 4;
-
-    #endregion
-
-    #region Int64
-
-    public static void WriteInt64(this byte[] buffer, long value, int offset = 0)
-    {
-        var converter8 = new ByteConverter8(value);
-        converter8.Write(buffer, offset);
-    }
-
-    public static Int64 ReadInt64(this byte[] buffer, int offset = 0) => BitConverter.ToInt64(buffer, offset);
-
-    [PublicAPI] public const int Int64Size = 8;
-
-    #endregion
-
-    #region UInt64
-
-    public static void WriteUInt64(this byte[] buffer, ulong value, int offset = 0)
-    {
-        var converter8 = new ByteConverter8(value);
-        converter8.Write(buffer, offset);
-    }
-
-    public static UInt64 ReadUInt64(this byte[] buffer, int offset = 0) => BitConverter.ToUInt64(buffer, offset);
-
-    [PublicAPI] public const int UInt64Size = 8;
-
-    #endregion
-
-    #region Int16
-
-    public static void WriteInt16(this byte[] buffer, short value, int offset = 0)
-    {
-        var converter2 = new ByteConverter2(value);
-        converter2.Write(buffer, offset);
-    }
-
-    public static Int16 ReadInt16(this byte[] buffer, int offset = 0) => BitConverter.ToInt16(buffer, offset);
-
-    [PublicAPI] public const int Int16Size = 2;
-
-    #endregion
-
-    #region UInt16
-
-    public static void WriteUInt16(this byte[] buffer, ushort value, int offset = 0)
-    {
-        var converter2 = new ByteConverter2(value);
-        converter2.Write(buffer, offset);
-    }
-
-    public static UInt16 ReadUInt16(this byte[] buffer, int offset = 0) => BitConverter.ToUInt16(buffer, offset);
-
-    [PublicAPI] public const int UInt16Size = 2;
+    [PublicAPI] public const int DecimalSize = 16;
 
     #endregion
 }

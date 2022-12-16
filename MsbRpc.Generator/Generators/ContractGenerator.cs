@@ -117,12 +117,6 @@ public class ContractGenerator
     }
 
     // ReSharper disable once MemberCanBeMadeStatic.Global
-    public string GenerateServerEndpoint()
-    {
-        //todo: implements
-        // ReSharper disable once ArrangeMethodOrOperatorBody
-        return string.Empty;
-    }
 
     private void GenerateServerProcedureGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
@@ -160,6 +154,13 @@ public class ContractGenerator
                 GenerateProcedureOutOfRangeCase(writer, procedureParameterName);
             }
         }
+    }
+
+    public string GenerateServerEndpoint()
+    {
+        //todo: implements
+        // ReSharper disable once ArrangeMethodOrOperatorBody
+        return string.Empty;
     }
 
     private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)

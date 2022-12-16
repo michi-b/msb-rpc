@@ -42,7 +42,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
 
         // Read response.        
 
-        int response = responseReader.ReadInt32();
+        int response = responseReader.ReadInt();
 
         ExitCalling(procedure);
 

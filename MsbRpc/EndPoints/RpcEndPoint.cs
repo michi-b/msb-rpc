@@ -72,7 +72,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <returns>whether listening should stop</returns>
     private async Task<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
-        int procedureIdValue = message.ReadInt32();
+        int procedureIdValue = message.ReadInt();
 
         TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
 
@@ -138,7 +138,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
             argumentByteCount + PrimitiveSerializer.Int32Size
         );
 
-        request.WriteInt32(GetProcedureIdValue(procedure));
+        request.WriteInt(GetProcedureIdValue(procedure));
 
         await _messenger.SendMessageAsync(request, cancellationToken);
 

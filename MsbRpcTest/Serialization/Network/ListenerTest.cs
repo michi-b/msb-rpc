@@ -67,7 +67,7 @@ public abstract class ListenerTest : Test
         CancellationToken cancellationToken = CancellationToken;
 
         byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
-        messageOut.WriteInt32(value);
+        messageOut.WriteInt(value);
         var messageOutSegment = new ArraySegment<byte>(messageOut);
 
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
@@ -81,7 +81,7 @@ public abstract class ListenerTest : Test
 
         Assert.AreEqual(1, messagesIn.Count);
 
-        int valueReceived = messagesIn[0].Array!.ReadInt32();
+        int valueReceived = messagesIn[0].Array!.ReadInt();
 
         Assert.AreEqual(value, valueReceived);
     }
@@ -99,7 +99,7 @@ public abstract class ListenerTest : Test
             byte[] message = new byte[PrimitiveSerializer.Int32Size];
             foreach (int value in values)
             {
-                message.WriteInt32(value);
+                message.WriteInt(value);
                 var messageSegment = new ArraySegment<byte>(message);
                 await client.SendMessageAsync(messageSegment, cancellationToken);
             }
@@ -114,7 +114,7 @@ public abstract class ListenerTest : Test
         {
             ArraySegment<byte> message = messagesIn[i];
             int value = values[i];
-            int valueReceived = message.Array!.ReadInt32(message.Offset);
+            int valueReceived = message.Array!.ReadInt(message.Offset);
             Assert.AreEqual(value, valueReceived);
         }
     }

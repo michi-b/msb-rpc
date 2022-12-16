@@ -41,8 +41,8 @@ public class UInt64SerializationTest : PrimitiveByteArraySerializationTest<UInt6
         const UInt64 value = 5142;
         const int offset = 13;
         byte[] buffer = GetBuffer(5);
-        buffer.WriteUInt64(value, offset);
-        UInt64 result = buffer.ReadUInt64(offset);
+        buffer.WriteUlong(value, offset);
+        UInt64 result = buffer.ReadUlong(offset);
         Assert.AreEqual(value, result);
     }
 
@@ -55,13 +55,13 @@ public class UInt64SerializationTest : PrimitiveByteArraySerializationTest<UInt6
 
         byte[] buffer = GetBuffer(3);
 
-        buffer.WriteUInt64(value0, GetOffset(0));
-        buffer.WriteUInt64(value1, GetOffset(1));
-        buffer.WriteUInt64(value2, GetOffset(2));
+        buffer.WriteUlong(value0, GetOffset(0));
+        buffer.WriteUlong(value1, GetOffset(1));
+        buffer.WriteUlong(value2, GetOffset(2));
 
-        UInt64 result0 = buffer.ReadUInt64(GetOffset(0));
-        UInt64 result1 = buffer.ReadUInt64(GetOffset(1));
-        UInt64 result2 = buffer.ReadUInt64(GetOffset(2));
+        UInt64 result0 = buffer.ReadUlong(GetOffset(0));
+        UInt64 result1 = buffer.ReadUlong(GetOffset(1));
+        UInt64 result2 = buffer.ReadUlong(GetOffset(2));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -70,8 +70,8 @@ public class UInt64SerializationTest : PrimitiveByteArraySerializationTest<UInt6
 
     protected override void WriteSingleElement(UInt64 value)
     {
-        SingleElementBuffer.WriteUInt64(value);
+        SingleElementBuffer.WriteUlong(value);
     }
 
-    protected override UInt64 ReadSingleElement() => SingleElementBuffer.ReadUInt64();
+    protected override UInt64 ReadSingleElement() => SingleElementBuffer.ReadUlong();
 }

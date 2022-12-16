@@ -26,8 +26,8 @@ public class SByteSerializationTest : PrimitiveBufferSerializationTest<SByte>
         const SByte value = -2;
         const int offset = 2;
         ArraySegment<byte> buffer = GetBuffer(4);
-        buffer.WriteSByte(value, offset);
-        SByte result = buffer.ReadSByte(offset);
+        buffer.WriteSbyte(value, offset);
+        SByte result = buffer.ReadSbyte(offset);
         Assert.AreEqual(value, result);
     }
 
@@ -42,17 +42,17 @@ public class SByteSerializationTest : PrimitiveBufferSerializationTest<SByte>
 
         ArraySegment<byte> buffer = GetBuffer(5);
 
-        buffer.WriteSByte(value0);
-        buffer.WriteSByte(value1, GetOffset(1));
-        buffer.WriteSByte(value2, GetOffset(2));
-        buffer.WriteSByte(value3, GetOffset(3));
-        buffer.WriteSByte(value4, GetOffset(4));
+        buffer.WriteSbyte(value0);
+        buffer.WriteSbyte(value1, GetOffset(1));
+        buffer.WriteSbyte(value2, GetOffset(2));
+        buffer.WriteSbyte(value3, GetOffset(3));
+        buffer.WriteSbyte(value4, GetOffset(4));
 
-        SByte result0 = buffer.ReadSByte(GetOffset(0));
-        SByte result1 = buffer.ReadSByte(GetOffset(1));
-        SByte result2 = buffer.ReadSByte(GetOffset(2));
-        SByte result3 = buffer.ReadSByte(GetOffset(3));
-        SByte result4 = buffer.ReadSByte(GetOffset(4));
+        SByte result0 = buffer.ReadSbyte(GetOffset(0));
+        SByte result1 = buffer.ReadSbyte(GetOffset(1));
+        SByte result2 = buffer.ReadSbyte(GetOffset(2));
+        SByte result3 = buffer.ReadSbyte(GetOffset(3));
+        SByte result4 = buffer.ReadSbyte(GetOffset(4));
 
         Assert.AreEqual(value0, result0);
         Assert.AreEqual(value1, result1);
@@ -63,8 +63,8 @@ public class SByteSerializationTest : PrimitiveBufferSerializationTest<SByte>
 
     protected override void WriteSingleElement(SByte value)
     {
-        SingleElementBuffer.WriteSByte(value);
+        SingleElementBuffer.WriteSbyte(value);
     }
 
-    protected override SByte ReadSingleElement() => SingleElementBuffer.ReadSByte();
+    protected override SByte ReadSingleElement() => SingleElementBuffer.ReadSbyte();
 }
