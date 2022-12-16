@@ -10,18 +10,18 @@ public class ContractGenerator
     private const string ServerPostfix = "Server";
     private const string ProcedurePostfix = "Procedure";
 
+    private readonly List<ProcedureGenerator> _procedures;
+
     public string ServerProcedureEnumExtensionsFileName { get; }
     public string ServerProcedureEnumFileName { get; }
     public string ServerInterfaceFileName { get; }
     public string ServerEndpointFileName { get; }
 
     private string ServerProcedureEnumExtensionsName { get; }
-    private string ServerProcedureEnumName { get; }
     private string ServerInterfaceName { get; }
+    private string ServerProcedureEnumName { get; }
     private string GeneratedNamespace { get; }
     private string ServerEndPointName { get; }
-
-    private readonly List<ProcedureGenerator> _procedures;
 
     public ContractGenerator(ContractInfo info)
     {
@@ -51,15 +51,15 @@ public class ContractGenerator
 
         ServerProcedureEnumExtensionsName = contractName + ServerPostfix + ProcedurePostfix + "Extensions";
         ServerProcedureEnumExtensionsFileName = $"{GeneratedNamespace}.{ServerProcedureEnumExtensionsName}{generatedFileEnding}";
-        
+
         ServerEndPointName = contractName + ServerPostfix + "Endpoint";
         ServerEndpointFileName = $"{GeneratedNamespace}.{ServerEndPointName}{generatedFileEnding}";
-        
+
         _procedures = new List<ProcedureGenerator>(info.Procedures.Length);
 
         foreach (ProcedureInfo procedureInfo in info.Procedures)
         {
-            _procedures.Add(new ProcedureGenerator(procedureInfo));
+            _procedures.Add(new ProcedureGenerator(procedureInfo, ServerProcedureEnumName));
         }
     }
 
@@ -104,28 +104,13 @@ public class ContractGenerator
 
         writer.WriteLine("public static class {0}", ServerProcedureEnumExtensionsName);
 
+        const string procedureParameterName = "procedure";
+
         using (writer.EncloseInBlock(false))
         {
-            const string procedureParameterName = "procedure";
-            writer.WriteLine
-            (
-                "public static string GetProcedureName(this {0} {1})",
-                ServerProcedureEnumName,
-                procedureParameterName
-            );
-            using (writer.EncloseInBlock())
-            {
-                writer.WriteLine("return procedure switch");
-                using (writer.EncloseInBlock())
-                {
-                    foreach (ProcedureGenerator procedure in _procedures)
-                    {
-                        procedure.GenerateEnumToNameSwitchLine(writer, ServerProcedureEnumName);
-                    }
-
-                    writer.WriteLine("_ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)");
-                }
-            }
+            GenerateServerProcedureGetNameExtension(writer, procedureParameterName);
+            writer.WriteLine();
+            GenerateServerProcedureGetInvertsDirectionExtension(writer, procedureParameterName);
         }
 
         return writer.GetResult();
@@ -137,6 +122,49 @@ public class ContractGenerator
         //todo: implements
         // ReSharper disable once ArrangeMethodOrOperatorBody
         return string.Empty;
+    }
+
+    private void GenerateServerProcedureGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
+    {
+        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", ServerProcedureEnumName, procedureParameterName);
+
+        using (writer.EncloseInBlock())
+        {
+            writer.WriteLine("return {0} switch", procedureParameterName);
+
+            using (writer.EncloseInBlock())
+            {
+                foreach (ProcedureGenerator procedure in _procedures)
+                {
+                    procedure.GenerateGetInvertsDirectionCase(writer);
+                }
+
+                GenerateProcedureOutOfRangeCase(writer, procedureParameterName);
+            }
+        }
+    }
+
+    private void GenerateServerProcedureGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
+    {
+        writer.WriteLine("public static string GetProcedureName(this {0} {1})", ServerProcedureEnumName, procedureParameterName);
+        using (writer.EncloseInBlock())
+        {
+            writer.WriteLine("return procedure switch");
+            using (writer.EncloseInBlock())
+            {
+                foreach (ProcedureGenerator procedure in _procedures)
+                {
+                    procedure.GenerateEnumToNameCase(writer);
+                }
+
+                GenerateProcedureOutOfRangeCase(writer, procedureParameterName);
+            }
+        }
+    }
+
+    private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)
+    {
+        writer.WriteLine($"_ => throw new ArgumentOutOfRangeException(nameof({procedureParameterName}), {procedureParameterName}, null)");
     }
 
     private IndentedTextWriter CreateCodeWriter()

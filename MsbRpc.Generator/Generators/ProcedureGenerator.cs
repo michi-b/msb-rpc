@@ -6,11 +6,13 @@ namespace MsbRpc.Generator.Generators;
 
 public class ProcedureGenerator
 {
+    private readonly string _fullName;
     private readonly string _name;
     private readonly List<ParameterInfo> _parameters;
     private readonly TypeInfo _returnType;
+    private readonly bool _invertsDirection;
 
-    public ProcedureGenerator(ProcedureInfo info)
+    public ProcedureGenerator(ProcedureInfo info, string serverProcedureEnumName)
     {
         _name = info.Name;
 
@@ -20,7 +22,11 @@ public class ProcedureGenerator
             _parameters.Add(parameterInfo);
         }
 
+        _invertsDirection = info.InvertsDirection;
+        
         _returnType = info.ReturnType;
+        
+        _fullName = serverProcedureEnumName + '.' + _name;
     }
 
     public void GenerateInterface(IndentedTextWriter writer)
@@ -57,8 +63,13 @@ public class ProcedureGenerator
         writer.WriteLine();
     }
 
-    public void GenerateEnumToNameSwitchLine(IndentedTextWriter writer, string serverProcedureEnumName)
+    public void GenerateEnumToNameCase(IndentedTextWriter writer)
     {
-        writer.WriteLine("{0} => nameof({0}),", serverProcedureEnumName + "." + _name);
+        writer.WriteLine("{0} => nameof({0}),", _fullName);
+    }
+
+    public void GenerateGetInvertsDirectionCase(IndentedTextWriter writer)
+    {
+        writer.WriteLine($"{_fullName} => {(_invertsDirection ? "true" : "false")},");
     }
 }
