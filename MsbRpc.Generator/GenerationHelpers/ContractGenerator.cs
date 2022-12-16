@@ -2,64 +2,23 @@
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.Generators;
+namespace MsbRpc.Generator.GenerationHelpers;
 
-public class ContractGenerator
+public readonly ref struct ContractGenerator
 {
-    private const string InterfacePrefix = "I";
-    private const string ServerPostfix = "Server";
-    private const string ProcedurePostfix = "Procedure";
-
     private readonly List<ProcedureGenerator> _procedures;
 
-    public string ServerProcedureEnumExtensionsFileName { get; }
-    public string ServerProcedureEnumFileName { get; }
-    public string ServerInterfaceFileName { get; }
-    public string ServerEndpointFileName { get; }
+    public ContractNames Names { get; }
 
-    private string ServerProcedureEnumExtensionsName { get; }
-    private string ServerInterfaceName { get; }
-    private string ServerProcedureEnumName { get; }
-    private string GeneratedNamespace { get; }
-    private string ServerEndPointName { get; }
-
-    public ContractGenerator(ContractInfo info)
+    public ContractGenerator(ref ContractInfo info)
     {
-        string contractInterfaceName = info.Name;
-        string namespaceName = info.Namespace;
+        Names = new ContractNames(info.Namespace, info.InterfaceName);
 
-        string contractName;
-        if (contractInterfaceName.StartsWith(InterfacePrefix, StringComparison.Ordinal) && char.IsUpper(contractInterfaceName[1]))
+        _procedures = new List<ProcedureGenerator>(info.ServerProcedures.Length);
+
+        foreach (ProcedureInfo procedureInfo in info.ServerProcedures)
         {
-            contractName = contractInterfaceName.Substring(1);
-        }
-        else
-        {
-            contractName = contractInterfaceName;
-            contractInterfaceName = InterfacePrefix + contractInterfaceName;
-        }
-
-        const string generatedFileEnding = ".g.cs";
-
-        GeneratedNamespace = namespaceName + ".Generated";
-
-        ServerInterfaceName = contractInterfaceName + ServerPostfix;
-        ServerInterfaceFileName = $"{GeneratedNamespace}.{ServerInterfaceName}{generatedFileEnding}";
-
-        ServerProcedureEnumName = contractName + ServerPostfix + ProcedurePostfix;
-        ServerProcedureEnumFileName = $"{GeneratedNamespace}.{ServerProcedureEnumName}{generatedFileEnding}";
-
-        ServerProcedureEnumExtensionsName = contractName + ServerPostfix + ProcedurePostfix + "Extensions";
-        ServerProcedureEnumExtensionsFileName = $"{GeneratedNamespace}.{ServerProcedureEnumExtensionsName}{generatedFileEnding}";
-
-        ServerEndPointName = contractName + ServerPostfix + "Endpoint";
-        ServerEndpointFileName = $"{GeneratedNamespace}.{ServerEndPointName}{generatedFileEnding}";
-
-        _procedures = new List<ProcedureGenerator>(info.Procedures.Length);
-
-        foreach (ProcedureInfo procedureInfo in info.Procedures)
-        {
-            _procedures.Add(new ProcedureGenerator(procedureInfo, ServerProcedureEnumName));
+            _procedures.Add(new ProcedureGenerator(procedureInfo, Names.ServerProcedure));
         }
     }
 
@@ -67,7 +26,7 @@ public class ContractGenerator
     {
         using IndentedTextWriter writer = CreateCodeWriter();
 
-        writer.WriteLine("public interface {0}", ServerInterfaceName);
+        writer.WriteLine("public interface {0}", Names.ServerInterface);
 
         using (writer.EncloseInBlock(false))
         {
@@ -84,7 +43,7 @@ public class ContractGenerator
     {
         using IndentedTextWriter writer = CreateCodeWriter();
 
-        writer.WriteLine("public enum {0}", ServerProcedureEnumName);
+        writer.WriteLine("public enum {0}", Names.ServerProcedure);
 
         using (writer.EncloseInBlock(false))
         {
@@ -102,7 +61,7 @@ public class ContractGenerator
     {
         using IndentedTextWriter writer = CreateCodeWriter();
 
-        writer.WriteLine("public static class {0}", ServerProcedureEnumExtensionsName);
+        writer.WriteLine("public static class {0}", Names.ServerProcedureEnumExtensions);
 
         const string procedureParameterName = "procedure";
 
@@ -120,7 +79,7 @@ public class ContractGenerator
 
     private void GenerateServerProcedureGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", ServerProcedureEnumName, procedureParameterName);
+        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", Names.ServerProcedure, procedureParameterName);
 
         using (writer.EncloseInBlock())
         {
@@ -140,7 +99,7 @@ public class ContractGenerator
 
     private void GenerateServerProcedureGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine("public static string GetProcedureName(this {0} {1})", ServerProcedureEnumName, procedureParameterName);
+        writer.WriteLine("public static string GetProcedureName(this {0} {1})", Names.ServerProcedure, procedureParameterName);
         using (writer.EncloseInBlock())
         {
             writer.WriteLine("return procedure switch");
@@ -160,9 +119,46 @@ public class ContractGenerator
     {
         using IndentedTextWriter writer = CreateCodeWriter();
 
-        writer.WriteLine("public class {0}", ServerEndPointName);
-        
+        writer.WriteLine("public class {0}", Names.ServerEndPoint);
+
+        using (writer.EncloseInBlock(false))
+        {
+            writer.WriteLine($"private readonly {Names.ServerInterface} {Names.ServerField};");
+            writer.WriteLine();
+            GenerateServerEndpointConstructor(writer);
+        }
+
         return writer.GetResult();
+    }
+
+    private void GenerateServerEndpointConstructor(IndentedTextWriter writer)
+    {
+        //header
+        writer.WriteLine($"public {Names.ServerEndPoint}");
+        using (writer.EncloseInParenthesesBlock())
+        {
+            writer.WriteLine(GeneralCode.MessengerParameterLine);
+            writer.WriteLine($"{Names.ServerInterface} {Names.ServerParameter},");
+            writer.WriteLine(GeneralCode.LoggerFactoryInterfaceParameter);
+            writer.WriteLine(RpcEndPointCode.BufferSizeParameterWithDefaultLine);
+        }
+
+        //base constructor invocation
+        writer.Indent++;
+        {
+            writer.WriteLine(": base");
+            using (writer.EncloseInParenthesesBlock())
+            {
+                writer.WriteLine($"{GeneralNames.MessengerParameter},");
+                writer.WriteLine($"{RpcEndPointNames.BufferSizeParameter},");
+                writer.WriteLoggerArgumentFromFactoryParameterLines(Names.ServerEndPoint);
+                writer.WriteLine(RpcEndPointNames.BufferSizeParameter);
+            }
+
+            //body
+            writer.WriteLine($"=> {Names.ServerField} = {Names.ServerParameter};");
+        }
+        writer.Indent--;
     }
 
     private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)
@@ -174,7 +170,7 @@ public class ContractGenerator
     {
         IndentedTextWriter writer = new(new StringWriter());
 
-        writer.WriteFileHeader(GeneratedNamespace);
+        writer.WriteFileHeader(Names.GeneratedNamespace);
 
         return writer;
     }

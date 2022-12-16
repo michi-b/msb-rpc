@@ -2,8 +2,9 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MsbRpc.Generator.Generators;
+using MsbRpc.Generator.GenerationHelpers;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator;
@@ -19,13 +20,11 @@ public class Generator : IIncrementalGenerator
                 GetContractInfo
             )
             .Where(contract => contract != null)
-            .Select((c, _) => c!);
-
-        
+            .Select((contractInfo, _) => (ContractInfo)contractInfo!);
 
         IncrementalValuesProvider<ContractInfo> rpcContracts = rpcContractDeclarationSyntaxNodes
             .Collect()
-            .SelectMany((infos, _) => infos.Distinct(ContractInfo.TargetComparer.Instance));
+            .SelectMany((infos, _) => infos.Distinct(TargetComparer.Instance));
 
         context.RegisterSourceOutput(rpcContracts, Generate);
     }
@@ -60,12 +59,12 @@ public class Generator : IIncrementalGenerator
             : null;
     }
 
-    private static void Generate(SourceProductionContext context, ContractInfo contract)
+    private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
     {
-        var generator = new ContractGenerator(contract);
-        context.AddSource(generator.ServerInterfaceFileName, generator.GenerateServerInterface());
-        context.AddSource(generator.ServerProcedureEnumFileName, generator.GenerateServerProcedureEnum());
-        context.AddSource(generator.ServerProcedureEnumExtensionsFileName, generator.GenerateServerProcedureEnumExtensions());
-        context.AddSource(generator.ServerEndpointFileName, generator.GenerateServerEndpoint());
+        var generator = new ContractGenerator(ref contractInfo);
+        context.AddSource(generator.Names.ServerInterfaceFile, generator.GenerateServerInterface());
+        context.AddSource(generator.Names.ServerProcedureFile, generator.GenerateServerProcedureEnum());
+        context.AddSource(generator.Names.ServerProcedureEnumExtensionsFile, generator.GenerateServerProcedureEnumExtensions());
+        context.AddSource(generator.Names.ServerEndpointFile, generator.GenerateServerEndpoint());
     }
 }

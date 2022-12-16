@@ -4,23 +4,8 @@ namespace MsbRpc.Generator.Extensions;
 
 public static class TextWriterExtensions
 {
-    public readonly ref struct ParenthesesEnclosure
-    {
-        private readonly IndentedTextWriter _writer;
-
-        public ParenthesesEnclosure(IndentedTextWriter writer)
-        {
-            _writer = writer;
-            _writer.Write("(");
-        }
-
-        public void Dispose()
-        {
-            _writer.Write(")");
-        }
-    }
-
-    public static ParenthesesEnclosure EncloseInParentheses(this IndentedTextWriter writer) => new(writer);
+    public static TextWriterParenthesesEnclosure EncloseInParentheses(this IndentedTextWriter writer, bool withTrailingNewLine = false) 
+        => new(writer, withTrailingNewLine);
 
     public static void WriteFileHeader(this TextWriter writer, string fileScopedNamespace)
     {

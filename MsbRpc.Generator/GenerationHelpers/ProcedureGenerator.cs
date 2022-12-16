@@ -2,9 +2,9 @@
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.Generators;
+namespace MsbRpc.Generator.GenerationHelpers;
 
-public class ProcedureGenerator
+public readonly struct ProcedureGenerator
 {
     private readonly string _fullName;
     private readonly string _name;

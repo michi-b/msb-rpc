@@ -3,28 +3,33 @@ using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
-public partial class ContractInfo : IEquatable<ContractInfo>
+public readonly struct ContractInfo : IEquatable<ContractInfo>
 {
-    public string Name { get; }
+    public string InterfaceName { get; }
     public string Namespace { get; }
-    public ImmutableArray<ProcedureInfo> Procedures { get; }
+    public ImmutableArray<ProcedureInfo> ServerProcedures { get; }
+    
+    public ImmutableArray<ProcedureInfo> ClientProcedures { get; }
 
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
     public ContractInfo(INamedTypeSymbol interfaceSymbol)
     {
-        Name = interfaceSymbol.Name;
+        InterfaceName = interfaceSymbol.Name;
         Namespace = interfaceSymbol.ContainingNamespace.ToDisplayString();
-        Procedures = interfaceSymbol.GetMembers()
+        ServerProcedures = interfaceSymbol.GetMembers()
             .Select(m => m as IMethodSymbol)
             .Where(m => m != null)
             .Select(m => new ProcedureInfo(m!))
             .ToImmutableArray();
+        
+        //todo: fill in correct client procedures
+        ClientProcedures = ImmutableArray<ProcedureInfo>.Empty;
     }
 
     public bool Equals(ContractInfo other)
-        => Name == other.Name
+        => InterfaceName == other.InterfaceName
            && Namespace == other.Namespace
-           && Procedures.SequenceEqual(other.Procedures);
+           && ServerProcedures.SequenceEqual(other.ServerProcedures);
 
     public override bool Equals(object obj) => Equals((ContractInfo)obj);
 
@@ -32,9 +37,9 @@ public partial class ContractInfo : IEquatable<ContractInfo>
     {
         unchecked
         {
-            int hashCode = Name.GetHashCode();
+            int hashCode = InterfaceName.GetHashCode();
             hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
-            hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
+            hashCode = (hashCode * 397) ^ ServerProcedures.GetHashCode();
             return hashCode;
         }
     }

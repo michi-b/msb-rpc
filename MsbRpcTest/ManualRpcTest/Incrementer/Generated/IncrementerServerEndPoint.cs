@@ -1,14 +1,13 @@
-﻿
-namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
+﻿namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
 public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<IncrementerServerProcedure, MsbRpc.EndPoints.UndefinedProcedure>
 {
-    private readonly IIncrementerServer _incrementer;
+    private readonly IIncrementerServer _incrementerServer;
 
     public IncrementerServerEndPoint
     (
         MsbRpc.Messaging.Messenger messenger,
-        IIncrementerServer incrementer,
+        IIncrementerServer incrementerServer,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int bufferSize = DefaultBufferSize
     )
@@ -21,7 +20,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
                 : new Microsoft.Extensions.Logging.Abstractions.NullLogger<IncrementerServerEndPoint>(),
             bufferSize
         )
-        => _incrementer = incrementer;
+        => _incrementerServer = incrementerServer;
 
     protected override MsbRpc.Serialization.Buffers.BufferWriter HandleRequest
     (
@@ -42,7 +41,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
         int valueArgument = argumentsReader.ReadInt();
 
         // Execute procedure.
-        int result = _incrementer.Increment(valueArgument);
+        int result = _incrementerServer.Increment(valueArgument);
 
         // Send response.
         const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.Int32Size;
