@@ -66,5 +66,6 @@ public class Generator : IIncrementalGenerator
         context.AddSource(generator.ServerInterfaceFileName, generator.GenerateServerInterface());
         context.AddSource(generator.ServerProcedureEnumFileName, generator.GenerateServerProcedureEnum());
         context.AddSource(generator.ServerProcedureEnumExtensionsFileName, generator.GenerateServerProcedureEnumExtensions());
+        context.AddSource(generator.ServerEndpointFileName, generator.GenerateServerEndpoint());
     }
 }

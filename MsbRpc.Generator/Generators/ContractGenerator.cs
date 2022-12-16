@@ -13,13 +13,15 @@ public class ContractGenerator
     public string ServerProcedureEnumExtensionsFileName { get; }
     public string ServerProcedureEnumFileName { get; }
     public string ServerInterfaceFileName { get; }
+    public string ServerEndpointFileName { get; }
 
     private string ServerProcedureEnumExtensionsName { get; }
     private string ServerProcedureEnumName { get; }
     private string ServerInterfaceName { get; }
     private string GeneratedNamespace { get; }
+    private string ServerEndPointName { get; }
 
-    private List<ProcedureGenerator> _procedures;
+    private readonly List<ProcedureGenerator> _procedures;
 
     public ContractGenerator(ContractInfo info)
     {
@@ -49,6 +51,9 @@ public class ContractGenerator
 
         ServerProcedureEnumExtensionsName = contractName + ServerPostfix + ProcedurePostfix + "Extensions";
         ServerProcedureEnumExtensionsFileName = $"{GeneratedNamespace}.{ServerProcedureEnumExtensionsName}{generatedFileEnding}";
+        
+        ServerEndPointName = contractName + ServerPostfix + "Endpoint";
+        ServerEndpointFileName = $"{GeneratedNamespace}.{ServerEndPointName}{generatedFileEnding}";
         
         _procedures = new List<ProcedureGenerator>(info.Procedures.Length);
 
@@ -124,6 +129,11 @@ public class ContractGenerator
         }
 
         return writer.GetResult();
+    }
+
+    public string GenerateServerEndpoint()
+    {
+        throw new NotImplementedException();
     }
 
     private IndentedTextWriter CreateCodeWriter()

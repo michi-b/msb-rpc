@@ -1,35 +1,29 @@
-﻿using Microsoft.Extensions.Logging;
-using MsbRpc.EndPoints;
-using MsbRpc.Messaging;
-using MsbRpc.Serialization.Buffers;
-using MsbRpc.Serialization.Primitives;
+﻿namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
-namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
-
-public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure, UndefinedProcedure>
+public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<IncrementerServerProcedure, MsbRpc.EndPoints.UndefinedProcedure>
 {
     private readonly IIncrementerServer _incrementer;
 
     public IncrementerServerEndPoint
     (
-        Messenger messenger,
+        MsbRpc.Messaging.Messenger messenger,
         IIncrementerServer incrementer,
-        ILoggerFactory? loggerFactory = null,
+        Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int bufferSize = DefaultBufferSize
     )
         : base
         (
             messenger,
-            Direction.Inbound,
-            loggerFactory?.CreateLogger<IncrementerServerEndPoint>(),
+            MsbRpc.EndPoints.Direction.Inbound,
+            loggerFactory != null ? Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<IncrementerServerEndPoint>(loggerFactory) : null,
             bufferSize
         )
         => _incrementer = incrementer;
 
     protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
-    protected override string GetName(UndefinedProcedure procedure) => throw new InvalidOperationException();
+    protected override string GetName(MsbRpc.EndPoints.UndefinedProcedure procedure) => throw new InvalidOperationException();
 
-    protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, BufferReader arguments)
+    protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, MsbRpc.Serialization.Buffers.BufferReader arguments)
     {
         return serverProcedure switch
         {
@@ -38,16 +32,16 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
         };
     }
 
-    protected override Direction GetDirectionAfterHandling(IncrementerServerProcedure serverProcedure)
+    protected override MsbRpc.EndPoints.Direction GetDirectionAfterHandling(IncrementerServerProcedure serverProcedure)
     {
         return serverProcedure switch
         {
-            IncrementerServerProcedure.Increment => Direction.Inbound,
+            IncrementerServerProcedure.Increment => MsbRpc.EndPoints.Direction.Inbound,
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
-    private ArraySegment<byte> Increment(BufferReader argumentsReader)
+    private ArraySegment<byte> Increment(MsbRpc.Serialization.Buffers.BufferReader argumentsReader)
     {
         
         // Read request arguments.
@@ -59,9 +53,9 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
 
         // Send response.
 
-        const int resultSize = PrimitiveSerializer.Int32Size;
+        const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.Int32Size;
         
-        BufferWriter responseWriter = GetResponseWriter(resultSize);
+        MsbRpc.Serialization.Buffers.BufferWriter responseWriter = GetResponseWriter(resultSize);
         
         responseWriter.Write(result);
         
