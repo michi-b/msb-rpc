@@ -158,9 +158,11 @@ public class ContractGenerator
 
     public string GenerateServerEndpoint()
     {
-        //todo: implements
-        // ReSharper disable once ArrangeMethodOrOperatorBody
-        return string.Empty;
+        using IndentedTextWriter writer = CreateCodeWriter();
+
+        writer.WriteLine("public class {0}", ServerEndPointName);
+        
+        return writer.GetResult();
     }
 
     private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)
