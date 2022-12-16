@@ -86,7 +86,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
 
-        ArraySegment<byte> response = HandleRequest(procedure, arguments);
+        ArraySegment<byte> response = HandleRequest(procedure, new BufferReader(arguments));
 
         await _messenger.SendMessageAsync(response, cancellationToken);
 
@@ -100,10 +100,10 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// </summary>
     /// <param name="size">number of bytes the segment is required to contain</param>
     /// <returns>the requested buffer that points into the endpoint memory</returns>
-    protected ArraySegment<byte> GetResponseMemory(int size)
+    protected BufferWriter GetResponseWriter(int size)
     {
         _state.AssertIsResponding();
-        return _buffer.Get(size);
+        return new BufferWriter(_buffer.Get(size));
     }
 
     /// <summary>
@@ -112,30 +112,30 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// </summary>
     /// <param name="size">number of bytes the segment is required to contain</param>
     /// <returns>the requested buffer that points into the endpoint memory</returns>
-    protected ArraySegment<byte> GetRequestMemory(int size)
+    protected BufferWriter GetRequestWriter(int size)
     {
         _state.AssertIsRequesting();
         ArraySegment<byte> buffer = _buffer.Get(size + PrimitiveSerializer.Int32Size);
-        return buffer.GetOffsetSubSegment(PrimitiveSerializer.Int32Size);
+        return new BufferWriter(buffer, PrimitiveSerializer.Int32Size);
     }
 
     /// <summary>
     ///     Sends an rpc request.
     /// </summary>
     /// <param name="procedure">Which procedure is to be invoked remotely.</param>
-    /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestMemory" />.</param>
+    /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestWriter" />.</param>
     /// <param name="cancellationToken">Token for operation cancellation.</param>
     /// <returns>the response message</returns>
-    protected async Task<ArraySegment<byte>> SendRequest
+    protected async ValueTask<BufferReader> SendRequest
         (TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
         int argumentByteCount = request.Count;
 
-        //get request memory makes sure to leave space for the procedure id in front of the buffer
+        //GetRequestWriter makes sure to leave space for the procedure id in front of the buffer
         request = new ArraySegment<byte>
         (
             request.Array!,
-            request.Offset - PrimitiveSerializer.Int32Size,
+            0,
             argumentByteCount + PrimitiveSerializer.Int32Size
         );
 
@@ -149,7 +149,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         return result.ReturnCode switch
         {
-            ReceiveMessageReturnCode.Success => result.Message,
+            ReceiveMessageReturnCode.Success => new BufferReader(result.Message),
             ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TOutboundProcedure>
                 (procedure, "connection closed while waiting for the response"),
             _ => throw new ArgumentOutOfRangeException()
@@ -190,8 +190,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <param name="procedure">id of the procedure to call</param>
     /// <param name="argumentsBuffer">bytes of the arguments in recycled memory for the procedure to call</param>
     /// <returns>bytes of the return value of the called procedure, may be in recycled memory as well</returns>
-    protected virtual ArraySegment<byte> HandleRequest
-        (TInboundProcedure procedure, ArraySegment<byte> argumentsBuffer)
+    protected virtual ArraySegment<byte> HandleRequest(TInboundProcedure procedure, BufferReader argumentsBuffer)
         => throw CreateUndefinedProcedureException();
 
     protected virtual Direction GetDirectionAfterHandling(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();

@@ -29,7 +29,7 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
     protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
     protected override string GetName(UndefinedProcedure procedure) => throw new InvalidOperationException();
 
-    protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, ArraySegment<byte> arguments)
+    protected override ArraySegment<byte> HandleRequest(IncrementerServerProcedure serverProcedure, BufferReader arguments)
     {
         return serverProcedure switch
         {
@@ -47,14 +47,12 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
         };
     }
 
-    private ArraySegment<byte> Increment(ArraySegment<byte> argumentsBuffer)
+    private ArraySegment<byte> Increment(BufferReader argumentsReader)
     {
         
         // Read request arguments.
 
-        var reader = new BufferReader(argumentsBuffer);
-        
-        int valueArgument = reader.ReadInt32();
+        int valueArgument = argumentsReader.ReadInt32();
 
         // Execute procedure.
         int result = _incrementer.Increment(valueArgument);
@@ -63,12 +61,10 @@ public class IncrementerServerEndPoint : RpcEndPoint<IncrementerServerProcedure,
 
         const int resultSize = PrimitiveSerializer.Int32Size;
         
-        ArraySegment<byte> resultBuffer = GetResponseMemory(resultSize);
+        BufferWriter responseWriter = GetResponseWriter(resultSize);
         
-        var writer = new BufferWriter(resultBuffer);
+        responseWriter.Write(result);
         
-        writer.Write(result);
-        
-        return resultBuffer;
+        return responseWriter.Buffer;
     }
 }

@@ -34,22 +34,19 @@ public class IncrementerClientEndPoint : RpcEndPoint<UndefinedProcedure, Increme
 
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        ArraySegment<byte> requestBytes = GetRequestMemory(constantArgumentSizeSum);
-
-        var writer = new BufferWriter(requestBytes);
+        BufferWriter writer = GetRequestWriter(constantArgumentSizeSum);
 
         writer.Write(value);
 
         // Send request.
 
         const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
-        ArraySegment<byte> responseBytes = await SendRequest(procedure, requestBytes, cancellationToken);
+        
+        BufferReader responseReader = await SendRequest(procedure, writer.Buffer, cancellationToken);
 
         // Read response.        
 
-        var reader = new BufferReader(responseBytes);
-
-        int response = reader.ReadInt32();
+        int response = responseReader.ReadInt32();
 
         ExitCalling(procedure);
 

@@ -1,17 +1,17 @@
 ﻿using JetBrains.Annotations;
+using MsbRpc.Utility;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
 namespace MsbRpc.Serialization.Buffers;
 
 public struct BufferWriter
 {
-    private readonly ArraySegment<byte> _segment;
     private int _position;
 
-    public BufferWriter(ArraySegment<byte> segment)
+    public BufferWriter(ArraySegment<byte> segment, int position = 0)
     {
-        _segment = segment;
-        _position = 0;
+        Buffer = segment;
+        _position = position;
     }
 
     private int PostIncrementPosition(int increment)
@@ -21,81 +21,84 @@ public struct BufferWriter
         return position;
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    public ArraySegment<byte> Buffer { get; }
+
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(byte value)
     {
-        _segment.WriteByte(value, PostIncrementPosition(ByteSize));
+        Buffer.WriteByte(value, PostIncrementPosition(ByteSize));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(sbyte value)
     {
-        _segment.WriteSByte(value, PostIncrementPosition(SByteSize));
+        Buffer.WriteSByte(value, PostIncrementPosition(SByteSize));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(short value)
     {
-        _segment.WriteInt16(value, PostIncrementPosition(Int16Size));
+        Buffer.WriteInt16(value, PostIncrementPosition(Int16Size));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(ushort value)
     {
-        _segment.WriteUInt16(value, PostIncrementPosition(UInt16Size));
+        Buffer.WriteUInt16(value, PostIncrementPosition(UInt16Size));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(int value)
     {
-        _segment.WriteInt32(value, PostIncrementPosition(Int32Size));
+        Buffer.WriteInt32(value, PostIncrementPosition(Int32Size));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(uint value)
     {
-        _segment.WriteUInt32(value, PostIncrementPosition(UInt32Size));
+        Buffer.WriteUInt32(value, PostIncrementPosition(UInt32Size));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(long value)
     {
-        _segment.WriteInt64(value, PostIncrementPosition(Int64Size));
+        Buffer.WriteInt64(value, PostIncrementPosition(Int64Size));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(ulong value)
     {
-        _segment.WriteUInt64(value, PostIncrementPosition(UInt64Size));
+        Buffer.WriteUInt64(value, PostIncrementPosition(UInt64Size));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(float value)
     {
-        _segment.WriteSingle(value, PostIncrementPosition(SingleSize));
+        Buffer.WriteSingle(value, PostIncrementPosition(SingleSize));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(double value)
     {
-        _segment.WriteDouble(value, PostIncrementPosition(DoubleSize));
+        Buffer.WriteDouble(value, PostIncrementPosition(DoubleSize));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(decimal value)
     {
-        _segment.WriteDecimal(value, PostIncrementPosition(DecimalSize));
+        Buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(bool value)
     {
-        _segment.WriteBoolean(value, PostIncrementPosition(BooleanSize));
+        Buffer.WriteBoolean(value, PostIncrementPosition(BooleanSize));
     }
 
-    [PublicAPI]
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(char value)
     {
-        _segment.WriteChar(value, PostIncrementPosition(CharSize));
+        Buffer.WriteChar(value, PostIncrementPosition(CharSize));
     }
 }
