@@ -53,11 +53,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
         return responseWriter;
     }
 
-    protected override string GetName(MsbRpc.EndPoints.UndefinedProcedure procedure) => throw CreateUndefinedProcedureException();
-
     protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
-
-    protected override bool GetInvertsDirection(MsbRpc.EndPoints.UndefinedProcedure procedure) => throw CreateUndefinedProcedureException();
 
     protected override bool GetInvertsDirection(IncrementerServerProcedure procedure) => procedure.GetInvertsDirection();
 }

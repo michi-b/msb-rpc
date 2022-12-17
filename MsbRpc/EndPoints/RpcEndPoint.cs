@@ -182,15 +182,13 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         return Unsafe.As<TOutboundProcedure, int>(ref value);
     }
 
-    //to be implemented by derived classes for defined procedure enums
-    protected abstract string GetName(TInboundProcedure procedure);
+    protected virtual string GetName(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
-    //to be implemented by derived classes for defined procedure enums
-    protected abstract string GetName(TOutboundProcedure procedure);
+    protected virtual string GetName(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
-    protected abstract bool GetInvertsDirection(TInboundProcedure procedure);
+    protected virtual bool GetInvertsDirection(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
-    protected abstract bool GetInvertsDirection(TOutboundProcedure procedure);
+    protected virtual bool GetInvertsDirection(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
     /// <param name="procedure">id of the procedure to call</param>
     /// <param name="argumentsBuffer">bytes of the arguments in recycled memory for the procedure to call</param>
