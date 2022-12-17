@@ -25,6 +25,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" />
+        <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
     </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 
 public class EndPointNames
 {
-    public const string BufferSizeParameter = "bufferSize";
+    public const string BufferSizeParameter = "initialBufferSize";
     public const string DefaultBufferSizeConstant = "DefaultBufferSize";
     public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
     public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";

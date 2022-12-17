@@ -5,9 +5,11 @@ using Microsoft.Extensions.Logging;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
+[PublicAPI(Messages.GeneratorTarget)]
 public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisposable
     where TInboundProcedure : Enum
     where TOutboundProcedure : Enum
@@ -27,19 +29,19 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     protected RpcEndPoint
     (
         Messenger messenger,
-        Direction direction,
+        EndPointDirection direction,
         ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> logger,
-        int bufferSize = DefaultBufferSize
+        int initialBufferSize = DefaultBufferSize
     )
     {
         _typeName = GetType().Name;
         Logger = logger;
         _messenger = messenger;
-        _buffer = new RecycledBuffer(bufferSize);
+        _buffer = new RecycledBuffer(initialBufferSize);
         _state = direction switch
         {
-            Direction.Inbound => State.IdleInbound,
-            Direction.Outbound => State.IdleOutbound,
+            EndPointDirection.Inbound => State.IdleInbound,
+            EndPointDirection.Outbound => State.IdleOutbound,
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }
@@ -48,7 +50,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     {
         _state.Transition(State.IdleInbound, State.Listening);
         Messenger.ListenReturnCode listenReturnCode = await _messenger.ListenAsync
-            (_buffer, (message, cancellationToken1) => ReceiveMessageAsync(message, cancellationToken1), cancellationToken);
+            (_buffer, ReceiveMessageAsync, cancellationToken);
 
         // receive message callback will only discontinue listening if procedure results in outbound state
         if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)

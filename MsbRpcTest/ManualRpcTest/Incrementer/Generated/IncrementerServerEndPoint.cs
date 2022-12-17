@@ -9,18 +9,17 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
         MsbRpc.Messaging.Messenger messenger,
         IIncrementerServer incrementerServer,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
-        int bufferSize = DefaultBufferSize
+        int initialBufferSize = DefaultBufferSize
     )
         : base
         (
             messenger,
-            MsbRpc.EndPoints.Direction.Inbound,
+            MsbRpc.EndPoints.EndPointDirection.Inbound,
             loggerFactory != null
                 ? Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<IncrementerServerEndPoint>(loggerFactory)
                 : new Microsoft.Extensions.Logging.Abstractions.NullLogger<IncrementerServerEndPoint>(),
-            bufferSize
-        )
-        => _incrementerServer = incrementerServer;
+            initialBufferSize
+        ) => _incrementerServer = incrementerServer;
 
     protected override MsbRpc.Serialization.Buffers.BufferWriter HandleRequest
     (

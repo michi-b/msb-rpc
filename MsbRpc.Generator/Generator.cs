@@ -68,7 +68,7 @@ public class Generator : IIncrementalGenerator
 
     private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointId target)
     {
-        if (generator[target].HasProcedures)
+        if (generator[target].HasInboundProcedures)
         {
             context.AddSource(generator.Names[target].ProcedureFile, generator.GenerateProcedureEnum(target));
             context.AddSource(generator.Names[target].ProcedureExtensionsFile, generator.GenerateProcedureEnumExtensions(target));

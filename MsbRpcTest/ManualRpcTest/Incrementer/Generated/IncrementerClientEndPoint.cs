@@ -15,7 +15,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
         : base
         (
             messenger,
-            MsbRpc.EndPoints.Direction.Outbound,
+            MsbRpc.EndPoints.EndPointDirection.Outbound,
             loggerFactory != null
                 ? Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<IncrementerClientEndPoint>(loggerFactory)
                 : new Microsoft.Extensions.Logging.Abstractions.NullLogger<IncrementerClientEndPoint>(),
