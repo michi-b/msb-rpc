@@ -1,5 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
+using MsbRpc.Generator.GenerationHelpers.Code;
+using MsbRpc.Generator.GenerationHelpers.Names;
 using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationHelpers;
@@ -131,7 +133,7 @@ public class EndPointGenerator
             writer.WriteLine(GeneralCode.MessengerParameterLine);
             writer.WriteLine($"{_names.InterfaceType} {_names.InterfaceParameter},");
             writer.WriteLine(GeneralCode.LoggerFactoryInterfaceParameter);
-            writer.WriteLine(RpcEndPointCode.BufferSizeParameterWithDefaultLine);
+            writer.WriteLine(EndPointCode.BufferSizeParameterWithDefaultLine);
         }
 
         //base constructor invocation
@@ -142,13 +144,22 @@ public class EndPointGenerator
             {
                 writer.WriteLine($"{GeneralNames.MessengerParameter},");
                 writer.WriteLine($"{EndPointNames.BufferSizeParameter},");
-                writer.WriteLoggerArgumentFromFactoryParameterLines(_names.EndPointType);
+                GenerateLoggerArgumentCreation(writer, _names.EndPointType);
                 writer.WriteLine(EndPointNames.BufferSizeParameter);
             }
 
             //body
             writer.WriteLine($"=> {_names.InterfaceField} = {_names.InterfaceParameter};");
         }
+        writer.Indent--;
+    }
+
+    private static void GenerateLoggerArgumentCreation(IndentedTextWriter writer, string categoryTypeName)
+    {
+        writer.WriteLine($"{GeneralNames.LoggerFactoryParameter} != null");
+        writer.Indent++;
+        writer.WriteLine($"? {GeneralNames.CreateLoggerMethod}.CreateLogger<{categoryTypeName}>({GeneralNames.LoggerFactoryParameter})");
+        writer.WriteLine($": new {GeneralNames.NullLoggerType}<{categoryTypeName}>(),");
         writer.Indent--;
     }
 

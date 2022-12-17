@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers;
+﻿namespace MsbRpc.Generator.GenerationHelpers.Names;
 
 public static class GeneralNames
 {

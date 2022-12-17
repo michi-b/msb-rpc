@@ -1,6 +1,8 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers;
+﻿using MsbRpc.Generator.GenerationHelpers.Names;
 
-public class RpcEndPointCode
+namespace MsbRpc.Generator.GenerationHelpers.Code;
+
+public static class EndPointCode
 {
     public const string BufferSizeParameterWithDefaultLine = $"int {EndPointNames.BufferSizeParameter} = {EndPointNames.DefaultBufferSizeConstant}";
 }
