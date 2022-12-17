@@ -5,8 +5,8 @@ namespace MsbRpc.EndPoints;
 
 public static class StateExtensions
 {
-    private static readonly State[] _respondingStates = { State.Listening };
-    private static readonly State[] _requestingStates = { State.Calling };
+    private static readonly State[] RespondingStates = { State.Listening };
+    private static readonly State[] RequestingStates = { State.Calling };
 
     public static void Transition(this ref State target, State stateFrom, State stateTo)
     {
@@ -26,13 +26,13 @@ public static class StateExtensions
     [Conditional("DEBUG")]
     internal static void AssertIsRequesting(this State target)
     {
-        target.AssertIsAmong(_requestingStates);
+        target.AssertIsAmong(RequestingStates);
     }
 
     [Conditional("DEBUG")]
     internal static void AssertIsResponding(this State target)
     {
-        target.AssertIsAmong(_respondingStates);
+        target.AssertIsAmong(RespondingStates);
     }
 
     [Conditional("DEBUG")]

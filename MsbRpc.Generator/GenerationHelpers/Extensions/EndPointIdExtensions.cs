@@ -1,6 +1,6 @@
 ﻿using MsbRpc.EndPoints;
 
-namespace MsbRpc.Generator.GenerationHelpers;
+namespace MsbRpc.Generator.GenerationHelpers.Extensions;
 
 public static class EndPointIdExtensions
 {

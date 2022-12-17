@@ -1,12 +1,11 @@
-﻿using System.CodeDom.Compiler;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
 public readonly struct ParameterInfo : IEquatable<ParameterInfo>
 {
-    private string Name { get; }
-    private TypeInfo Type { get; }
+    public string Name { get; }
+    public TypeInfo Type { get; }
 
     public ParameterInfo(IParameterSymbol parameter)
     {
@@ -24,12 +23,5 @@ public readonly struct ParameterInfo : IEquatable<ParameterInfo>
         {
             return (Name.GetHashCode() * 397) ^ Type.GetHashCode();
         }
-    }
-
-    public void GenerateInterface(IndentedTextWriter writer)
-    {
-        writer.Write(Type.FullName);
-        writer.Write(" ");
-        writer.Write(Name);
     }
 }

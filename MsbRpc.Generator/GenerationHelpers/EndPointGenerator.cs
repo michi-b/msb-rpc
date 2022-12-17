@@ -23,6 +23,8 @@ public class EndPointGenerator
 
     public bool HasInboundProcedures { get; }
     private bool HasOutboundProcedures => Remote!.HasInboundProcedures;
+    
+    private ProcedureGenerator[] OutBoundProcedures => Remote!._procedures;
 
     public EndPointGenerator(EndPointInfo info, EndPointNames names, EndPointDirection initialDirection)
     {
@@ -44,7 +46,7 @@ public class EndPointGenerator
         {
             foreach (ProcedureGenerator procedure in _procedures)
             {
-                procedure.GenerateInterface(writer);
+                procedure.GenerateInterfaceMethod(writer);
             }
         }
     }
@@ -91,9 +93,13 @@ public class EndPointGenerator
             }
 
             GenerateEndpointConstructor(writer);
+            
+            foreach (ProcedureGenerator outBoundProcedure in OutBoundProcedures)
+            {
+                writer.WriteLine();
+                outBoundProcedure.GenerateEndPointMethod(writer);
+            }
         }
-
-        if (HasOutboundProcedures) { }
     }
 
     private string GetOutboundProcedureName() => Remote!.GetInboundProcedureName();

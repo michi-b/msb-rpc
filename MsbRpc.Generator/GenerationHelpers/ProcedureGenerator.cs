@@ -1,5 +1,8 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
+using MsbRpc.Generator.GenerationHelpers.Code;
+using MsbRpc.Generator.GenerationHelpers.Extensions;
+using MsbRpc.Generator.GenerationHelpers.Names;
 using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationHelpers;
@@ -8,7 +11,9 @@ public readonly struct ProcedureGenerator
 {
     private readonly string _fullName;
     private readonly string _name;
-    private readonly List<ParameterInfo> _parameters;
+    private readonly ParameterGenerator[] _parameters;
+    private readonly bool _hasParameters;
+    private readonly string _parametersString;
     private readonly TypeInfo _returnType;
     private readonly bool _invertsDirection;
 
@@ -16,12 +21,18 @@ public readonly struct ProcedureGenerator
     {
         _name = info.Name;
 
-        _parameters = new List<ParameterInfo>(info.Parameters.Length);
-        foreach (ParameterInfo parameterInfo in info.Parameters)
+        _parameters = new ParameterGenerator[info.Parameters.Length];
+        
+        for (int i = 0; i < info.Parameters.Length; i++)
         {
-            _parameters.Add(parameterInfo);
+            ParameterInfo parameterInfo = info.Parameters[i];
+            _parameters[i] = new ParameterGenerator(parameterInfo);
         }
 
+        _hasParameters = _parameters.Length > 0;
+
+        _parametersString = _parameters.GetString();
+        
         _invertsDirection = info.InvertsDirection;
 
         _returnType = info.ReturnType;
@@ -29,20 +40,15 @@ public readonly struct ProcedureGenerator
         _fullName = procedureEnumName + '.' + _name;
     }
 
-    public void GenerateInterface(IndentedTextWriter writer)
+    public void GenerateInterfaceMethod(IndentedTextWriter writer)
     {
         writer.Write($"{_returnType.FullName} {_name}");
 
         using (writer.EncloseInParentheses())
         {
-            if (_parameters.Count > 0)
+            if (_hasParameters)
             {
-                _parameters[0].GenerateInterface(writer);
-                for (int i = 1; i < _parameters.Count; i++)
-                {
-                    writer.WriteCommaDelimiter();
-                    _parameters[i].GenerateInterface(writer);
-                }
+                writer.Write(_parametersString);
             }
         }
 
@@ -71,5 +77,22 @@ public readonly struct ProcedureGenerator
     public void GenerateGetInvertsDirectionCase(IndentedTextWriter writer)
     {
         writer.WriteLine($"{_fullName} => {(_invertsDirection ? "true" : "false")},");
+    }
+
+    public void GenerateEndPointMethod(IndentedTextWriter writer)
+    {
+        if (_returnType.SerializationInfo.SerializationType.GetIsPrimitiveType())
+        {
+            writer.Write($"{GeneralNames.VaLueTaskType}<{_returnType.FullName}> {_name}{GeneralNames.AsyncSuffix}(");
+            if (_hasParameters)
+            {
+                writer.Write($"{_parametersString}, ");
+            }
+            writer.WriteLine($"{GeneralCode.CancellationTokenParameter})");
+        }
+        else
+        {
+            throw new NotImplementedException("only primitive return values for remote procedures are implemented at this time");
+        }
     }
 }

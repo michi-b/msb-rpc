@@ -10,6 +10,13 @@ public static class GeneralNames
 
     public const string CreateLoggerMethod = "Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger";
     public const string NullLoggerType = "Microsoft.Extensions.Logging.Abstractions.NullLogger";
+    
+    public const string VaLueTaskType = "System.Threading.Tasks.ValueTask";
+    
+    public const string CancellationTokenType = "System.Threading.CancellationToken";
+    public const string CancellationTokenParameter = "cancellationToken";
+    
     public const string GeneratedFileEnding = ".g.cs";
     public const string InterfacePrefix = "I";
+    public const string AsyncSuffix = "Async";
 }
