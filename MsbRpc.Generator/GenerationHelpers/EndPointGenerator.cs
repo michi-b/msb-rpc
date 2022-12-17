@@ -1,4 +1,5 @@
 ﻿using System.CodeDom.Compiler;
+using System.Diagnostics;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Code;
 using MsbRpc.Generator.GenerationHelpers.Names;
@@ -34,7 +35,7 @@ public class EndPointGenerator
 
     public void GenerateInterface(IndentedTextWriter writer)
     {
-        writer.WriteLine("public interface {0}", _names.InterfaceType);
+        writer.WriteLine("public interface {0}", _names.Interface);
 
         using (writer.EncloseInBlock(false))
         {
@@ -76,15 +77,20 @@ public class EndPointGenerator
 
     public void GenerateEndPoint(IndentedTextWriter writer)
     {
-        writer.WriteLine("public class {0}", _names.EndPointType);
+        writer.Write($"public class {_names.EndPointType} : {EndPointNames.EndPointBaseType}");
+        writer.WriteLine($"<{GetInboundProcedureName()}, {GetOutboundProcedureName()}>");
 
         using (writer.EncloseInBlock(false))
         {
-            writer.WriteLine($"private readonly {_names.InterfaceType} {_names.InterfaceField};");
+            writer.WriteLine($"private readonly {_names.Interface} {_names.InterfaceField};");
             writer.WriteLine();
             GenerateEndpointConstructor(writer);
         }
     }
+
+    private string GetOutboundProcedureName() => Remote!.GetInboundProcedureName();
+
+    private string GetInboundProcedureName() => HasProcedures ? _names.ProcedureEnum : EndPointNames.UndefinedProcedureEnum;
 
     private void GenerateProcedureEnumGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
@@ -131,7 +137,7 @@ public class EndPointGenerator
         using (writer.EncloseInParenthesesBlock())
         {
             writer.WriteLine(GeneralCode.MessengerParameterLine);
-            writer.WriteLine($"{_names.InterfaceType} {_names.InterfaceParameter},");
+            writer.WriteLine($"{_names.Interface} {_names.InterfaceParameter},");
             writer.WriteLine(GeneralCode.LoggerFactoryInterfaceParameter);
             writer.WriteLine(EndPointCode.BufferSizeParameterWithDefaultLine);
         }

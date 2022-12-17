@@ -4,6 +4,8 @@ public class EndPointNames
 {
     public const string BufferSizeParameter = "bufferSize";
     public const string DefaultBufferSizeConstant = "DefaultBufferSize";
+    public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
+    public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
 
     /// <summary>{ContractNamespace}.Generated.{Contract}{Client/Server}Endpoint.g.cs</summary>
     public string EndPointFile { get; }
@@ -24,7 +26,7 @@ public class EndPointNames
     public string InterfaceParameter { get; }
 
     /// <summary>I{Contract}{Client/Server}</summary>
-    public string InterfaceType { get; }
+    public string Interface { get; }
 
     /// <summary>{Contract}{Client/Server}Procedure</summary>
     public string ProcedureEnum { get; }
@@ -40,8 +42,8 @@ public class EndPointNames
         InterfaceField = $"_{lowerCaseContractName}{serverPostfix}";
         InterfaceParameter = $"{lowerCaseContractName}{serverPostfix}";
 
-        InterfaceType = $"{GeneralNames.InterfacePrefix}{contractName}{serverPostfix}";
-        InterfaceFile = $"{generatedNamespace}.{InterfaceType}{GeneralNames.GeneratedFileEnding}";
+        Interface = $"{GeneralNames.InterfacePrefix}{contractName}{serverPostfix}";
+        InterfaceFile = $"{generatedNamespace}.{Interface}{GeneralNames.GeneratedFileEnding}";
 
         ProcedureEnum = $"{contractName}{serverPostfix}{ContractNames.ProcedurePostfix}";
         ProcedureFile = $"{generatedNamespace}.{ProcedureEnum}{GeneralNames.GeneratedFileEnding}";
