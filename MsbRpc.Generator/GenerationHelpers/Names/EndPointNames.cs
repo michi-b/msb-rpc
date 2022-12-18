@@ -6,6 +6,8 @@ public class EndPointNames
     public const string DefaultBufferSizeConstant = "DefaultBufferSize";
     public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
     public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
+    public const string EnterCallingMethod = "EnterCalling";
+    public const string ExitCallingMethod = "ExitCalling";
 
     /// <summary>{ContractNamespace}.Generated.{Contract}{Client/Server}Endpoint.g.cs</summary>
     public string EndPointFile { get; }

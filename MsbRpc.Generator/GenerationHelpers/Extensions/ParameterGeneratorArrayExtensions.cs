@@ -11,7 +11,7 @@ public static class ParameterGeneratorArrayExtensions
             return string.Empty;
         }
 
-        string firstParameterCode = parameters[0].Code;
+        string firstParameterCode = parameters[0].ParameterCode;
         var stringBuilder = new StringBuilder((firstParameterCode.Length * parameters.Length * 2) 
                                               + 2 * (parameters.Length - 1)); //for commas and spaces 
 
@@ -19,7 +19,7 @@ public static class ParameterGeneratorArrayExtensions
         for (int i = 1; i < parameters.Length; i++)
         {
             stringBuilder.Append(", ");
-            stringBuilder.Append(parameters[i].Code);
+            stringBuilder.Append(parameters[i].ParameterCode);
         }
         
         return stringBuilder.ToString();

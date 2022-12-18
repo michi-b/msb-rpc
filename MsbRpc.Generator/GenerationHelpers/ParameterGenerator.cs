@@ -4,10 +4,15 @@ namespace MsbRpc.Generator.GenerationHelpers;
 
 public readonly struct ParameterGenerator
 {
-    public readonly string Code { get; }
-    
+    public readonly string ParameterCode { get; }
+    private readonly TypeGenerator Type { get; }
+    private readonly string Name { get; }
+
     public ParameterGenerator(ParameterInfo info)
     {
-        Code = $"{info.Type.FullName} {info.Name}";
+        Name = info.Name;
+        Type = new TypeGenerator(info.Type);
+        
+        ParameterCode = $"{Type.FullName} {Name}";
     }
 }

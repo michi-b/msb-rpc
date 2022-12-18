@@ -2,44 +2,44 @@
 
 public static class SerializationTypeExtensions
 {
-    public static string? GetPrimitiveTypeName(this SerializationType target, string result)
+    public static string? GetPrimitiveTypeName(this SerializationKind target, string result)
     {
         return target switch
         {
-            SerializationType.Byte => SerializationTypeUtility.ByteTypeName,
-            SerializationType.Sbyte => SerializationTypeUtility.SbyteTypeName,
-            SerializationType.Bool => SerializationTypeUtility.BoolTypeName,
-            SerializationType.Char => SerializationTypeUtility.CharTypeName,
-            SerializationType.Int => SerializationTypeUtility.IntTypeName,
-            SerializationType.Long => SerializationTypeUtility.LongTypeName,
-            SerializationType.Short => SerializationTypeUtility.ShortTypeName,
-            SerializationType.Uint => SerializationTypeUtility.UintTypeName,
-            SerializationType.Ulong => SerializationTypeUtility.UlongTypeName,
-            SerializationType.Ushort => SerializationTypeUtility.UshortTypeName,
-            SerializationType.Float => SerializationTypeUtility.FloatTypeName,
-            SerializationType.Double => SerializationTypeUtility.DoubleTypeName,
-            SerializationType.Decimal => SerializationTypeUtility.DecimalTypeName,
+            SerializationKind.Byte => SerializationTypeUtility.ByteTypeName,
+            SerializationKind.Sbyte => SerializationTypeUtility.SbyteTypeName,
+            SerializationKind.Bool => SerializationTypeUtility.BoolTypeName,
+            SerializationKind.Char => SerializationTypeUtility.CharTypeName,
+            SerializationKind.Int => SerializationTypeUtility.IntTypeName,
+            SerializationKind.Long => SerializationTypeUtility.LongTypeName,
+            SerializationKind.Short => SerializationTypeUtility.ShortTypeName,
+            SerializationKind.Uint => SerializationTypeUtility.UintTypeName,
+            SerializationKind.Ulong => SerializationTypeUtility.UlongTypeName,
+            SerializationKind.Ushort => SerializationTypeUtility.UshortTypeName,
+            SerializationKind.Float => SerializationTypeUtility.FloatTypeName,
+            SerializationKind.Double => SerializationTypeUtility.DoubleTypeName,
+            SerializationKind.Decimal => SerializationTypeUtility.DecimalTypeName,
             _ => null
         };
     }
 
-    public static bool GetIsPrimitiveType(this SerializationType target)
+    public static bool GetIsPrimitive(this SerializationKind target)
     {
         return target switch
         {
-            SerializationType.Byte => true,
-            SerializationType.Sbyte => true,
-            SerializationType.Bool => true,
-            SerializationType.Char => true,
-            SerializationType.Int => true,
-            SerializationType.Long => true,
-            SerializationType.Short => true,
-            SerializationType.Uint => true,
-            SerializationType.Ulong => true,
-            SerializationType.Ushort => true,
-            SerializationType.Float => true,
-            SerializationType.Double => true,
-            SerializationType.Decimal => true,
+            SerializationKind.Byte => true,
+            SerializationKind.Sbyte => true,
+            SerializationKind.Bool => true,
+            SerializationKind.Char => true,
+            SerializationKind.Int => true,
+            SerializationKind.Long => true,
+            SerializationKind.Short => true,
+            SerializationKind.Uint => true,
+            SerializationKind.Ulong => true,
+            SerializationKind.Ushort => true,
+            SerializationKind.Float => true,
+            SerializationKind.Double => true,
+            SerializationKind.Decimal => true,
             _ => false
         };
     }

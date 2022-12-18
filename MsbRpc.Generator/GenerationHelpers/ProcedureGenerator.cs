@@ -12,9 +12,10 @@ public readonly struct ProcedureGenerator
     private readonly string _fullName;
     private readonly string _name;
     private readonly ParameterGenerator[] _parameters;
+    
     private readonly bool _hasParameters;
     private readonly string _parametersString;
-    private readonly TypeInfo _returnType;
+    private readonly TypeGenerator _returnType;
     private readonly bool _invertsDirection;
 
     public ProcedureGenerator(ProcedureInfo info, string procedureEnumName)
@@ -35,7 +36,7 @@ public readonly struct ProcedureGenerator
         
         _invertsDirection = info.InvertsDirection;
 
-        _returnType = info.ReturnType;
+        _returnType = new TypeGenerator(info.ReturnType);
 
         _fullName = procedureEnumName + '.' + _name;
     }
@@ -79,9 +80,9 @@ public readonly struct ProcedureGenerator
         writer.WriteLine($"{_fullName} => {(_invertsDirection ? "true" : "false")},");
     }
 
-    public void GenerateEndPointMethod(IndentedTextWriter writer)
+    public void GenerateRequestMethod(IndentedTextWriter writer)
     {
-        if (_returnType.SerializationInfo.SerializationType.GetIsPrimitiveType())
+        if (_returnType.Serialization.Kind.GetIsPrimitive())
         {
             writer.Write($"{GeneralNames.VaLueTaskType}<{_returnType.FullName}> {_name}{GeneralNames.AsyncSuffix}(");
             if (_hasParameters)
@@ -89,6 +90,12 @@ public readonly struct ProcedureGenerator
                 writer.Write($"{_parametersString}, ");
             }
             writer.WriteLine($"{GeneralCode.CancellationTokenParameter})");
+            
+            using (writer.EncloseInBlock())
+            {
+                writer.WriteLine($"{EndPointNames.EnterCallingMethod}();");
+                
+            }
         }
         else
         {

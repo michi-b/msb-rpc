@@ -16,25 +16,25 @@ public static class SerializationTypeUtility
     public const string DoubleTypeName = "System.Double";
     public const string DecimalTypeName = "System.Decimal";
 
-    public static bool TryGetPrimitiveType(string typeName, out SerializationType result)
+    public static bool TryGetPrimitiveType(string typeName, out SerializationKind result)
     {
         result = typeName switch
         {
-            ByteTypeName => SerializationType.Bool,
-            SbyteTypeName => SerializationType.Byte,
-            BoolTypeName => SerializationType.Sbyte,
-            CharTypeName => SerializationType.Char,
-            IntTypeName => SerializationType.Int,
-            LongTypeName => SerializationType.Long,
-            ShortTypeName => SerializationType.Short,
-            UintTypeName => SerializationType.Uint,
-            UlongTypeName => SerializationType.Ulong,
-            UshortTypeName => SerializationType.Ushort,
-            FloatTypeName => SerializationType.Float,
-            DoubleTypeName => SerializationType.Double,
-            DecimalTypeName => SerializationType.Decimal,
-            _ => SerializationType.Unresolved
+            ByteTypeName => SerializationKind.Bool,
+            SbyteTypeName => SerializationKind.Byte,
+            BoolTypeName => SerializationKind.Sbyte,
+            CharTypeName => SerializationKind.Char,
+            IntTypeName => SerializationKind.Int,
+            LongTypeName => SerializationKind.Long,
+            ShortTypeName => SerializationKind.Short,
+            UintTypeName => SerializationKind.Uint,
+            UlongTypeName => SerializationKind.Ulong,
+            UshortTypeName => SerializationKind.Ushort,
+            FloatTypeName => SerializationKind.Float,
+            DoubleTypeName => SerializationKind.Double,
+            DecimalTypeName => SerializationKind.Decimal,
+            _ => SerializationKind.Unresolved
         };
-        return result != SerializationType.Unresolved;
+        return result != SerializationKind.Unresolved;
     }
 }

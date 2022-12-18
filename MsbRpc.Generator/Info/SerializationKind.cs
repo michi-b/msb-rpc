@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Info;
 
-public enum SerializationType
+public enum SerializationKind
 {
     Unresolved = 0,
     Byte = 1,

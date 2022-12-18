@@ -97,7 +97,7 @@ public class EndPointGenerator
             foreach (ProcedureGenerator outBoundProcedure in OutBoundProcedures)
             {
                 writer.WriteLine();
-                outBoundProcedure.GenerateEndPointMethod(writer);
+                outBoundProcedure.GenerateRequestMethod(writer);
             }
         }
     }
