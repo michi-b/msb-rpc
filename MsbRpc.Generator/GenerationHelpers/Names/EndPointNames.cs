@@ -2,12 +2,29 @@
 
 public class EndPointNames
 {
-    public const string BufferSizeParameter = "initialBufferSize";
-    public const string DefaultBufferSizeConstant = "DefaultBufferSize";
-    public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
-    public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
-    public const string EnterCallingMethod = "EnterCalling";
-    public const string ExitCallingMethod = "ExitCalling";
+    public static class Types
+    {
+        public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
+        public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
+    }
+    
+    public static class Methods
+    {
+        public const string EnterCalling = "EnterCalling";
+        public const string ExitCalling = "ExitCalling";
+        public const string GetRequestWriter = "GetRequestWriter";
+        public const string GetResponseWriter = "GetResponseWriter";
+    }
+    
+    public static class Parameters
+    {
+        public const string BufferSize = "initialBufferSize";
+    }
+    
+    public static class Fields
+    {
+        public const string DefaultBufferSizeConstant = "DefaultBufferSize";
+    }
 
     /// <summary>{ContractNamespace}.Generated.{Contract}{Client/Server}Endpoint.g.cs</summary>
     public string EndPointFile { get; }

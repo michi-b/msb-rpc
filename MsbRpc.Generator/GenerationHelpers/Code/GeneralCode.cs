@@ -5,7 +5,7 @@ namespace MsbRpc.Generator.GenerationHelpers.Code;
 
 public static class GeneralCode
 {
-    public const string MessengerParameterLine = $"{MessengerType} {MessengerParameter},";
-    public const string CancellationTokenParameter = $"{CancellationTokenType} {GeneralNames.CancellationTokenParameter}";
-    public const string LoggerFactoryInterfaceParameter = $"{LoggerFactoryInterfaceType} {LoggerFactoryParameter},";
+    public const string MessengerParameterLine = $"{Types.Messenger} {Parameters.Messenger},";
+    public const string CancellationTokenParameter = $"{Types.CancellationToken} {Parameters.CancellationToken}";
+    public const string LoggerFactoryInterfaceParameter = $"{Types.LoggerFactoryInterface} {Parameters.LoggerFactory},";
 }

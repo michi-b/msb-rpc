@@ -82,7 +82,7 @@ public class EndPointGenerator
 
     public void GenerateEndPoint(IndentedTextWriter writer)
     {
-        writer.Write($"public class {_names.EndPointType} : {EndPointNames.EndPointBaseType}");
+        writer.Write($"public class {_names.EndPointType} : {EndPointNames.Types.EndPointBaseType}");
         writer.WriteLine($"<{GetInboundProcedureName()}, {GetOutboundProcedureName()}>");
 
         using (writer.EncloseInBlock(false))
@@ -104,7 +104,7 @@ public class EndPointGenerator
 
     private string GetOutboundProcedureName() => Remote!.GetInboundProcedureName();
 
-    private string GetInboundProcedureName() => HasInboundProcedures ? _names.ProcedureEnum : EndPointNames.UndefinedProcedureEnum;
+    private string GetInboundProcedureName() => HasInboundProcedures ? _names.ProcedureEnum : EndPointNames.Types.UndefinedProcedureEnum;
 
     private void GenerateProcedureEnumGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
@@ -166,11 +166,11 @@ public class EndPointGenerator
             writer.WriteLine(": base");
             using (writer.EncloseInParenthesesBlock(false))
             {
-                writer.WriteLine($"{GeneralNames.MessengerParameter},");
+                writer.WriteLine($"{GeneralNames.Parameters.Messenger},");
                 writer.WriteLine(EndPointCode.GetInitialDirectionArgumentLine(_initialDirection));
-                writer.WriteLine($"{EndPointNames.BufferSizeParameter},");
+                writer.WriteLine($"{EndPointNames.Parameters.BufferSize},");
                 GenerateLoggerArgumentCreation(writer, _names.EndPointType);
-                writer.WriteLine(EndPointNames.BufferSizeParameter);
+                writer.WriteLine(EndPointNames.Parameters.BufferSize);
             }
 
             //body
@@ -186,10 +186,10 @@ public class EndPointGenerator
 
     private static void GenerateLoggerArgumentCreation(IndentedTextWriter writer, string categoryTypeName)
     {
-        writer.WriteLine($"{GeneralNames.LoggerFactoryParameter} != null");
+        writer.WriteLine($"{GeneralNames.Parameters.LoggerFactory} != null");
         writer.Indent++;
-        writer.WriteLine($"? {GeneralNames.CreateLoggerMethod}.CreateLogger<{categoryTypeName}>({GeneralNames.LoggerFactoryParameter})");
-        writer.WriteLine($": new {GeneralNames.NullLoggerType}<{categoryTypeName}>(),");
+        writer.WriteLine($"? {GeneralNames.Methods.CreateLogger}.CreateLogger<{categoryTypeName}>({GeneralNames.Parameters.LoggerFactory})");
+        writer.WriteLine($": new {GeneralNames.Types.NullLogger}<{categoryTypeName}>(),");
         writer.Indent--;
     }
 

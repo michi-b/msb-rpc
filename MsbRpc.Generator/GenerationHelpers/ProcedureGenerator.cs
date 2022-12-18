@@ -10,7 +10,11 @@ namespace MsbRpc.Generator.GenerationHelpers;
 
 public readonly struct ProcedureGenerator
 {
-    private const string _constantArgumentsSizeSumVariableName = "constantArgumentsSizeSum";
+    private static class VariableNames
+    {
+        public const string RequestWriter = "writer";
+        public const string ConstantArgumentsSizeSum = "constantSerializedSize";
+    }
 
     private readonly string _fullName;
     private readonly string _name;
@@ -44,7 +48,7 @@ public readonly struct ProcedureGenerator
         }
 
         _constantArgumentsSizeSumCodeLine =
-            $"const int {_constantArgumentsSizeSumVariableName} = {string.Join(" + ", constantSerializationSumParts)};";
+            $"const int {VariableNames.ConstantArgumentsSizeSum} = {string.Join(" + ", constantSerializationSumParts)};";
 
         _hasParameters = _parameters.Length > 0;
 
@@ -99,20 +103,21 @@ public readonly struct ProcedureGenerator
     public void GenerateRequestMethod(IndentedTextWriter writer)
     {
         Debug.Assert(_returnType.SerializationKind.GetIsPrimitive(), "only primitives are implemented right now");
-        
+
         //header
-        writer.Write($"{GeneralNames.VaLueTaskType}<{_returnType.Name}> {_name}{GeneralNames.AsyncSuffix}(");
+        writer.Write($"{GeneralNames.Types.VaLueTask}<{_returnType.Name}> {_name}{GeneralNames.AsyncSuffix}(");
         if (_hasParameters)
         {
             writer.Write($"{_parametersString}, ");
         }
+
         writer.WriteLine($"{GeneralCode.CancellationTokenParameter})");
 
         //body
         using (writer.EncloseInBlock())
         {
-            writer.WriteLine($"{EndPointNames.EnterCallingMethod}();");
-            
+            writer.WriteLine($"{EndPointNames.Methods.EnterCalling}();");
+
             if (_hasParameters)
             {
                 writer.WriteLine();
@@ -120,8 +125,20 @@ public readonly struct ProcedureGenerator
                 {
                     writer.WriteLine(parameter.ConstantSizeVariableInitializationLine);
                 }
+
+                writer.WriteLine();
                 writer.WriteLine(_constantArgumentsSizeSumCodeLine);
             }
+
+            writer.WriteLine();
+            writer.WriteLine
+            (
+                EndPointCode.GetRequestWriterCodeLine
+                (
+                    VariableNames.RequestWriter,
+                    _hasParameters ? VariableNames.ConstantArgumentsSizeSum : "0"
+                )
+            );
         }
     }
 }

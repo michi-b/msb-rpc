@@ -48,7 +48,7 @@ public static class SerializationKindExtensions
 
     public static bool TryGetConstantSizeCode(this SerializationKind target, out string result)
     {
-        const string primitiveSerializer = GeneralNames.PrimitiveSerializerType;
+        const string primitiveSerializer = GeneralNames.Types.PrimitiveSerializer;
         result = target switch
         {
             SerializationKind.Byte => $"{primitiveSerializer}.ByteSize",
