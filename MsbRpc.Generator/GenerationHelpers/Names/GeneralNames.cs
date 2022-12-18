@@ -15,6 +15,8 @@ public static class GeneralNames
     
     public const string CancellationTokenType = "System.Threading.CancellationToken";
     public const string CancellationTokenParameter = "cancellationToken";
+
+    public const string PrimitiveSerializerType = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
     
     public const string GeneratedFileEnding = ".g.cs";
     public const string InterfacePrefix = "I";

@@ -4,14 +4,26 @@ namespace MsbRpc.Generator.GenerationHelpers;
 
 public readonly struct TypeGenerator
 {
-    public readonly string FullName;
-    public readonly TypeSerializationGenerator Serialization;
+    public readonly string Name;
+    public SerializationKind SerializationKind { get; }
 
     public TypeGenerator(TypeInfo typeInfo)
     {
-        string name = typeInfo.Name;
+        string name = typeInfo.LocalName;
         string ns = typeInfo.Namespace;
-        FullName = $"{ns}.{name}";
-        Serialization = new TypeSerializationGenerator(FullName);
+        Name = $"{ns}.{name}";
+        
+        SerializationKind = SerializationTypeUtility.TryGetPrimitiveType(Name, out SerializationKind primitiveSerializationType)
+            ? primitiveSerializationType
+            : SerializationKind.Unresolved;
+        
+        
+    }
+    
+    public bool TryGetConstantSizeInitializationLine(string variableName, out string result)
+    {
+        bool success = SerializationKind.TryGetConstantSizeCode(out string constantSizeCode);
+        result = success ? $"const {Name} {variableName} = {constantSizeCode};" : string.Empty;
+        return success;
     }
 }

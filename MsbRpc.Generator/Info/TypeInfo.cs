@@ -4,18 +4,18 @@ namespace MsbRpc.Generator.Info;
 
 public readonly struct TypeInfo : IEquatable<TypeInfo>
 {
-    public string Name { get; }
+    public string LocalName { get; }
     public string Namespace { get; }
 
     public TypeInfo(INamedTypeSymbol typeSymbol)
     {
         INamedTypeSymbol originalDefinition = typeSymbol.OriginalDefinition;
-        Name = originalDefinition.Name;
+        LocalName = originalDefinition.Name;
         Namespace = originalDefinition.ContainingNamespace.ToDisplayString();
     }
 
     public bool Equals(TypeInfo other)
-        => Name == other.Name
+        => LocalName == other.LocalName
            && Namespace == other.Namespace;
 
     public override bool Equals(object? obj) => obj is TypeInfo other && Equals(other);
@@ -24,7 +24,7 @@ public readonly struct TypeInfo : IEquatable<TypeInfo>
     {
         unchecked
         {
-            return (Name.GetHashCode() * 397) ^ Namespace.GetHashCode();
+            return (LocalName.GetHashCode() * 397) ^ Namespace.GetHashCode();
         }
     }
 }

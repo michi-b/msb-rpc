@@ -5,14 +5,20 @@ namespace MsbRpc.Generator.GenerationHelpers;
 public readonly struct ParameterGenerator
 {
     public readonly string ParameterCode { get; }
-    private readonly TypeGenerator Type { get; }
+    public readonly TypeGenerator Type { get; }
     private readonly string Name { get; }
+
+    public readonly string ConstantSizeVariableName;
+    public readonly string? ConstantSizeVariableInitializationLine;
+    public readonly bool IsConstantSize;
 
     public ParameterGenerator(ParameterInfo info)
     {
         Name = info.Name;
         Type = new TypeGenerator(info.Type);
+        ParameterCode = $"{Type.Name} {Name}";
         
-        ParameterCode = $"{Type.FullName} {Name}";
+        ConstantSizeVariableName = $"{Name}Size";
+        IsConstantSize = Type.TryGetConstantSizeInitializationLine(ConstantSizeVariableName, out ConstantSizeVariableInitializationLine);
     }
 }
