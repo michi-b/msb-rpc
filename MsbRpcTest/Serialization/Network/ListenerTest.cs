@@ -66,7 +66,7 @@ public abstract class ListenerTest : Test
 
         CancellationToken cancellationToken = CancellationToken;
 
-        byte[] messageOut = new byte[PrimitiveSerializer.Int32Size];
+        byte[] messageOut = new byte[PrimitiveSerializer.IntSize];
         messageOut.WriteInt(value);
         var messageOutSegment = new ArraySegment<byte>(messageOut);
 
@@ -96,7 +96,7 @@ public abstract class ListenerTest : Test
 
         using (client)
         {
-            byte[] message = new byte[PrimitiveSerializer.Int32Size];
+            byte[] message = new byte[PrimitiveSerializer.IntSize];
             foreach (int value in values)
             {
                 message.WriteInt(value);

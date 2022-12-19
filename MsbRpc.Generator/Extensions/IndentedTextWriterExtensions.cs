@@ -4,8 +4,8 @@ namespace MsbRpc.Generator.Extensions;
 
 public static class IndentedTextWriterExtensions
 {
-    public static IndentedTextWriterBlock EncloseInBlock(this IndentedTextWriter writer, bool withTrailingNewline = true)
-        => new(writer, withTrailingNewline);
+    public static IndentedTextWriterBlock EncloseInBlock(this IndentedTextWriter writer, BlockOptions options = BlockOptions.WithTrailingNewline)
+        => new(writer, options);
 
     public static IndentedTextWriterParenthesesBlock EncloseInParenthesesBlock(this IndentedTextWriter writer, bool withTrailingNewline = true)
         => new(writer, withTrailingNewline);
@@ -17,15 +17,17 @@ public static class IndentedTextWriterExtensions
         writer.WriteLine('{');
     }
 
-    public static void WriteBlockScopeEnd(this IndentedTextWriter writer, bool withTrailingNewline)
+    public static void WriteBlockScopeEnd(this IndentedTextWriter writer, BlockOptions options)
     {
-        if (withTrailingNewline)
+        writer.Write('}');
+        if (options.HasFlag(BlockOptions.WithTrailingSemicolon))
         {
-            writer.WriteLine('}');
+            writer.Write(';');
         }
-        else
+
+        if (options.HasFlag(BlockOptions.WithTrailingNewline))
         {
-            writer.Write('}');
+            writer.WriteLine();
         }
     }
 

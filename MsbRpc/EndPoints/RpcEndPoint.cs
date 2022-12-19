@@ -79,7 +79,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
 
-        ArraySegment<byte> arguments = message.GetOffsetSubSegment(PrimitiveSerializer.Int32Size);
+        ArraySegment<byte> arguments = message.GetOffsetSubSegment(PrimitiveSerializer.IntSize);
 
         LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
 
@@ -118,8 +118,8 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     protected BufferWriter GetRequestWriter(int size)
     {
         _state.AssertIsRequesting();
-        ArraySegment<byte> buffer = _buffer.Get(size + PrimitiveSerializer.Int32Size);
-        return new BufferWriter(buffer, PrimitiveSerializer.Int32Size);
+        ArraySegment<byte> buffer = _buffer.Get(size + PrimitiveSerializer.IntSize);
+        return new BufferWriter(buffer, PrimitiveSerializer.IntSize);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         (
             request.Array!,
             0,
-            argumentByteCount + PrimitiveSerializer.Int32Size
+            argumentByteCount + PrimitiveSerializer.IntSize
         );
 
         request.WriteInt(GetProcedureIdValue(procedure));

@@ -13,19 +13,19 @@ public static partial class PrimitiveSerializer
     {
         return primitiveType switch
         {
-            PrimitiveType.Boolean => BooleanSize,
+            PrimitiveType.Boolean => BoolSize,
             PrimitiveType.Byte => ByteSize,
             PrimitiveType.Char => CharSize,
             PrimitiveType.Decimal => DecimalSize,
             PrimitiveType.Double => DoubleSize,
-            PrimitiveType.Int16 => Int16Size,
-            PrimitiveType.Int32 => Int32Size,
-            PrimitiveType.Int64 => Int64Size,
-            PrimitiveType.SByte => SByteSize,
-            PrimitiveType.Single => SingleSize,
-            PrimitiveType.UInt16 => UInt16Size,
-            PrimitiveType.UInt32 => UInt32Size,
-            PrimitiveType.UInt64 => UInt64Size,
+            PrimitiveType.Int16 => ShortSize,
+            PrimitiveType.Int32 => IntSize,
+            PrimitiveType.Int64 => LongSize,
+            PrimitiveType.SByte => SbyteSize,
+            PrimitiveType.Single => FloatSize,
+            PrimitiveType.UInt16 => UshortSize,
+            PrimitiveType.UInt32 => UintSize,
+            PrimitiveType.UInt64 => UlongSize,
             _ => throw new ArgumentOutOfRangeException(nameof(primitiveType), primitiveType, null)
         };
     }
@@ -46,7 +46,7 @@ public static partial class PrimitiveSerializer
 
     public static sbyte ReadSbyte(this byte[] buffer, int offset = 0) => (sbyte)buffer[offset];
 
-    [PublicAPI] public const int SByteSize = 1;
+    [PublicAPI] public const int SbyteSize = 1;
 
     #endregion
 
@@ -56,7 +56,7 @@ public static partial class PrimitiveSerializer
 
     public static bool ReadBool(this byte[] buffer, int offset = 0) => buffer[offset] == 1;
 
-    [PublicAPI] public const int BooleanSize = 1;
+    [PublicAPI] public const int BoolSize = 1;
 
     #endregion
 
@@ -84,7 +84,7 @@ public static partial class PrimitiveSerializer
 
     public static int ReadInt(this byte[] buffer, int offset = 0) => BitConverter.ToInt32(buffer, offset);
 
-    [PublicAPI] public const int Int32Size = 4;
+    [PublicAPI] public const int IntSize = 4;
 
     #endregion
 
@@ -98,7 +98,7 @@ public static partial class PrimitiveSerializer
 
     public static long ReadLong(this byte[] buffer, int offset = 0) => BitConverter.ToInt64(buffer, offset);
 
-    [PublicAPI] public const int Int64Size = 8;
+    [PublicAPI] public const int LongSize = 8;
 
     #endregion
 
@@ -112,7 +112,7 @@ public static partial class PrimitiveSerializer
 
     public static short ReadShort(this byte[] buffer, int offset = 0) => BitConverter.ToInt16(buffer, offset);
 
-    [PublicAPI] public const int Int16Size = 2;
+    [PublicAPI] public const int ShortSize = 2;
 
     #endregion
 
@@ -126,7 +126,7 @@ public static partial class PrimitiveSerializer
 
     public static uint ReadUint(this byte[] buffer, int offset = 0) => BitConverter.ToUInt32(buffer, offset);
 
-    [PublicAPI] public const int UInt32Size = 4;
+    [PublicAPI] public const int UintSize = 4;
 
     #endregion
 
@@ -140,7 +140,7 @@ public static partial class PrimitiveSerializer
 
     public static ulong ReadUlong(this byte[] buffer, int offset = 0) => BitConverter.ToUInt64(buffer, offset);
 
-    [PublicAPI] public const int UInt64Size = 8;
+    [PublicAPI] public const int UlongSize = 8;
 
     #endregion
 
@@ -154,7 +154,7 @@ public static partial class PrimitiveSerializer
 
     public static ushort ReadUshort(this byte[] buffer, int offset = 0) => BitConverter.ToUInt16(buffer, offset);
 
-    [PublicAPI] public const int UInt16Size = 2;
+    [PublicAPI] public const int UshortSize = 2;
 
     #endregion
 
@@ -168,7 +168,7 @@ public static partial class PrimitiveSerializer
 
     public static float ReadFloat(this byte[] buffer, int offset = 0) => BitConverter.ToSingle(buffer, offset);
 
-    [PublicAPI] public const int SingleSize = 8;
+    [PublicAPI] public const int FloatSize = 8;
 
     #endregion
 

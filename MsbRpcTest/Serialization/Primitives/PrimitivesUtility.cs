@@ -8,19 +8,19 @@ public static class PrimitivesUtility
     {
         return typeName switch
         {
-            "System.Boolean" => PrimitiveSerializer.BooleanSize,
+            "System.Boolean" => PrimitiveSerializer.BoolSize,
             "System.Byte" => PrimitiveSerializer.ByteSize,
             "System.Char" => PrimitiveSerializer.CharSize,
             "System.Decimal" => PrimitiveSerializer.DecimalSize,
             "System.Double" => PrimitiveSerializer.DoubleSize,
-            "System.Int16" => PrimitiveSerializer.Int16Size,
-            "System.Int32" => PrimitiveSerializer.Int32Size,
-            "System.Int64" => PrimitiveSerializer.Int64Size,
-            "System.SByte" => PrimitiveSerializer.SByteSize,
-            "System.Single" => PrimitiveSerializer.SingleSize,
-            "System.UInt16" => PrimitiveSerializer.UInt16Size,
-            "System.UInt32" => PrimitiveSerializer.UInt32Size,
-            "System.UInt64" => PrimitiveSerializer.UInt64Size,
+            "System.Int16" => PrimitiveSerializer.ShortSize,
+            "System.Int32" => PrimitiveSerializer.IntSize,
+            "System.Int64" => PrimitiveSerializer.LongSize,
+            "System.SByte" => PrimitiveSerializer.SbyteSize,
+            "System.Single" => PrimitiveSerializer.FloatSize,
+            "System.UInt16" => PrimitiveSerializer.UshortSize,
+            "System.UInt32" => PrimitiveSerializer.UintSize,
+            "System.UInt64" => PrimitiveSerializer.UlongSize,
             _ => throw new NotSupportedException()
         };
     }

@@ -68,10 +68,10 @@ public class PrimitivesSerializationTest : Test
         int offset = 0;
 
         buffer.WriteBool(trueBooleanValue, offset);
-        offset += PrimitiveSerializer.BooleanSize;
+        offset += PrimitiveSerializer.BoolSize;
 
         buffer.WriteBool(falseBooleanValue, offset);
-        offset += PrimitiveSerializer.BooleanSize;
+        offset += PrimitiveSerializer.BoolSize;
 
         buffer[offset++] = byteValue;
 
@@ -88,28 +88,28 @@ public class PrimitivesSerializationTest : Test
         offset += PrimitiveSerializer.DoubleSize;
 
         buffer.WriteShort(int16Value, offset);
-        offset += PrimitiveSerializer.Int16Size;
+        offset += PrimitiveSerializer.ShortSize;
 
         buffer.WriteInt(int32Value, offset);
-        offset += PrimitiveSerializer.Int32Size;
+        offset += PrimitiveSerializer.IntSize;
 
         buffer.WriteLong(int64Value, offset);
-        offset += PrimitiveSerializer.Int64Size;
+        offset += PrimitiveSerializer.LongSize;
 
         buffer.WriteSbyte(sByteValue, offset);
-        offset += PrimitiveSerializer.SByteSize;
+        offset += PrimitiveSerializer.SbyteSize;
 
         buffer.WriteFloat(singleValue, offset);
-        offset += PrimitiveSerializer.SingleSize;
+        offset += PrimitiveSerializer.FloatSize;
 
         buffer.WriteUshort(uint16Value, offset);
-        offset += PrimitiveSerializer.UInt16Size;
+        offset += PrimitiveSerializer.UshortSize;
 
         buffer.WriteUint(uint32Value, offset);
-        offset += PrimitiveSerializer.UInt32Size;
+        offset += PrimitiveSerializer.UintSize;
 
         buffer.WriteUlong(uint64Value, offset);
-        offset += PrimitiveSerializer.UInt64Size;
+        offset += PrimitiveSerializer.UlongSize;
 
         int byteCount = offset;
 
@@ -129,10 +129,10 @@ public class PrimitivesSerializationTest : Test
         offset = 0;
 
         bool trueBooleanResult = bytes.ReadBool(offset);
-        offset += PrimitiveSerializer.BooleanSize;
+        offset += PrimitiveSerializer.BoolSize;
 
         bool falseBooleanResult = bytes.ReadBool(offset);
-        offset += PrimitiveSerializer.BooleanSize;
+        offset += PrimitiveSerializer.BoolSize;
 
         byte byteResult = bytes[offset++];
 
@@ -149,28 +149,28 @@ public class PrimitivesSerializationTest : Test
         offset += PrimitiveSerializer.DoubleSize;
 
         Int16 int16Result = bytes.ReadShort(offset);
-        offset += PrimitiveSerializer.Int16Size;
+        offset += PrimitiveSerializer.ShortSize;
 
         Int32 int32Result = bytes.ReadInt(offset);
-        offset += PrimitiveSerializer.Int32Size;
+        offset += PrimitiveSerializer.IntSize;
 
         Int64 int64Result = bytes.ReadLong(offset);
-        offset += PrimitiveSerializer.Int64Size;
+        offset += PrimitiveSerializer.LongSize;
 
         SByte sByteResult = bytes.ReadSbyte(offset);
-        offset += PrimitiveSerializer.SByteSize;
+        offset += PrimitiveSerializer.SbyteSize;
 
         Single singleResult = bytes.ReadFloat(offset);
-        offset += PrimitiveSerializer.SingleSize;
+        offset += PrimitiveSerializer.FloatSize;
 
         UInt16 uint16Result = bytes.ReadUshort(offset);
-        offset += PrimitiveSerializer.UInt16Size;
+        offset += PrimitiveSerializer.UshortSize;
 
         UInt32 uint32Result = bytes.ReadUint(offset);
-        offset += PrimitiveSerializer.UInt32Size;
+        offset += PrimitiveSerializer.UintSize;
 
         UInt64 uint64Result = bytes.ReadUlong(offset);
-        offset += PrimitiveSerializer.UInt64Size;
+        offset += PrimitiveSerializer.UlongSize;
 
         Assert.AreEqual(byteCount, offset);
 

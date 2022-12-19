@@ -43,7 +43,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
         int result = _incrementerServer.Increment(valueArgument);
 
         // Send response.
-        const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.Int32Size;
+        const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
         MsbRpc.Serialization.Buffers.BufferWriter responseWriter = GetResponseWriter(resultSize);
 

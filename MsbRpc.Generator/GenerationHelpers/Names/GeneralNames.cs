@@ -12,6 +12,7 @@ public static class GeneralNames
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
         public const string BufferWriter = "MsbRpc.Serialization.Buffers.BufferWriter";
         public const string BufferReader = "MsbRpc.Serialization.Buffers.BufferReader";
+        public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
     }
     
     public static class Methods

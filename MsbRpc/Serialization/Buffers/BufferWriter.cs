@@ -33,13 +33,13 @@ public struct BufferWriter
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(sbyte value)
     {
-        Buffer.WriteSbyte(value, PostIncrementPosition(SByteSize));
+        Buffer.WriteSbyte(value, PostIncrementPosition(SbyteSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(bool value)
     {
-        Buffer.WriteBool(value, PostIncrementPosition(BooleanSize));
+        Buffer.WriteBool(value, PostIncrementPosition(BoolSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
@@ -51,43 +51,43 @@ public struct BufferWriter
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(int value)
     {
-        Buffer.WriteInt(value, PostIncrementPosition(Int32Size));
+        Buffer.WriteInt(value, PostIncrementPosition(IntSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(long value)
     {
-        Buffer.WriteLong(value, PostIncrementPosition(Int64Size));
+        Buffer.WriteLong(value, PostIncrementPosition(LongSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(short value)
     {
-        Buffer.WriteShort(value, PostIncrementPosition(Int16Size));
+        Buffer.WriteShort(value, PostIncrementPosition(ShortSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(uint value)
     {
-        Buffer.WriteUint(value, PostIncrementPosition(UInt32Size));
+        Buffer.WriteUint(value, PostIncrementPosition(UintSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(ulong value)
     {
-        Buffer.WriteUlong(value, PostIncrementPosition(UInt64Size));
+        Buffer.WriteUlong(value, PostIncrementPosition(UlongSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(ushort value)
     {
-        Buffer.WriteUshort(value, PostIncrementPosition(UInt16Size));
+        Buffer.WriteUshort(value, PostIncrementPosition(UshortSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(float value)
     {
-        Buffer.WriteFloat(value, PostIncrementPosition(SingleSize));
+        Buffer.WriteFloat(value, PostIncrementPosition(FloatSize));
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]

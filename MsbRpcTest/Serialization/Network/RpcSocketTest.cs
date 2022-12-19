@@ -194,11 +194,11 @@ public class RpcSocketTest : Test
         const bool booleanValue = true;
         const sbyte sByteValue = -122;
 
-        const int arraySize = PrimitiveSerializer.Int32Size
+        const int arraySize = PrimitiveSerializer.IntSize
                               + PrimitiveSerializer.DecimalSize
                               + PrimitiveSerializer.CharSize
-                              + PrimitiveSerializer.BooleanSize
-                              + PrimitiveSerializer.SByteSize;
+                              + PrimitiveSerializer.BoolSize
+                              + PrimitiveSerializer.SbyteSize;
 
         ArraySegment<byte> sendBytes = BufferUtility.Create(arraySize);
 

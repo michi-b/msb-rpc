@@ -33,7 +33,7 @@ public class Messenger : IDisposable
         OperationDiscontinued
     }
 
-    private const int CountSize = PrimitiveSerializer.Int32Size;
+    private const int CountSize = PrimitiveSerializer.IntSize;
     private readonly ArraySegment<byte> _receiveCountSegment = BufferUtility.Create(CountSize);
     private readonly ArraySegment<byte> _sendCountSegment = BufferUtility.Create(CountSize);
     private readonly RpcSocket _socket;

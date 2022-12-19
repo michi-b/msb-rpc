@@ -27,7 +27,10 @@ public interface IIncrementer
                     MetadataReferenceUtility.MsCoreLib,
                     MetadataReferenceUtility.SystemRuntime,
                     MetadataReferenceUtility.NetStandard,
-                    MetadataReferenceUtility.GetAssemblyReference<RpcContractAttribute>()
+                    MetadataReferenceUtility.GetAssemblyReference<RpcContractAttribute>(),
+                    MetadataReferenceUtility.GetAssemblyReference<MsbRpc.EndPoints.EndPointDirection>(),
+                    MetadataReferenceUtility.GetAssemblyReference<Microsoft.Extensions.Logging.ILoggerFactory>(),
+                    MetadataReferenceUtility.GetAssemblyReference<ArgumentOutOfRangeException>()
                 )
             ).WithAdditionalGenerators(new Generator())
         )

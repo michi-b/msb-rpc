@@ -23,7 +23,7 @@ public class EndPointGenerator
 
     public bool HasInboundProcedures { get; }
     private bool HasOutboundProcedures => Remote!.HasInboundProcedures;
-    
+
     private ProcedureGenerator[] OutBoundProcedures => Remote!._procedures;
 
     public EndPointGenerator(EndPointInfo info, EndPointNames names, EndPointDirection initialDirection)
@@ -42,7 +42,7 @@ public class EndPointGenerator
     {
         writer.WriteLine("public interface {0}", _names.Interface);
 
-        using (writer.EncloseInBlock(false))
+        using (writer.EncloseInBlock(BlockOptions.None))
         {
             foreach (ProcedureGenerator procedure in _procedures)
             {
@@ -55,7 +55,7 @@ public class EndPointGenerator
     {
         writer.WriteLine("public enum {0}", _names.ProcedureEnum);
 
-        using (writer.EncloseInBlock(false))
+        using (writer.EncloseInBlock(BlockOptions.None))
         {
             int proceduresCount = _procedures.Length;
             int lastIndex = proceduresCount - 1;
@@ -72,7 +72,7 @@ public class EndPointGenerator
 
         const string procedureParameterName = "procedure";
 
-        using (writer.EncloseInBlock(false))
+        using (writer.EncloseInBlock(BlockOptions.None))
         {
             GenerateProcedureEnumGetNameExtension(writer, procedureParameterName);
             writer.WriteLine();
@@ -85,7 +85,7 @@ public class EndPointGenerator
         writer.Write($"public class {_names.EndPointType} : {EndPointNames.Types.EndPointBaseType}");
         writer.WriteLine($"<{GetInboundProcedureName()}, {GetOutboundProcedureName()}>");
 
-        using (writer.EncloseInBlock(false))
+        using (writer.EncloseInBlock(BlockOptions.None))
         {
             if (HasInboundProcedures)
             {
@@ -93,7 +93,7 @@ public class EndPointGenerator
             }
 
             GenerateEndpointConstructor(writer);
-            
+
             foreach (ProcedureGenerator outBoundProcedure in OutBoundProcedures)
             {
                 writer.WriteLine();
@@ -106,6 +106,24 @@ public class EndPointGenerator
 
     private string GetInboundProcedureName() => HasInboundProcedures ? _names.ProcedureEnum : EndPointNames.Types.UndefinedProcedureEnum;
 
+    private void GenerateProcedureEnumGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
+    {
+        writer.WriteLine("public static string GetProcedureName(this {0} {1})", _names.ProcedureEnum, procedureParameterName);
+        using (writer.EncloseInBlock())
+        {
+            writer.WriteLine("return procedure switch");
+            using (writer.EncloseInBlock(BlockOptions.WithTrailingSemicolonAndNewline))
+            {
+                foreach (ProcedureGenerator procedure in _procedures)
+                {
+                    procedure.GenerateEnumToNameCase(writer);
+                }
+
+                GenerateProcedureOutOfRangeCase(writer, procedureParameterName);
+            }
+        }
+    }
+
     private void GenerateProcedureEnumGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
         writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", _names.ProcedureEnum, procedureParameterName);
@@ -114,29 +132,11 @@ public class EndPointGenerator
         {
             writer.WriteLine("return {0} switch", procedureParameterName);
 
-            using (writer.EncloseInBlock())
+            using (writer.EncloseInBlock(BlockOptions.WithTrailingSemicolonAndNewline))
             {
                 foreach (ProcedureGenerator procedure in _procedures)
                 {
                     procedure.GenerateGetInvertsDirectionCase(writer);
-                }
-
-                GenerateProcedureOutOfRangeCase(writer, procedureParameterName);
-            }
-        }
-    }
-
-    private void GenerateProcedureEnumGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
-    {
-        writer.WriteLine("public static string GetProcedureName(this {0} {1})", _names.ProcedureEnum, procedureParameterName);
-        using (writer.EncloseInBlock())
-        {
-            writer.WriteLine("return procedure switch");
-            using (writer.EncloseInBlock())
-            {
-                foreach (ProcedureGenerator procedure in _procedures)
-                {
-                    procedure.GenerateEnumToNameCase(writer);
                 }
 
                 GenerateProcedureOutOfRangeCase(writer, procedureParameterName);
@@ -195,6 +195,6 @@ public class EndPointGenerator
 
     private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine($"_ => throw new ArgumentOutOfRangeException(nameof({procedureParameterName}), {procedureParameterName}, null)");
+        writer.WriteLine($"_ => throw new {GeneralNames.Types.ArgumentOutOfRangeException}(nameof({procedureParameterName}), {procedureParameterName}, null)");
     }
 }

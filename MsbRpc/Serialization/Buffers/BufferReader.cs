@@ -26,34 +26,34 @@ public struct BufferReader
     public byte ReadByte() => _segment.ReadByte(PostIncrementPosition(ByteSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public sbyte ReadSbyte() => _segment.ReadSbyte(PostIncrementPosition(SByteSize));
+    public sbyte ReadSbyte() => _segment.ReadSbyte(PostIncrementPosition(SbyteSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public bool ReadBool() => _segment.ReadBool(PostIncrementPosition(BooleanSize));
+    public bool ReadBool() => _segment.ReadBool(PostIncrementPosition(BoolSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public char ReadChar() => _segment.ReadChar(PostIncrementPosition(CharSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public int ReadInt() => _segment.ReadInt(PostIncrementPosition(Int32Size));
+    public int ReadInt() => _segment.ReadInt(PostIncrementPosition(IntSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public long ReadLong() => _segment.ReadLong(PostIncrementPosition(Int64Size));
+    public long ReadLong() => _segment.ReadLong(PostIncrementPosition(LongSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public short ReadShort() => _segment.ReadShort(PostIncrementPosition(Int16Size));
+    public short ReadShort() => _segment.ReadShort(PostIncrementPosition(ShortSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public uint ReadUint() => _segment.ReadUint(PostIncrementPosition(UInt32Size));
+    public uint ReadUint() => _segment.ReadUint(PostIncrementPosition(UintSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public ulong ReadUlong() => _segment.ReadUlong(PostIncrementPosition(UInt64Size));
+    public ulong ReadUlong() => _segment.ReadUlong(PostIncrementPosition(UlongSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public ushort ReadUshort() => _segment.ReadUshort(PostIncrementPosition(UInt16Size));
+    public ushort ReadUshort() => _segment.ReadUshort(PostIncrementPosition(UshortSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public float ReadFloat() => _segment.ReadFloat(PostIncrementPosition(SingleSize));
+    public float ReadFloat() => _segment.ReadFloat(PostIncrementPosition(FloatSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public double ReadDouble() => _segment.ReadDouble(PostIncrementPosition(DoubleSize));

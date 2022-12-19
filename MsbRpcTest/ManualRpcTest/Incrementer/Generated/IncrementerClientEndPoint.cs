@@ -28,7 +28,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
 
         // Write request arguments
 
-        const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.Int32Size;
+        const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
         const int constantArgumentSizeSum = valueArgumentSize;
 
