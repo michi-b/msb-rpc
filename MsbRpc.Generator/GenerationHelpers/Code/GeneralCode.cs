@@ -1,5 +1,4 @@
-﻿using MsbRpc.Generator.GenerationHelpers.Names;
-using static MsbRpc.Generator.GenerationHelpers.Names.GeneralNames;
+﻿using static MsbRpc.Generator.GenerationHelpers.Names.GeneralNames;
 
 namespace MsbRpc.Generator.GenerationHelpers.Code;
 

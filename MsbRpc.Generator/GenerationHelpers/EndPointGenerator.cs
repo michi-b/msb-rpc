@@ -168,7 +168,6 @@ public class EndPointGenerator
             {
                 writer.WriteLine($"{GeneralNames.Parameters.Messenger},");
                 writer.WriteLine(EndPointCode.GetInitialDirectionArgumentLine(_initialDirection));
-                writer.WriteLine($"{EndPointNames.Parameters.BufferSize},");
                 GenerateLoggerArgumentCreation(writer, _names.EndPointType);
                 writer.WriteLine(EndPointNames.Parameters.BufferSize);
             }
@@ -188,13 +187,14 @@ public class EndPointGenerator
     {
         writer.WriteLine($"{GeneralNames.Parameters.LoggerFactory} != null");
         writer.Indent++;
-        writer.WriteLine($"? {GeneralNames.Methods.CreateLogger}.CreateLogger<{categoryTypeName}>({GeneralNames.Parameters.LoggerFactory})");
+        writer.WriteLine($"? {GeneralNames.Methods.CreateLogger}<{categoryTypeName}>({GeneralNames.Parameters.LoggerFactory})");
         writer.WriteLine($": new {GeneralNames.Types.NullLogger}<{categoryTypeName}>(),");
         writer.Indent--;
     }
 
     private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine($"_ => throw new {GeneralNames.Types.ArgumentOutOfRangeException}(nameof({procedureParameterName}), {procedureParameterName}, null)");
+        writer.WriteLine
+            ($"_ => throw new {GeneralNames.Types.ArgumentOutOfRangeException}(nameof({procedureParameterName}), {procedureParameterName}, null)");
     }
 }
