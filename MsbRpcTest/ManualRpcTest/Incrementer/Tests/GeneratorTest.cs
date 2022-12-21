@@ -1,9 +1,11 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Misbat.CodeAnalysis.Test.CodeTest;
 using Misbat.CodeAnalysis.Test.Extensions;
 using Misbat.CodeAnalysis.Test.Utility;
+using MsbRpc.EndPoints;
 using MsbRpc.Generator;
 using MsbRpc.Generator.Attributes;
 
@@ -18,7 +20,7 @@ public interface IIncrementer
     int Increment(int value);
 }";
 
-    private static readonly CodeTest CodeTest = new CodeTest
+    private readonly CodeTest CodeTest = new CodeTest
         (
             new CodeTestConfiguration
             (
@@ -27,10 +29,11 @@ public interface IIncrementer
                     MetadataReferenceUtility.MsCoreLib,
                     MetadataReferenceUtility.SystemRuntime,
                     MetadataReferenceUtility.NetStandard,
-                    MetadataReferenceUtility.GetAssemblyReference<RpcContractAttribute>(),
-                    MetadataReferenceUtility.GetAssemblyReference<MsbRpc.EndPoints.EndPointDirection>(),
-                    MetadataReferenceUtility.GetAssemblyReference<Microsoft.Extensions.Logging.ILoggerFactory>(),
-                    MetadataReferenceUtility.GetAssemblyReference<ArgumentOutOfRangeException>()
+                    MetadataReferenceUtility.FromType<RpcContractAttribute>(),
+                    MetadataReferenceUtility.FromType<EndPointDirection>(),
+                    MetadataReferenceUtility.FromType<ILoggerFactory>(),
+                    MetadataReferenceUtility.FromType<ArgumentOutOfRangeException>(),
+                    MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Tasks.Extensions")
                 )
             ).WithAdditionalGenerators(new Generator())
         )
@@ -92,6 +95,8 @@ public interface IIncrementer
         const string expectedTreeName = "IncrementerServerProcedureExtensions.g.cs";
         Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
     }
+
+    private async ValueTask<int> Dummy() => await ValueTask.FromResult(0);
 
     private async Task<CodeTestResult> RunCodeTest() => (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
     private async Task<GeneratorDriverRunResult> RunGenerator() => (await RunCodeTest()).GeneratorResults[typeof(Generator)].GetRunResult();

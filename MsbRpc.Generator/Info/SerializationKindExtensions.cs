@@ -89,4 +89,26 @@ public static class SerializationKindExtensions
             _ => false
         };
     }
+
+    public static string GetBufferReadMethodName(this SerializationKind target)
+    {
+        return target switch
+        {
+            SerializationKind.Unresolved => throw new InvalidOperationException(),
+            SerializationKind.Byte => "ReadByte",
+            SerializationKind.Sbyte => "ReadSbyte",
+            SerializationKind.Bool => "ReadBool",
+            SerializationKind.Char => "ReadChar",
+            SerializationKind.Int => "ReadInt",
+            SerializationKind.Long => "ReadLong",
+            SerializationKind.Short => "ReadShort",
+            SerializationKind.Uint => "ReadUint",
+            SerializationKind.Ulong => "ReadUlong",
+            SerializationKind.Ushort => "ReadUshort",
+            SerializationKind.Float => "ReadFloat",
+            SerializationKind.Double => "ReadDouble",
+            SerializationKind.Decimal => "ReadDecimal",
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
+    }
 }

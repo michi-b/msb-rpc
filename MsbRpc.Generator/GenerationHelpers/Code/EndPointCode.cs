@@ -10,6 +10,6 @@ public static class EndPointCode
 
     public static string GetInitialDirectionArgumentLine(EndPointDirection direction) => $"MsbRpc.EndPoints.EndPointDirection.{direction.GetName()},";
 
-    public static string GetRequestWriterCodeLine(string variableName, string sizeArgument) 
-        => $"{GeneralNames.Types.BufferWriter} {variableName} = {EndPointNames.Methods.GetRequestWriter}({sizeArgument});";
+    public static string GetRequestWriterCodeLine(string variableName, string sizeArgument)
+        => $"{ProcedureNames.Types.BufferWriter} {variableName} = {EndPointNames.Methods.GetRequestWriter}({sizeArgument});";
 }

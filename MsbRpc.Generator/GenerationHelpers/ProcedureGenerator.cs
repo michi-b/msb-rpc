@@ -5,17 +5,12 @@ using MsbRpc.Generator.GenerationHelpers.Code;
 using MsbRpc.Generator.GenerationHelpers.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Names;
 using MsbRpc.Generator.Info;
+using static MsbRpc.Generator.GenerationHelpers.Names.ProcedureNames;
 
 namespace MsbRpc.Generator.GenerationHelpers;
 
 public readonly struct ProcedureGenerator
 {
-    private static class VariableNames
-    {
-        public const string RequestWriter = "writer";
-        public const string ConstantArgumentsSizeSum = "constantSerializedSize";
-    }
-
     private readonly string _fullName;
     private readonly string _name;
     private readonly ParameterGenerator[] _parameters;
@@ -24,6 +19,7 @@ public readonly struct ProcedureGenerator
     private readonly TypeGenerator _returnType;
     private readonly bool _invertsDirection;
     private readonly string _constantArgumentsSizeSumCodeLine;
+    private readonly string _procedureEnumName;
 
     public ProcedureGenerator(ProcedureInfo info, string procedureEnumName)
     {
@@ -48,7 +44,7 @@ public readonly struct ProcedureGenerator
         }
 
         _constantArgumentsSizeSumCodeLine =
-            $"const int {VariableNames.ConstantArgumentsSizeSum} = {string.Join(" + ", constantSerializationSumParts)};";
+            $"const int {Variables.ConstantArgumentsSizeSum} = {string.Join(" + ", constantSerializationSumParts)};";
 
         _hasParameters = _parameters.Length > 0;
 
@@ -57,6 +53,8 @@ public readonly struct ProcedureGenerator
         _invertsDirection = info.InvertsDirection;
 
         _returnType = new TypeGenerator(info.ReturnType);
+
+        _procedureEnumName = procedureEnumName;
 
         _fullName = procedureEnumName + '.' + _name;
     }
@@ -105,7 +103,7 @@ public readonly struct ProcedureGenerator
         Debug.Assert(_returnType.SerializationKind.GetIsPrimitive(), "only primitives are implemented right now");
 
         //header
-        writer.Write($"{GeneralNames.Types.VaLueTask}<{_returnType.Name}> {_name}{GeneralNames.AsyncSuffix}(");
+        writer.Write($"public async {GeneralNames.Types.VaLueTask}<{_returnType.Name}> {_name}{GeneralNames.AsyncSuffix}(");
         if (_hasParameters)
         {
             writer.Write($"{_parametersString}, ");
@@ -116,8 +114,10 @@ public readonly struct ProcedureGenerator
         //body
         using (writer.EncloseInBlock())
         {
+            //enter calling
             writer.WriteLine($"{EndPointNames.Methods.EnterCalling}();");
 
+            //get size for request writer
             if (_hasParameters)
             {
                 writer.WriteLine();
@@ -130,15 +130,47 @@ public readonly struct ProcedureGenerator
                 writer.WriteLine(_constantArgumentsSizeSumCodeLine);
             }
 
+            //get request writer
             writer.WriteLine();
             writer.WriteLine
             (
                 EndPointCode.GetRequestWriterCodeLine
                 (
-                    VariableNames.RequestWriter,
-                    _hasParameters ? VariableNames.ConstantArgumentsSizeSum : "0"
+                    Variables.RequestWriter,
+                    _hasParameters ? Variables.ConstantArgumentsSizeSum : "0"
                 )
             );
+
+            //write parameters
+            writer.WriteLine();
+            foreach (ParameterGenerator parameter in _parameters)
+            {
+                writer.WriteLine($"{Variables.RequestWriter}.{Methods.BufferWriterWrite}({parameter.Name});");
+            }
+
+            //procedure id
+            writer.WriteLine();
+            writer.WriteLine($"const {_procedureEnumName} {Variables.Procedure} = {_fullName};");
+
+            //send request
+            writer.WriteLine();
+            writer.Write($"{Types.BufferReader} {Variables.ResponseReader} = await {Methods.SendRequest}(");
+            writer.Write($"{Variables.Procedure}, ");
+            writer.Write($"{Variables.RequestWriter}.{Properties.BufferWriterBufferProperty}, ");
+            writer.WriteLine($"{GeneralNames.Parameters.CancellationToken});");
+
+            //read response
+            writer.WriteLine();
+            writer.Write($"{_returnType.Name} {Variables.Response} = ");
+            writer.WriteLine($"{_returnType.GetBufferReadExpression(Variables.ResponseReader)};");
+
+            //exit calling
+            writer.WriteLine();
+            writer.WriteLine($"{EndPointNames.Methods.ExitCalling}({Variables.Procedure});");
+
+            //return response
+            writer.WriteLine();
+            writer.WriteLine($"return {Variables.Response};");
         }
     }
 }

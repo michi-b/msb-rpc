@@ -18,6 +18,7 @@
         <PackageReference Include="coverlet.collector" Version="3.1.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.1-dev-10301" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896" />
+        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,6 +26,12 @@
         <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" />
         <ProjectReference Include="..\MsbRpc.Generator\MsbRpc.Generator.csproj" />
         <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Threading.Tasks.Extensions">
+        <HintPath>..\..\..\Program Files\dotnet\shared\Microsoft.NETCore.App\6.0.12\System.Threading.Tasks.Extensions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

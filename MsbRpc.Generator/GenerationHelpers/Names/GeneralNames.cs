@@ -2,6 +2,10 @@
 
 public static class GeneralNames
 {
+    public const string GeneratedFileEnding = ".g.cs";
+    public const string InterfacePrefix = "I";
+    public const string AsyncSuffix = "Async";
+
     public static class Types
     {
         public const string LoggerFactoryInterface = "Microsoft.Extensions.Logging.ILoggerFactory";
@@ -10,11 +14,9 @@ public static class GeneralNames
         public const string VaLueTask = "System.Threading.Tasks.ValueTask";
         public const string CancellationToken = "System.Threading.CancellationToken";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
-        public const string BufferWriter = "MsbRpc.Serialization.Buffers.BufferWriter";
-        public const string BufferReader = "MsbRpc.Serialization.Buffers.BufferReader";
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
     }
-    
+
     public static class Methods
     {
         public const string CreateLogger = "Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger";
@@ -26,8 +28,4 @@ public static class GeneralNames
         public const string Messenger = "messenger";
         public const string CancellationToken = "cancellationToken";
     }
-
-    public const string GeneratedFileEnding = ".g.cs";
-    public const string InterfacePrefix = "I";
-    public const string AsyncSuffix = "Async";
 }
