@@ -79,7 +79,7 @@ public interface IIncrementer
     public async Task GeneratesClientEndPoint()
     {
         const string expectedTreeName = "IncrementerClientEndPoint.g.cs";
-        GeneratorDriverRunResult result = await RunGenerator(CodeTest.LoggingOptions.AnalyzerDiagnostics);
+        GeneratorDriverRunResult result = await RunGenerator(CodeTest.LoggingOptions.Diagnostics);
         SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.FilePath.EndsWith(expectedTreeName));
         Assert.IsNotNull(tree);
     }
