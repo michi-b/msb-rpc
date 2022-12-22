@@ -20,7 +20,7 @@ public interface IIncrementer
     int Increment(int value);
 }";
 
-    private readonly CodeTest CodeTest = new CodeTest
+    private static readonly CodeTest CodeTest = new CodeTest
         (
             new CodeTestConfiguration
             (
@@ -76,6 +76,15 @@ public interface IIncrementer
     public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator());
 
     [TestMethod]
+    public async Task GeneratesClientEndPoint()
+    {
+        const string expectedTreeName = "IncrementerClientEndPoint.g.cs";
+        GeneratorDriverRunResult result = await RunGenerator(CodeTest.LoggingOptions.AnalyzerDiagnostics);
+        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.FilePath.EndsWith(expectedTreeName));
+        Assert.IsNotNull(tree);
+    }
+
+    [TestMethod]
     public async Task GeneratesServerInterface()
     {
         const string expectedTreeName = "IIncrementerServer.g.cs";
@@ -96,8 +105,9 @@ public interface IIncrementer
         Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
     }
 
-    private async ValueTask<int> Dummy() => await ValueTask.FromResult(0);
+    private async Task<CodeTestResult> RunCodeTest(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.All)
+        => (await CodeTest.Run(CancellationToken, LoggerFactory, loggingOptions)).Result;
 
-    private async Task<CodeTestResult> RunCodeTest() => (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
-    private async Task<GeneratorDriverRunResult> RunGenerator() => (await RunCodeTest()).GeneratorResults[typeof(Generator)].GetRunResult();
+    private async Task<GeneratorDriverRunResult> RunGenerator(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.All)
+        => (await RunCodeTest(loggingOptions)).GeneratorResults[typeof(Generator)].GetRunResult();
 }
