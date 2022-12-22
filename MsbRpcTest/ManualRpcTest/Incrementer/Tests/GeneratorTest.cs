@@ -41,6 +41,8 @@ public interface IIncrementer
         .InNamespace("MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input")
         .WithCode(Code);
 
+    private static readonly ILogger<GeneratorTest> Logger = LoggerFactory.CreateLogger<GeneratorTest>();
+
     [TestMethod]
     public async Task GeneratorRuns()
     {
@@ -49,16 +51,16 @@ public interface IIncrementer
     }
 
     [TestMethod]
-    public async Task GeneratorHasSingleResult()
+    public async Task GeneratorHasOneResult()
     {
-        CodeTestResult result = await RunCodeTest();
+        CodeTestResult result = await RunCodeTest(CodeTest.LoggingOptions.All);
         Assert.AreEqual(1, result.GeneratorResults.Count);
     }
 
     [TestMethod]
     public async Task GeneratorThrowsNoException()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator();
+        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(CodeTest.LoggingOptions.None);
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         Assert.AreEqual(null, rpcGeneratorResult.Exception);
     }
@@ -73,41 +75,51 @@ public interface IIncrementer
     }
 
     [TestMethod]
-    public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator());
+    public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator(CodeTest.LoggingOptions.Code));
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        const string expectedTreeName = "IncrementerClientEndPoint.g.cs";
-        GeneratorDriverRunResult result = await RunGenerator(CodeTest.LoggingOptions.Diagnostics);
-        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.FilePath.EndsWith(expectedTreeName));
+        const string shortFileName = "IncrementerClientEndPoint.g.cs";
+        GeneratorDriverRunResult result = await RunGenerator();
+        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
         Assert.IsNotNull(tree);
+        await Logger.LogTreeAsync(tree, nameof(GeneratesClientEndPoint), CancellationToken);
     }
 
     [TestMethod]
     public async Task GeneratesServerInterface()
     {
-        const string expectedTreeName = "IIncrementerServer.g.cs";
-        Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
+        const string shortFileName = "IIncrementerServer.g.cs";
+        GeneratorDriverRunResult result = await RunGenerator();
+        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
+        Assert.IsNotNull(tree);
+        await Logger.LogTreeAsync(tree, nameof(GeneratesServerInterface), CancellationToken);
     }
 
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
     {
-        const string expectedTreeName = "IncrementerServerProcedure.g.cs";
-        Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
+        const string shortFileName = "IncrementerServerProcedure.g.cs";
+        GeneratorDriverRunResult result = await RunGenerator();
+        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
+        Assert.IsNotNull(tree);
+        await Logger.LogTreeAsync(tree, nameof(GeneratesServerProcedureEnum), CancellationToken);
     }
 
     [TestMethod]
     public async Task GeneratesServerProcedureEnumExtensions()
     {
-        const string expectedTreeName = "IncrementerServerProcedureExtensions.g.cs";
-        Assert.That.HasGeneratedAnyTree(await RunGenerator(), tree => tree.FilePath.EndsWith(expectedTreeName));
+        const string shortFileName = "IncrementerServerProcedureExtensions.g.cs";
+        GeneratorDriverRunResult result = await RunGenerator();
+        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
+        Assert.IsNotNull(tree);
+        await Logger.LogTreeAsync(tree, nameof(GeneratesServerProcedureEnumExtensions), CancellationToken);
     }
 
-    private async Task<CodeTestResult> RunCodeTest(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.All)
-        => (await CodeTest.Run(CancellationToken, LoggerFactory, loggingOptions)).Result;
-
-    private async Task<GeneratorDriverRunResult> RunGenerator(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.All)
+    private async Task<GeneratorDriverRunResult> RunGenerator(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics)
         => (await RunCodeTest(loggingOptions)).GeneratorResults[typeof(Generator)].GetRunResult();
+
+    private async Task<CodeTestResult> RunCodeTest(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics)
+        => (await CodeTest.Run(CancellationToken, LoggerFactory, loggingOptions)).Result;
 }
