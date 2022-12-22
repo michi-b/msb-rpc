@@ -56,21 +56,23 @@ public class EndPointNames
     /// <summary>{Contract}{Client/Server}Endpoint</summary>
     public string EndPointType { get; }
 
-    public EndPointNames(string generatedNamespace, string contractName, string lowerCaseContractName, string serverPostfix)
+    public EndPointNames(string generatedNamespace, string contractName, string lowerCaseContractName, EndPointId endPointType)
     {
-        InterfaceField = $"_{lowerCaseContractName}{serverPostfix}";
-        InterfaceParameter = $"{lowerCaseContractName}{serverPostfix}";
+        string typeName = endPointType.GetName();
+        
+        InterfaceField = $"_{lowerCaseContractName}{typeName}";
+        InterfaceParameter = $"{lowerCaseContractName}{typeName}";
 
-        Interface = $"{GeneralNames.InterfacePrefix}{contractName}{serverPostfix}";
+        Interface = $"{GeneralNames.InterfacePrefix}{contractName}{typeName}";
         InterfaceFile = $"{generatedNamespace}.{Interface}{GeneralNames.GeneratedFileEnding}";
 
-        ProcedureEnum = $"{contractName}{serverPostfix}{ContractNames.ProcedurePostfix}";
+        ProcedureEnum = $"{contractName}{typeName}{ContractNames.ProcedurePostfix}";
         ProcedureFile = $"{generatedNamespace}.{ProcedureEnum}{GeneralNames.GeneratedFileEnding}";
 
-        ProcedureEnumExtensions = $"{contractName}{serverPostfix}{ContractNames.ProcedurePostfix}Extensions";
+        ProcedureEnumExtensions = $"{contractName}{typeName}{ContractNames.ProcedurePostfix}Extensions";
         ProcedureExtensionsFile = $"{generatedNamespace}.{ProcedureEnumExtensions}{GeneralNames.GeneratedFileEnding}";
 
-        EndPointType = $"{contractName}{serverPostfix}Endpoint";
+        EndPointType = $"{contractName}{typeName}EndPoint";
         EndPointFile = $"{generatedNamespace}.{EndPointType}{GeneralNames.GeneratedFileEnding}";
     }
 }

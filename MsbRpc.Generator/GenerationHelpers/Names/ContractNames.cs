@@ -3,8 +3,6 @@
 public class ContractNames
 {
     public const string ProcedurePostfix = "Procedure";
-    private const string ServerPostfix = "Server";
-    private const string ClientPostfix = "Client";
 
     private readonly EndPointNames _client;
     private readonly EndPointNames _server;
@@ -27,8 +25,8 @@ public class ContractNames
 
         GeneratedNamespace = $"{contractNamespace}.Generated";
 
-        _server = new EndPointNames(GeneratedNamespace, contractName, lowerCaseContractName, ServerPostfix);
-        _client = new EndPointNames(GeneratedNamespace, contractName, lowerCaseContractName, ClientPostfix);
+        _server = new EndPointNames(GeneratedNamespace, contractName, lowerCaseContractName, EndPointId.Server);
+        _client = new EndPointNames(GeneratedNamespace, contractName, lowerCaseContractName, EndPointId.Client);
     }
 
     private static string GetContractName(string contractInterfaceName)
