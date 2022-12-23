@@ -11,4 +11,14 @@ public static class EndPointIdExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
+    
+    public static string GetLowerCaseName(this EndPointId target)
+    {
+        return target switch
+        {
+            EndPointId.Client => "client",
+            EndPointId.Server => "server",
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
+    }
 }

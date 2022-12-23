@@ -86,6 +86,16 @@ public interface IIncrementer
         Assert.IsNotNull(tree);
         await Logger.LogTreeAsync(tree, nameof(GeneratesClientEndPoint), CancellationToken);
     }
+    
+    [TestMethod]
+    public async Task GeneratesServerEndPoint()
+    {
+        const string shortFileName = "IncrementerServerEndPoint.g.cs";
+        GeneratorDriverRunResult result = await RunGenerator();
+        SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
+        Assert.IsNotNull(tree);
+        await Logger.LogTreeAsync(tree, nameof(GeneratesClientEndPoint), CancellationToken);
+    }
 
     [TestMethod]
     public async Task GeneratesServerInterface()

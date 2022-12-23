@@ -15,6 +15,8 @@ public static class GeneralNames
         public const string CancellationToken = "System.Threading.CancellationToken";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
+        public const string BufferWriter = "MsbRpc.Serialization.BufferWriter";
+        public const string BufferReader = "MsbRpc.Serialization.BufferReader";
     }
 
     public static class Methods
@@ -27,5 +29,17 @@ public static class GeneralNames
         public const string LoggerFactory = "loggerFactory";
         public const string Messenger = "messenger";
         public const string CancellationToken = "cancellationToken";
+    }
+
+    public static string WithLowerFirstChar(this string identifier)
+    {
+        char firstChar = char.ToLowerInvariant(identifier[0]);
+        return firstChar + identifier.Substring(1);
+    }
+    
+    public static string WithUpperFirstChar(this string identifier)
+    {
+        char firstChar = char.ToUpperInvariant(identifier[0]);
+        return firstChar + identifier.Substring(1);
     }
 }

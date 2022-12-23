@@ -4,6 +4,7 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Code;
 using MsbRpc.Generator.GenerationHelpers.Names;
 using MsbRpc.Generator.Info;
+using static MsbRpc.Generator.GenerationHelpers.Names.EndPointNames;
 
 namespace MsbRpc.Generator.GenerationHelpers;
 
@@ -34,9 +35,15 @@ public class EndPointGenerator
         HasInboundProcedures = info.Procedures.Length > 0;
 
         _procedures = HasInboundProcedures
-            ? info.Procedures.Select(p => new ProcedureGenerator(p, names.ProcedureEnum)).ToArray()
+            ? info.Procedures.Select(p => new ProcedureGenerator(p, names.InboundProcedureEnum)).ToArray()
             : Array.Empty<ProcedureGenerator>();
+
+        InboundProcedureName = HasInboundProcedures ? _names.InboundProcedureEnum : Types.UndefinedProcedureEnum;
     }
+
+    private string GetOutboundProcedureName => Remote!.InboundProcedureName;
+
+    private string InboundProcedureName { get; }
 
     public void GenerateInterface(IndentedTextWriter writer)
     {
@@ -53,7 +60,7 @@ public class EndPointGenerator
 
     public void GenerateProcedureEnum(IndentedTextWriter writer)
     {
-        writer.WriteLine("public enum {0}", _names.ProcedureEnum);
+        writer.WriteLine("public enum {0}", _names.InboundProcedureEnum);
 
         using (writer.EncloseInBlock(BlockOptions.None))
         {
@@ -83,7 +90,7 @@ public class EndPointGenerator
     public void GenerateEndPoint(IndentedTextWriter writer)
     {
         writer.Write($"public class {_names.EndPointType} : {EndPointNames.Types.EndPointBaseType}");
-        writer.WriteLine($"<{GetInboundProcedureName()}, {GetOutboundProcedureName()}>");
+        writer.WriteLine($"<{InboundProcedureName}, {GetOutboundProcedureName}>");
 
         using (writer.EncloseInBlock(BlockOptions.None))
         {
@@ -99,16 +106,40 @@ public class EndPointGenerator
                 writer.WriteLine();
                 outBoundProcedure.GenerateRequestMethod(writer);
             }
+
+            if (HasInboundProcedures)
+            {
+                writer.WriteLine();
+                GenerateHandleRequest(writer);
+            }
         }
     }
 
-    private string GetOutboundProcedureName() => Remote!.GetInboundProcedureName();
+    private void GenerateHandleRequest(IndentedTextWriter writer)
+    {
+        string procedureParameterName = _names.InboundProcedureEnumParameter;
+        
+        //header
+        writer.WriteLine($"protected override {GeneralNames.Types.BufferWriter} HandleRequest");
+        using (writer.EncloseInParenthesesBlock())
+        {
+            writer.WriteLine($"{InboundProcedureName} {procedureParameterName},");
+            writer.WriteLine($"{GeneralNames.Types.BufferReader} {Parameters.ArgumentsBufferReader}");
+        }
 
-    private string GetInboundProcedureName() => HasInboundProcedures ? _names.ProcedureEnum : EndPointNames.Types.UndefinedProcedureEnum;
+        //body
+        using (writer.EncloseInBlock(BlockOptions.None))
+        {
+            writer.WriteLine($"return {procedureParameterName} switch");
+            
+              
+        }
+        
+    }
 
     private void GenerateProcedureEnumGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine("public static string GetProcedureName(this {0} {1})", _names.ProcedureEnum, procedureParameterName);
+        writer.WriteLine("public static string GetProcedureName(this {0} {1})", _names.InboundProcedureEnum, procedureParameterName);
         using (writer.EncloseInBlock())
         {
             writer.WriteLine("return procedure switch");
@@ -126,7 +157,7 @@ public class EndPointGenerator
 
     private void GenerateProcedureEnumGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", _names.ProcedureEnum, procedureParameterName);
+        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", _names.InboundProcedureEnum, procedureParameterName);
 
         using (writer.EncloseInBlock())
         {

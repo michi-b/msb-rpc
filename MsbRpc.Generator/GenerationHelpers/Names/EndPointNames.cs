@@ -19,6 +19,7 @@ public class EndPointNames
     public static class Parameters
     {
         public const string BufferSize = "initialBufferSize";
+        public const string ArgumentsBufferReader = "arguments";
     }
     
     public static class Fields
@@ -48,7 +49,10 @@ public class EndPointNames
     public string Interface { get; }
 
     /// <summary>{Contract}{Client/Server}Procedure</summary>
-    public string ProcedureEnum { get; }
+    public string InboundProcedureEnum { get; }
+    
+    /// <summary>{Contract}{client/server}Procedure</summary>
+    public string InboundProcedureEnumParameter { get; }
 
     /// <summary>{Contract}{Client/Server}ProcedureExtensions</summary>
     public string ProcedureEnumExtensions { get; }
@@ -56,23 +60,27 @@ public class EndPointNames
     /// <summary>{Contract}{Client/Server}Endpoint</summary>
     public string EndPointType { get; }
 
-    public EndPointNames(string generatedNamespace, string contractName, string lowerCaseContractName, EndPointId endPointType)
+    public EndPointNames(string generatedNamespace, string contractName, EndPointId endPointType)
     {
-        string typeName = endPointType.GetName();
+        string endPointTypeName = endPointType.GetName();
+        string lowerCaseEndPointTypeName = endPointType.GetLowerCaseName();
         
-        InterfaceField = $"_{lowerCaseContractName}{typeName}";
-        InterfaceParameter = $"{lowerCaseContractName}{typeName}";
+        string lowerCaseContractName = contractName.WithLowerFirstChar();
+        
+        InterfaceField = $"_{lowerCaseContractName}{endPointTypeName}";
+        InterfaceParameter = $"{lowerCaseContractName}{endPointTypeName}";
 
-        Interface = $"{GeneralNames.InterfacePrefix}{contractName}{typeName}";
+        Interface = $"{GeneralNames.InterfacePrefix}{contractName}{endPointTypeName}";
         InterfaceFile = $"{generatedNamespace}.{Interface}{GeneralNames.GeneratedFileEnding}";
 
-        ProcedureEnum = $"{contractName}{typeName}{ContractNames.ProcedurePostfix}";
-        ProcedureFile = $"{generatedNamespace}.{ProcedureEnum}{GeneralNames.GeneratedFileEnding}";
-
-        ProcedureEnumExtensions = $"{contractName}{typeName}{ContractNames.ProcedurePostfix}Extensions";
+        InboundProcedureEnum = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}";
+        ProcedureFile = $"{generatedNamespace}.{InboundProcedureEnum}{GeneralNames.GeneratedFileEnding}";
+        InboundProcedureEnumParameter = $"{lowerCaseEndPointTypeName}{ContractNames.ProcedurePostfix}";
+        
+        ProcedureEnumExtensions = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}Extensions";
         ProcedureExtensionsFile = $"{generatedNamespace}.{ProcedureEnumExtensions}{GeneralNames.GeneratedFileEnding}";
 
-        EndPointType = $"{contractName}{typeName}EndPoint";
+        EndPointType = $"{contractName}{endPointTypeName}EndPoint";
         EndPointFile = $"{generatedNamespace}.{EndPointType}{GeneralNames.GeneratedFileEnding}";
     }
 }
