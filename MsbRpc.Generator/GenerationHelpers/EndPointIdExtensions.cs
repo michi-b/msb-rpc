@@ -21,4 +21,14 @@ public static class EndPointIdExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
+
+    public static EndPointId GetOther(this EndPointId target)
+    {
+        return target switch
+        {
+            EndPointId.Client => EndPointId.Server,
+            EndPointId.Server => EndPointId.Client,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
+    }
 }

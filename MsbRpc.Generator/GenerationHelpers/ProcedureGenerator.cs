@@ -21,7 +21,14 @@ public readonly struct ProcedureGenerator
     private readonly string _constantArgumentsSizeSumCodeLine;
     private readonly string _procedureEnumName;
 
-    public ProcedureGenerator(ProcedureInfo info, string procedureEnumName)
+    public ProcedureGenerator
+    (
+        ref ContractInfo contractInfo,
+        ContractNames contractNames,
+        ref EndPointInfo endPointInfo,
+        EndPointNames endPointNames,
+        ref ProcedureInfo info
+    )
     {
         _name = info.Name;
 
@@ -54,9 +61,9 @@ public readonly struct ProcedureGenerator
 
         _returnType = new TypeGenerator(info.ReturnType);
 
-        _procedureEnumName = procedureEnumName;
+        _procedureEnumName = endPointNames.InboundProcedureEnumType;
 
-        _fullName = procedureEnumName + '.' + _name;
+        _fullName = _procedureEnumName + '.' + _name;
     }
 
     public void GenerateInterfaceMethod(IndentedTextWriter writer)

@@ -1,7 +1,14 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers.Names;
+﻿using MsbRpc.Generator.Info;
 
-public static class ProcedureNames
+namespace MsbRpc.Generator.GenerationHelpers.Names;
+
+public class ProcedureNames
 {
+    public ProcedureNames(ProcedureInfo info)
+    {
+        
+    }
+
     public static class Variables
     {
         public const string RequestWriter = "requestWriter";

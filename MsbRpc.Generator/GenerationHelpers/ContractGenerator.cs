@@ -1,6 +1,5 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.GenerationHelpers.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Names;
 using MsbRpc.Generator.Info;
 
@@ -24,14 +23,12 @@ public readonly struct ContractGenerator
     public ContractGenerator(ref ContractInfo info)
     {
         Names = new ContractNames(info.Namespace, info.InterfaceName);
-        _clientGenerator = CreateEndPointGenerator(info, Names, EndPointId.Client);
-        _serverGenerator = CreateEndPointGenerator(info, Names, EndPointId.Server);
+
+        _clientGenerator = new EndPointGenerator(ref info, Names, EndPointId.Client);
+        _serverGenerator = new EndPointGenerator(ref info, Names, EndPointId.Server);
         _clientGenerator.Remote = _serverGenerator;
         _serverGenerator.Remote = _clientGenerator;
     }
-
-    private static EndPointGenerator CreateEndPointGenerator(ContractInfo info, ContractNames names, EndPointId endPoint)
-        => new(info[endPoint], names[endPoint], endPoint.GetInitialDirection());
 
     public string GenerateInterface(EndPointId endPoint)
     {

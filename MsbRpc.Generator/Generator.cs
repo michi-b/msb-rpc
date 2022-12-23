@@ -66,15 +66,18 @@ public class Generator : IIncrementalGenerator
         GenerateEndPoint(context, generator, EndPointId.Server);
     }
 
-    private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointId target)
+    private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointId targetEndPointType)
     {
-        if (generator[target].HasInboundProcedures)
+        EndPointGenerator endPointGenerator = generator[targetEndPointType];
+
+        if (generator[targetEndPointType].HasInboundProcedures)
         {
-            context.AddSource(generator.Names[target].ProcedureFile, generator.GenerateProcedureEnum(target));
-            context.AddSource(generator.Names[target].ProcedureExtensionsFile, generator.GenerateProcedureEnumExtensions(target));
-            context.AddSource(generator.Names[target].InterfaceFile, generator.GenerateInterface(target));
+            context.AddSource(endPointGenerator.Names.InboundProcedureEnumFile, generator.GenerateProcedureEnum(targetEndPointType));
+            context.AddSource
+                (endPointGenerator.Names.InboundProcedureEnumExtensionsFile, generator.GenerateProcedureEnumExtensions(targetEndPointType));
+            context.AddSource(endPointGenerator.Names.InterfaceFile, generator.GenerateInterface(targetEndPointType));
         }
 
-        context.AddSource(generator.Names[target].EndPointFile, generator.GenerateEndPoint(target));
+        context.AddSource(endPointGenerator.Names.EndPointFile, generator.GenerateEndPoint(targetEndPointType));
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.CodeDom.Compiler;
+using System.Collections.Immutable;
 using MsbRpc.EndPoints;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Code;
+using MsbRpc.Generator.GenerationHelpers.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Names;
 using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.GenerationHelpers.Names.EndPointNames;
@@ -10,48 +12,47 @@ namespace MsbRpc.Generator.GenerationHelpers;
 
 public class EndPointGenerator
 {
+    private readonly ProcedureGenerator[] _inboundProcedures;
     private readonly EndPointDirection _initialDirection;
-    private readonly EndPointNames _names;
-    private readonly ProcedureGenerator[] _procedures;
+    public readonly bool HasInboundProcedures;
+    public readonly EndPointNames Names;
 
-    public EndPointGenerator? Remote
+    public EndPointGenerator? Remote { set; private get; }
+
+    public EndPointGenerator(ref ContractInfo contractInfo, ContractNames contractNames, EndPointId endPointType)
     {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        // todo: use in code generation
-        private get;
-        set;
+        Names = new EndPointNames(ref contractInfo, contractNames, endPointType);
+        _initialDirection = endPointType.GetInitialDirection();
+
+        EndPointInfo info = contractInfo[endPointType];
+
+        ImmutableArray<ProcedureInfo> inboundProcedureInfos = info.InboundProcedures;
+
+        HasInboundProcedures = info.HasInboundProcedures;
+
+        if (HasInboundProcedures)
+        {
+            int inboundProceduresCount = inboundProcedureInfos.Length;
+            _inboundProcedures = new ProcedureGenerator[inboundProceduresCount];
+            for (int i = 0; i < inboundProceduresCount; i++)
+            {
+                ProcedureInfo inboundProcedureInfo = inboundProcedureInfos[i];
+                _inboundProcedures[i] = new ProcedureGenerator(ref contractInfo, contractNames, ref info, Names, ref inboundProcedureInfo);
+            }
+        }
+        else
+        {
+            _inboundProcedures = Array.Empty<ProcedureGenerator>();
+        }
     }
-
-    public bool HasInboundProcedures { get; }
-    private bool HasOutboundProcedures => Remote!.HasInboundProcedures;
-
-    private ProcedureGenerator[] OutBoundProcedures => Remote!._procedures;
-
-    public EndPointGenerator(EndPointInfo info, EndPointNames names, EndPointDirection initialDirection)
-    {
-        _names = names;
-        _initialDirection = initialDirection;
-
-        HasInboundProcedures = info.Procedures.Length > 0;
-
-        _procedures = HasInboundProcedures
-            ? info.Procedures.Select(p => new ProcedureGenerator(p, names.InboundProcedureEnum)).ToArray()
-            : Array.Empty<ProcedureGenerator>();
-
-        InboundProcedureName = HasInboundProcedures ? _names.InboundProcedureEnum : Types.UndefinedProcedureEnum;
-    }
-
-    private string GetOutboundProcedureName => Remote!.InboundProcedureName;
-
-    private string InboundProcedureName { get; }
 
     public void GenerateInterface(IndentedTextWriter writer)
     {
-        writer.WriteLine("public interface {0}", _names.Interface);
+        writer.WriteLine("public interface {0}", Names.InterfaceType);
 
         using (writer.EncloseInBlock(BlockOptions.None))
         {
-            foreach (ProcedureGenerator procedure in _procedures)
+            foreach (ProcedureGenerator procedure in _inboundProcedures)
             {
                 procedure.GenerateInterfaceMethod(writer);
             }
@@ -60,22 +61,22 @@ public class EndPointGenerator
 
     public void GenerateProcedureEnum(IndentedTextWriter writer)
     {
-        writer.WriteLine("public enum {0}", _names.InboundProcedureEnum);
+        writer.WriteLine("public enum {0}", Names.InboundProcedureEnumType);
 
         using (writer.EncloseInBlock(BlockOptions.None))
         {
-            int proceduresCount = _procedures.Length;
+            int proceduresCount = _inboundProcedures.Length;
             int lastIndex = proceduresCount - 1;
             for (int i = 0; i < proceduresCount; i++)
             {
-                _procedures[i].GenerateEnumField(writer, i, i < lastIndex);
+                _inboundProcedures[i].GenerateEnumField(writer, i, i < lastIndex);
             }
         }
     }
 
     public void GenerateProcedureEnumExtensions(IndentedTextWriter writer)
     {
-        writer.WriteLine("public static class {0}", _names.ProcedureEnumExtensions);
+        writer.WriteLine("public static class {0}", Names.InboundProcedureEnumExtensionsType);
 
         const string procedureParameterName = "procedure";
 
@@ -89,19 +90,21 @@ public class EndPointGenerator
 
     public void GenerateEndPoint(IndentedTextWriter writer)
     {
-        writer.Write($"public class {_names.EndPointType} : {EndPointNames.Types.EndPointBaseType}");
-        writer.WriteLine($"<{InboundProcedureName}, {GetOutboundProcedureName}>");
+        EndPointGenerator remote = GetRemote();
+
+        writer.Write($"public class {Names.EndPointType} : {Types.EndPointBaseType}");
+        writer.WriteLine($"<{Names.InboundProcedureEnumType}, {remote.Names.InboundProcedureEnumType}>");
 
         using (writer.EncloseInBlock(BlockOptions.None))
         {
             if (HasInboundProcedures)
             {
-                writer.WriteLine($"private readonly {_names.Interface} {_names.InterfaceField};\n");
+                writer.WriteLine($"private readonly {Names.InterfaceType} {Names.InterfaceField};\n");
             }
 
             GenerateEndpointConstructor(writer);
 
-            foreach (ProcedureGenerator outBoundProcedure in OutBoundProcedures)
+            foreach (ProcedureGenerator outBoundProcedure in remote._inboundProcedures)
             {
                 writer.WriteLine();
                 outBoundProcedure.GenerateRequestMethod(writer);
@@ -115,15 +118,25 @@ public class EndPointGenerator
         }
     }
 
+    private EndPointGenerator GetRemote()
+    {
+        if (Remote == null)
+        {
+            throw new NullReferenceException("remote has not been set, make sure to not call generation code before the remote has been set");
+        }
+
+        return Remote;
+    }
+
     private void GenerateHandleRequest(IndentedTextWriter writer)
     {
-        string procedureParameterName = _names.InboundProcedureEnumParameter;
-        
+        string procedureParameterName = Names.InboundProcedureEnumParameter;
+
         //header
         writer.WriteLine($"protected override {GeneralNames.Types.BufferWriter} HandleRequest");
         using (writer.EncloseInParenthesesBlock())
         {
-            writer.WriteLine($"{InboundProcedureName} {procedureParameterName},");
+            writer.WriteLine($"{Names.InboundProcedureEnumType} {procedureParameterName},");
             writer.WriteLine($"{GeneralNames.Types.BufferReader} {Parameters.ArgumentsBufferReader}");
         }
 
@@ -131,21 +144,18 @@ public class EndPointGenerator
         using (writer.EncloseInBlock(BlockOptions.None))
         {
             writer.WriteLine($"return {procedureParameterName} switch");
-            
-              
         }
-        
     }
 
     private void GenerateProcedureEnumGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine("public static string GetProcedureName(this {0} {1})", _names.InboundProcedureEnum, procedureParameterName);
+        writer.WriteLine("public static string GetProcedureName(this {0} {1})", Names.InboundProcedureEnumType, procedureParameterName);
         using (writer.EncloseInBlock())
         {
             writer.WriteLine("return procedure switch");
             using (writer.EncloseInBlock(BlockOptions.WithTrailingSemicolonAndNewline))
             {
-                foreach (ProcedureGenerator procedure in _procedures)
+                foreach (ProcedureGenerator procedure in _inboundProcedures)
                 {
                     procedure.GenerateEnumToNameCase(writer);
                 }
@@ -157,7 +167,7 @@ public class EndPointGenerator
 
     private void GenerateProcedureEnumGetInvertsDirectionExtension(IndentedTextWriter writer, string procedureParameterName)
     {
-        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", _names.InboundProcedureEnum, procedureParameterName);
+        writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", Names.InboundProcedureEnumType, procedureParameterName);
 
         using (writer.EncloseInBlock())
         {
@@ -165,7 +175,7 @@ public class EndPointGenerator
 
             using (writer.EncloseInBlock(BlockOptions.WithTrailingSemicolonAndNewline))
             {
-                foreach (ProcedureGenerator procedure in _procedures)
+                foreach (ProcedureGenerator procedure in _inboundProcedures)
                 {
                     procedure.GenerateGetInvertsDirectionCase(writer);
                 }
@@ -178,13 +188,13 @@ public class EndPointGenerator
     private void GenerateEndpointConstructor(IndentedTextWriter writer)
     {
         //header
-        writer.WriteLine($"public {_names.EndPointType}");
+        writer.WriteLine($"public {Names.EndPointType}");
         using (writer.EncloseInParenthesesBlock())
         {
             writer.WriteLine(GeneralCode.MessengerParameterLine);
             if (HasInboundProcedures)
             {
-                writer.WriteLine($"{_names.Interface} {_names.InterfaceParameter},");
+                writer.WriteLine($"{Names.InterfaceType} {Names.InterfaceParameter},");
             }
 
             writer.WriteLine(GeneralCode.LoggerFactoryInterfaceParameter);
@@ -199,15 +209,15 @@ public class EndPointGenerator
             {
                 writer.WriteLine($"{GeneralNames.Parameters.Messenger},");
                 writer.WriteLine(EndPointCode.GetInitialDirectionArgumentLine(_initialDirection));
-                GenerateLoggerArgumentCreation(writer, _names.EndPointType);
-                writer.WriteLine(EndPointNames.Parameters.BufferSize);
+                GenerateLoggerArgumentCreation(writer, Names.EndPointType);
+                writer.WriteLine(Parameters.BufferSize);
             }
 
             //body
             writer.WriteLine
             (
                 HasInboundProcedures
-                    ? $" => {_names.InterfaceField} = {_names.InterfaceParameter};"
+                    ? $" => {Names.InterfaceField} = {Names.InterfaceParameter};"
                     : " { }"
             );
         }

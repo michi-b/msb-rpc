@@ -4,13 +4,15 @@ namespace MsbRpc.Generator.Info;
 
 public readonly struct EndPointInfo : IEquatable<EndPointInfo>
 {
-    public ImmutableArray<ProcedureInfo> Procedures { get; }
+    public ImmutableArray<ProcedureInfo> InboundProcedures { get; }
 
-    public EndPointInfo(ImmutableArray<ProcedureInfo> procedures) => Procedures = procedures;
+    public EndPointInfo(ImmutableArray<ProcedureInfo> inboundProcedures) => InboundProcedures = inboundProcedures;
 
-    public bool Equals(EndPointInfo other) => Procedures.Equals(other.Procedures);
+    public bool Equals(EndPointInfo other) => InboundProcedures.Equals(other.InboundProcedures);
 
     public override bool Equals(object? obj) => obj is EndPointInfo other && Equals(other);
 
-    public override int GetHashCode() => Procedures.GetHashCode();
+    public override int GetHashCode() => InboundProcedures.GetHashCode();
+    
+    public bool HasInboundProcedures => InboundProcedures.Length > 0;
 }

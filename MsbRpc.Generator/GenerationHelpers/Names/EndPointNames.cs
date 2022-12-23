@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers.Names;
+﻿using MsbRpc.Generator.Info;
+
+namespace MsbRpc.Generator.GenerationHelpers.Names;
 
 public class EndPointNames
 {
@@ -27,60 +29,51 @@ public class EndPointNames
         public const string DefaultBufferSizeConstant = "DefaultBufferSize";
     }
 
-    /// <summary>{ContractNamespace}.Generated.{Contract}{Client/Server}Endpoint.g.cs</summary>
     public string EndPointFile { get; }
-
-    /// <summary>{ContractNamespace}.Generated.I{Contract}{Client/Server}.g.cs</summary>
     public string InterfaceFile { get; }
-
-    /// <summary>{ContractNamespace}.Generated.{Contract}{Client/Server}Procedure.g.cs</summary>
-    public string ProcedureFile { get; }
-
-    /// <summary>{ContractNamespace}.Generated.{Contract}{Client/Server}ProcedureExtensions.g.cs</summary>
-    public string ProcedureExtensionsFile { get; }
-
-    /// <summary>_{contract}{Client/Server}</summary>
+    public string InboundProcedureEnumFile { get; }
+    public string InboundProcedureEnumExtensionsFile { get; }
     public string InterfaceField { get; }
-
-    /// <summary>{contract}{Client/Server}</summary>
     public string InterfaceParameter { get; }
-
-    /// <summary>I{Contract}{Client/Server}</summary>
-    public string Interface { get; }
-
-    /// <summary>{Contract}{Client/Server}Procedure</summary>
-    public string InboundProcedureEnum { get; }
-    
-    /// <summary>{Contract}{client/server}Procedure</summary>
+    public string InterfaceType { get; }
+    public string InboundProcedureEnumType { get; }
     public string InboundProcedureEnumParameter { get; }
-
-    /// <summary>{Contract}{Client/Server}ProcedureExtensions</summary>
-    public string ProcedureEnumExtensions { get; }
-
-    /// <summary>{Contract}{Client/Server}Endpoint</summary>
+    public string InboundProcedureEnumExtensionsType { get; }
     public string EndPointType { get; }
-
-    public EndPointNames(string generatedNamespace, string contractName, EndPointId endPointType)
+    
+    public EndPointNames(ref ContractInfo contractInfo, ContractNames contractNames, EndPointId endPointType)
     {
         string endPointTypeName = endPointType.GetName();
         string lowerCaseEndPointTypeName = endPointType.GetLowerCaseName();
+        string contractName = contractNames.ContractName;
+        string lowerCaseContractName = contractNames.LowerCaseContractName;
+        string generatedNamespace = contractNames.GeneratedNamespace;
+
+        bool hasInboundProcedures = contractInfo[endPointType].HasInboundProcedures;
         
-        string lowerCaseContractName = contractName.WithLowerFirstChar();
-        
-        InterfaceField = $"_{lowerCaseContractName}{endPointTypeName}";
+        InterfaceType = $"{GeneralNames.InterfacePrefix}{contractName}{endPointTypeName}";
+        InterfaceFile = $"{generatedNamespace}.{InterfaceType}{GeneralNames.GeneratedFileEnding}";
         InterfaceParameter = $"{lowerCaseContractName}{endPointTypeName}";
-
-        Interface = $"{GeneralNames.InterfacePrefix}{contractName}{endPointTypeName}";
-        InterfaceFile = $"{generatedNamespace}.{Interface}{GeneralNames.GeneratedFileEnding}";
-
-        InboundProcedureEnum = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}";
-        ProcedureFile = $"{generatedNamespace}.{InboundProcedureEnum}{GeneralNames.GeneratedFileEnding}";
-        InboundProcedureEnumParameter = $"{lowerCaseEndPointTypeName}{ContractNames.ProcedurePostfix}";
-        
-        ProcedureEnumExtensions = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}Extensions";
-        ProcedureExtensionsFile = $"{generatedNamespace}.{ProcedureEnumExtensions}{GeneralNames.GeneratedFileEnding}";
+        InterfaceField = $"_{lowerCaseContractName}{endPointTypeName}";
 
         EndPointType = $"{contractName}{endPointTypeName}EndPoint";
         EndPointFile = $"{generatedNamespace}.{EndPointType}{GeneralNames.GeneratedFileEnding}";
+        
+        if (hasInboundProcedures)
+        {
+            InboundProcedureEnumType = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}";
+            InboundProcedureEnumFile = $"{generatedNamespace}.{InboundProcedureEnumType}{GeneralNames.GeneratedFileEnding}";
+            InboundProcedureEnumParameter = $"{lowerCaseEndPointTypeName}{ContractNames.ProcedurePostfix}";
+            InboundProcedureEnumExtensionsType = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}Extensions";
+            InboundProcedureEnumExtensionsFile = $"{generatedNamespace}.{InboundProcedureEnumExtensionsType}{GeneralNames.GeneratedFileEnding}";
+        }
+        else
+        {
+            InboundProcedureEnumType = Types.UndefinedProcedureEnum;
+            InboundProcedureEnumFile = string.Empty;
+            InboundProcedureEnumParameter = string.Empty;
+            InboundProcedureEnumExtensionsType = string.Empty;
+            InboundProcedureEnumExtensionsFile = string.Empty;
+        }
     }
 }
