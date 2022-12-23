@@ -1,4 +1,4 @@
-﻿using static MsbRpc.Generator.GenerationHelpers.ReusedNames.IndependentNames;
+﻿using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationHelpers.Code;
 

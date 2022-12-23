@@ -5,18 +5,10 @@ namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
 public class EndPointNames
 {
     public static class Types
-    {
-        public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
-        public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
-    }
+    { }
     
     public static class Methods
-    {
-        public const string EnterCalling = "EnterCalling";
-        public const string ExitCalling = "ExitCalling";
-        public const string GetRequestWriter = "GetRequestWriter";
-        public const string GetResponseWriter = "GetResponseWriter";
-    }
+    { }
     
     public static class Parameters
     {
@@ -69,7 +61,7 @@ public class EndPointNames
         }
         else
         {
-            InboundProcedureEnumType = Types.UndefinedProcedureEnum;
+            InboundProcedureEnumType = IndependentNames.Types.UndefinedProcedureEnum;
             InboundProcedureEnumFile = string.Empty;
             InboundProcedureEnumParameter = string.Empty;
             InboundProcedureEnumExtensionsType = string.Empty;

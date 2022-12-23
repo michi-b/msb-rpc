@@ -1,10 +1,11 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
+﻿namespace MsbRpc.Generator;
 
 public static class IndependentNames
 {
     public const string GeneratedFileEnding = ".g.cs";
     public const string InterfacePrefix = "I";
     public const string AsyncSuffix = "Async";
+    public const string ProcedurePostfix = "Procedure";
 
     public static class Types
     {
@@ -17,11 +18,17 @@ public static class IndependentNames
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
         public const string BufferWriter = "MsbRpc.Serialization.BufferWriter";
         public const string BufferReader = "MsbRpc.Serialization.BufferReader";
+        public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
+        public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
     }
 
     public static class Methods
     {
         public const string CreateLogger = "Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger";
+        public const string EndPointEnterCalling = "EnterCalling";
+        public const string EndPointExitCalling = "ExitCalling";
+        public const string GetEndPointRequestWriter = "GetRequestWriter";
+        public const string GetEndPointResponseWriter = "GetResponseWriter";
     }
 
     public static class Parameters

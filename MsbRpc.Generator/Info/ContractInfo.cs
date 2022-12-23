@@ -4,19 +4,19 @@ using MsbRpc.Generator.GenerationHelpers;
 
 namespace MsbRpc.Generator.Info;
 
-public readonly struct ContractInfo : IEquatable<ContractInfo>
+public struct ContractInfo : IEquatable<ContractInfo>
 {
     public string InterfaceName { get; }
     public string Namespace { get; }
 
-    private readonly EndPointInfo _client;
-    private readonly EndPointInfo _server;
+    public EndPointInfo Client;
+    public EndPointInfo Server;
 
     public EndPointInfo this[EndPointId endPoint]
         => endPoint switch
         {
-            EndPointId.Client => _client,
-            EndPointId.Server => _server,
+            EndPointId.Client => Client,
+            EndPointId.Server => Server,
             _ => throw new ArgumentOutOfRangeException(nameof(endPoint), endPoint, null)
         };
 
@@ -32,15 +32,15 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
             .Select(m => new ProcedureInfo(m!))
             .ToImmutableArray();
 
-        _server = new EndPointInfo(serverProcedures);
+        Server = new EndPointInfo(serverProcedures);
 
         //todo: fill in correct client procedures
-        _client = new EndPointInfo(ImmutableArray<ProcedureInfo>.Empty);
+        Client = new EndPointInfo(ImmutableArray<ProcedureInfo>.Empty);
     }
 
     public bool Equals
         (ContractInfo other)
-        => _client.Equals(other._client) && _server.Equals(other._server) && InterfaceName == other.InterfaceName && Namespace == other.Namespace;
+        => Client.Equals(other.Client) && Server.Equals(other.Server) && InterfaceName == other.InterfaceName && Namespace == other.Namespace;
 
     public override bool Equals(object? obj) => obj is ContractInfo other && Equals(other);
 
@@ -48,8 +48,8 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
     {
         unchecked
         {
-            int hashCode = _client.GetHashCode();
-            hashCode = (hashCode * 397) ^ _server.GetHashCode();
+            int hashCode = Client.GetHashCode();
+            hashCode = (hashCode * 397) ^ Server.GetHashCode();
             hashCode = (hashCode * 397) ^ InterfaceName.GetHashCode();
             hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
             return hashCode;

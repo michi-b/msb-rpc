@@ -3,6 +3,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsbRpc.Generator.GenerationHelpers;
+using MsbRpc.Generator.GenerationHelpers.ReusedNames;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Utility;
@@ -61,6 +62,7 @@ public class Generator : IIncrementalGenerator
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
     {
+        ContractNames contractNames = new ContractNames(contractInfo);
         var generator = new ContractGenerator(ref contractInfo);
         GenerateEndPoint(context, generator, EndPointId.Client);
         GenerateEndPoint(context, generator, EndPointId.Server);
@@ -68,6 +70,7 @@ public class Generator : IIncrementalGenerator
 
     private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointId targetEndPointType)
     {
+        
         EndPointGenerator endPointGenerator = generator[targetEndPointType];
 
         if (generator[targetEndPointType].HasInboundProcedures)

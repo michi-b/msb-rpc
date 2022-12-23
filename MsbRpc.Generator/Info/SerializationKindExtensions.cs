@@ -1,4 +1,6 @@
 ﻿using MsbRpc.Generator.GenerationHelpers.ReusedNames;
+using static MsbRpc.Generator.IndependentNames;
+
 
 namespace MsbRpc.Generator.Info;
 
@@ -46,27 +48,48 @@ public static class SerializationKindExtensions
         };
     }
 
+    [Obsolete("Use GetIsPrimitive instead")]
     public static bool TryGetConstantSizeCode(this SerializationKind target, out string result)
     {
-        const string primitiveSerializer = IndependentNames.Types.PrimitiveSerializer;
         result = target switch
         {
-            SerializationKind.Byte => $"{primitiveSerializer}.ByteSize",
-            SerializationKind.Sbyte => $"{primitiveSerializer}.SbyteSize",
-            SerializationKind.Bool => $"{primitiveSerializer}.BoolSize",
-            SerializationKind.Char => $"{primitiveSerializer}.CharSize",
-            SerializationKind.Int => $"{primitiveSerializer}.IntSize",
-            SerializationKind.Long => $"{primitiveSerializer}.LongSize",
-            SerializationKind.Short => $"{primitiveSerializer}.ShortSize",
-            SerializationKind.Uint => $"{primitiveSerializer}.UintSize",
-            SerializationKind.Ulong => $"{primitiveSerializer}.UlongSize",
-            SerializationKind.Ushort => $"{primitiveSerializer}.UshortSize",
-            SerializationKind.Float => $"{primitiveSerializer}.FloatSize",
-            SerializationKind.Double => $"{primitiveSerializer}.DoubleSize",
-            SerializationKind.Decimal => $"{primitiveSerializer}.DecimalSize",
+            SerializationKind.Byte => $"{Types.PrimitiveSerializer}.ByteSize",
+            SerializationKind.Sbyte => $"{Types.PrimitiveSerializer}.SbyteSize",
+            SerializationKind.Bool => $"{Types.PrimitiveSerializer}.BoolSize",
+            SerializationKind.Char => $"{Types.PrimitiveSerializer}.CharSize",
+            SerializationKind.Int => $"{Types.PrimitiveSerializer}.IntSize",
+            SerializationKind.Long => $"{Types.PrimitiveSerializer}.LongSize",
+            SerializationKind.Short => $"{Types.PrimitiveSerializer}.ShortSize",
+            SerializationKind.Uint => $"{Types.PrimitiveSerializer}.UintSize",
+            SerializationKind.Ulong => $"{Types.PrimitiveSerializer}.UlongSize",
+            SerializationKind.Ushort => $"{Types.PrimitiveSerializer}.UshortSize",
+            SerializationKind.Float => $"{Types.PrimitiveSerializer}.FloatSize",
+            SerializationKind.Double => $"{Types.PrimitiveSerializer}.DoubleSize",
+            SerializationKind.Decimal => $"{Types.PrimitiveSerializer}.DecimalSize",
             _ => string.Empty
         };
         return result != string.Empty;
+    }
+    
+    public static string GetConstantSizeCode(this SerializationKind target)
+    {
+        return target switch
+        {
+            SerializationKind.Byte => $"{Types.PrimitiveSerializer}.ByteSize",
+            SerializationKind.Sbyte => $"{Types.PrimitiveSerializer}.SbyteSize",
+            SerializationKind.Bool => $"{Types.PrimitiveSerializer}.BoolSize",
+            SerializationKind.Char => $"{Types.PrimitiveSerializer}.CharSize",
+            SerializationKind.Int => $"{Types.PrimitiveSerializer}.IntSize",
+            SerializationKind.Long => $"{Types.PrimitiveSerializer}.LongSize",
+            SerializationKind.Short => $"{Types.PrimitiveSerializer}.ShortSize",
+            SerializationKind.Uint => $"{Types.PrimitiveSerializer}.UintSize",
+            SerializationKind.Ulong => $"{Types.PrimitiveSerializer}.UlongSize",
+            SerializationKind.Ushort => $"{Types.PrimitiveSerializer}.UshortSize",
+            SerializationKind.Float => $"{Types.PrimitiveSerializer}.FloatSize",
+            SerializationKind.Double => $"{Types.PrimitiveSerializer}.DoubleSize",
+            SerializationKind.Decimal => $"{Types.PrimitiveSerializer}.DecimalSize",
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        }
     }
 
     public static bool GetIsConstantSize(this SerializationKind target)

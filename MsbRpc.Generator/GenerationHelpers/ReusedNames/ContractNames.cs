@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
+﻿using MsbRpc.Generator.Info;
+
+namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
 
 public class ContractNames
 {
@@ -12,6 +14,13 @@ public class ContractNames
         ContractName = GetContractName(contractInterfaceName);
         LowerCaseContractName = ContractName.WithLowerFirstChar();
         GeneratedNamespace = $"{contractNamespace}.Generated";
+    }
+
+    public ContractNames(ContractInfo info)
+    {
+        ContractName = GetContractName(info.InterfaceName);
+        LowerCaseContractName = ContractName.WithLowerFirstChar();
+        GeneratedNamespace = $"{info.Namespace}.Generated";
     }
 
     private static string GetContractName(string contractInterfaceName)

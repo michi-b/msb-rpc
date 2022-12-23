@@ -92,7 +92,7 @@ public class EndPointGenerator
     {
         EndPointGenerator remote = GetRemote();
 
-        writer.Write($"public class {Names.EndPointType} : {Types.EndPointBaseType}");
+        writer.Write($"public class {Names.EndPointType} : {IndependentNames.Types.EndPointBaseType}");
         writer.WriteLine($"<{Names.InboundProcedureEnumType}, {remote.Names.InboundProcedureEnumType}>");
 
         using (writer.EncloseInBlock(BlockOptions.None))

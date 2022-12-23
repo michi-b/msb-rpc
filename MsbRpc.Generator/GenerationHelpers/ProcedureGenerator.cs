@@ -122,7 +122,7 @@ public readonly struct ProcedureGenerator
         using (writer.EncloseInBlock())
         {
             //enter calling
-            writer.WriteLine($"{EndPointNames.Methods.EnterCalling}();");
+            writer.WriteLine($"{IndependentNames.Methods.EndPointEnterCalling}();");
 
             //get size for request writer
             if (_hasParameters)
@@ -173,7 +173,7 @@ public readonly struct ProcedureGenerator
 
             //exit calling
             writer.WriteLine();
-            writer.WriteLine($"{EndPointNames.Methods.ExitCalling}({Variables.Procedure});");
+            writer.WriteLine($"{IndependentNames.Methods.EndPointExitCalling}({Variables.Procedure});");
 
             //return response
             writer.WriteLine();
