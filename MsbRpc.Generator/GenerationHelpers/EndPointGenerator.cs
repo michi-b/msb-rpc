@@ -4,9 +4,9 @@ using MsbRpc.EndPoints;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Code;
 using MsbRpc.Generator.GenerationHelpers.Extensions;
-using MsbRpc.Generator.GenerationHelpers.Names;
+using MsbRpc.Generator.GenerationHelpers.ReusedNames;
 using MsbRpc.Generator.Info;
-using static MsbRpc.Generator.GenerationHelpers.Names.EndPointNames;
+using static MsbRpc.Generator.GenerationHelpers.ReusedNames.EndPointNames;
 
 namespace MsbRpc.Generator.GenerationHelpers;
 
@@ -133,11 +133,11 @@ public class EndPointGenerator
         string procedureParameterName = Names.InboundProcedureEnumParameter;
 
         //header
-        writer.WriteLine($"protected override {GeneralNames.Types.BufferWriter} HandleRequest");
+        writer.WriteLine($"protected override {IndependentNames.Types.BufferWriter} HandleRequest");
         using (writer.EncloseInParenthesesBlock())
         {
             writer.WriteLine($"{Names.InboundProcedureEnumType} {procedureParameterName},");
-            writer.WriteLine($"{GeneralNames.Types.BufferReader} {Parameters.ArgumentsBufferReader}");
+            writer.WriteLine($"{IndependentNames.Types.BufferReader} {Parameters.ArgumentsBufferReader}");
         }
 
         //body
@@ -207,7 +207,7 @@ public class EndPointGenerator
             writer.WriteLine(": base");
             using (writer.EncloseInParenthesesBlock(false))
             {
-                writer.WriteLine($"{GeneralNames.Parameters.Messenger},");
+                writer.WriteLine($"{IndependentNames.Parameters.Messenger},");
                 writer.WriteLine(EndPointCode.GetInitialDirectionArgumentLine(_initialDirection));
                 GenerateLoggerArgumentCreation(writer, Names.EndPointType);
                 writer.WriteLine(Parameters.BufferSize);
@@ -226,16 +226,16 @@ public class EndPointGenerator
 
     private static void GenerateLoggerArgumentCreation(IndentedTextWriter writer, string categoryTypeName)
     {
-        writer.WriteLine($"{GeneralNames.Parameters.LoggerFactory} != null");
+        writer.WriteLine($"{IndependentNames.Parameters.LoggerFactory} != null");
         writer.Indent++;
-        writer.WriteLine($"? {GeneralNames.Methods.CreateLogger}<{categoryTypeName}>({GeneralNames.Parameters.LoggerFactory})");
-        writer.WriteLine($": new {GeneralNames.Types.NullLogger}<{categoryTypeName}>(),");
+        writer.WriteLine($"? {IndependentNames.Methods.CreateLogger}<{categoryTypeName}>({IndependentNames.Parameters.LoggerFactory})");
+        writer.WriteLine($": new {IndependentNames.Types.NullLogger}<{categoryTypeName}>(),");
         writer.Indent--;
     }
 
     private static void GenerateProcedureOutOfRangeCase(TextWriter writer, string procedureParameterName)
     {
         writer.WriteLine
-            ($"_ => throw new {GeneralNames.Types.ArgumentOutOfRangeException}(nameof({procedureParameterName}), {procedureParameterName}, null)");
+            ($"_ => throw new {IndependentNames.Types.ArgumentOutOfRangeException}(nameof({procedureParameterName}), {procedureParameterName}, null)");
     }
 }

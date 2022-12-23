@@ -1,5 +1,5 @@
 ﻿using MsbRpc.EndPoints;
-using MsbRpc.Generator.GenerationHelpers.Names;
+using MsbRpc.Generator.GenerationHelpers.ReusedNames;
 
 namespace MsbRpc.Generator.GenerationHelpers.Code;
 

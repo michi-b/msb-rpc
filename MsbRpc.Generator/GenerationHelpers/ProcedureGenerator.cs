@@ -3,9 +3,9 @@ using System.Diagnostics;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationHelpers.Code;
 using MsbRpc.Generator.GenerationHelpers.Extensions;
-using MsbRpc.Generator.GenerationHelpers.Names;
+using MsbRpc.Generator.GenerationHelpers.ReusedNames;
 using MsbRpc.Generator.Info;
-using static MsbRpc.Generator.GenerationHelpers.Names.ProcedureNames;
+using static MsbRpc.Generator.GenerationHelpers.ReusedNames.ProcedureNames;
 
 namespace MsbRpc.Generator.GenerationHelpers;
 
@@ -110,7 +110,7 @@ public readonly struct ProcedureGenerator
         Debug.Assert(_returnType.SerializationKind.GetIsPrimitive(), "only primitives are implemented right now");
 
         //header
-        writer.Write($"public async {GeneralNames.Types.VaLueTask}<{_returnType.Name}> {_name}{GeneralNames.AsyncSuffix}(");
+        writer.Write($"public async {IndependentNames.Types.VaLueTask}<{_returnType.Name}> {_name}{IndependentNames.AsyncSuffix}(");
         if (_hasParameters)
         {
             writer.Write($"{_parametersString}, ");
@@ -164,7 +164,7 @@ public readonly struct ProcedureGenerator
             writer.Write($"{Types.BufferReader} {Variables.ResponseReader} = await {Methods.SendRequest}(");
             writer.Write($"{Variables.Procedure}, ");
             writer.Write($"{Variables.RequestWriter}.{Properties.BufferWriterBufferProperty}, ");
-            writer.WriteLine($"{GeneralNames.Parameters.CancellationToken});");
+            writer.WriteLine($"{IndependentNames.Parameters.CancellationToken});");
 
             //read response
             writer.WriteLine();

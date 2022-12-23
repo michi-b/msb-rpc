@@ -1,6 +1,6 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers.Names;
+﻿namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
 
-public static class GeneralNames
+public static class IndependentNames
 {
     public const string GeneratedFileEnding = ".g.cs";
     public const string InterfacePrefix = "I";

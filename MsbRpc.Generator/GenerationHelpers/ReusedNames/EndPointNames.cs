@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.GenerationHelpers.Names;
+namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
 
 public class EndPointNames
 {
@@ -51,21 +51,21 @@ public class EndPointNames
 
         bool hasInboundProcedures = contractInfo[endPointType].HasInboundProcedures;
         
-        InterfaceType = $"{GeneralNames.InterfacePrefix}{contractName}{endPointTypeName}";
-        InterfaceFile = $"{generatedNamespace}.{InterfaceType}{GeneralNames.GeneratedFileEnding}";
+        InterfaceType = $"{IndependentNames.InterfacePrefix}{contractName}{endPointTypeName}";
+        InterfaceFile = $"{generatedNamespace}.{InterfaceType}{IndependentNames.GeneratedFileEnding}";
         InterfaceParameter = $"{lowerCaseContractName}{endPointTypeName}";
         InterfaceField = $"_{lowerCaseContractName}{endPointTypeName}";
 
         EndPointType = $"{contractName}{endPointTypeName}EndPoint";
-        EndPointFile = $"{generatedNamespace}.{EndPointType}{GeneralNames.GeneratedFileEnding}";
+        EndPointFile = $"{generatedNamespace}.{EndPointType}{IndependentNames.GeneratedFileEnding}";
         
         if (hasInboundProcedures)
         {
             InboundProcedureEnumType = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}";
-            InboundProcedureEnumFile = $"{generatedNamespace}.{InboundProcedureEnumType}{GeneralNames.GeneratedFileEnding}";
+            InboundProcedureEnumFile = $"{generatedNamespace}.{InboundProcedureEnumType}{IndependentNames.GeneratedFileEnding}";
             InboundProcedureEnumParameter = $"{lowerCaseEndPointTypeName}{ContractNames.ProcedurePostfix}";
             InboundProcedureEnumExtensionsType = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}Extensions";
-            InboundProcedureEnumExtensionsFile = $"{generatedNamespace}.{InboundProcedureEnumExtensionsType}{GeneralNames.GeneratedFileEnding}";
+            InboundProcedureEnumExtensionsFile = $"{generatedNamespace}.{InboundProcedureEnumExtensionsType}{IndependentNames.GeneratedFileEnding}";
         }
         else
         {

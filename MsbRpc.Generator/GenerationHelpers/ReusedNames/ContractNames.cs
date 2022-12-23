@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator.GenerationHelpers.Names;
+﻿namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
 
 public class ContractNames
 {
@@ -16,7 +16,7 @@ public class ContractNames
 
     private static string GetContractName(string contractInterfaceName)
     {
-        string iStripped = contractInterfaceName.StartsWith(GeneralNames.InterfacePrefix, StringComparison.Ordinal)
+        string iStripped = contractInterfaceName.StartsWith(IndependentNames.InterfacePrefix, StringComparison.Ordinal)
                            && char.IsUpper(contractInterfaceName[1])
             ? contractInterfaceName.Substring(1)
             : contractInterfaceName;
