@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.GeneratorHelperTree;
+namespace MsbRpc.Generator.HelperTree;
 
 public readonly struct TypeCache
 {

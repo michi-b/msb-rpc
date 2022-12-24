@@ -1,11 +1,12 @@
 ﻿namespace MsbRpc.Generator;
 
-public static class IndependentNames
+internal static class IndependentNames
 {
     public const string GeneratedFileEnding = ".g.cs";
     public const string InterfacePrefix = "I";
     public const string AsyncSuffix = "Async";
     public const string ProcedurePostfix = "Procedure";
+    public const string PrivateFieldPrefix = "_";
 
     public static class Types
     {
@@ -38,13 +39,13 @@ public static class IndependentNames
         public const string CancellationToken = "cancellationToken";
     }
 
-    public static string WithLowerFirstChar(this string identifier)
+    public static string ToLowerFirstChar(this string identifier)
     {
         char firstChar = char.ToLowerInvariant(identifier[0]);
         return firstChar + identifier.Substring(1);
     }
     
-    public static string WithUpperFirstChar(this string identifier)
+    public static string ToUpperFirstChar(this string identifier)
     {
         char firstChar = char.ToUpperInvariant(identifier[0]);
         return firstChar + identifier.Substring(1);

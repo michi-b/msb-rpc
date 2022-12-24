@@ -1,5 +1,4 @@
-﻿using MsbRpc.Generator.GenerationHelpers.ReusedNames;
-using static MsbRpc.Generator.IndependentNames;
+﻿using static MsbRpc.Generator.IndependentNames;
 
 
 namespace MsbRpc.Generator.Info;
@@ -89,7 +88,7 @@ public static class SerializationKindExtensions
             SerializationKind.Double => $"{Types.PrimitiveSerializer}.DoubleSize",
             SerializationKind.Decimal => $"{Types.PrimitiveSerializer}.DecimalSize",
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
-        }
+        };
     }
 
     public static bool GetIsConstantSize(this SerializationKind target)

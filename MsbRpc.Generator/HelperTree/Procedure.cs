@@ -1,19 +1,22 @@
 ﻿using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.GeneratorHelperTree;
+namespace MsbRpc.Generator.HelperTree;
 
-public class ProcedureNode
+public class Procedure
 {
     public readonly TypeNode ReturnType;
-    public readonly string Name;
     public readonly Parameter[] Parameters;
+    public readonly ProcedureNames Names;
+    public readonly int EnumValue;
+    public readonly string EnumValueString;
     
-    public ProcedureNode(ContractNode contractNode, ref ProcedureInfo procedureInfo, TypeCache typeCache)
+    public Procedure(ProcedureInfo procedureInfo, ProcedureCollectionNames procedureCollectionNames, int definitionIndex, TypeCache typeCache)
     {
-        Name = procedureInfo.Name;
-
+        Names = new ProcedureNames(procedureCollectionNames, procedureInfo);
         ReturnType = typeCache.GetOrAdd(procedureInfo.ReturnType);
+        EnumValue = definitionIndex;
+        EnumValueString = definitionIndex.ToString();
 
         ImmutableArray<ParameterInfo> parameterInfos = procedureInfo.Parameters;
         int parameterCount = parameterInfos.Length;

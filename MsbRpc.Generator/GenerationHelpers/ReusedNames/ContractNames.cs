@@ -12,14 +12,14 @@ public class ContractNames
     public ContractNames(string contractNamespace, string contractInterfaceName)
     {
         ContractName = GetContractName(contractInterfaceName);
-        LowerCaseContractName = ContractName.WithLowerFirstChar();
+        LowerCaseContractName = ContractName.ToLowerFirstChar();
         GeneratedNamespace = $"{contractNamespace}.Generated";
     }
 
     public ContractNames(ContractInfo info)
     {
         ContractName = GetContractName(info.InterfaceName);
-        LowerCaseContractName = ContractName.WithLowerFirstChar();
+        LowerCaseContractName = ContractName.ToLowerFirstChar();
         GeneratedNamespace = $"{info.Namespace}.Generated";
     }
 
@@ -29,6 +29,6 @@ public class ContractNames
                            && char.IsUpper(contractInterfaceName[1])
             ? contractInterfaceName.Substring(1)
             : contractInterfaceName;
-        return iStripped.WithUpperFirstChar();
+        return iStripped.ToUpperFirstChar();
     }
 }

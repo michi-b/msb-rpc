@@ -19,14 +19,14 @@ public class EndPointGenerator
 
     public EndPointGenerator? Remote { set; private get; }
 
-    public EndPointGenerator(ref ContractInfo contractInfo, ContractNames contractNames, EndPointId endPointType)
+    public EndPointGenerator(ref ContractInfo contractInfo, ContractNames contractNames, EndPointTypeId endPointType)
     {
         Names = new EndPointNames(ref contractInfo, contractNames, endPointType);
         _initialDirection = endPointType.GetInitialDirection();
 
         EndPointInfo info = contractInfo[endPointType];
 
-        ImmutableArray<ProcedureInfo> inboundProcedureInfos = info.InboundProcedures;
+        ImmutableArray<ProcedureInfo> inboundProcedureInfos = info.Procedures;
 
         HasInboundProcedures = info.HasInboundProcedures;
 
@@ -50,7 +50,7 @@ public class EndPointGenerator
     {
         writer.WriteLine("public interface {0}", Names.InterfaceType);
 
-        using (writer.EncloseInBlock(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockOptions.None))
         {
             foreach (ProcedureGenerator procedure in _inboundProcedures)
             {
@@ -63,7 +63,7 @@ public class EndPointGenerator
     {
         writer.WriteLine("public enum {0}", Names.InboundProcedureEnumType);
 
-        using (writer.EncloseInBlock(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockOptions.None))
         {
             int proceduresCount = _inboundProcedures.Length;
             int lastIndex = proceduresCount - 1;
@@ -80,7 +80,7 @@ public class EndPointGenerator
 
         const string procedureParameterName = "procedure";
 
-        using (writer.EncloseInBlock(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockOptions.None))
         {
             GenerateProcedureEnumGetNameExtension(writer, procedureParameterName);
             writer.WriteLine();
@@ -95,7 +95,7 @@ public class EndPointGenerator
         writer.Write($"public class {Names.EndPointType} : {IndependentNames.Types.EndPointBaseType}");
         writer.WriteLine($"<{Names.InboundProcedureEnumType}, {remote.Names.InboundProcedureEnumType}>");
 
-        using (writer.EncloseInBlock(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockOptions.None))
         {
             if (HasInboundProcedures)
             {
@@ -134,14 +134,14 @@ public class EndPointGenerator
 
         //header
         writer.WriteLine($"protected override {IndependentNames.Types.BufferWriter} HandleRequest");
-        using (writer.EncloseInParenthesesBlock())
+        using (writer.EncloseInParenthesesBlockAsync())
         {
             writer.WriteLine($"{Names.InboundProcedureEnumType} {procedureParameterName},");
             writer.WriteLine($"{IndependentNames.Types.BufferReader} {Parameters.ArgumentsBufferReader}");
         }
 
         //body
-        using (writer.EncloseInBlock(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockOptions.None))
         {
             writer.WriteLine($"return {procedureParameterName} switch");
         }
@@ -150,10 +150,10 @@ public class EndPointGenerator
     private void GenerateProcedureEnumGetNameExtension(IndentedTextWriter writer, string procedureParameterName)
     {
         writer.WriteLine("public static string GetProcedureName(this {0} {1})", Names.InboundProcedureEnumType, procedureParameterName);
-        using (writer.EncloseInBlock())
+        using (writer.EncloseInBlockAsync())
         {
             writer.WriteLine("return procedure switch");
-            using (writer.EncloseInBlock(BlockOptions.WithTrailingSemicolonAndNewline))
+            using (writer.EncloseInBlockAsync(BlockOptions.WithTrailingSemicolonAndNewline))
             {
                 foreach (ProcedureGenerator procedure in _inboundProcedures)
                 {
@@ -169,11 +169,11 @@ public class EndPointGenerator
     {
         writer.WriteLine("public static bool GetInvertsDirection(this {0} {1})", Names.InboundProcedureEnumType, procedureParameterName);
 
-        using (writer.EncloseInBlock())
+        using (writer.EncloseInBlockAsync())
         {
             writer.WriteLine("return {0} switch", procedureParameterName);
 
-            using (writer.EncloseInBlock(BlockOptions.WithTrailingSemicolonAndNewline))
+            using (writer.EncloseInBlockAsync(BlockOptions.WithTrailingSemicolonAndNewline))
             {
                 foreach (ProcedureGenerator procedure in _inboundProcedures)
                 {
@@ -189,7 +189,7 @@ public class EndPointGenerator
     {
         //header
         writer.WriteLine($"public {Names.EndPointType}");
-        using (writer.EncloseInParenthesesBlock())
+        using (writer.EncloseInParenthesesBlockAsync())
         {
             writer.WriteLine(GeneralCode.MessengerParameterLine);
             if (HasInboundProcedures)
@@ -205,7 +205,7 @@ public class EndPointGenerator
         writer.Indent++;
         {
             writer.WriteLine(": base");
-            using (writer.EncloseInParenthesesBlock(false))
+            using (writer.EncloseInParenthesesBlockAsync(false))
             {
                 writer.WriteLine($"{IndependentNames.Parameters.Messenger},");
                 writer.WriteLine(EndPointCode.GetInitialDirectionArgumentLine(_initialDirection));

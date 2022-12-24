@@ -12,46 +12,46 @@ public readonly struct ContractGenerator
     private readonly EndPointGenerator _clientGenerator;
     private readonly EndPointGenerator _serverGenerator;
 
-    public EndPointGenerator this[EndPointId endPointId]
-        => endPointId switch
+    public EndPointGenerator this[EndPointTypeId endPointType]
+        => endPointType switch
         {
-            EndPointId.Client => _clientGenerator,
-            EndPointId.Server => _serverGenerator,
-            _ => throw new ArgumentOutOfRangeException(nameof(endPointId), endPointId, null)
+            EndPointTypeId.Client => _clientGenerator,
+            EndPointTypeId.Server => _serverGenerator,
+            _ => throw new ArgumentOutOfRangeException(nameof(endPointType), endPointType, null)
         };
 
     public ContractGenerator(ref ContractInfo info)
     {
         Names = new ContractNames(info.Namespace, info.InterfaceName);
 
-        _clientGenerator = new EndPointGenerator(ref info, Names, EndPointId.Client);
-        _serverGenerator = new EndPointGenerator(ref info, Names, EndPointId.Server);
+        _clientGenerator = new EndPointGenerator(ref info, Names, EndPointTypeId.Client);
+        _serverGenerator = new EndPointGenerator(ref info, Names, EndPointTypeId.Server);
         _clientGenerator.Remote = _serverGenerator;
         _serverGenerator.Remote = _clientGenerator;
     }
 
-    public string GenerateInterface(EndPointId endPoint)
+    public string GenerateInterface(EndPointTypeId endPoint)
     {
         using IndentedTextWriter writer = CreateCodeWriter();
         this[endPoint].GenerateInterface(writer);
         return writer.GetResult();
     }
 
-    public string GenerateProcedureEnum(EndPointId endPoint)
+    public string GenerateProcedureEnum(EndPointTypeId endPoint)
     {
         using IndentedTextWriter writer = CreateCodeWriter();
         this[endPoint].GenerateProcedureEnum(writer);
         return writer.GetResult();
     }
 
-    public string GenerateProcedureEnumExtensions(EndPointId endPoint)
+    public string GenerateProcedureEnumExtensions(EndPointTypeId endPoint)
     {
         using IndentedTextWriter writer = CreateCodeWriter();
         this[endPoint].GenerateProcedureEnumExtensions(writer);
         return writer.GetResult();
     }
 
-    public string GenerateEndPoint(EndPointId endPoint)
+    public string GenerateEndPoint(EndPointTypeId endPoint)
     {
         using IndentedTextWriter writer = CreateCodeWriter();
         this[endPoint].GenerateEndPoint(writer);

@@ -4,12 +4,6 @@ namespace MsbRpc.Generator.GenerationHelpers.ReusedNames;
 
 public class EndPointNames
 {
-    public static class Types
-    { }
-    
-    public static class Methods
-    { }
-    
     public static class Parameters
     {
         public const string BufferSize = "initialBufferSize";
@@ -33,9 +27,9 @@ public class EndPointNames
     public string InboundProcedureEnumExtensionsType { get; }
     public string EndPointType { get; }
     
-    public EndPointNames(ref ContractInfo contractInfo, ContractNames contractNames, EndPointId endPointType)
+    public EndPointNames(ref ContractInfo contractInfo, ContractNames contractNames, EndPointTypeId endPointType)
     {
-        string endPointTypeName = endPointType.GetName();
+        string endPointTypeName = endPointType.GetUpperCaseName();
         string lowerCaseEndPointTypeName = endPointType.GetLowerCaseName();
         string contractName = contractNames.ContractName;
         string lowerCaseContractName = contractNames.LowerCaseContractName;

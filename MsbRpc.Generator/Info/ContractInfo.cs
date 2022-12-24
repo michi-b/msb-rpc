@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.GenerationHelpers;
 
 namespace MsbRpc.Generator.Info;
 
@@ -12,11 +11,11 @@ public struct ContractInfo : IEquatable<ContractInfo>
     public EndPointInfo Client;
     public EndPointInfo Server;
 
-    public EndPointInfo this[EndPointId endPoint]
+    public EndPointInfo this[EndPointTypeId endPoint]
         => endPoint switch
         {
-            EndPointId.Client => Client,
-            EndPointId.Server => Server,
+            EndPointTypeId.Client => Client,
+            EndPointTypeId.Server => Server,
             _ => throw new ArgumentOutOfRangeException(nameof(endPoint), endPoint, null)
         };
 

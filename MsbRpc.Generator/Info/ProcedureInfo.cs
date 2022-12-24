@@ -16,7 +16,7 @@ public readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
     {
         //todo: use correct direction inversion
         InvertsDirection = false;
-        Name = method.Name;
+        Name = method.Name.ToUpperFirstChar();
         ImmutableArray<IParameterSymbol> parameters = method.Parameters;
         Parameters = parameters.Select(parameter => new ParameterInfo(parameter)).ToImmutableArray();
         ReturnType = new TypeInfo((INamedTypeSymbol)method.ReturnType);

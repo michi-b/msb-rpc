@@ -1,12 +1,14 @@
 ﻿//todo: implement
 
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MsbRpc.Generator.GenerationHelpers;
-using MsbRpc.Generator.GenerationHelpers.ReusedNames;
+using Microsoft.CodeAnalysis.Text;
+using MsbRpc.Generator.HelperTree;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Utility;
+using MsbRpc.Generator.Writers;
 
 namespace MsbRpc.Generator;
 
@@ -62,25 +64,40 @@ public class Generator : IIncrementalGenerator
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
     {
-        ContractNames contractNames = new ContractNames(contractInfo);
-        var generator = new ContractGenerator(ref contractInfo);
-        GenerateEndPoint(context, generator, EndPointId.Client);
-        GenerateEndPoint(context, generator, EndPointId.Server);
-    }
-
-    private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointId targetEndPointType)
-    {
+        ContractNode helperTree = new(ref contractInfo);
+        Task serverGenerationTask = GenerateEndPoint(context, helperTree.Server);
+        Task clientGenerationTask = GenerateEndPoint(context, helperTree.Client);
+        // Task.WaitAll(serverGenerationTask, clientGenerationTask);
         
-        EndPointGenerator endPointGenerator = generator[targetEndPointType];
-
-        if (generator[targetEndPointType].HasInboundProcedures)
-        {
-            context.AddSource(endPointGenerator.Names.InboundProcedureEnumFile, generator.GenerateProcedureEnum(targetEndPointType));
-            context.AddSource
-                (endPointGenerator.Names.InboundProcedureEnumExtensionsFile, generator.GenerateProcedureEnumExtensions(targetEndPointType));
-            context.AddSource(endPointGenerator.Names.InterfaceFile, generator.GenerateInterface(targetEndPointType));
-        }
-
-        context.AddSource(endPointGenerator.Names.EndPointFile, generator.GenerateEndPoint(targetEndPointType));
+        // ContractNames contractNames = new ContractNames(contractInfo);
+        // var generator = new ContractGenerator(ref contractInfo);
+        // GenerateEndPoint(context, generator, EndPointTypeId.Client);
+        // GenerateEndPoint(context, generator, EndPointTypeId.Server);
     }
+
+    private static async Task GenerateEndPoint(SourceProductionContext context, EndPoint endPoint)
+    {
+        List<Task> codeGenerationTasks = new(7);
+        if (endPoint.TryGetInbound(out ProcedureCollection? procedures) && procedures != null)
+        {
+            codeGenerationTasks.Add(new ProcedureEnumWriter(endPoint.Contract, procedures).Generate(context));
+        }
+        await Task.WhenAll(codeGenerationTasks.ToArray());
+    }
+
+    // private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointTypeId targetEndPointType)
+    // {
+    //     
+    //     EndPointGenerator endPointGenerator = generator[targetEndPointType];
+    //
+    //     if (generator[targetEndPointType].HasInboundProcedures)
+    //     {
+    //         context.AddSource(endPointGenerator.Names.InboundProcedureEnumFile, generator.GenerateProcedureEnum(targetEndPointType));
+    //         context.AddSource
+    //             (endPointGenerator.Names.InboundProcedureEnumExtensionsFile, generator.GenerateProcedureEnumExtensions(targetEndPointType));
+    //         context.AddSource(endPointGenerator.Names.InterfaceFile, generator.GenerateInterface(targetEndPointType));
+    //     }
+    //
+    //     context.AddSource(endPointGenerator.Names.EndPointFile, generator.GenerateEndPoint(targetEndPointType));
+    // }
 }
