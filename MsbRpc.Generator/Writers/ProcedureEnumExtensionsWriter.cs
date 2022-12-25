@@ -52,7 +52,7 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
 
     private async ValueTask WriteExtension(IndentedTextWriter writer,string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression )
     {
-        await writer.WriteLineAsync($"public static string {extensionMethodName}(this {_procedures.Names.EnumType} {Parameters.Procedure})");
+        await writer.WriteLineAsync($"public static {returnType} {extensionMethodName}(this {_procedures.Names.EnumType} {Parameters.Procedure})");
         await writer.EnterBlockAsync();
         {
             await writer.WriteLineAsync(_returnProcedureSwitchExpressionLine);
