@@ -92,15 +92,11 @@ public interface IIncrementer
         await TestGenerates("IncrementerServerProcedureExtensions.g.cs");
     }
 
-    // [TestMethod]
-    // public async Task GeneratesServerInterface()
-    // {
-    //     const string shortFileName = "IIncrementerServer.g.cs";
-    //     GeneratorDriverRunResult result = await RunGenerator();
-    //     SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
-    //     Assert.IsNotNull(tree);
-    //     await Logger.LogTreeAsync(tree, nameof(GeneratesServerInterface), CancellationToken);
-    // }
+    [TestMethod]
+    public async Task GeneratesServerInterface()
+    {
+        await TestGenerates("IIncrementerServer.g.cs");
+    }
     
     // [TestMethod]
     // public async Task GeneratesClientEndPoint()

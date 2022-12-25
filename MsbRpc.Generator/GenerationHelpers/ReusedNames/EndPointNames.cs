@@ -38,20 +38,20 @@ public class EndPointNames
         bool hasInboundProcedures = contractInfo[endPointType].HasInboundProcedures;
         
         InterfaceType = $"{IndependentNames.InterfacePrefix}{contractName}{endPointTypeName}";
-        InterfaceFile = $"{generatedNamespace}.{InterfaceType}{IndependentNames.GeneratedFileEnding}";
+        InterfaceFile = $"{generatedNamespace}.{InterfaceType}{IndependentNames.GeneratedFilePostfix}";
         InterfaceParameter = $"{lowerCaseContractName}{endPointTypeName}";
         InterfaceField = $"_{lowerCaseContractName}{endPointTypeName}";
 
         EndPointType = $"{contractName}{endPointTypeName}EndPoint";
-        EndPointFile = $"{generatedNamespace}.{EndPointType}{IndependentNames.GeneratedFileEnding}";
+        EndPointFile = $"{generatedNamespace}.{EndPointType}{IndependentNames.GeneratedFilePostfix}";
         
         if (hasInboundProcedures)
         {
             InboundProcedureEnumType = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}";
-            InboundProcedureEnumFile = $"{generatedNamespace}.{InboundProcedureEnumType}{IndependentNames.GeneratedFileEnding}";
+            InboundProcedureEnumFile = $"{generatedNamespace}.{InboundProcedureEnumType}{IndependentNames.GeneratedFilePostfix}";
             InboundProcedureEnumParameter = $"{lowerCaseEndPointTypeName}{ContractNames.ProcedurePostfix}";
             InboundProcedureEnumExtensionsType = $"{contractName}{endPointTypeName}{ContractNames.ProcedurePostfix}Extensions";
-            InboundProcedureEnumExtensionsFile = $"{generatedNamespace}.{InboundProcedureEnumExtensionsType}{IndependentNames.GeneratedFileEnding}";
+            InboundProcedureEnumExtensionsFile = $"{generatedNamespace}.{InboundProcedureEnumExtensionsType}{IndependentNames.GeneratedFilePostfix}";
         }
         else
         {

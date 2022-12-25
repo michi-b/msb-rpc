@@ -2,12 +2,12 @@
 
 internal static class IndependentNames
 {
-    public const string GeneratedFileEnding = ".g.cs";
     public const string InterfacePrefix = "I";
-    public const string AsyncSuffix = "Async";
-    public const string ProcedurePostfix = "Procedure";
     public const string PrivateFieldPrefix = "_";
-    public const string ExtensionsPostfix = "Extensions";
+    public const string AsyncPostFix = "Async";
+    public const string ProcedurePostfix = "Procedure";
+    public const string ExtensionsPostFix = "Extensions";
+    public const string GeneratedFilePostfix = ".g.cs";
 
     public static class Types
     {
@@ -43,15 +43,15 @@ internal static class IndependentNames
         public const string Procedure = "procedure";
     }
 
-    public static string ToLowerFirstChar(this string identifier)
+    public static string ToCamelCase(this string pascalCase)
     {
-        char firstChar = char.ToLowerInvariant(identifier[0]);
-        return firstChar + identifier.Substring(1);
+        char firstChar = char.ToLowerInvariant(pascalCase[0]);
+        return firstChar + pascalCase.Substring(1);
     }
     
-    public static string ToUpperFirstChar(this string identifier)
+    public static string ToPascalCase(this string camelCase)
     {
-        char firstChar = char.ToUpperInvariant(identifier[0]);
-        return firstChar + identifier.Substring(1);
+        char firstChar = char.ToUpperInvariant(camelCase[0]);
+        return firstChar + camelCase.Substring(1);
     }
 }

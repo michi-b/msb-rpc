@@ -13,7 +13,7 @@ public readonly struct TypeGenerator
         string ns = typeInfo.Namespace;
         Name = $"{ns}.{name}";
 
-        SerializationKind = SerializationTypeUtility.TryGetPrimitiveType(Name, out SerializationKind primitiveSerializationType)
+        SerializationKind = SerializationKindUtility.TryGetPrimitiveSerialization(Name, out SerializationKind primitiveSerializationType)
             ? primitiveSerializationType
             : SerializationKind.Unresolved;
     }

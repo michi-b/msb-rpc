@@ -9,7 +9,7 @@ public readonly struct ParameterInfo : IEquatable<ParameterInfo>
 
     public ParameterInfo(IParameterSymbol parameter)
     {
-        Name = parameter.Name.ToLowerFirstChar();
+        Name = parameter.Name.ToCamelCase();
         Type = new TypeInfo((INamedTypeSymbol)parameter.Type);
     }
 

@@ -1,4 +1,5 @@
-﻿using MsbRpc.Generator.Info;
+﻿using MsbRpc.Generator.HelperTree.Names;
+using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.HelperTree;
 
@@ -11,7 +12,7 @@ public class TypeNode
     public TypeNode(ref TypeInfo info)
     {
         Names = new TypeNames(info);
-        IsPrimitive = SerializationTypeUtility.TryGetPrimitiveType(Names.FullName, out SerializationKind primitiveSerializationType);
+        IsPrimitive = SerializationKindUtility.TryGetPrimitiveSerialization(Names.FullName, out SerializationKind primitiveSerializationType);
         SerializationKind = IsPrimitive ? primitiveSerializationType : SerializationKind.Unresolved;
     }
 }

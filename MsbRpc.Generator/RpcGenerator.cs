@@ -4,11 +4,11 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using MsbRpc.Generator.CodeWriters;
 using MsbRpc.Generator.HelperTree;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Utility;
-using MsbRpc.Generator.Writers;
 
 namespace MsbRpc.Generator;
 
@@ -82,6 +82,7 @@ public class Generator : IIncrementalGenerator
         {
             codeGenerationTasks.Add(new ProcedureEnumWriter(endPoint.Contract, inboundProcedures).Generate(context));
             codeGenerationTasks.Add(new ProcedureEnumExtensionsWriter(endPoint.Contract, inboundProcedures).Generate(context));
+            codeGenerationTasks.Add(new InterfaceWriter(endPoint.Contract, endPoint, inboundProcedures).Generate(context));
         }
         await Task.WhenAll(codeGenerationTasks.ToArray());
     }

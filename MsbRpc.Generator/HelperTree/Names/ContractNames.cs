@@ -1,11 +1,11 @@
-﻿namespace MsbRpc.Generator.HelperTree;
+﻿namespace MsbRpc.Generator.HelperTree.Names;
 
 public readonly struct ContractNames
 {
     public ContractNames(string contractNamespace, string contractInterfaceName)
     {
         UpperCaseName = GetContractName(contractInterfaceName);
-        LowerCaseName = UpperCaseName.ToLowerFirstChar();
+        LowerCaseName = UpperCaseName.ToCamelCase();
         GeneratedNamespace = $"{contractNamespace}.Generated";
     }
 
@@ -15,7 +15,7 @@ public readonly struct ContractNames
                            && char.IsUpper(contractInterfaceName[1])
             ? contractInterfaceName.Substring(1)
             : contractInterfaceName;
-        return iStripped.ToUpperFirstChar();
+        return iStripped.ToPascalCase();
     }
 
     public readonly string GeneratedNamespace;

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 
-namespace MsbRpc.Generator.Writers;
+namespace MsbRpc.Generator.CodeWriters;
 
 public abstract class CodeWriter
 {

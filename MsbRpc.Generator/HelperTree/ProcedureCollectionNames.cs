@@ -1,4 +1,5 @@
-﻿using static MsbRpc.Generator.IndependentNames;
+﻿using MsbRpc.Generator.HelperTree.Names;
+using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.HelperTree;
 

@@ -3,7 +3,7 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.Writers;
+namespace MsbRpc.Generator.CodeWriters;
 
 internal class ProcedureEnumWriter : CodeWriter
 {
@@ -15,7 +15,7 @@ internal class ProcedureEnumWriter : CodeWriter
         : base(contract)
     {
         Procedures = procedures;
-        FileName = $"{GeneratedNamespace}.{Procedures.Names.EnumType}{GeneratedFileEnding}";
+        FileName = $"{GeneratedNamespace}.{Procedures.Names.EnumType}{GeneratedFilePostfix}";
     }
 
     protected override async ValueTask Write(IndentedTextWriter writer)
@@ -31,6 +31,6 @@ internal class ProcedureEnumWriter : CodeWriter
             }
             await writer.WriteLineAsync(GetEnumMemberDefinition(Procedures.LastIndex));
         }
-        await writer.ExitBlockAsync();
+        await writer.ExitBlockAsync(BlockAdditions.None);
     }
 }

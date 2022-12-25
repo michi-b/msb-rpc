@@ -4,8 +4,8 @@ namespace MsbRpc.Generator.Extensions;
 
 public static class IndentedTextWriterExtensions
 {
-    public static IndentedTextWriterBlock EncloseInBlockAsync(this IndentedTextWriter writer, BlockOptions options = BlockOptions.WithTrailingNewline)
-        => new(writer, options);
+    public static IndentedTextWriterBlock EncloseInBlockAsync(this IndentedTextWriter writer, BlockAdditions additions = BlockAdditions.NewLine)
+        => new(writer, additions);
 
     public static IndentedTextWriterParenthesesBlock EncloseInParenthesesBlockAsync(this IndentedTextWriter writer, bool withTrailingNewline = true)
         => new(writer, withTrailingNewline);
@@ -18,18 +18,18 @@ public static class IndentedTextWriterExtensions
         writer.Indent++;
     }
 
-    public static async ValueTask ExitBlockAsync(this IndentedTextWriter writer, BlockOptions options = BlockOptions.WithTrailingNewline)
+    public static async ValueTask ExitBlockAsync(this IndentedTextWriter writer, BlockAdditions additions = BlockAdditions.NewLine)
     {
         writer.Indent--;
 
         await writer.WriteAsync("}");
 
-        if (options.HasFlag(BlockOptions.WithTrailingSemicolon))
+        if (additions.HasFlag(BlockAdditions.Semicolon))
         {
             await writer.WriteLineAsync(';');
         }
 
-        if (options.HasFlag(BlockOptions.WithTrailingNewline))
+        if (additions.HasFlag(BlockAdditions.NewLine))
         {
             await writer.WriteLineAsync();
         }
@@ -40,15 +40,15 @@ public static class IndentedTextWriterExtensions
         writer.WriteLine('{');
     }
 
-    public static void WriteBlockScopeEnd(this IndentedTextWriter writer, BlockOptions options)
+    public static void WriteBlockScopeEnd(this IndentedTextWriter writer, BlockAdditions additions)
     {
         writer.Write('}');
-        if (options.HasFlag(BlockOptions.WithTrailingSemicolon))
+        if (additions.HasFlag(BlockAdditions.Semicolon))
         {
             writer.Write(';');
         }
 
-        if (options.HasFlag(BlockOptions.WithTrailingNewline))
+        if (additions.HasFlag(BlockAdditions.NewLine))
         {
             writer.WriteLine();
         }

@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator.HelperTree;
+﻿namespace MsbRpc.Generator.HelperTree.Names;
 
 public readonly struct EndPointNames
 {
@@ -8,7 +8,7 @@ public readonly struct EndPointNames
         UpperCaseTypeId = endPointType.GetUpperCaseName();
         
         UpperCaseBase = $"{contract.UpperCaseName}{UpperCaseTypeId}";
-        LowerCaseBase = $"{contract.LowerCaseName}{LowerCaseTypeId}";
+        LowerCaseBase = $"{contract.LowerCaseName}{UpperCaseTypeId}";
         
         EndPointType = $"{UpperCaseBase}Endpoint";
     }
@@ -24,4 +24,6 @@ public readonly struct EndPointNames
     
     /// <summary>{contract}{Client/Server}</summary>
     public string LowerCaseBase { get; }
+    
+    public string InterfaceType => $"I{UpperCaseBase}";
 }

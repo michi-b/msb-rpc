@@ -50,7 +50,7 @@ public class EndPointGenerator
     {
         writer.WriteLine("public interface {0}", Names.InterfaceType);
 
-        using (writer.EncloseInBlockAsync(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockAdditions.None))
         {
             foreach (ProcedureGenerator procedure in _inboundProcedures)
             {
@@ -63,7 +63,7 @@ public class EndPointGenerator
     {
         writer.WriteLine("public enum {0}", Names.InboundProcedureEnumType);
 
-        using (writer.EncloseInBlockAsync(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockAdditions.None))
         {
             int proceduresCount = _inboundProcedures.Length;
             int lastIndex = proceduresCount - 1;
@@ -80,7 +80,7 @@ public class EndPointGenerator
 
         const string procedureParameterName = "procedure";
 
-        using (writer.EncloseInBlockAsync(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockAdditions.None))
         {
             GenerateProcedureEnumGetNameExtension(writer, procedureParameterName);
             writer.WriteLine();
@@ -95,7 +95,7 @@ public class EndPointGenerator
         writer.Write($"public class {Names.EndPointType} : {IndependentNames.Types.EndPointBaseType}");
         writer.WriteLine($"<{Names.InboundProcedureEnumType}, {remote.Names.InboundProcedureEnumType}>");
 
-        using (writer.EncloseInBlockAsync(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockAdditions.None))
         {
             if (HasInboundProcedures)
             {
@@ -141,7 +141,7 @@ public class EndPointGenerator
         }
 
         //body
-        using (writer.EncloseInBlockAsync(BlockOptions.None))
+        using (writer.EncloseInBlockAsync(BlockAdditions.None))
         {
             writer.WriteLine($"return {procedureParameterName} switch");
         }
@@ -153,7 +153,7 @@ public class EndPointGenerator
         using (writer.EncloseInBlockAsync())
         {
             writer.WriteLine("return procedure switch");
-            using (writer.EncloseInBlockAsync(BlockOptions.WithTrailingSemicolonAndNewline))
+            using (writer.EncloseInBlockAsync(BlockAdditions.WithTrailingSemicolonAndNewline))
             {
                 foreach (ProcedureGenerator procedure in _inboundProcedures)
                 {
@@ -173,7 +173,7 @@ public class EndPointGenerator
         {
             writer.WriteLine("return {0} switch", procedureParameterName);
 
-            using (writer.EncloseInBlockAsync(BlockOptions.WithTrailingSemicolonAndNewline))
+            using (writer.EncloseInBlockAsync(BlockAdditions.WithTrailingSemicolonAndNewline))
             {
                 foreach (ProcedureGenerator procedure in _inboundProcedures)
                 {

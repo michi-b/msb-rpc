@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Info;
 
-public static class SerializationTypeUtility
+public static class SerializationKindUtility
 {
     public const string ByteTypeName = "System.Byte";
     public const string SbyteTypeName = "System.SByte";
@@ -15,8 +15,22 @@ public static class SerializationTypeUtility
     public const string FloatTypeName = "System.Single";
     public const string DoubleTypeName = "System.Double";
     public const string DecimalTypeName = "System.Decimal";
+    
+    public const string ByteKeyword = "byte";
+    public const string SbyteKeyword = "sbyte";
+    public const string BoolKeyword = "bool";
+    public const string CharKeyword = "char";
+    public const string IntKeyword = "int";
+    public const string LongKeyword = "long";
+    public const string ShortKeyword = "short";
+    public const string UintKeyword = "uint";
+    public const string UlongKeyword = "ulong";
+    public const string UshortKeyword = "ushort";
+    public const string FloatKeyword = "float";
+    public const string DoubleKeyword = "double";
+    public const string DecimalKeyword = "decimal";
 
-    public static bool TryGetPrimitiveType(string typeName, out SerializationKind result)
+    public static bool TryGetPrimitiveSerialization(string typeName, out SerializationKind result)
     {
         result = typeName switch
         {

@@ -5,12 +5,12 @@ namespace MsbRpc.Generator.Extensions;
 public readonly ref struct IndentedTextWriterBlock
 {
     private readonly IndentedTextWriter _writer;
-    private readonly BlockOptions _options;
+    private readonly BlockAdditions _additions;
 
-    public IndentedTextWriterBlock(IndentedTextWriter writer, BlockOptions options)
+    public IndentedTextWriterBlock(IndentedTextWriter writer, BlockAdditions additions)
     {
         _writer = writer;
-        _options = options;
+        _additions = additions;
         _writer.WriteBlockScopeStart();
         _writer.Indent++;
     }
@@ -18,6 +18,6 @@ public readonly ref struct IndentedTextWriterBlock
     public void Dispose()
     {
         _writer.Indent--;
-        _writer.WriteBlockScopeEnd(_options);
+        _writer.WriteBlockScopeEnd(_additions);
     }
 }

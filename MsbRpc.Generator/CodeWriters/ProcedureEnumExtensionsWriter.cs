@@ -3,7 +3,7 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.Writers;
+namespace MsbRpc.Generator.CodeWriters;
 
 internal class ProcedureEnumExtensionsWriter : CodeWriter
 {
@@ -18,8 +18,8 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
         : base(contract)
     {
         _procedures = procedures;
-        _className = $"{_procedures.Names.EnumType}{ExtensionsPostfix}";
-        FileName = $"{GeneratedNamespace}.{_className}{GeneratedFileEnding}";
+        _className = $"{_procedures.Names.EnumType}{ExtensionsPostFix}";
+        FileName = $"{GeneratedNamespace}.{_className}{GeneratedFilePostfix}";
         _procedureParameterOutOfRangeLine = GetArgumentOutOfRangeExceptionSwitchExpressionCase(Parameters.Procedure);
         _returnProcedureSwitchExpressionLine = $"return {Parameters.Procedure} switch";
     }
@@ -35,7 +35,7 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
             
             await WriteGetInvertsDirectionExtension(writer);
         }
-        await writer.ExitBlockAsync();
+        await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
     private async ValueTask  WriteGetNameExtension(IndentedTextWriter writer)
@@ -64,7 +64,7 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
                 }
                 await writer.WriteLineAsync(_procedureParameterOutOfRangeLine);
             }
-            await writer.ExitBlockAsync(BlockOptions.WithTrailingSemicolon);
+            await writer.ExitBlockAsync(BlockAdditions.Semicolon);
         }
         await writer.ExitBlockAsync();
     }
