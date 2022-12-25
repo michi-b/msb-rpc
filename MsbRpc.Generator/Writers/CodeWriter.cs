@@ -7,13 +7,15 @@ using MsbRpc.Generator.HelperTree;
 
 namespace MsbRpc.Generator.Writers;
 
-public abstract class Writer
+public abstract class CodeWriter
 {
     protected readonly string GeneratedNamespace;
-    
-    protected Writer(ContractNode contract) : this(contract.Names.GeneratedNamespace) {}
 
-    private Writer(string generatedNamespace) => GeneratedNamespace = generatedNamespace;
+    protected abstract string FileName { get; }
+
+    protected CodeWriter(ContractNode contract) : this(contract.Names.GeneratedNamespace) { }
+
+    private CodeWriter(string generatedNamespace) => GeneratedNamespace = generatedNamespace;
 
     public async Task Generate(SourceProductionContext context)
     {
@@ -22,17 +24,16 @@ public abstract class Writer
         string code = writer.GetResult();
         context.AddSource(FileName, SourceText.From(code, Encoding.UTF8));
     }
-    
-    protected abstract string FileName { get; }
-    
+
     protected abstract ValueTask Write(IndentedTextWriter writer);
-    
+
     private IndentedTextWriter CreateCodeWriter()
     {
         IndentedTextWriter writer = new(new StringWriter());
-
         writer.WriteFileHeader(GeneratedNamespace);
-
         return writer;
     }
+
+    protected static string GetArgumentOutOfRangeExceptionSwitchExpressionCase(string variableName)
+        => $"_ => throw new {IndependentNames.Types.ArgumentOutOfRangeException}(nameof({variableName}), {variableName}, null)";
 }

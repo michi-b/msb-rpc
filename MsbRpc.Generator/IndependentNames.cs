@@ -7,6 +7,7 @@ internal static class IndependentNames
     public const string AsyncSuffix = "Async";
     public const string ProcedurePostfix = "Procedure";
     public const string PrivateFieldPrefix = "_";
+    public const string ExtensionsPostfix = "Extensions";
 
     public static class Types
     {
@@ -30,6 +31,8 @@ internal static class IndependentNames
         public const string EndPointExitCalling = "ExitCalling";
         public const string GetEndPointRequestWriter = "GetRequestWriter";
         public const string GetEndPointResponseWriter = "GetResponseWriter";
+        public const string GetNameProcedureEnumExtension = "GetName";
+        public const string GetInvertsDirectionProcedureExtension = "GetInvertsDirection";
     }
 
     public static class Parameters
@@ -37,6 +40,7 @@ internal static class IndependentNames
         public const string LoggerFactory = "loggerFactory";
         public const string Messenger = "messenger";
         public const string CancellationToken = "cancellationToken";
+        public const string Procedure = "procedure";
     }
 
     public static string ToLowerFirstChar(this string identifier)

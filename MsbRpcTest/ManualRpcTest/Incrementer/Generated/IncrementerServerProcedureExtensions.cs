@@ -11,7 +11,6 @@ public static class IncrementerServerProcedureExtensions
         };
     }
 
-    //todo: generated this
     public static bool GetInvertsDirection(this IncrementerServerProcedure procedure)
     {
         return procedure switch

@@ -10,6 +10,7 @@ public class Procedure
     public readonly ProcedureNames Names;
     public readonly int EnumValue;
     public readonly string EnumValueString;
+    public readonly bool InvertsDirection;
     
     public Procedure(ProcedureInfo procedureInfo, ProcedureCollectionNames procedureCollectionNames, int definitionIndex, TypeCache typeCache)
     {
@@ -17,7 +18,8 @@ public class Procedure
         ReturnType = typeCache.GetOrAdd(procedureInfo.ReturnType);
         EnumValue = definitionIndex;
         EnumValueString = definitionIndex.ToString();
-
+        InvertsDirection = procedureInfo.InvertsDirection;
+        
         ImmutableArray<ParameterInfo> parameterInfos = procedureInfo.Parameters;
         int parameterCount = parameterInfos.Length;
         Parameters = new Parameter[parameterCount];

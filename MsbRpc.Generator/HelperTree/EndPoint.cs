@@ -21,7 +21,7 @@ public class EndPoint
         Type = type;
     }
 
-    public bool TryGetInbound(out ProcedureCollection? procedures) => Contract.TryGetProcedures(Type, out procedures);
+    public bool TryGetInboundProcedures(out ProcedureCollection? procedures) => Contract.TryGetProcedures(Type, out procedures);
     
     public bool TryGetOutboundProcedures(out ProcedureCollection? procedures) => Contract.TryGetProcedures(Type.GetOther(), out procedures);
 }

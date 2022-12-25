@@ -78,9 +78,10 @@ public class Generator : IIncrementalGenerator
     private static async Task GenerateEndPoint(SourceProductionContext context, EndPoint endPoint)
     {
         List<Task> codeGenerationTasks = new(7);
-        if (endPoint.TryGetInbound(out ProcedureCollection? procedures) && procedures != null)
+        if (endPoint.TryGetInboundProcedures(out ProcedureCollection? inboundProcedures) && inboundProcedures != null)
         {
-            codeGenerationTasks.Add(new ProcedureEnumWriter(endPoint.Contract, procedures).Generate(context));
+            codeGenerationTasks.Add(new ProcedureEnumWriter(endPoint.Contract, inboundProcedures).Generate(context));
+            codeGenerationTasks.Add(new ProcedureEnumExtensionsWriter(endPoint.Contract, inboundProcedures).Generate(context));
         }
         await Task.WhenAll(codeGenerationTasks.ToArray());
     }

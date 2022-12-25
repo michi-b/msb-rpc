@@ -12,11 +12,34 @@ public static class IndentedTextWriterExtensions
 
     public static string GetResult(this IndentedTextWriter writer) => writer.InnerWriter.ToString();
 
+    public static async ValueTask EnterBlockAsync(this IndentedTextWriter writer)
+    {
+        await writer.WriteLineAsync("{");
+        writer.Indent++;
+    }
+
+    public static async ValueTask ExitBlockAsync(this IndentedTextWriter writer, BlockOptions options = BlockOptions.WithTrailingNewline)
+    {
+        writer.Indent--;
+
+        await writer.WriteAsync("}");
+
+        if (options.HasFlag(BlockOptions.WithTrailingSemicolon))
+        {
+            await writer.WriteLineAsync(';');
+        }
+
+        if (options.HasFlag(BlockOptions.WithTrailingNewline))
+        {
+            await writer.WriteLineAsync();
+        }
+    }
+
     public static void WriteBlockScopeStart(this IndentedTextWriter writer)
     {
         writer.WriteLine('{');
     }
-    
+
     public static void WriteBlockScopeEnd(this IndentedTextWriter writer, BlockOptions options)
     {
         writer.Write('}');

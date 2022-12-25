@@ -14,7 +14,6 @@ public class ProcedureCollectionNames
         InterfaceField = $"{PrivateFieldPrefix}{lowerCaseBase}";
         
         EnumType = $"{upperCaseBase}{ProcedurePostfix}";
-        EnumParameter = $"{lowerCaseBase}{ProcedurePostfix}";        
     }
     
     public string InterfaceType { get; }
@@ -25,5 +24,4 @@ public class ProcedureCollectionNames
     /// enum type name (local to generated namespace)
     /// </summary>
     public string EnumType { get; }
-    public string EnumParameter { get; }
 }
