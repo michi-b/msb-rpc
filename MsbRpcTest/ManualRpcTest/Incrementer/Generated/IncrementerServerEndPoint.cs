@@ -29,7 +29,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
         return serverProcedure switch
         {
             IncrementerServerProcedure.Increment => Increment(arguments),
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(serverProcedure), serverProcedure, null)
         };
     }
 

@@ -6,7 +6,16 @@ namespace MsbRpc.Generator.CodeWriters;
 
 public static class OutboundRpcWriter
 {
-    public static async ValueTask WriteProcedureCallAsync(IndentedTextWriter writer, ProcedureCollection procedures, Procedure procedure)
+    public static async ValueTask WriteAsync(IndentedTextWriter writer, ProcedureCollection procedures)
+    {
+        foreach (Procedure procedure in procedures)
+        {
+            await writer.WriteLineAsync();
+            await WriteProcedureCallAsync(writer, procedures, procedure);
+        }
+    }
+
+    private static async ValueTask WriteProcedureCallAsync(IndentedTextWriter writer, ProcedureCollection procedures, Procedure procedure)
     {
         //header
         string returnType = procedure.ReturnType.Names.Name;

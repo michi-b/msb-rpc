@@ -64,14 +64,13 @@ internal class EndPointFileWriter : CodeFileWriter
 
             if (_outboundProcedures != null)
             {
-                foreach (Procedure procedure in _outboundProcedures)
-                {
-                    await writer.WriteLineAsync();
-                    await OutboundRpcWriter.WriteProcedureCallAsync(writer, _outboundProcedures, procedure);
-                }
+                await OutboundRpcWriter.WriteAsync(writer, _outboundProcedures);
             }
 
-            //todo: implement inbound procedures here
+            if (_inboundProcedures != null)
+            {
+                await InboundRpcWriter.WriteAsync(writer, _inboundProcedures);
+            }
 
             if (_inboundProcedures != null)
             {

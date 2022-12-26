@@ -41,6 +41,7 @@ internal static class IndependentNames
         public const string GetEndPointResponseWriter = "GetResponseWriter";
         public const string GetEndpointProcedureName = "GetName";
         public const string GetEndPointProcedureInvertsDirection = "GetInvertsDirection";
+        public const string EndPointHandleRequest = "HandleRequest";
     }
 
     public static class Properties
@@ -55,7 +56,7 @@ internal static class IndependentNames
         public const string CancellationToken = "cancellationToken";
         public const string Procedure = "procedure";
         public const string InitialBufferSize = "initialBufferSize";
-        public const string ArgumentsBufferReader = "argumentsReader";
+        public const string ArgumentsBufferReader = "arguments";
     }
 
     public static class EnumValues
