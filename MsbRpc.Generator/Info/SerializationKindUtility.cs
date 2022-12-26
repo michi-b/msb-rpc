@@ -15,7 +15,7 @@ public static class SerializationKindUtility
     public const string FloatTypeName = "System.Single";
     public const string DoubleTypeName = "System.Double";
     public const string DecimalTypeName = "System.Decimal";
-    
+
     public const string ByteKeyword = "byte";
     public const string SbyteKeyword = "sbyte";
     public const string BoolKeyword = "bool";

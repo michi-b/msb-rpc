@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Utility;
 
-public static class WellKnownAttributes
+public static class GeneratorAttributes
 {
     public static bool IsRpcContractAttribute(ISymbol attributeClass)
         => attributeClass is

@@ -6,8 +6,7 @@ public readonly struct TypeCache
 {
     private readonly Dictionary<TypeInfo, TypeNode> _cache = new();
 
-    public TypeCache()
-    { }
+    public TypeCache() { }
 
     public TypeNode GetOrAdd(TypeInfo typeInfo)
     {

@@ -7,13 +7,13 @@ namespace MsbRpc.Generator.CodeWriters;
 
 internal class ProcedureEnumExtensionsWriter : CodeWriter
 {
-    protected override string FileName { get; }
-
-    private readonly ProcedureCollection _procedures;
     private readonly string _className;
     private readonly string _procedureParameterOutOfRangeLine;
+
+    private readonly ProcedureCollection _procedures;
     private readonly string _returnProcedureSwitchExpressionLine;
-    
+    protected override string FileName { get; }
+
     public ProcedureEnumExtensionsWriter(ContractNode contract, ProcedureCollection procedures)
         : base(contract)
     {
@@ -32,13 +32,13 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
             await WriteGetNameExtensionAsync(writer);
 
             await writer.WriteLineAsync();
-            
+
             await WriteGetInvertsDirectionExtensionAsync(writer);
         }
         await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
-    private async ValueTask  WriteGetNameExtensionAsync(IndentedTextWriter writer)
+    private async ValueTask WriteGetNameExtensionAsync(IndentedTextWriter writer)
     {
         string GetCaseCode(Procedure procedure) => $"nameof({procedure.Names.EnumValue})";
         await WriteExtensionAsync(writer, "string", Methods.GetNameProcedureEnumExtension, GetCaseCode);
@@ -50,7 +50,8 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
         await WriteExtensionAsync(writer, "bool", Methods.GetInvertsDirectionProcedureExtension, GetCaseCode);
     }
 
-    private async ValueTask WriteExtensionAsync(IndentedTextWriter writer,string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression )
+    private async ValueTask WriteExtensionAsync
+        (IndentedTextWriter writer, string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression)
     {
         await writer.WriteLineAsync($"public static {returnType} {extensionMethodName}(this {_procedures.Names.EnumType} {Parameters.Procedure})");
         await writer.EnterBlockAsync();
@@ -62,6 +63,7 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
                 {
                     await writer.WriteLineAsync($"{procedure.Names.EnumValue} => {getCaseExpression(procedure)},");
                 }
+
                 await writer.WriteLineAsync(_procedureParameterOutOfRangeLine);
             }
             await writer.ExitBlockAsync(BlockAdditions.Semicolon);

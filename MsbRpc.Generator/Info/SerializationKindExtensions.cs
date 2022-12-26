@@ -1,6 +1,5 @@
 ﻿using static MsbRpc.Generator.IndependentNames;
 
-
 namespace MsbRpc.Generator.Info;
 
 public static class SerializationKindExtensions
@@ -70,11 +69,8 @@ public static class SerializationKindExtensions
         };
     }
 
-    public static bool HasKeyword(this SerializationKind serializationKind)
-    {
-        return serializationKind.GetIsPrimitive();
-    }
-    
+    public static bool HasKeyword(this SerializationKind serializationKind) => serializationKind.GetIsPrimitive();
+
     public static bool GetKeyword(this SerializationKind serializationKind, out string? keyword)
     {
         if (serializationKind.GetIsPrimitive())
@@ -98,6 +94,7 @@ public static class SerializationKindExtensions
             };
             return true;
         }
+
         keyword = null;
         return false;
     }

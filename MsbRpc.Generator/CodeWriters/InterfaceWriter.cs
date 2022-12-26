@@ -6,14 +6,12 @@ namespace MsbRpc.Generator.CodeWriters;
 
 public class InterfaceWriter : CodeWriter
 {
-    private readonly EndPoint _endPoint;
     private readonly string _interfaceName;
     private readonly ProcedureCollection _procedures;
     protected override string FileName { get; }
 
     public InterfaceWriter(ContractNode contract, EndPoint endPoint, ProcedureCollection procedures) : base(contract)
     {
-        _endPoint = endPoint;
         _procedures = procedures;
         _interfaceName = endPoint.Names.InterfaceType;
         FileName = $"{GeneratedNamespace}.{_interfaceName}{IndependentNames.GeneratedFilePostfix}";

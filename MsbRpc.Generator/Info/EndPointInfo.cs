@@ -13,6 +13,6 @@ public readonly struct EndPointInfo : IEquatable<EndPointInfo>
     public override bool Equals(object? obj) => obj is EndPointInfo other && Equals(other);
 
     public override int GetHashCode() => Procedures.GetHashCode();
-    
+
     public bool HasInboundProcedures => Procedures.Length > 0;
 }

@@ -1,9 +1,7 @@
 ﻿//todo: implement
 
-using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.CodeWriters;
 using MsbRpc.Generator.HelperTree;
 using MsbRpc.Generator.Info;
@@ -57,7 +55,7 @@ public class Generator : IIncrementalGenerator
         // check that interfaceSymbol has the RpcContract attribute
         return contractInterface.GetAttributes()
             .Select(attributeData => attributeData.AttributeClass!)
-            .Any(WellKnownAttributes.IsRpcContractAttribute)
+            .Any(GeneratorAttributes.IsRpcContractAttribute)
             ? new ContractInfo(contractInterface)
             : null;
     }
@@ -67,18 +65,13 @@ public class Generator : IIncrementalGenerator
         ContractNode helperTree = new(ref contractInfo);
         Task serverGenerationTask = GenerateEndPoint(context, helperTree.Server);
         Task clientGenerationTask = GenerateEndPoint(context, helperTree.Client);
-        // Task.WaitAll(serverGenerationTask, clientGenerationTask);
-        
-        // ContractNames contractNames = new ContractNames(contractInfo);
-        // var generator = new ContractGenerator(ref contractInfo);
-        // GenerateEndPoint(context, generator, EndPointTypeId.Client);
-        // GenerateEndPoint(context, generator, EndPointTypeId.Server);
+        Task.WaitAll(serverGenerationTask, clientGenerationTask);
     }
 
     private static async Task GenerateEndPoint(SourceProductionContext context, EndPoint endPoint)
     {
-        List<Task> codeGenerationTasks = new(7);
-        
+        List<Task> codeGenerationTasks = new(4);
+
         //generate inbound procedure enum and extensions and interface
         if (endPoint.TryGetInboundProcedures(out ProcedureCollection? inboundProcedures) && inboundProcedures != null)
         {
@@ -86,30 +79,14 @@ public class Generator : IIncrementalGenerator
             codeGenerationTasks.Add(new ProcedureEnumExtensionsWriter(endPoint.Contract, inboundProcedures).GenerateAsync(context));
             codeGenerationTasks.Add(new InterfaceWriter(endPoint.Contract, endPoint, inboundProcedures).GenerateAsync(context));
         }
-        
+
         //generate endpoint
         endPoint.TryGetOutboundProcedures(out ProcedureCollection? outboundProcedures);
-        if(inboundProcedures != null || outboundProcedures != null)
+        if (inboundProcedures != null || outboundProcedures != null)
         {
             codeGenerationTasks.Add(new EndPointWriter(endPoint.Contract, endPoint, inboundProcedures, outboundProcedures).GenerateAsync(context));
         }
-        
+
         await Task.WhenAll(codeGenerationTasks.ToArray());
     }
-
-    // private static void GenerateEndPoint(SourceProductionContext context, ContractGenerator generator, EndPointTypeId targetEndPointType)
-    // {
-    //     
-    //     EndPointGenerator endPointGenerator = generator[targetEndPointType];
-    //
-    //     if (generator[targetEndPointType].HasInboundProcedures)
-    //     {
-    //         context.AddSource(endPointGenerator.Names.InboundProcedureEnumFile, generator.GenerateProcedureEnum(targetEndPointType));
-    //         context.AddSource
-    //             (endPointGenerator.Names.InboundProcedureEnumExtensionsFile, generator.GenerateProcedureEnumExtensions(targetEndPointType));
-    //         context.AddSource(endPointGenerator.Names.InterfaceFile, generator.GenerateInterface(targetEndPointType));
-    //     }
-    //
-    //     context.AddSource(endPointGenerator.Names.EndPointFile, generator.GenerateEndPoint(targetEndPointType));
-    // }
 }

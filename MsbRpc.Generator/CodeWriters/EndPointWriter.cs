@@ -3,7 +3,6 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 using MsbRpc.Generator.HelperTree.Names;
 using static MsbRpc.Generator.IndependentNames;
-using ProcedureNames = MsbRpc.Generator.GenerationHelpers.ReusedNames.ProcedureNames;
 
 namespace MsbRpc.Generator.CodeWriters;
 
@@ -106,9 +105,9 @@ internal class EndPointWriter : CodeWriter
                 writer.Indent--;
                 await writer.WriteLineAsync($"{Parameters.InitialBufferSize}");
             }
-            
+
             await writer.ExitParenthesesBlockAsync(_inboundProcedures == null ? BlockAdditions.None : BlockAdditions.NewLine);
-            
+
             if (_inboundProcedures == null)
             {
                 await writer.WriteLineAsync(" { }");
@@ -143,7 +142,7 @@ internal class EndPointWriter : CodeWriter
                 await writer.WriteAsync(", ");
             }
         }
-        
+
         await writer.WriteLineAsync($"{Types.CancellationToken} {Parameters.CancellationToken})");
 
         //body
@@ -168,6 +167,7 @@ internal class EndPointWriter : CodeWriter
         {
             await WriteParametersSizeSumCalculationAsync(writer, parameters);
         }
+
         await writer.WriteLineAsync();
         await writer.WriteLineAsync
         (
@@ -182,14 +182,18 @@ internal class EndPointWriter : CodeWriter
                 await writer.WriteLineAsync(IndependentCode.GetBufferWrite(parameter.Names.Name));
             }
         }
+
         await writer.WriteLineAsync();
         await writer.WriteLineAsync($"const {procedures.Names.EnumType} {Variables.Procedure} = {procedure.Names.EnumValue};");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync($"{Types.BufferReader} {Variables.ResultReader} "
-                                    + $"= await {Methods.SendEndPointRequest}("
-                                    + $"{Variables.Procedure}, "
-                                    + $"{Variables.ArgumentsWriter}.{Properties.BufferWriterBuffer}, "
-                                    + $"{Parameters.CancellationToken});");
+        await writer.WriteLineAsync
+        (
+            $"{Types.BufferReader} {Variables.ResultReader} "
+            + $"= await {Methods.SendEndPointRequest}("
+            + $"{Variables.Procedure}, "
+            + $"{Variables.ArgumentsWriter}.{Properties.BufferWriterBuffer}, "
+            + $"{Parameters.CancellationToken});"
+        );
         await writer.WriteLineAsync();
         await writer.WriteLineAsync(procedure.ReadResultLine);
         await writer.WriteLineAsync();

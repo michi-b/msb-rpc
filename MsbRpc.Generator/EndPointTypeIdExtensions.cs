@@ -11,7 +11,7 @@ public static class EndPointTypeIdExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
-    
+
     public static string GetLowerCaseName(this EndPointTypeId target)
     {
         return target switch

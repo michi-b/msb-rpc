@@ -17,12 +17,11 @@ public class ProcedureCollection : IReadOnlyList<Procedure>
     public ProcedureCollection
     (
         ImmutableArray<ProcedureInfo> procedures,
-        ContractNames contractNames,
         EndPointNames endPointNames,
         TypeCache typeCache
     )
     {
-        Names = new ProcedureCollectionNames(contractNames, endPointNames);
+        Names = new ProcedureCollectionNames(endPointNames);
         Count = procedures.Length;
         LastIndex = Count - 1;
 

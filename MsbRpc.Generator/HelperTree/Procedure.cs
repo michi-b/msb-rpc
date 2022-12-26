@@ -7,10 +7,10 @@ namespace MsbRpc.Generator.HelperTree;
 
 public class Procedure
 {
+    private readonly bool _hasParameters;
+
     private readonly ParameterCollection? _parameters;
-    public readonly int EnumValue;
     public readonly string EnumValueString;
-    public readonly bool HasParameters;
     public readonly bool InvertsDirection;
     public readonly ProcedureNames Names;
     public readonly string ReadResultLine;
@@ -20,16 +20,15 @@ public class Procedure
     {
         Names = new ProcedureNames(procedureCollectionNames, procedureInfo);
         ReturnType = typeCache.GetOrAdd(procedureInfo.ReturnType);
-        EnumValue = definitionIndex;
         EnumValueString = definitionIndex.ToString();
         InvertsDirection = procedureInfo.InvertsDirection;
 
         ImmutableArray<ParameterInfo> parameterInfos = procedureInfo.Parameters;
-        HasParameters = parameterInfos.Length > 0;
-        if (HasParameters)
+        _hasParameters = parameterInfos.Length > 0;
+        if (_hasParameters)
         {
             _parameters = new ParameterCollection(parameterInfos, typeCache);
-            HasParameters = true;
+            _hasParameters = true;
         }
 
         ReadResultLine =
@@ -38,7 +37,7 @@ public class Procedure
 
     public bool TryGetParameters(out ParameterCollection? parameters)
     {
-        if (HasParameters)
+        if (_hasParameters)
         {
             parameters = _parameters;
             return true;

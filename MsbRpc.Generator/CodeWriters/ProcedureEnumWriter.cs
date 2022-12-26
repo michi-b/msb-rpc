@@ -8,9 +8,9 @@ namespace MsbRpc.Generator.CodeWriters;
 internal class ProcedureEnumWriter : CodeWriter
 {
     protected override string FileName { get; }
-    
+
     private ProcedureCollection Procedures { get; }
-    
+
     public ProcedureEnumWriter(ContractNode contract, ProcedureCollection procedures)
         : base(contract)
     {
@@ -29,6 +29,7 @@ internal class ProcedureEnumWriter : CodeWriter
             {
                 await writer.WriteLineAsync($"{GetEnumMemberDefinition(i)},");
             }
+
             await writer.WriteLineAsync(GetEnumMemberDefinition(Procedures.LastIndex));
         }
         await writer.ExitBlockAsync(BlockAdditions.None);

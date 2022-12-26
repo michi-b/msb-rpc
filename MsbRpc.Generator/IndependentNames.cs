@@ -38,7 +38,7 @@ internal static class IndependentNames
         public const string BufferWrite = "Write";
         public const string SendEndPointRequest = "SendRequest";
     }
-    
+
     public static class Properties
     {
         public const string BufferWriterBuffer = "Buffer";
@@ -53,13 +53,13 @@ internal static class IndependentNames
         public const string InitialBufferSize = "initialBufferSize";
         public const string ArgumentsBufferReader = "argumentsReader";
     }
-    
+
     public static class EnumValues
     {
         public const string InboundEndPointDirection = Types.EndPointDirection + ".Inbound";
         public const string OutboundEndPointDirection = Types.EndPointDirection + ".Outbound";
     }
-    
+
     public static class Variables
     {
         public const string Procedure = "procedure";
