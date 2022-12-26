@@ -23,7 +23,7 @@ public static class OutboundRpcWriter
         string returnType = procedure.ReturnType.Names.Name;
         await writer.WriteAsync($"public async {Types.Task}<{returnType}> {procedure.Names.Async}");
 
-        procedure.TryGetParameters(out ParameterCollection? parameters);
+        ParameterCollection? parameters = procedure.Parameters;
 
         await writer.WriteAsync('(');
         if (parameters != null)
@@ -92,10 +92,11 @@ public static class OutboundRpcWriter
 
         //read result
         TypeNode returnType = procedure.ReturnType;
-        if (returnType.SerializationKind.TryGetBufferReadMethodName(out string? bufferReadMethod) && bufferReadMethod != null)
+        string? bufferReadMethodName = returnType.SerializationKind.GetBufferReadMethodName();
+        if (bufferReadMethodName != null)
         {
             await writer.WriteAsync($"{returnType.Names.Name} {Variables.ProcedureResult} ");
-            await writer.WriteLineAsync($"= {Variables.ResultReader}.{bufferReadMethod}();");
+            await writer.WriteLineAsync($"= {Variables.ResultReader}.{bufferReadMethodName}();");
         }
         else
         {

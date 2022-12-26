@@ -42,7 +42,8 @@ public class InterfaceFileWriter : CodeFileWriter
         await writer.WriteAsync(procedure.Names.Name);
         await writer.WriteAsync('(');
         {
-            if (procedure.TryGetParameters(out ParameterCollection? parameters) && parameters != null)
+            ParameterCollection? parameters = procedure.Parameters;
+            if (parameters != null)
             {
                 for (int i = 0; i < parameters.LastIndex; i++)
                 {

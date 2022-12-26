@@ -25,9 +25,9 @@ public static class SerializationKindExtensions
         };
     }
 
-    public static bool TryGetConstantSizeExpression(this SerializationKind target, out string? result)
+    public static string? GetConstantSizeExpression(this SerializationKind target)
     {
-        result = target switch
+        return target switch
         {
             SerializationKind.Byte => $"{Types.PrimitiveSerializer}.ByteSize",
             SerializationKind.Sbyte => $"{Types.PrimitiveSerializer}.SbyteSize",
@@ -44,12 +44,11 @@ public static class SerializationKindExtensions
             SerializationKind.Decimal => $"{Types.PrimitiveSerializer}.DecimalSize",
             _ => null
         };
-        return result != null;
     }
 
-    public static bool TryGetBufferReadMethodName(this SerializationKind target, out string? bufferReadMethod)
+    public static string? GetBufferReadMethodName(this SerializationKind target)
     {
-        bufferReadMethod = target switch
+        return target switch
         {
             SerializationKind.Byte => "ReadByte",
             SerializationKind.Sbyte => "ReadSbyte",
@@ -66,7 +65,6 @@ public static class SerializationKindExtensions
             SerializationKind.Decimal => "ReadDecimal",
             _ => null
         };
-        return bufferReadMethod != null;
     }
 
     public static bool HasKeyword(this SerializationKind serializationKind) => serializationKind.GetIsPrimitive();

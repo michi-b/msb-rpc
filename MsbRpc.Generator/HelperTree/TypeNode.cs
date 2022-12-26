@@ -14,6 +14,7 @@ public class TypeNode
     {
         SerializationKindUtility.TryGetPrimitiveSerializationKind($"{info.Namespace}.{info.LocalName}", out SerializationKind);
         Names = new TypeNames(info, SerializationKind);
-        IsConstantSize = SerializationKind.TryGetConstantSizeExpression(out ConstantSizeExpression);
+        ConstantSizeExpression = SerializationKind.GetConstantSizeExpression();
+        IsConstantSize = ConstantSizeExpression != null;
     }
 }

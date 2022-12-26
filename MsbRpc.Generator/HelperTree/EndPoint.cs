@@ -6,10 +6,10 @@ namespace MsbRpc.Generator.HelperTree;
 
 public class EndPoint
 {
-    private readonly EndPointTypeId _type;
-    public readonly ContractNode Contract;
+    public readonly ProcedureCollection? InboundProcedures;
     public readonly string InitialDirectionEnumValue;
     public readonly EndPointNames Names;
+    public readonly ProcedureCollection? OutboundProcedures;
 
     public EndPoint
     (
@@ -18,14 +18,22 @@ public class EndPoint
         EndPointNames names
     )
     {
-        Contract = contract;
         Names = names;
-        _type = type;
         EndPointDirection initialDirection = type.GetInitialDirection();
         InitialDirectionEnumValue = initialDirection.GetEnumValueCode();
+
+        InboundProcedures = type switch
+        {
+            EndPointTypeId.Client => contract.ClientProcedures,
+            EndPointTypeId.Server => contract.ServerProcedures,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+
+        OutboundProcedures = type switch
+        {
+            EndPointTypeId.Client => contract.ServerProcedures,
+            EndPointTypeId.Server => contract.ClientProcedures,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
     }
-
-    public bool TryGetInboundProcedures(out ProcedureCollection? procedures) => Contract.TryGetProcedures(_type, out procedures);
-
-    public bool TryGetOutboundProcedures(out ProcedureCollection? procedures) => Contract.TryGetProcedures(_type.GetOther(), out procedures);
 }

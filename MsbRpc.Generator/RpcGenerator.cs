@@ -60,29 +60,30 @@ public class Generator : IIncrementalGenerator
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
     {
-        ContractNode helperTree = new(ref contractInfo);
-        Task serverGenerationTask = GenerateEndPoint(context, helperTree.Server);
-        Task clientGenerationTask = GenerateEndPoint(context, helperTree.Client);
+        ContractNode contract = new(ref contractInfo);
+        Task serverGenerationTask = GenerateEndPoint(context, contract, contract.Server);
+        Task clientGenerationTask = GenerateEndPoint(context, contract, contract.Client);
         Task.WaitAll(serverGenerationTask, clientGenerationTask);
     }
 
-    private static async Task GenerateEndPoint(SourceProductionContext context, EndPoint endPoint)
+    private static async Task GenerateEndPoint(SourceProductionContext context, ContractNode contract, EndPoint endPoint)
     {
         List<Task> codeGenerationTasks = new(4);
 
         //generate inbound procedure enum and extensions and interface
-        if (endPoint.TryGetInboundProcedures(out ProcedureCollection? inboundProcedures) && inboundProcedures != null)
+        ProcedureCollection? inboundProcedures = endPoint.InboundProcedures;
+        if (inboundProcedures != null)
         {
-            codeGenerationTasks.Add(new ProcedureEnumFileWriter(endPoint.Contract, inboundProcedures).GenerateAsync(context));
-            codeGenerationTasks.Add(new ProcedureEnumExtensionsFileWriter(endPoint.Contract, inboundProcedures).GenerateAsync(context));
-            codeGenerationTasks.Add(new InterfaceFileWriter(endPoint.Contract, endPoint, inboundProcedures).GenerateAsync(context));
+            codeGenerationTasks.Add(new ProcedureEnumFileWriter(contract, inboundProcedures).GenerateAsync(context));
+            codeGenerationTasks.Add(new ProcedureEnumExtensionsFileWriter(contract, inboundProcedures).GenerateAsync(context));
+            codeGenerationTasks.Add(new InterfaceFileWriter(contract, endPoint, inboundProcedures).GenerateAsync(context));
         }
 
         //generate endpoint
-        endPoint.TryGetOutboundProcedures(out ProcedureCollection? outboundProcedures);
+        ProcedureCollection? outboundProcedures = endPoint.OutboundProcedures;
         if (inboundProcedures != null || outboundProcedures != null)
         {
-            var endPointWriter = new EndPointFileWriter(endPoint.Contract, endPoint, inboundProcedures, outboundProcedures);
+            var endPointWriter = new EndPointFileWriter(contract, endPoint, inboundProcedures, outboundProcedures);
             codeGenerationTasks.Add(endPointWriter.GenerateAsync(context));
         }
 

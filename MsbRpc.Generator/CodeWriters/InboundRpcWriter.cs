@@ -69,14 +69,15 @@ public static class InboundRpcWriter
 
     private static async Task WriteProcedureCallBodyAsync(IndentedTextWriter writer, string implementationFieldName, Procedure procedure)
     {
-        procedure.TryGetParameters(out ParameterCollection? parameters);
+        ParameterCollection? parameters = procedure.Parameters;
 
         //read arguments
         if (parameters != null)
         {
             foreach (Parameter parameter in parameters)
             {
-                if (parameter.Type.SerializationKind.TryGetBufferReadMethodName(out string? bufferReadMethodName) && bufferReadMethodName != null)
+                string? bufferReadMethodName = parameter.Type.SerializationKind.GetBufferReadMethodName();
+                if (bufferReadMethodName != null)
                 {
                     await WriteReadParameterAsync(writer, parameter, bufferReadMethodName);
                 }
