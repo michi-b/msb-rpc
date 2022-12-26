@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
-using MsbRpc.Generator.HelperTree.Names;
+using MsbRpc.Generator.GenerationTree.Names;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.HelperTree;
+namespace MsbRpc.Generator.GenerationTree;
 
 public class ProcedureCollection : IReadOnlyList<Procedure>
 {

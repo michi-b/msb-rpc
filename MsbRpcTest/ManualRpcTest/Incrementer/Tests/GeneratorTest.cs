@@ -35,7 +35,7 @@ public interface IIncrementer
                     MetadataReferenceUtility.FromType<ArgumentOutOfRangeException>(),
                     MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Tasks.Extensions")
                 )
-            ).WithAdditionalGenerators(new Generator())
+            ).WithAdditionalGenerators(new ContractGenerator())
         )
         .WithAddedNamespaceImports("MsbRpc.Generator.Attributes")
         .InNamespace("MsbRpcTest.Serialization.ManualRpcTest.Incrementer.Input")
@@ -47,7 +47,7 @@ public interface IIncrementer
     public async Task GeneratorRuns()
     {
         CodeTestResult result = (await CodeTest.Run(CancellationToken, LoggerFactory)).Result;
-        Assert.IsTrue(result.GeneratorResults.ContainsKey(typeof(Generator)));
+        Assert.IsTrue(result.GeneratorResults.ContainsKey(typeof(ContractGenerator)));
     }
 
     [TestMethod]
@@ -117,7 +117,7 @@ public interface IIncrementer
     }
 
     private async Task<GeneratorDriverRunResult> RunGenerator(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics)
-        => (await RunCodeTest(loggingOptions)).GeneratorResults[typeof(Generator)].GetRunResult();
+        => (await RunCodeTest(loggingOptions)).GeneratorResults[typeof(ContractGenerator)].GetRunResult();
 
     private async Task<CodeTestResult> RunCodeTest(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics)
         => (await CodeTest.Run(CancellationToken, LoggerFactory, loggingOptions)).Result;

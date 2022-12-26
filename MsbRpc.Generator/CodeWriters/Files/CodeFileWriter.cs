@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.HelperTree;
+using MsbRpc.Generator.GenerationTree;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 

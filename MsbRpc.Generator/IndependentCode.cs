@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator;
 
-public class IndependentCode
+public static class IndependentCode
 {
     private const string ArgumentsBufferWrite = IndependentNames.Variables.ArgumentsWriter + "." + IndependentNames.Methods.BufferWrite;
 

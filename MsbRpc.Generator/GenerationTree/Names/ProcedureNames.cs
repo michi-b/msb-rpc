@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.HelperTree.Names;
+namespace MsbRpc.Generator.GenerationTree.Names;
 
 public class ProcedureNames
 {

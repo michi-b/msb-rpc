@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsbRpc.Generator.CodeWriters.Files;
-using MsbRpc.Generator.HelperTree;
+using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Utility;
@@ -9,7 +9,7 @@ using MsbRpc.Generator.Utility;
 namespace MsbRpc.Generator;
 
 [Generator]
-public class Generator : IIncrementalGenerator
+public class ContractGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

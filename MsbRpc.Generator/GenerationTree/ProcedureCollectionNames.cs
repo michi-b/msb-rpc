@@ -1,7 +1,7 @@
-﻿using MsbRpc.Generator.HelperTree.Names;
+﻿using MsbRpc.Generator.GenerationTree.Names;
 using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.HelperTree;
+namespace MsbRpc.Generator.GenerationTree;
 
 public class ProcedureCollectionNames
 {

@@ -1,6 +1,6 @@
 ﻿using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.HelperTree.Names;
+namespace MsbRpc.Generator.GenerationTree.Names;
 
 public readonly struct ParameterNames
 {

@@ -1,11 +1,10 @@
-﻿namespace MsbRpc.Generator.HelperTree.Names;
+﻿namespace MsbRpc.Generator.GenerationTree.Names;
 
 public readonly struct EndPointNames
 {
     public EndPointNames(ContractNames contract, EndPointTypeId endPointType)
     {
-        endPointType.GetLowerCaseName();
-        string upperCaseTypeId = endPointType.GetUpperCaseName();
+        string upperCaseTypeId = endPointType.GetName();
 
         PascalCaseName = $"{contract.PascalCaseName}{upperCaseTypeId}";
         CamelCaseName = $"{contract.CamelCaseName}{upperCaseTypeId}";

@@ -1,6 +1,6 @@
-﻿using MsbRpc.Generator.HelperTree.Names;
+﻿using MsbRpc.Generator.GenerationTree.Names;
 
-namespace MsbRpc.Generator.HelperTree;
+namespace MsbRpc.Generator.GenerationTree;
 
 public readonly struct Parameter
 {

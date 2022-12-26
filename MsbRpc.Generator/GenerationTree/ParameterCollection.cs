@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.HelperTree;
+namespace MsbRpc.Generator.GenerationTree;
 
 public class ParameterCollection : IReadOnlyList<Parameter>
 {

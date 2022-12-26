@@ -1,8 +1,8 @@
 ﻿using MsbRpc.EndPoints;
 using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.HelperTree.Names;
+using MsbRpc.Generator.GenerationTree.Names;
 
-namespace MsbRpc.Generator.HelperTree;
+namespace MsbRpc.Generator.GenerationTree;
 
 public class EndPoint
 {

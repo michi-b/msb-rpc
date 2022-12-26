@@ -1,7 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.HelperTree;
-using MsbRpc.Generator.HelperTree.Names;
+using MsbRpc.Generator.GenerationTree;
+using MsbRpc.Generator.GenerationTree.Names;
 using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
