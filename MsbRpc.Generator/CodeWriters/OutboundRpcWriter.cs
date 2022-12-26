@@ -112,7 +112,8 @@ public static class OutboundRpcWriter
     {
         foreach (Parameter parameter in parameters)
         {
-            if (parameter.Type.TryGetConstantSizeExpression(out string? constantSizeExpression) && constantSizeExpression != null)
+            string? constantSizeExpression = parameter.Type.ConstantSizeExpression;
+            if (constantSizeExpression != null)
             {
                 await writer.WriteLineAsync($"const int {parameter.Names.SizeVariable} = {constantSizeExpression};");
             }
@@ -128,7 +129,7 @@ public static class OutboundRpcWriter
         {
             await writer.WriteLineAsync();
 
-            await writer.WriteAsync($"const int {Variables.ConstantSizeParametersSize} = ");
+            await writer.WriteAsync($"const int {Variables.ConstantSizeRpcParametersSize} = ");
             await writer.WriteAsync(constantSizeParameters[0].Names.SizeVariable);
             for (int i = 1; i < constantSizeParametersCount; i++)
             {
@@ -144,7 +145,7 @@ public static class OutboundRpcWriter
         {
             if (constantSizeParameters.Count > 0)
             {
-                await writer.WriteLineAsync($"const int {Variables.ParametersSizeSum} = {Variables.ConstantSizeParametersSize};");
+                await writer.WriteLineAsync($"const int {Variables.ParametersSizeSum} = {Variables.ConstantSizeRpcParametersSize};");
             }
             else
             {

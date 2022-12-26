@@ -38,7 +38,7 @@ internal static class IndependentNames
         public const string EndPointExitCalling = "ExitCalling";
         public const string SendEndPointRequest = "SendRequest";
         public const string GetEndPointRequestWriter = "GetRequestWriter";
-        public const string GetEndPointResponseWriter = "GetResponseWriter";
+        public const string GetEndPointResultWriter = "GetResponseWriter";
         public const string GetEndpointProcedureName = "GetName";
         public const string GetEndPointProcedureInvertsDirection = "GetInvertsDirection";
         public const string EndPointHandleRequest = "HandleRequest";
@@ -71,10 +71,12 @@ internal static class IndependentNames
         public const string ProcedureResult = "result";
         public const string Procedure = "procedure";
         public const string SizeVariablePostFix = "Size";
-        public const string ConstantSizeParametersSize = "constantSizeParametersSizeSum";
+        public const string ConstantSizeRpcParametersSize = "constantSizeParametersSizeSum";
         public const string ParametersSizeSum = "ParametersSizeSum";
         public const string ArgumentsWriter = "argumentsWriter";
         public const string ResultReader = "resultReader";
+        public const string RpcResultSize = "resultSize";
+        public const string RpcResultWriter = "resultWriter";
     }
 
     public static string ToCamelCase(this string target)

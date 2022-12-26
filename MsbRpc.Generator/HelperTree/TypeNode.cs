@@ -5,7 +5,7 @@ namespace MsbRpc.Generator.HelperTree;
 
 public class TypeNode
 {
-    private readonly string? _constantSizeExpression;
+    public readonly string? ConstantSizeExpression;
     public readonly bool IsConstantSize;
     public readonly TypeNames Names;
     public readonly SerializationKind SerializationKind;
@@ -14,12 +14,6 @@ public class TypeNode
     {
         SerializationKindUtility.TryGetPrimitiveSerializationKind($"{info.Namespace}.{info.LocalName}", out SerializationKind);
         Names = new TypeNames(info, SerializationKind);
-        IsConstantSize = SerializationKind.TryGetConstantSizeExpression(out _constantSizeExpression);
-    }
-
-    public bool TryGetConstantSizeExpression(out string? expression)
-    {
-        expression = _constantSizeExpression;
-        return IsConstantSize;
+        IsConstantSize = SerializationKind.TryGetConstantSizeExpression(out ConstantSizeExpression);
     }
 }

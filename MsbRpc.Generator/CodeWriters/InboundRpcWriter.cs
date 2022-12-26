@@ -90,7 +90,8 @@ public static class InboundRpcWriter
         await writer.WriteLineAsync();
 
         //invoke implementation
-        string invocationWithoutParameters = $"{procedure.ReturnType.Names.Name} {Variables.ProcedureResult}"
+        const string procedureResultVariable = Variables.ProcedureResult;
+        string invocationWithoutParameters = $"{procedure.ReturnType.Names.Name} {procedureResultVariable}"
                                              + $" = {implementationFieldName}.{procedure.Names.Name}";
         if (parameters != null)
         {
@@ -104,6 +105,22 @@ public static class InboundRpcWriter
         }
 
         await writer.WriteLineAsync();
+
+        const string resultSizeVariable = Variables.RpcResultSize;
+        string? constantResultSizeExpression = procedure.ReturnType.ConstantSizeExpression;
+        if (constantResultSizeExpression != null)
+        {
+            await writer.WriteLineAsync($"const int {resultSizeVariable} = {constantResultSizeExpression};");
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+
+        const string resultWriterVariable = Variables.RpcResultWriter;
+        await writer.WriteLineAsync($"{Types.BufferWriter} {resultWriterVariable} = {Methods.GetEndPointResultWriter}({resultSizeVariable});");
+        await writer.WriteLineAsync($"{resultWriterVariable}.{Methods.BufferWrite}({procedureResultVariable});");
+        await writer.WriteLineAsync($"return {resultWriterVariable};");
     }
 
     private static async ValueTask WriteReadParameterAsync(TextWriter writer, Parameter parameter, string bufferReadMethodName)
