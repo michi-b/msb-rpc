@@ -4,27 +4,15 @@ namespace MsbRpc.Generator.HelperTree.Names;
 
 public class TypeNames
 {
-    public readonly string FullName;
-    public readonly string LowerCaseShortName;
-    public readonly string UpperCaseShortName;
+    public readonly string Name;
 
-    public TypeNames(TypeInfo info)
+    public TypeNames(TypeInfo info, SerializationKind serializationKind)
     {
-        FullName = $"{info.Namespace}.{info.LocalName}";
+        Name = $"{info.Namespace}.{info.LocalName}";
 
-        if (SerializationKindUtility.TryGetPrimitiveSerialization(FullName, out SerializationKind primitiveSerialization))
+        if (serializationKind.GetKeyword(out string? primitiveKeyword) && primitiveKeyword != null)
         {
-            if (primitiveSerialization.GetKeyword(out string? primitiveKeyword) && primitiveKeyword != null)
-            {
-                FullName = primitiveKeyword;
-                UpperCaseShortName = primitiveKeyword.ToPascalCase();
-                LowerCaseShortName = primitiveKeyword;
-            }
-            else
-            {
-                UpperCaseShortName = info.LocalName.ToPascalCase();
-                LowerCaseShortName = info.LocalName.ToCamelCase();
-            }
+            Name = primitiveKeyword;
         }
     }
 }

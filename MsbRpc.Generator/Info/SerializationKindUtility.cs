@@ -30,7 +30,7 @@ public static class SerializationKindUtility
     public const string DoubleKeyword = "double";
     public const string DecimalKeyword = "decimal";
 
-    public static bool TryGetPrimitiveSerialization(string typeName, out SerializationKind result)
+    public static bool TryGetPrimitiveSerializationKind(string typeName, out SerializationKind result)
     {
         result = typeName switch
         {

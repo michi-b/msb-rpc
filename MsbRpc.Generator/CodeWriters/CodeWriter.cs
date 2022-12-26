@@ -17,15 +17,15 @@ public abstract class CodeWriter
 
     private CodeWriter(string generatedNamespace) => GeneratedNamespace = generatedNamespace;
 
-    public async Task Generate(SourceProductionContext context)
+    public async Task GenerateAsync(SourceProductionContext context)
     {
         IndentedTextWriter writer = CreateCodeWriter();
-        await Write(writer);
+        await WriteAsync(writer);
         string code = writer.GetResult();
         context.AddSource(FileName, SourceText.From(code, Encoding.UTF8));
     }
 
-    protected abstract ValueTask Write(IndentedTextWriter writer);
+    protected abstract ValueTask WriteAsync(IndentedTextWriter writer);
 
     private IndentedTextWriter CreateCodeWriter()
     {

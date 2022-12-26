@@ -13,14 +13,14 @@ public readonly struct TypeGenerator
         string ns = typeInfo.Namespace;
         Name = $"{ns}.{name}";
 
-        SerializationKind = SerializationKindUtility.TryGetPrimitiveSerialization(Name, out SerializationKind primitiveSerializationType)
+        SerializationKind = SerializationKindUtility.TryGetPrimitiveSerializationKind(Name, out SerializationKind primitiveSerializationType)
             ? primitiveSerializationType
             : SerializationKind.Unresolved;
     }
 
     public bool TryGetConstantSizeInitializationLine(string variableName, out string result)
     {
-        bool success = SerializationKind.TryGetConstantSizeCode(out string constantSizeCode);
+        bool success = SerializationKind.TryGetConstantSizeExpression(out string constantSizeCode);
         result = success ? $"const {Name} {variableName} = {constantSizeCode};" : string.Empty;
         return success;
     }

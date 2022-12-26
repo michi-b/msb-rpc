@@ -82,16 +82,16 @@ public class Generator : IIncrementalGenerator
         //generate inbound procedure enum and extensions and interface
         if (endPoint.TryGetInboundProcedures(out ProcedureCollection? inboundProcedures) && inboundProcedures != null)
         {
-            codeGenerationTasks.Add(new ProcedureEnumWriter(endPoint.Contract, inboundProcedures).Generate(context));
-            codeGenerationTasks.Add(new ProcedureEnumExtensionsWriter(endPoint.Contract, inboundProcedures).Generate(context));
-            codeGenerationTasks.Add(new InterfaceWriter(endPoint.Contract, endPoint, inboundProcedures).Generate(context));
+            codeGenerationTasks.Add(new ProcedureEnumWriter(endPoint.Contract, inboundProcedures).GenerateAsync(context));
+            codeGenerationTasks.Add(new ProcedureEnumExtensionsWriter(endPoint.Contract, inboundProcedures).GenerateAsync(context));
+            codeGenerationTasks.Add(new InterfaceWriter(endPoint.Contract, endPoint, inboundProcedures).GenerateAsync(context));
         }
         
         //generate endpoint
         endPoint.TryGetOutboundProcedures(out ProcedureCollection? outboundProcedures);
         if(inboundProcedures != null || outboundProcedures != null)
         {
-            codeGenerationTasks.Add(new EndPointWriter(endPoint.Contract, endPoint, inboundProcedures, outboundProcedures).Generate(context));
+            codeGenerationTasks.Add(new EndPointWriter(endPoint.Contract, endPoint, inboundProcedures, outboundProcedures).GenerateAsync(context));
         }
         
         await Task.WhenAll(codeGenerationTasks.ToArray());

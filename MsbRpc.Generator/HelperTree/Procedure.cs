@@ -1,21 +1,20 @@
 ﻿using System.Collections.Immutable;
 using MsbRpc.Generator.HelperTree.Names;
 using MsbRpc.Generator.Info;
+using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.HelperTree;
 
 public class Procedure
 {
-    public readonly TypeNode ReturnType;
-    public readonly ProcedureNames Names;
+    private readonly ParameterCollection? _parameters;
     public readonly int EnumValue;
     public readonly string EnumValueString;
-    public readonly bool InvertsDirection;
-    public readonly int LastParameterIndex;
-    public readonly int ParameterCount;
     public readonly bool HasParameters;
-    
-    private readonly Parameter[]? Parameters;
+    public readonly bool InvertsDirection;
+    public readonly ProcedureNames Names;
+    public readonly string ReadResultLine;
+    public readonly TypeNode ReturnType;
 
     public Procedure(ProcedureInfo procedureInfo, ProcedureCollectionNames procedureCollectionNames, int definitionIndex, TypeCache typeCache)
     {
@@ -24,33 +23,24 @@ public class Procedure
         EnumValue = definitionIndex;
         EnumValueString = definitionIndex.ToString();
         InvertsDirection = procedureInfo.InvertsDirection;
-        
+
         ImmutableArray<ParameterInfo> parameterInfos = procedureInfo.Parameters;
-        ParameterCount = parameterInfos.Length;
-        HasParameters = ParameterCount > 0;
+        HasParameters = parameterInfos.Length > 0;
         if (HasParameters)
         {
-            int parameterCount = ParameterCount;
-            LastParameterIndex = parameterCount - 1;
-            Parameters = new Parameter[parameterCount];
-            for (int i = 0; i < ParameterCount; i++)
-            {
-                ParameterInfo parameterInfo = parameterInfos[i];
-                Parameters[i] = new Parameter(parameterInfo.Name, typeCache.GetOrAdd(parameterInfo.Type));
-            }
+            _parameters = new ParameterCollection(parameterInfos, typeCache);
+            HasParameters = true;
         }
-        else
-        {
-            LastParameterIndex = -1;
-            Parameters = null;
-        }
+
+        ReadResultLine =
+            $"{ReturnType.Names.Name} {Variables.Result} = {Variables.ResultReader}.{ReturnType.SerializationKind.GetBufferReadMethodName()}();";
     }
 
-    public bool TryGetParameters(out Parameter[]? parameters)
+    public bool TryGetParameters(out ParameterCollection? parameters)
     {
         if (HasParameters)
         {
-            parameters = Parameters;
+            parameters = _parameters;
             return true;
         }
 

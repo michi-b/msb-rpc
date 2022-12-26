@@ -19,8 +19,8 @@ internal static class IndependentNames
         public const string CancellationToken = "System.Threading.CancellationToken";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
-        public const string BufferWriter = "MsbRpc.Serialization.BufferWriter";
-        public const string BufferReader = "MsbRpc.Serialization.BufferReader";
+        public const string BufferWriter = "MsbRpc.Serialization.Buffers.BufferWriter";
+        public const string BufferReader = "MsbRpc.Serialization.Buffers.BufferReader";
         public const string EndPoint = "MsbRpc.EndPoints.RpcEndPoint";
         public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
         public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
@@ -35,6 +35,13 @@ internal static class IndependentNames
         public const string GetEndPointResponseWriter = "GetResponseWriter";
         public const string GetNameProcedureEnumExtension = "GetName";
         public const string GetInvertsDirectionProcedureExtension = "GetInvertsDirection";
+        public const string BufferWrite = "Write";
+        public const string SendEndPointRequest = "SendRequest";
+    }
+    
+    public static class Properties
+    {
+        public const string BufferWriterBuffer = "Buffer";
     }
 
     public static class Parameters
@@ -44,13 +51,24 @@ internal static class IndependentNames
         public const string CancellationToken = "cancellationToken";
         public const string Procedure = "procedure";
         public const string InitialBufferSize = "initialBufferSize";
-        public const string ArgumentsBufferReader = "arguments";
+        public const string ArgumentsBufferReader = "argumentsReader";
     }
     
     public static class EnumValues
     {
         public const string InboundEndPointDirection = Types.EndPointDirection + ".Inbound";
         public const string OutboundEndPointDirection = Types.EndPointDirection + ".Outbound";
+    }
+    
+    public static class Variables
+    {
+        public const string Procedure = "procedure";
+        public const string SizeVariablePostFix = "Size";
+        public const string ConstantSizeParametersSize = "constantSizeParametersSizeSum";
+        public const string ParametersSizeSum = "ParametersSizeSum";
+        public const string ArgumentsWriter = "argumentsWriter";
+        public const string ResultReader = "resultReader";
+        public const string Result = "result";
     }
 
     public static string ToCamelCase(this string target)

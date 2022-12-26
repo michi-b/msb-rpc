@@ -18,7 +18,7 @@ internal class ProcedureEnumWriter : CodeWriter
         FileName = $"{GeneratedNamespace}.{Procedures.Names.EnumType}{GeneratedFilePostfix}";
     }
 
-    protected override async ValueTask Write(IndentedTextWriter writer)
+    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
     {
         string GetEnumMemberDefinition(int i) => $"{Procedures[i].Names.PascalCaseName} = {Procedures[i].EnumValueString}";
 

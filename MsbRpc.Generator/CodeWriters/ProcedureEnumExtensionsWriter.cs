@@ -24,33 +24,33 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
         _returnProcedureSwitchExpressionLine = $"return {Parameters.Procedure} switch";
     }
 
-    protected override async ValueTask Write(IndentedTextWriter writer)
+    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
     {
         await writer.WriteLineAsync($"public static class {_className}");
         await writer.EnterBlockAsync();
         {
-            await WriteGetNameExtension(writer);
+            await WriteGetNameExtensionAsync(writer);
 
             await writer.WriteLineAsync();
             
-            await WriteGetInvertsDirectionExtension(writer);
+            await WriteGetInvertsDirectionExtensionAsync(writer);
         }
         await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
-    private async ValueTask  WriteGetNameExtension(IndentedTextWriter writer)
+    private async ValueTask  WriteGetNameExtensionAsync(IndentedTextWriter writer)
     {
         string GetCaseCode(Procedure procedure) => $"nameof({procedure.Names.EnumValue})";
-        await WriteExtension(writer, "string", Methods.GetNameProcedureEnumExtension, GetCaseCode);
+        await WriteExtensionAsync(writer, "string", Methods.GetNameProcedureEnumExtension, GetCaseCode);
     }
 
-    private async ValueTask WriteGetInvertsDirectionExtension(IndentedTextWriter writer)
+    private async ValueTask WriteGetInvertsDirectionExtensionAsync(IndentedTextWriter writer)
     {
         string GetCaseCode(Procedure procedure) => procedure.InvertsDirection ? "true" : "false";
-        await WriteExtension(writer, "bool", Methods.GetInvertsDirectionProcedureExtension, GetCaseCode);
+        await WriteExtensionAsync(writer, "bool", Methods.GetInvertsDirectionProcedureExtension, GetCaseCode);
     }
 
-    private async ValueTask WriteExtension(IndentedTextWriter writer,string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression )
+    private async ValueTask WriteExtensionAsync(IndentedTextWriter writer,string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression )
     {
         await writer.WriteLineAsync($"public static {returnType} {extensionMethodName}(this {_procedures.Names.EnumType} {Parameters.Procedure})");
         await writer.EnterBlockAsync();

@@ -26,8 +26,7 @@ public static class SerializationKindExtensions
         };
     }
 
-    [Obsolete("Use GetIsPrimitive instead")]
-    public static bool TryGetConstantSizeCode(this SerializationKind target, out string result)
+    public static bool TryGetConstantSizeExpression(this SerializationKind target, out string? result)
     {
         result = target switch
         {
@@ -44,30 +43,9 @@ public static class SerializationKindExtensions
             SerializationKind.Float => $"{Types.PrimitiveSerializer}.FloatSize",
             SerializationKind.Double => $"{Types.PrimitiveSerializer}.DoubleSize",
             SerializationKind.Decimal => $"{Types.PrimitiveSerializer}.DecimalSize",
-            _ => string.Empty
+            _ => null
         };
-        return result != string.Empty;
-    }
-
-    public static bool GetIsConstantSize(this SerializationKind target)
-    {
-        return target switch
-        {
-            SerializationKind.Byte => true,
-            SerializationKind.Sbyte => true,
-            SerializationKind.Bool => true,
-            SerializationKind.Char => true,
-            SerializationKind.Int => true,
-            SerializationKind.Long => true,
-            SerializationKind.Short => true,
-            SerializationKind.Uint => true,
-            SerializationKind.Ulong => true,
-            SerializationKind.Ushort => true,
-            SerializationKind.Float => true,
-            SerializationKind.Double => true,
-            SerializationKind.Decimal => true,
-            _ => false
-        };
+        return result != null;
     }
 
     public static string GetBufferReadMethodName(this SerializationKind target)

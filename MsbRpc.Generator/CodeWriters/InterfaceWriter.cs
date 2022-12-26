@@ -19,7 +19,7 @@ public class InterfaceWriter : CodeWriter
         FileName = $"{GeneratedNamespace}.{_interfaceName}{IndependentNames.GeneratedFilePostfix}";
     }
 
-    protected override async ValueTask Write(IndentedTextWriter writer)
+    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
     {
         await writer.WriteLineAsync($"public interface {_interfaceName}");
         await writer.EnterBlockAsync();
@@ -28,28 +28,27 @@ public class InterfaceWriter : CodeWriter
 
             for (int i = 0; i < lastIndex; i++)
             {
-                await WriteInterfaceMethod(writer, _procedures[i]);
+                await WriteInterfaceMethodAsync(writer, _procedures[i]);
                 await writer.WriteLineAsync(";");
             }
 
-            await WriteInterfaceMethod(writer, _procedures[lastIndex]);
+            await WriteInterfaceMethodAsync(writer, _procedures[lastIndex]);
         }
         await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
-    private static async ValueTask WriteInterfaceMethod(TextWriter writer, Procedure procedure)
+    private static async ValueTask WriteInterfaceMethodAsync(TextWriter writer, Procedure procedure)
     {
-        await writer.WriteAsync(procedure.ReturnType.Names.FullName);
+        await writer.WriteAsync(procedure.ReturnType.Names.Name);
         await writer.WriteAsync(' ');
         await writer.WriteAsync(procedure.Names.PascalCaseName);
         await writer.WriteAsync('(');
         {
-            if (procedure.TryGetParameters(out Parameter[]? parameters) && parameters != null)
+            if (procedure.TryGetParameters(out ParameterCollection? parameters) && parameters != null)
             {
-                int lastParameterIndex = procedure.LastParameterIndex;
-                for (int i = 0; i < lastParameterIndex; i++)
+                for (int i = 0; i < parameters.LastIndex; i++)
                 {
-                    await WriteInterfaceMethodParameter(writer, parameters[i]);
+                    await WriteInterfaceMethodParameterAsync(writer, parameters[i]);
                     await writer.WriteAsync(", ");
                 }
             }
@@ -57,10 +56,10 @@ public class InterfaceWriter : CodeWriter
         await writer.WriteLineAsync(");");
     }
 
-    private static async ValueTask WriteInterfaceMethodParameter(TextWriter writer, Parameter parameter)
+    private static async ValueTask WriteInterfaceMethodParameterAsync(TextWriter writer, Parameter parameter)
     {
-        await writer.WriteAsync(parameter.Type.Names.FullName);
+        await writer.WriteAsync(parameter.Type.Names.Name);
         await writer.WriteAsync(' ');
-        await writer.WriteAsync(parameter.Names.CamelCaseName);
+        await writer.WriteAsync(parameter.Names.Name);
     }
 }
