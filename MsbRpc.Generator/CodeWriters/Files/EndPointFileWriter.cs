@@ -70,8 +70,30 @@ internal class EndPointFileWriter : CodeFileWriter
                     await OutboundRpcWriter.WriteProcedureCallAsync(writer, _outboundProcedures, procedure);
                 }
             }
+
+            //todo: implement inbound procedures here
+
+            if (_inboundProcedures != null)
+            {
+                await WriteProcedureEnumUtilityOverrides(writer, _inboundProceduresEnumTypeName);
+            }
+
+            if (_outboundProcedures != null)
+            {
+                await WriteProcedureEnumUtilityOverrides(writer, _outboundProceduresEnumTypeName);
+            }
         }
         await writer.ExitBlockAsync(BlockAdditions.None);
+    }
+
+    private async Task WriteProcedureEnumUtilityOverrides(IndentedTextWriter writer, string enumTypeName)
+    {
+        await writer.WriteLineAsync();
+        await writer.WriteAsync($"protected override string {Methods.GetEndpointProcedureName}({enumTypeName} {Parameters.Procedure})");
+        await writer.WriteLineAsync($" => {Parameters.Procedure}.{Methods.GetNameProcedureEnumExtension}();");
+        await writer.WriteLineAsync();
+        await writer.WriteAsync($"protected override bool {Methods.GetEndPointProcedureInvertsDirection}({enumTypeName} {Parameters.Procedure})");
+        await writer.WriteLineAsync($" => {Parameters.Procedure}.{Methods.GetInvertsDirectionProcedureExtension}();");
     }
 
     private async ValueTask WriteConstructorAsync(IndentedTextWriter writer)

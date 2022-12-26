@@ -29,14 +29,18 @@ internal static class IndependentNames
     public static class Methods
     {
         public const string CreateLogger = "Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger";
-        public const string EndPointEnterCalling = "EnterCalling";
-        public const string EndPointExitCalling = "ExitCalling";
-        public const string GetEndPointRequestWriter = "GetRequestWriter";
-        public const string GetEndPointResponseWriter = "GetResponseWriter";
         public const string GetNameProcedureEnumExtension = "GetName";
         public const string GetInvertsDirectionProcedureExtension = "GetInvertsDirection";
         public const string BufferWrite = "Write";
+
+        //endpoints
+        public const string EndPointEnterCalling = "EnterCalling";
+        public const string EndPointExitCalling = "ExitCalling";
         public const string SendEndPointRequest = "SendRequest";
+        public const string GetEndPointRequestWriter = "GetRequestWriter";
+        public const string GetEndPointResponseWriter = "GetResponseWriter";
+        public const string GetEndpointProcedureName = "GetName";
+        public const string GetEndPointProcedureInvertsDirection = "GetInvertsDirection";
     }
 
     public static class Properties
