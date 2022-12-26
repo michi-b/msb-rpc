@@ -11,8 +11,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
         MsbRpc.Messaging.Messenger messenger,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultBufferSize
-    )
-        : base
+    ) : base
         (
             messenger,
             MsbRpc.EndPoints.EndPointDirection.Outbound,

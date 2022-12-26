@@ -3,15 +3,15 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.CodeWriters;
+namespace MsbRpc.Generator.CodeWriters.Files;
 
-internal class ProcedureEnumWriter : CodeWriter
+internal class ProcedureEnumFileWriter : CodeFileWriter
 {
     protected override string FileName { get; }
 
     private ProcedureCollection Procedures { get; }
 
-    public ProcedureEnumWriter(ContractNode contract, ProcedureCollection procedures)
+    public ProcedureEnumFileWriter(ContractNode contract, ProcedureCollection procedures)
         : base(contract)
     {
         Procedures = procedures;

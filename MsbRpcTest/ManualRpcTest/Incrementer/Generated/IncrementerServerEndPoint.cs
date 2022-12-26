@@ -10,8 +10,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
         IIncrementerServer incrementerServer,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultBufferSize
-    )
-        : base
+    ) : base
         (
             messenger,
             MsbRpc.EndPoints.EndPointDirection.Inbound,

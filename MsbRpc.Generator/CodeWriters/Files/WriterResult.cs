@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Text;
 
-namespace MsbRpc.Generator.CodeWriters;
+namespace MsbRpc.Generator.CodeWriters.Files;
 
 public struct WriterResult
 {

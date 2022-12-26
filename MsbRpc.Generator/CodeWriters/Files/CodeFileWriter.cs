@@ -5,17 +5,17 @@ using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 
-namespace MsbRpc.Generator.CodeWriters;
+namespace MsbRpc.Generator.CodeWriters.Files;
 
-public abstract class CodeWriter
+public abstract class CodeFileWriter
 {
     protected readonly string GeneratedNamespace;
 
     protected abstract string FileName { get; }
 
-    protected CodeWriter(ContractNode contract) : this(contract.Names.GeneratedNamespace) { }
+    protected CodeFileWriter(ContractNode contract) : this(contract.Names.GeneratedNamespace) { }
 
-    private CodeWriter(string generatedNamespace) => GeneratedNamespace = generatedNamespace;
+    private CodeFileWriter(string generatedNamespace) => GeneratedNamespace = generatedNamespace;
 
     public async Task GenerateAsync(SourceProductionContext context)
     {

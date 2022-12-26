@@ -3,9 +3,9 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.CodeWriters;
+namespace MsbRpc.Generator.CodeWriters.Files;
 
-internal class ProcedureEnumExtensionsWriter : CodeWriter
+internal class ProcedureEnumExtensionsFileWriter : CodeFileWriter
 {
     private readonly string _className;
     private readonly string _procedureParameterOutOfRangeLine;
@@ -14,7 +14,7 @@ internal class ProcedureEnumExtensionsWriter : CodeWriter
     private readonly string _returnProcedureSwitchExpressionLine;
     protected override string FileName { get; }
 
-    public ProcedureEnumExtensionsWriter(ContractNode contract, ProcedureCollection procedures)
+    public ProcedureEnumExtensionsFileWriter(ContractNode contract, ProcedureCollection procedures)
         : base(contract)
     {
         _procedures = procedures;

@@ -2,15 +2,15 @@
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
 
-namespace MsbRpc.Generator.CodeWriters;
+namespace MsbRpc.Generator.CodeWriters.Files;
 
-public class InterfaceWriter : CodeWriter
+public class InterfaceFileWriter : CodeFileWriter
 {
     private readonly string _interfaceName;
     private readonly ProcedureCollection _procedures;
     protected override string FileName { get; }
 
-    public InterfaceWriter(ContractNode contract, EndPoint endPoint, ProcedureCollection procedures) : base(contract)
+    public InterfaceFileWriter(ContractNode contract, EndPoint endPoint, ProcedureCollection procedures) : base(contract)
     {
         _procedures = procedures;
         _interfaceName = endPoint.Names.InterfaceType;
