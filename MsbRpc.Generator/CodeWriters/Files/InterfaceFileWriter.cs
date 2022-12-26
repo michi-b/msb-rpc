@@ -39,7 +39,7 @@ public class InterfaceFileWriter : CodeFileWriter
     {
         await writer.WriteAsync(procedure.ReturnType.Names.Name);
         await writer.WriteAsync(' ');
-        await writer.WriteAsync(procedure.Names.PascalCaseName);
+        await writer.WriteAsync(procedure.Names.Name);
         await writer.WriteAsync('(');
         {
             if (procedure.TryGetParameters(out ParameterCollection? parameters) && parameters != null)
@@ -49,6 +49,8 @@ public class InterfaceFileWriter : CodeFileWriter
                     await WriteInterfaceMethodParameterAsync(writer, parameters[i]);
                     await writer.WriteAsync(", ");
                 }
+
+                await WriteInterfaceMethodParameterAsync(writer, parameters[parameters.LastIndex]);
             }
         }
         await writer.WriteLineAsync(");");

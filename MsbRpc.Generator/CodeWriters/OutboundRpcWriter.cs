@@ -1,6 +1,8 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.HelperTree;
+using MsbRpc.Generator.Info;
+using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters;
 
@@ -19,7 +21,7 @@ public static class OutboundRpcWriter
     {
         //header
         string returnType = procedure.ReturnType.Names.Name;
-        await writer.WriteAsync($"public async {IndependentNames.Types.Task}<{returnType}> {procedure.Names.CallMethod}");
+        await writer.WriteAsync($"public async {Types.Task}<{returnType}> {procedure.Names.Async}");
 
         procedure.TryGetParameters(out ParameterCollection? parameters);
 
@@ -33,7 +35,7 @@ public static class OutboundRpcWriter
             }
         }
 
-        await writer.WriteLineAsync($"{IndependentNames.Types.CancellationToken} {IndependentNames.Parameters.CancellationToken})");
+        await writer.WriteLineAsync($"{Types.CancellationToken} {Parameters.CancellationToken})");
 
         //body
         await writer.EnterBlockAsync();
@@ -51,7 +53,7 @@ public static class OutboundRpcWriter
         ParameterCollection? parameters
     )
     {
-        await writer.WriteLineAsync($"{IndependentNames.Methods.EndPointEnterCalling}();");
+        await writer.WriteLineAsync($"{Methods.EndPointEnterCalling}();");
         await writer.WriteLineAsync();
         if (parameters != null)
         {
@@ -61,8 +63,8 @@ public static class OutboundRpcWriter
         await writer.WriteLineAsync();
         await writer.WriteLineAsync
         (
-            $"{IndependentNames.Types.BufferWriter} {IndependentNames.Variables.ArgumentsWriter}"
-            + $" = {IndependentNames.Methods.GetEndPointRequestWriter}({IndependentNames.Variables.ParametersSizeSum});"
+            $"{Types.BufferWriter} {Variables.ArgumentsWriter}"
+            + $" = {Methods.GetEndPointRequestWriter}({Variables.ParametersSizeSum});"
         );
         await writer.WriteLineAsync();
         if (parameters != null)
@@ -74,22 +76,36 @@ public static class OutboundRpcWriter
         }
 
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync($"const {procedures.Names.EnumType} {IndependentNames.Variables.Procedure} = {procedure.Names.EnumValue};");
+        await writer.WriteLineAsync($"const {procedures.Names.EnumType} {Variables.Procedure} = {procedure.Names.EnumValue};");
         await writer.WriteLineAsync();
+
+        //send request
         await writer.WriteLineAsync
         (
-            $"{IndependentNames.Types.BufferReader} {IndependentNames.Variables.ResultReader} "
-            + $"= await {IndependentNames.Methods.SendEndPointRequest}("
-            + $"{IndependentNames.Variables.Procedure}, "
-            + $"{IndependentNames.Variables.ArgumentsWriter}.{IndependentNames.Properties.BufferWriterBuffer}, "
-            + $"{IndependentNames.Parameters.CancellationToken});"
+            $"{Types.BufferReader} {Variables.ResultReader} "
+            + $"= await {Methods.SendEndPointRequest}("
+            + $"{Variables.Procedure}, "
+            + $"{Variables.ArgumentsWriter}.{Properties.BufferWriterBuffer}, "
+            + $"{Parameters.CancellationToken});"
         );
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync(procedure.ReadResultLine);
+
+        //read result
+        TypeNode returnType = procedure.ReturnType;
+        if (returnType.SerializationKind.TryGetBufferReadMethodName(out string? bufferReadMethod) && bufferReadMethod != null)
+        {
+            await writer.WriteAsync($"{returnType.Names.Name} {Variables.ProcedureResult} ");
+            await writer.WriteLineAsync($"= {Variables.ResultReader}.{bufferReadMethod}();");
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync($"{IndependentNames.Methods.EndPointExitCalling}({IndependentNames.Variables.Procedure});");
+        await writer.WriteLineAsync($"{Methods.EndPointExitCalling}({Variables.Procedure});");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync($"return {IndependentNames.Variables.Result};");
+        await writer.WriteLineAsync($"return {Variables.ProcedureResult};");
     }
 
     private static async Task WriteParametersSizeSumCalculationAsync(IndentedTextWriter writer, ParameterCollection parameters)
@@ -112,7 +128,7 @@ public static class OutboundRpcWriter
         {
             await writer.WriteLineAsync();
 
-            await writer.WriteAsync($"const int {IndependentNames.Variables.ConstantSizeParametersSize} = ");
+            await writer.WriteAsync($"const int {Variables.ConstantSizeParametersSize} = ");
             await writer.WriteAsync(constantSizeParameters[0].Names.SizeVariable);
             for (int i = 1; i < constantSizeParametersCount; i++)
             {
@@ -128,12 +144,11 @@ public static class OutboundRpcWriter
         {
             if (constantSizeParameters.Count > 0)
             {
-                await writer.WriteLineAsync
-                    ($"const int {IndependentNames.Variables.ParametersSizeSum} = {IndependentNames.Variables.ConstantSizeParametersSize};");
+                await writer.WriteLineAsync($"const int {Variables.ParametersSizeSum} = {Variables.ConstantSizeParametersSize};");
             }
             else
             {
-                await writer.WriteLineAsync($"const int {IndependentNames.Variables.ParametersSizeSum} = 0;");
+                await writer.WriteLineAsync($"const int {Variables.ParametersSizeSum} = 0;");
             }
         }
         else

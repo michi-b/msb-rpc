@@ -47,11 +47,10 @@ public static class SerializationKindExtensions
         return result != null;
     }
 
-    public static string GetBufferReadMethodName(this SerializationKind target)
+    public static bool TryGetBufferReadMethodName(this SerializationKind target, out string? bufferReadMethod)
     {
-        return target switch
+        bufferReadMethod = target switch
         {
-            SerializationKind.Unresolved => throw new InvalidOperationException(),
             SerializationKind.Byte => "ReadByte",
             SerializationKind.Sbyte => "ReadSbyte",
             SerializationKind.Bool => "ReadBool",
@@ -65,8 +64,9 @@ public static class SerializationKindExtensions
             SerializationKind.Float => "ReadFloat",
             SerializationKind.Double => "ReadDouble",
             SerializationKind.Decimal => "ReadDecimal",
-            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+            _ => null
         };
+        return bufferReadMethod != null;
     }
 
     public static bool HasKeyword(this SerializationKind serializationKind) => serializationKind.GetIsPrimitive();

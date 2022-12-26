@@ -67,13 +67,14 @@ internal static class IndependentNames
 
     public static class Variables
     {
+        public const string ReceivedArgumentPostFix = "Argument";
+        public const string ProcedureResult = "result";
         public const string Procedure = "procedure";
         public const string SizeVariablePostFix = "Size";
         public const string ConstantSizeParametersSize = "constantSizeParametersSizeSum";
         public const string ParametersSizeSum = "ParametersSizeSum";
         public const string ArgumentsWriter = "argumentsWriter";
         public const string ResultReader = "resultReader";
-        public const string Result = "result";
     }
 
     public static string ToCamelCase(this string target)

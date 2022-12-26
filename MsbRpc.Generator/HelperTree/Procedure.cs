@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using MsbRpc.Generator.HelperTree.Names;
 using MsbRpc.Generator.Info;
-using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.HelperTree;
 
@@ -13,7 +12,6 @@ public class Procedure
     public readonly string EnumValueString;
     public readonly bool InvertsDirection;
     public readonly ProcedureNames Names;
-    public readonly string ReadResultLine;
     public readonly TypeNode ReturnType;
 
     public Procedure(ProcedureInfo procedureInfo, ProcedureCollectionNames procedureCollectionNames, int definitionIndex, TypeCache typeCache)
@@ -30,9 +28,6 @@ public class Procedure
             _parameters = new ParameterCollection(parameterInfos, typeCache);
             _hasParameters = true;
         }
-
-        ReadResultLine =
-            $"{ReturnType.Names.Name} {Variables.Result} = {Variables.ResultReader}.{ReturnType.SerializationKind.GetBufferReadMethodName()}();";
     }
 
     public bool TryGetParameters(out ParameterCollection? parameters)
