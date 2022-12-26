@@ -20,7 +20,7 @@ internal class ProcedureEnumWriter : CodeWriter
 
     protected override async ValueTask Write(IndentedTextWriter writer)
     {
-        string GetEnumMemberDefinition(int i) => $"{Procedures[i].Names.Name} = {Procedures[i].EnumValueString}";
+        string GetEnumMemberDefinition(int i) => $"{Procedures[i].Names.PascalCaseName} = {Procedures[i].EnumValueString}";
 
         await writer.WriteLineAsync($"public enum {Procedures.Names.EnumType}");
         await writer.EnterBlockAsync();

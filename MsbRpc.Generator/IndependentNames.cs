@@ -14,14 +14,16 @@ internal static class IndependentNames
         public const string LoggerFactoryInterface = "Microsoft.Extensions.Logging.ILoggerFactory";
         public const string Messenger = "MsbRpc.Messaging.Messenger";
         public const string NullLogger = "Microsoft.Extensions.Logging.Abstractions.NullLogger";
+        public const string Task = "System.Threading.Tasks.Task";
         public const string VaLueTask = "System.Threading.Tasks.ValueTask";
         public const string CancellationToken = "System.Threading.CancellationToken";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
         public const string BufferWriter = "MsbRpc.Serialization.BufferWriter";
         public const string BufferReader = "MsbRpc.Serialization.BufferReader";
-        public const string EndPointBaseType = "MsbRpc.EndPoints.RpcEndPoint";
+        public const string EndPoint = "MsbRpc.EndPoints.RpcEndPoint";
         public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
+        public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
     }
 
     public static class Methods
@@ -41,17 +43,39 @@ internal static class IndependentNames
         public const string Messenger = "messenger";
         public const string CancellationToken = "cancellationToken";
         public const string Procedure = "procedure";
-    }
-
-    public static string ToCamelCase(this string pascalCase)
-    {
-        char firstChar = char.ToLowerInvariant(pascalCase[0]);
-        return firstChar + pascalCase.Substring(1);
+        public const string InitialBufferSize = "initialBufferSize";
+        public const string ArgumentsBufferReader = "arguments";
     }
     
-    public static string ToPascalCase(this string camelCase)
+    public static class EnumValues
     {
-        char firstChar = char.ToUpperInvariant(camelCase[0]);
-        return firstChar + camelCase.Substring(1);
+        public const string InboundEndPointDirection = Types.EndPointDirection + ".Inbound";
+        public const string OutboundEndPointDirection = Types.EndPointDirection + ".Outbound";
+    }
+
+    public static string ToCamelCase(this string target)
+    {
+        char firstChar = target[0];
+
+        if (!char.IsLower(firstChar))
+        {
+            char firstCharLower = char.ToLowerInvariant(firstChar);
+            return firstCharLower + target.Substring(1);
+        }
+
+        return target;
+    }
+
+    public static string ToPascalCase(this string target)
+    {
+        char firstChar = target[0];
+
+        if (!char.IsUpper(firstChar))
+        {
+            char firstCharUpper = char.ToUpperInvariant(firstChar);
+            return firstCharUpper + target.Substring(1);
+        }
+
+        return target;
     }
 }

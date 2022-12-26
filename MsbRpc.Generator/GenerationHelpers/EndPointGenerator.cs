@@ -92,7 +92,7 @@ public class EndPointGenerator
     {
         EndPointGenerator remote = GetRemote();
 
-        writer.Write($"public class {Names.EndPointType} : {IndependentNames.Types.EndPointBaseType}");
+        writer.Write($"public class {Names.EndPointType} : {IndependentNames.Types.EndPoint}");
         writer.WriteLine($"<{Names.InboundProcedureEnumType}, {remote.Names.InboundProcedureEnumType}>");
 
         using (writer.EncloseInBlockAsync(BlockAdditions.None))
@@ -107,7 +107,7 @@ public class EndPointGenerator
             foreach (ProcedureGenerator outBoundProcedure in remote._inboundProcedures)
             {
                 writer.WriteLine();
-                outBoundProcedure.GenerateRequestMethod(writer);
+                //outBoundProcedure.GenerateRequestMethod(writer);
             }
 
             if (HasInboundProcedures)

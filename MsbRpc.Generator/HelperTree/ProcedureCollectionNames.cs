@@ -7,8 +7,8 @@ public class ProcedureCollectionNames
 {
     public ProcedureCollectionNames(ContractNames contract, EndPointNames endPoint)
     {
-        string lowerCaseBase = endPoint.LowerCaseBase;
-        string upperCaseBase = endPoint.UpperCaseBase;
+        string lowerCaseBase = endPoint.CamelCaseName;
+        string upperCaseBase = endPoint.PascalCaseName;
 
         InterfaceType = $"{InterfacePrefix}{upperCaseBase}";
         InterfaceParameter = lowerCaseBase;
@@ -17,12 +17,12 @@ public class ProcedureCollectionNames
         EnumType = $"{upperCaseBase}{ProcedurePostfix}";
     }
     
-    public string InterfaceType { get; }
-    public string InterfaceParameter { get; }
-    public string InterfaceField { get; }
-    
+    public readonly string InterfaceType;
+    public readonly string InterfaceParameter;
+    public readonly string InterfaceField;
+
     /// <summary>
     /// enum type name (local to generated namespace)
     /// </summary>
-    public string EnumType { get; }
+    public readonly string EnumType;
 }

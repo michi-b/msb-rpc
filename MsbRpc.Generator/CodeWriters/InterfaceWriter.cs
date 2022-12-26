@@ -41,14 +41,17 @@ public class InterfaceWriter : CodeWriter
     {
         await writer.WriteAsync(procedure.ReturnType.Names.FullName);
         await writer.WriteAsync(' ');
-        await writer.WriteAsync(procedure.Names.Name);
+        await writer.WriteAsync(procedure.Names.PascalCaseName);
         await writer.WriteAsync('(');
         {
-            int lastParameterIndex = procedure.LastParameterIndex;
-            for (int i = 0; i < lastParameterIndex; i++)
+            if (procedure.TryGetParameters(out Parameter[]? parameters) && parameters != null)
             {
-                await WriteInterfaceMethodParameter(writer, procedure.Parameters[i]);
-                await writer.WriteAsync(", ");
+                int lastParameterIndex = procedure.LastParameterIndex;
+                for (int i = 0; i < lastParameterIndex; i++)
+                {
+                    await WriteInterfaceMethodParameter(writer, parameters[i]);
+                    await writer.WriteAsync(", ");
+                }
             }
         }
         await writer.WriteLineAsync(");");
@@ -58,6 +61,6 @@ public class InterfaceWriter : CodeWriter
     {
         await writer.WriteAsync(parameter.Type.Names.FullName);
         await writer.WriteAsync(' ');
-        await writer.WriteAsync(parameter.Names.Name);
+        await writer.WriteAsync(parameter.Names.CamelCaseName);
     }
 }

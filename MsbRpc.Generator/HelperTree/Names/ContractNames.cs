@@ -4,8 +4,8 @@ public readonly struct ContractNames
 {
     public ContractNames(string contractNamespace, string contractInterfaceName)
     {
-        UpperCaseName = GetContractName(contractInterfaceName);
-        LowerCaseName = UpperCaseName.ToCamelCase();
+        PascalCaseName = GetContractName(contractInterfaceName);
+        CamelCaseName = PascalCaseName.ToCamelCase();
         GeneratedNamespace = $"{contractNamespace}.Generated";
     }
 
@@ -19,6 +19,6 @@ public readonly struct ContractNames
     }
 
     public readonly string GeneratedNamespace;
-    public readonly string UpperCaseName;
-    public readonly string LowerCaseName;
+    public readonly string PascalCaseName;
+    public readonly string CamelCaseName;
 }

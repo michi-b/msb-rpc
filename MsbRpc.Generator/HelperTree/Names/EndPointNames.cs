@@ -7,23 +7,21 @@ public readonly struct EndPointNames
         LowerCaseTypeId = endPointType.GetLowerCaseName();
         UpperCaseTypeId = endPointType.GetUpperCaseName();
         
-        UpperCaseBase = $"{contract.UpperCaseName}{UpperCaseTypeId}";
-        LowerCaseBase = $"{contract.LowerCaseName}{UpperCaseTypeId}";
+        PascalCaseName = $"{contract.PascalCaseName}{UpperCaseTypeId}";
+        CamelCaseName = $"{contract.CamelCaseName}{UpperCaseTypeId}";
         
-        EndPointType = $"{UpperCaseBase}Endpoint";
+        EndPointType = $"{PascalCaseName}Endpoint";
+        InterfaceType = $"I{PascalCaseName}";
     }
 
-    public string EndPointType { get; }
-    
-    public string LowerCaseTypeId { get; }
+    public readonly string EndPointType;
+    public readonly string LowerCaseTypeId;
+    public readonly string UpperCaseTypeId;
 
-    public string UpperCaseTypeId { get; }
-    
     /// <summary>{Contract}{Client/Server}</summary>
-    public string UpperCaseBase { get; }
-    
+    public readonly string PascalCaseName;
     /// <summary>{contract}{Client/Server}</summary>
-    public string LowerCaseBase { get; }
-    
-    public string InterfaceType => $"I{UpperCaseBase}";
+    public readonly string CamelCaseName;
+    public readonly string InterfaceType;
+    public const string DefaultBufferSizeConstant = "DefaultBufferSize";
 }

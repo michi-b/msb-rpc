@@ -4,10 +4,10 @@ public readonly struct ParameterNames
 {
     public ParameterNames(string name)
     {
-        Name = name.ToCamelCase();
+        CamelCaseName = name.ToCamelCase();
         PascalCaseName = name.ToPascalCase();
     }
 
     public readonly string PascalCaseName;
-    public readonly string Name;
+    public readonly string CamelCaseName;
 }

@@ -100,79 +100,81 @@ public readonly struct ProcedureGenerator
         // writer.WriteLine($"{_fullName} => {(_invertsDirection ? "true" : "false")},");
     }
 
+#if false
     public void GenerateRequestMethod(IndentedTextWriter writer)
     {
-        // Debug.Assert(_returnType.SerializationKind.GetIsPrimitive(), "only primitives are implemented right now");
-        //
-        // //header
-        // writer.Write($"public async {IndependentNames.Types.VaLueTask}<{_returnType.Name}> {_name}{IndependentNames.AsyncSuffix}(");
-        // if (_hasParameters)
-        // {
-        //     writer.Write($"{_parametersString}, ");
-        // }
-        //
-        // writer.WriteLine($"{GeneralCode.CancellationTokenParameter})");
-        //
-        // //body
-        // using (writer.EncloseInBlockAsync())
-        // {
-        //     //enter calling
-        //     writer.WriteLine($"{IndependentNames.Methods.EndPointEnterCalling}();");
-        //
-        //     //get size for request writer
-        //     if (_hasParameters)
-        //     {
-        //         writer.WriteLine();
-        //         foreach (ParameterGenerator parameter in _parameters)
-        //         {
-        //             writer.WriteLine(parameter.ConstantSizeVariableInitializationLine);
-        //         }
-        //
-        //         writer.WriteLine();
-        //         writer.WriteLine(_constantArgumentsSizeSumCodeLine);
-        //     }
-        //
-        //     //get request writer
-        //     writer.WriteLine();
-        //     writer.WriteLine
-        //     (
-        //         EndPointCode.GetRequestWriterCodeLine
-        //         (
-        //             Variables.RequestWriter,
-        //             _hasParameters ? Variables.ConstantArgumentsSizeSum : "0"
-        //         )
-        //     );
-        //
-        //     //write parameters
-        //     writer.WriteLine();
-        //     foreach (ParameterGenerator parameter in _parameters)
-        //     {
-        //         writer.WriteLine($"{Variables.RequestWriter}.{Methods.BufferWriterWrite}({parameter.Name});");
-        //     }
-        //
-        //     //procedure id
-        //     writer.WriteLine();
-        //     writer.WriteLine($"const {_procedureEnumName} {Variables.Procedure} = {_fullName};");
-        //
-        //     //send request
-        //     writer.WriteLine();
-        //     writer.Write($"{Types.BufferReader} {Variables.ResponseReader} = await {Methods.SendRequest}(");
-        //     writer.Write($"{Variables.Procedure}, ");
-        //     writer.Write($"{Variables.RequestWriter}.{Properties.BufferWriterBufferProperty}, ");
-        //     writer.WriteLine($"{IndependentNames.Parameters.CancellationToken});");
-        //
-        //     //read response
-        //     writer.WriteLine();
-        //     writer.Write($"{_returnType.Name} {Variables.Response} = ");
-        //     writer.WriteLine($"{_returnType.GetBufferReadExpression(Variables.ResponseReader)};");
-        //
-        //     //exit calling
-        //     writer.WriteLine();
-        //     writer.WriteLine($"{IndependentNames.Methods.EndPointExitCalling}({Variables.Procedure});");
-        //
-        //     //return response
-        //     writer.WriteLine();
-        //     writer.WriteLine($"return {Variables.Response};");
-        // }
+        Debug.Assert(_returnType.SerializationKind.GetIsPrimitive(), "only primitives are implemented right now");
+        
+        //header
+        writer.Write($"public async {IndependentNames.Types.VaLueTask}<{_returnType.Name}> {_name}{IndependentNames.AsyncSuffix}(");
+        if (_hasParameters)
+        {
+            writer.Write($"{_parametersString}, ");
+        }
+        
+        writer.WriteLine($"{GeneralCode.CancellationTokenParameter})");
+        
+        //body
+        using (writer.EncloseInBlockAsync())
+        {
+            //enter calling
+            writer.WriteLine($"{IndependentNames.Methods.EndPointEnterCalling}();");
+        
+            //get size for request writer
+            if (_hasParameters)
+            {
+                writer.WriteLine();
+                foreach (ParameterGenerator parameter in _parameters)
+                {
+                    writer.WriteLine(parameter.ConstantSizeVariableInitializationLine);
+                }
+        
+                writer.WriteLine();
+                writer.WriteLine(_constantArgumentsSizeSumCodeLine);
+            }
+        
+            //get request writer
+            writer.WriteLine();
+            writer.WriteLine
+            (
+                EndPointCode.GetRequestWriterCodeLine
+                (
+                    Variables.RequestWriter,
+                    _hasParameters ? Variables.ConstantArgumentsSizeSum : "0"
+                )
+            );
+        
+            //write parameters
+            writer.WriteLine();
+            foreach (ParameterGenerator parameter in _parameters)
+            {
+                writer.WriteLine($"{Variables.RequestWriter}.{Methods.BufferWriterWrite}({parameter.Name});");
+            }
+        
+            //procedure id
+            writer.WriteLine();
+            writer.WriteLine($"const {_procedureEnumName} {Variables.Procedure} = {_fullName};");
+        
+            //send request
+            writer.WriteLine();
+            writer.Write($"{Types.BufferReader} {Variables.ResponseReader} = await {Methods.SendRequest}(");
+            writer.Write($"{Variables.Procedure}, ");
+            writer.Write($"{Variables.RequestWriter}.{Properties.BufferWriterBufferProperty}, ");
+            writer.WriteLine($"{IndependentNames.Parameters.CancellationToken});");
+        
+            //read response
+            writer.WriteLine();
+            writer.Write($"{_returnType.Name} {Variables.Response} = ");
+            writer.WriteLine($"{_returnType.GetBufferReadExpression(Variables.ResponseReader)};");
+        
+            //exit calling
+            writer.WriteLine();
+            writer.WriteLine($"{IndependentNames.Methods.EndPointExitCalling}({Variables.Procedure});");
+        
+            //return response
+            writer.WriteLine();
+            writer.WriteLine($"return {Variables.Response};");
+        }
     }
+#endif
 }
