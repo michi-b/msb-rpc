@@ -19,7 +19,6 @@ public class RpcSocket : IRpcSocket
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
-
         _socket = socket;
     }
 
@@ -27,7 +26,7 @@ public class RpcSocket : IRpcSocket
     public void Send(ArraySegment<byte> bytes)
     {
         int bytesSent = _socket.Send(bytes.Array!, bytes.Offset, bytes.Count, SocketFlags.None, out SocketError socketError);
-        if (socketError != SocketError.Success || bytesSent != bytes.Count)
+        if ((socketError != SocketError.Success || bytesSent != bytes.Count) && !_isDisposed)
         {
             throw new RpcSocketSendException(this, bytes.Count, bytesSent);
         }
@@ -63,15 +62,22 @@ public class RpcSocket : IRpcSocket
             return false;
         }
 
+        if (_isDisposed)
+        {
+            return false;
+        }
         //The remote closing the connection before sending an expected amount of bytes? Now THAT's unexpected!
-        Dispose();
-        throw new RpcSocketReceiveException(this, length, receivedCount);
+        else
+        {
+            Dispose();
+            throw new RpcSocketReceiveException(this, length, receivedCount);
+        }
     }
 
     public int Receive(ArraySegment<byte> buffer)
     {
         int count = _socket.Receive(buffer.Array!, buffer.Offset, buffer.Count, SocketFlags.None, out SocketError error);
-        if (error != SocketError.Success)
+        if (error != SocketError.Success && !_isDisposed)
         {
             throw new RpcSocketReceiveException(this, buffer.Count, count);
         }
@@ -140,7 +146,7 @@ public class RpcSocket : IRpcSocket
     /// <returns>
     ///     The count of bytes that were received.
     ///     Zero if the connection was closed before any bytes could be read.
-    ///     Otherwise any positive number lower than the size of the provided byffer.
+    ///     Otherwise any positive number lower than the size of the provided buffer.
     /// </returns>
     [PublicAPI]
     public async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
@@ -175,8 +181,8 @@ public class RpcSocket : IRpcSocket
     {
         if (!_isDisposed)
         {
-            _socket.Dispose();
             _isDisposed = true;
+            _socket.Dispose();
         }
     }
 
