@@ -20,7 +20,7 @@ public class PrimitivesSerializationTest : Test
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
-        using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(connection.Server, cancellationToken);
+        using Task<byte[]> listenTask = ByteArrayListener.Listen(connection.Server);
 
         byte[] bytes = new byte[NetworkUtility.DefaultBufferSize];
 
@@ -45,7 +45,7 @@ public class PrimitivesSerializationTest : Test
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
-        using Task<byte[]> listenTask = ByteArrayListener.ListenAsync(connection.Server, cancellationToken);
+        using Task<byte[]> listenTask = ByteArrayListener.Listen(connection.Server);
 
         byte[] buffer = new byte[NetworkUtility.DefaultBufferSize];
 
