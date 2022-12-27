@@ -66,7 +66,7 @@ internal class ProcedureEnumExtensionsFileWriter : CodeFileWriter
 
                 await writer.WriteLineAsync(_procedureParameterOutOfRangeLine);
             }
-            await writer.ExitBlockAsync(BlockAdditions.Semicolon);
+            await writer.ExitBlockAsync(BlockAdditions.SemicolonAndNewline);
         }
         await writer.ExitBlockAsync();
     }

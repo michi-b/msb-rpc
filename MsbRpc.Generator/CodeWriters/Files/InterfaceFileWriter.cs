@@ -27,7 +27,6 @@ public class InterfaceFileWriter : CodeFileWriter
             for (int i = 0; i < lastIndex; i++)
             {
                 await WriteInterfaceMethodAsync(writer, _procedures[i]);
-                await writer.WriteLineAsync(";");
             }
 
             await WriteInterfaceMethodAsync(writer, _procedures[lastIndex]);

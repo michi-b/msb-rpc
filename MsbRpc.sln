@@ -5,13 +5,15 @@ VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Misbat.CodeAnalysis.Test", "Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj", "{ED63E780-1760-4E7E-85D0-C27FEC9CC5E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpcTest", "MsbRpcTest\MsbRpcTest.csproj", "{D5D2D2D4-536B-493C-8726-1862E196E35E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.Test", "MsbRpc.Test\MsbRpc.Test.csproj", "{D5D2D2D4-536B-493C-8726-1862E196E35E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc", "MsbRpc\MsbRpc.csproj", "{31A6AE9E-78A5-4786-B112-97E001022A55}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.Generator", "MsbRpc.Generator\MsbRpc.Generator.csproj", "{8D57F6F9-BB08-4AEF-B2B4-01B2AE3B56FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.Generator.Attributes", "MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj", "{7506B616-A0D1-415F-A102-576BE6E91D1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRpc.Test.Integration", "MsbRpc.Test.Integration\MsbRpc.Test.Integration.csproj", "{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,14 @@ Global
 		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|x86.ActiveCfg = Release|Any CPU
 		{7506B616-A0D1-415F-A102-576BE6E91D1C}.Release|x86.Build.0 = Release|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
