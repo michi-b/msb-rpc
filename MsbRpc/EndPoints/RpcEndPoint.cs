@@ -65,12 +65,54 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         return listenReturnCode;
     }
 
+    public Messenger.ListenReturnCode Listen()
+    {
+        _state.Transition(State.IdleInbound, State.Listening);
+        Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, ReceiveMessage);
+
+        // receive message callback will only discontinue listening if procedure results in outbound state
+        if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
+        {
+            _state.Transition(State.Listening, State.IdleOutbound);
+        }
+        // otherwise, connection has got to be lost
+        else
+        {
+            Dispose();
+        }
+
+        return listenReturnCode;
+    }
+
     public void Dispose()
     {
         _messenger.Dispose();
         _state = State.Disposed;
     }
 
+    private bool ReceiveMessage(ArraySegment<byte> message)
+    {
+        int procedureIdValue = message.ReadInt();
+
+        TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
+
+        ArraySegment<byte> arguments = message.GetOffsetSubSegment(PrimitiveSerializer.IntSize);
+
+        LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
+
+        BufferWriter responseWriter = HandleRequest(procedure, new BufferReader(arguments));
+
+        _messenger.SendMessage(responseWriter.Buffer);
+
+        bool invertsDirection = GetInvertsDirection(procedure);
+        if (invertsDirection)
+        {
+            _state = State.IdleOutbound;
+        }
+
+        return invertsDirection;
+    }
+    
     /// <returns>whether listening should stop</returns>
     private async ValueTask<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
     {
@@ -110,7 +152,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
     /// <summary>
     ///     Get a buffer with specified size from endpoint memory for sending an rpc request.
-    ///     Is offset so <see cref="SendRequest" /> can prefix it with the procedure id.
+    ///     Is offset so <see cref="SendRequestAsync" /> can prefix it with the procedure id.
     /// </summary>
     /// <param name="size">number of bytes the segment is required to contain</param>
     /// <returns>the requested buffer that points into the endpoint memory</returns>
@@ -128,7 +170,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestWriter" />.</param>
     /// <param name="cancellationToken">Token for operation cancellation.</param>
     /// <returns>the response message</returns>
-    protected async ValueTask<BufferReader> SendRequest(TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
+    protected async ValueTask<BufferReader> SendRequestAsync(TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
         int argumentByteCount = request.Count;
 

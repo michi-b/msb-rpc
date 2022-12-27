@@ -62,14 +62,14 @@ public class Messenger : IDisposable
     {
         return Task.Factory.StartNew
             (
-                () => ListenSynchronously(buffer, receive),
+                () => Listen(buffer, receive),
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
             );
     }
 
-    public ListenReturnCode ListenSynchronously(RecycledBuffer buffer, ReceiveDelegate receive)
+    public ListenReturnCode Listen(RecycledBuffer buffer, ReceiveDelegate receive)
     {
         while (true)
         {

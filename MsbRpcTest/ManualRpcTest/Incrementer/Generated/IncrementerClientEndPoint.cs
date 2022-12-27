@@ -39,7 +39,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
 
         const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
 
-        MsbRpc.Serialization.Buffers.BufferReader responseReader = await SendRequest(procedure, writer.Buffer, cancellationToken);
+        MsbRpc.Serialization.Buffers.BufferReader responseReader = await SendRequestAsync(procedure, writer.Buffer, cancellationToken);
 
         // Read response.        
 
