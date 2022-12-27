@@ -37,6 +37,5 @@ public class ActiveListenerTest : ListenerTest
         await TestMultipleIntMessagesAreDelivered();
     }
 
-    protected override Task<List<ArraySegment<byte>>> Listen(Messenger messenger)
-        => MessagesListener.Listen(messenger, TaskCreationOptions.None);
+    protected override Task<List<ArraySegment<byte>>> Listen(Messenger messenger) => MessagesListener.Listen(messenger, TaskCreationOptions.None);
 }

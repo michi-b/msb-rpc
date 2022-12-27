@@ -46,26 +46,10 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         };
     }
 
-    public async ValueTask<Messenger.ListenReturnCode> ListenAsync(CancellationToken cancellationToken)
-    {
-        _state.Transition(State.IdleInbound, State.Listening);
-        Messenger.ListenReturnCode listenReturnCode = await _messenger.ListenAsync(_buffer, ReceiveMessageAsync, cancellationToken);
+    public Task<Messenger.ListenReturnCode> Listen(TaskCreationOptions taskCreationOptions = TaskCreationOptions.LongRunning)
+        => Task.Factory.StartNew(ListenSynchronously, CancellationToken.None, taskCreationOptions, TaskScheduler.Default);
 
-        // receive message callback will only discontinue listening if procedure results in outbound state
-        if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
-        {
-            _state.Transition(State.Listening, State.IdleOutbound);
-        }
-        // otherwise, connection has got to be lost
-        else
-        {
-            Dispose();
-        }
-
-        return listenReturnCode;
-    }
-
-    public Messenger.ListenReturnCode Listen()
+    public Messenger.ListenReturnCode ListenSynchronously()
     {
         _state.Transition(State.IdleInbound, State.Listening);
         Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, ReceiveMessage);
@@ -112,30 +96,6 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         return invertsDirection;
     }
-    
-    /// <returns>whether listening should stop</returns>
-    private async ValueTask<bool> ReceiveMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
-    {
-        int procedureIdValue = message.ReadInt();
-
-        TInboundProcedure procedure = GetInboundProcedure(procedureIdValue);
-
-        ArraySegment<byte> arguments = message.GetOffsetSubSegment(PrimitiveSerializer.IntSize);
-
-        LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
-
-        BufferWriter responseWriter = HandleRequest(procedure, new BufferReader(arguments));
-
-        await _messenger.SendMessageAsync(responseWriter.Buffer, cancellationToken);
-
-        bool invertsDirection = GetInvertsDirection(procedure);
-        if (invertsDirection)
-        {
-            _state = State.IdleOutbound;
-        }
-
-        return invertsDirection;
-    }
 
     /// <summary>
     ///     Get a buffer with specified size from endpoint memory for sending an rpc response.
@@ -170,7 +130,8 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestWriter" />.</param>
     /// <param name="cancellationToken">Token for operation cancellation.</param>
     /// <returns>the response message</returns>
-    protected async ValueTask<BufferReader> SendRequestAsync(TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
+    protected async ValueTask<BufferReader> SendRequestAsync
+        (TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
         int argumentByteCount = request.Count;
 

@@ -56,19 +56,6 @@ public class Messenger : IDisposable
         _disposed = true;
     }
 
-    /// <throws>OperationCanceledException</throws>
-    /// <throws>SocketReceiveException</throws>
-    public Task<ListenReturnCode> ListenLongRunning(RecycledBuffer buffer, ReceiveDelegate receive)
-    {
-        return Task.Factory.StartNew
-            (
-                () => Listen(buffer, receive),
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default
-            );
-    }
-
     public ListenReturnCode Listen(RecycledBuffer buffer, ReceiveDelegate receive)
     {
         while (true)
@@ -81,46 +68,13 @@ public class Messenger : IDisposable
                     {
                         return ListenReturnCode.OperationDiscontinued;
                     }
+
                     break;
                 case ReceiveMessageReturnCode.ConnectionClosed:
                     return ListenReturnCode.ConnectionClosed;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-    }
-    
-    /// <throws>OperationCanceledException</throws>
-    /// <throws>SocketReceiveException</throws>
-    [PublicAPI]
-    public async Task<ListenReturnCode> ListenAsync(RecycledBuffer buffer, ReceiveAsyncDelegate receiveAsync, CancellationToken cancellationToken)
-    {
-        try
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                ReceiveMessageResult receiveResult = await ReceiveMessageAsync(buffer, cancellationToken);
-                switch (receiveResult.ReturnCode)
-                {
-                    case ReceiveMessageReturnCode.Success:
-                        if (await receiveAsync(receiveResult.Message, cancellationToken))
-                        {
-                            return ListenReturnCode.OperationDiscontinued;
-                        }
-
-                        break;
-                    case ReceiveMessageReturnCode.ConnectionClosed:
-                        return ListenReturnCode.ConnectionClosed;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            return ListenReturnCode.OperationCanceled;
-        }
-        catch (OperationCanceledException)
-        {
-            return ListenReturnCode.OperationCanceled;
         }
     }
 
@@ -150,7 +104,7 @@ public class Messenger : IDisposable
             ReceiveMessageReturnCode.Success
         );
     }
-    
+
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]

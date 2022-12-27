@@ -18,7 +18,7 @@ public class IncrementerTest : Test
         var serverImplementation = new Implementation.Incrementer();
         var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation);
 
-        ValueTask<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
+        Task<Messenger.ListenReturnCode> serverListenTask = server.Listen();
 
         connection.CreateClientMessenger().Dispose();
 
@@ -99,9 +99,9 @@ public class IncrementerTest : Test
     {
         public IncrementerClientEndPoint Client { get; }
         private IncrementerServerEndPoint Server { get; }
-        private ValueTask<Messenger.ListenReturnCode> ServerListenTask { get; }
+        private Task<Messenger.ListenReturnCode> ServerListenTask { get; }
 
-        private Setup(IncrementerClientEndPoint client, IncrementerServerEndPoint server, ValueTask<Messenger.ListenReturnCode> serverListenTask)
+        private Setup(IncrementerClientEndPoint client, IncrementerServerEndPoint server, Task<Messenger.ListenReturnCode> serverListenTask)
         {
             Client = client;
             Server = server;
@@ -115,10 +115,10 @@ public class IncrementerTest : Test
             var serverImplementation = new Implementation.Incrementer();
             var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation, LoggerFactory);
 
-            ValueTask<Messenger.ListenReturnCode> serverListenTask = server.ListenAsync(cancellationToken);
+            Task<Messenger.ListenReturnCode> listenTask = server.Listen();
             var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
 
-            return new Setup(client, server, serverListenTask);
+            return new Setup(client, server, listenTask);
         }
 
         public async ValueTask DisposeAsync()

@@ -19,6 +19,7 @@ public class RpcSocket : IRpcSocket
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
+
         _socket = socket;
     }
 
@@ -67,11 +68,9 @@ public class RpcSocket : IRpcSocket
             return false;
         }
         //The remote closing the connection before sending an expected amount of bytes? Now THAT's unexpected!
-        else
-        {
-            Dispose();
-            throw new RpcSocketReceiveException(this, length, receivedCount);
-        }
+
+        Dispose();
+        throw new RpcSocketReceiveException(this, length, receivedCount);
     }
 
     public int Receive(ArraySegment<byte> buffer)
@@ -81,6 +80,7 @@ public class RpcSocket : IRpcSocket
         {
             throw new RpcSocketReceiveException(this, buffer.Count, count);
         }
+
         return count;
     }
 

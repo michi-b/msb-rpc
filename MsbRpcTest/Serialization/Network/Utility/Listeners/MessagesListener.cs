@@ -18,7 +18,7 @@ public static class MessagesListener
             TaskScheduler.Default
         );
     }
-    
+
     public static List<ArraySegment<byte>> Listen(Messenger messenger)
     {
         List<ArraySegment<byte>> messages = new();
@@ -26,7 +26,7 @@ public static class MessagesListener
         messenger.Listen
         (
             buffer,
-            (message) =>
+            message =>
             {
                 messages.Add(message.Copy());
                 return false;
