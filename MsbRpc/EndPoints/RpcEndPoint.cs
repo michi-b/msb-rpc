@@ -82,7 +82,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
 
-        BufferWriter responseWriter = resolver.Resolve(procedure, new BufferReader(arguments));
+        BufferWriter responseWriter = resolver.Execute(procedure, new BufferReader(arguments));
 
         _messenger.SendMessage(responseWriter.Buffer);
 

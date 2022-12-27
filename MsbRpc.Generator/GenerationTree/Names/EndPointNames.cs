@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.GenerationTree.Names;
+﻿using static MsbRpc.Generator.IndependentNames;
+
+namespace MsbRpc.Generator.GenerationTree.Names;
 
 public readonly struct EndPointNames
 {
@@ -8,8 +10,7 @@ public readonly struct EndPointNames
 
         PascalCaseName = $"{contract.PascalCaseName}{upperCaseTypeId}";
         CamelCaseName = $"{contract.CamelCaseName}{upperCaseTypeId}";
-
-        InterfaceType = $"I{PascalCaseName}";
+        ImplementationInterface = $"{InterfacePrefix}{PascalCaseName}{ImplementationPostfix}";
     }
 
     /// <summary>{Contract}{Client/Server}</summary>
@@ -18,6 +19,7 @@ public readonly struct EndPointNames
     /// <summary>{contract}{Client/Server}</summary>
     public readonly string CamelCaseName;
 
-    public readonly string InterfaceType;
+    public readonly string ImplementationInterface;
+    
     public const string DefaultBufferSizeConstant = "DefaultBufferSize";
 }

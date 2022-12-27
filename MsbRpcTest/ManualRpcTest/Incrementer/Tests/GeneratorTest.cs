@@ -92,7 +92,7 @@ public interface IIncrementer
     [TestMethod]
     public async Task GeneratesServerInterface()
     {
-        await TestGenerates("IIncrementerServer.g.cs");
+        await TestGenerates("IIncrementerServerImplementation.g.cs");
     }
 
     [TestMethod]

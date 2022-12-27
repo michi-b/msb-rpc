@@ -64,7 +64,7 @@ public static class OutboundRpcWriter
         await writer.WriteLineAsync
         (
             $"{Types.BufferWriter} {Variables.ArgumentsWriter}"
-            + $" = {Methods.GetEndPointRequestWriter}({Variables.ParametersSizeSum});"
+            + $" = {Methods.EndPointGetRequestWriter}({Variables.ParametersSizeSum});"
         );
         await writer.WriteLineAsync();
         if (parameters != null)
@@ -83,7 +83,7 @@ public static class OutboundRpcWriter
         await writer.WriteLineAsync
         (
             $"{Types.BufferReader} {Variables.ResultReader} "
-            + $"= await {Methods.SendEndPointRequest}("
+            + $"= await {Methods.EndPointSendRequestAsync}("
             + $"{Variables.Procedure}, "
             + $"{Variables.ArgumentsWriter}.{Properties.BufferWriterBuffer}, "
             + $"{Parameters.CancellationToken});"

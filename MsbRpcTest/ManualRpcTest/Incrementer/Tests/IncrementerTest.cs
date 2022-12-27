@@ -94,6 +94,17 @@ public class IncrementerTest : Test
         Assert.AreEqual(expectedResult, lastResult);
     }
 
+    private static Task<Messenger.ListenReturnCode> CreateServerListenTask(IncrementerServerEndPoint server, CancellationToken cancellationToken)
+    {
+        return Task.Factory.StartNew
+        (
+            () => server.Listen(new Implementation.Incrementer()),
+            cancellationToken,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default
+        );
+    }
+
     private class Setup : IAsyncDisposable
     {
         public IncrementerClientEndPoint Client { get; }
@@ -126,16 +137,5 @@ public class IncrementerTest : Test
             await ServerListenTask;
             Server.Dispose();
         }
-    }
-
-    private static Task<Messenger.ListenReturnCode> CreateServerListenTask(IncrementerServerEndPoint server, CancellationToken cancellationToken)
-    {
-        return Task.Factory.StartNew
-        (
-            () => server.Listen(new Implementation.Incrementer()),
-            cancellationToken,
-            TaskCreationOptions.LongRunning,
-            TaskScheduler.Default
-        );
     }
 }

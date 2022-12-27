@@ -10,50 +10,14 @@ public static class InboundRpcWriter
 {
     public static async ValueTask WriteAsync(IndentedTextWriter writer, ProcedureCollection procedures)
     {
-        await writer.WriteLineAsync();
-
-        await WriteHandleRequestOverrideAsync(writer, procedures);
-
         foreach (Procedure procedure in procedures)
         {
             await writer.WriteLineAsync();
-            await WriteProcedureCallAsync(writer, procedures.Names.InterfaceField, procedure);
+            await WriteProcedureCallAsync(writer, procedure);
         }
     }
 
-    private static async ValueTask WriteHandleRequestOverrideAsync(IndentedTextWriter writer, ProcedureCollection procedures)
-    {
-        const string procedureName = Parameters.Procedure;
-
-        //header
-        await writer.WriteLineAsync($"protected override {Types.BufferWriter} {Methods.EndPointHandleRequest}");
-        await writer.EnterParenthesesBlockAsync();
-        {
-            await writer.WriteLineAsync($"{procedures.Names.EnumType} {procedureName},");
-            await writer.WriteLineAsync($"{Types.BufferReader} {Parameters.ArgumentsBufferReader}");
-        }
-        await writer.ExitParenthesesBlockAsync();
-
-        //body
-        await writer.EnterBlockAsync();
-        {
-            await writer.WriteLineAsync($"return {procedureName} switch");
-            await writer.EnterBlockAsync();
-            {
-                foreach (Procedure procedure in procedures)
-                {
-                    string switchCase = $"{procedure.Names.EnumValue} => {procedure.Names.Name}({Parameters.ArgumentsBufferReader}),";
-                    await writer.WriteLineAsync(switchCase);
-                }
-
-                await writer.WriteLineAsync($"_ => throw new {Types.ArgumentOutOfRangeException}(nameof({procedureName}), {procedureName}, null)");
-            }
-            await writer.ExitBlockAsync(BlockAdditions.SemicolonAndNewline);
-        }
-        await writer.ExitBlockAsync();
-    }
-
-    private static async ValueTask WriteProcedureCallAsync(IndentedTextWriter writer, string implementationFieldName, Procedure procedure)
+    private static async ValueTask WriteProcedureCallAsync(IndentedTextWriter writer, Procedure procedure)
     {
         //header
         await writer.WriteAsync($"private {Types.BufferWriter} {procedure.Names.Name}");
@@ -62,12 +26,12 @@ public static class InboundRpcWriter
         //body
         await writer.EnterBlockAsync();
         {
-            await WriteProcedureCallBodyAsync(writer, implementationFieldName, procedure);
+            await WriteProcedureCallBodyAsync(writer, procedure);
         }
         await writer.ExitBlockAsync();
     }
 
-    private static async Task WriteProcedureCallBodyAsync(IndentedTextWriter writer, string implementationFieldName, Procedure procedure)
+    private static async Task WriteProcedureCallBodyAsync(IndentedTextWriter writer, Procedure procedure)
     {
         ParameterCollection? parameters = procedure.Parameters;
 
@@ -93,7 +57,7 @@ public static class InboundRpcWriter
         //invoke implementation
         const string procedureResultVariable = Variables.ProcedureResult;
         string invocationWithoutParameters = $"{procedure.ReturnType.Names.Name} {procedureResultVariable}"
-                                             + $" = {implementationFieldName}.{procedure.Names.Name}";
+                                             + $" = {Fields.RpcImplementation}.{procedure.Names.Name}";
         if (parameters != null)
         {
             await writer.WriteAsync($"{invocationWithoutParameters}(");
@@ -119,7 +83,8 @@ public static class InboundRpcWriter
         }
 
         const string resultWriterVariable = Variables.RpcResultWriter;
-        await writer.WriteLineAsync($"{Types.BufferWriter} {resultWriterVariable} = {Methods.GetEndPointResultWriter}({resultSizeVariable});");
+        await writer.WriteAsync($"{Types.BufferWriter} {resultWriterVariable} = ");
+        await writer.WriteLineAsync($"{Fields.RpcResolverEndPoint}.{Methods.EndPointGetResponseWriter}({resultSizeVariable});");
         await writer.WriteLineAsync($"{resultWriterVariable}.{Methods.BufferWrite}({procedureResultVariable});");
         await writer.WriteLineAsync($"return {resultWriterVariable};");
     }

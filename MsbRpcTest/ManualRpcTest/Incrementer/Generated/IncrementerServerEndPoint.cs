@@ -28,10 +28,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
 
     public Messenger.ListenReturnCode Listen(IIncrementerServerImplementation implementation) => base.Listen(CreateResolver(implementation));
     
-    public Resolver CreateResolver(IIncrementerServerImplementation implementation)
-    {
-        return new Resolver(this, implementation);
-    }
+    public Resolver CreateResolver(IIncrementerServerImplementation implementation) => new Resolver(this, implementation);
 
     public class Resolver : MsbRpc.EndPoints.IRpcResolver<IncrementerServerProcedure>
     {
@@ -44,7 +41,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
             _implementation = implementation;
         }
 
-        public BufferWriter Resolve(IncrementerServerProcedure procedure, BufferReader arguments)
+        BufferWriter MsbRpc.EndPoints.IRpcResolver<IncrementerServerProcedure>.Execute(IncrementerServerProcedure procedure, BufferReader arguments)
         {
             return procedure switch
             {
@@ -52,6 +49,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
                 _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
             };   
         }
+        
         private MsbRpc.Serialization.Buffers.BufferWriter Increment(MsbRpc.Serialization.Buffers.BufferReader argumentsReader)
         {
             // Read request arguments.

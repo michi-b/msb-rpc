@@ -4,5 +4,5 @@ namespace MsbRpc.EndPoints;
 
 public interface IRpcResolver<in TProcedure> where TProcedure : Enum
 {
-    BufferWriter Resolve(TProcedure procedure, BufferReader reader);
+    BufferWriter Execute(TProcedure procedure, BufferReader reader);
 }

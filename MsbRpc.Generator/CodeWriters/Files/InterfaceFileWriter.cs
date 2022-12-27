@@ -13,7 +13,7 @@ public class InterfaceFileWriter : CodeFileWriter
     public InterfaceFileWriter(ContractNode contract, EndPoint endPoint, ProcedureCollection procedures) : base(contract)
     {
         _procedures = procedures;
-        _interfaceName = endPoint.Names.InterfaceType;
+        _interfaceName = endPoint.Names.ImplementationInterface;
         FileName = $"{GeneratedNamespace}.{_interfaceName}{IndependentNames.GeneratedFilePostfix}";
     }
 

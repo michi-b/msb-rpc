@@ -8,11 +8,13 @@ internal static class IndependentNames
     public const string ProcedurePostfix = "Procedure";
     public const string ExtensionsPostFix = "Extensions";
     public const string GeneratedFilePostfix = ".g.cs";
+    public const string ImplementationPostfix = "Implementation";
 
     public static class Types
     {
         public const string LoggerFactoryInterface = "Microsoft.Extensions.Logging.ILoggerFactory";
         public const string Messenger = "MsbRpc.Messaging.Messenger";
+        public const string MessengerListenReturnCode = "MsbRpc.Messaging.Messenger.ListenReturnCode";
         public const string NullLogger = "Microsoft.Extensions.Logging.Abstractions.NullLogger";
         public const string Task = "System.Threading.Tasks.Task";
         public const string VaLueTask = "System.Threading.Tasks.ValueTask";
@@ -24,6 +26,8 @@ internal static class IndependentNames
         public const string EndPoint = "MsbRpc.EndPoints.RpcEndPoint";
         public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
         public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
+        public const string LocalEndPointResolver = "Resolver";
+        public const string RpcResolverInterface = "MsbRpc.EndPoints.IRpcResolver";
     }
 
     public static class Methods
@@ -34,14 +38,18 @@ internal static class IndependentNames
         public const string BufferWrite = "Write";
 
         //endpoints
+        public const string EndPointCreateResolver = "CreateResolver";
+        public const string EndPointListen = "Listen";
         public const string EndPointEnterCalling = "EnterCalling";
         public const string EndPointExitCalling = "ExitCalling";
-        public const string SendEndPointRequest = "SendRequest";
-        public const string GetEndPointRequestWriter = "GetRequestWriter";
-        public const string GetEndPointResultWriter = "GetResponseWriter";
-        public const string GetEndpointProcedureName = "GetName";
-        public const string GetEndPointProcedureInvertsDirection = "GetInvertsDirection";
+        public const string EndPointSendRequestAsync = "SendRequestAsync";
+        public const string EndPointGetRequestWriter = "GetRequestWriter";
+        public const string EndPointGetResponseWriter = "GetResponseWriter";
+        public const string EndpointGetProcedureName = "GetName";
+        public const string EndPointGetProcedureInvertsDirection = "GetInvertsDirection";
         public const string EndPointHandleRequest = "HandleRequest";
+        
+        public const string RpcResolverExecute = "Execute";
     }
 
     public static class Properties
@@ -57,6 +65,14 @@ internal static class IndependentNames
         public const string Procedure = "procedure";
         public const string InitialBufferSize = "initialBufferSize";
         public const string ArgumentsBufferReader = "arguments";
+        public const string EndPointImplementation = "implementation";
+        public const string RpcEndPoint = "endPoint";
+    }
+    
+    public static class Fields
+    {
+        public const string RpcResolverEndPoint = "_endPoint";
+        public const string RpcImplementation = "_implementation";
     }
 
     public static class EnumValues
