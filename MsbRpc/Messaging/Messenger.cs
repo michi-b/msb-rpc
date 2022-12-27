@@ -5,6 +5,7 @@ using MsbRpc.Sockets;
 
 namespace MsbRpc.Messaging;
 
+[PublicAPI]
 public class Messenger : IDisposable
 {
     /// <summary>
@@ -13,7 +14,9 @@ public class Messenger : IDisposable
     /// </summary>
     /// <param name="message">the received message</param>
     /// <returns>true if listening should be continued, otherwise false</returns>
-    public delegate ValueTask<bool> ReceiveDelegate(ArraySegment<byte> message, CancellationToken cancellationToken);
+    public delegate ValueTask<bool> ReceiveAsyncDelegate(ArraySegment<byte> message, CancellationToken cancellationToken);
+
+    public delegate bool ReceiveDelegate(ArraySegment<byte> message);
 
     public enum ListenReturnCode
     {
@@ -55,8 +58,42 @@ public class Messenger : IDisposable
 
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
+    public Task<ListenReturnCode> ListenLongRunning(RecycledBuffer buffer, ReceiveDelegate receive)
+    {
+        return Task.Factory.StartNew
+            (
+                () => Listen(buffer, receive),
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default
+            );
+    }
+
+    public ListenReturnCode Listen(RecycledBuffer buffer, ReceiveDelegate receive)
+    {
+        while (true)
+        {
+            ReceiveMessageResult receiveResult = ReceiveMessage(buffer);
+            switch (receiveResult.ReturnCode)
+            {
+                case ReceiveMessageReturnCode.Success:
+                    if (receive(receiveResult.Message))
+                    {
+                        return ListenReturnCode.OperationDiscontinued;
+                    }
+                    break;
+                case ReceiveMessageReturnCode.ConnectionClosed:
+                    return ListenReturnCode.ConnectionClosed;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+    
+    /// <throws>OperationCanceledException</throws>
+    /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async ValueTask<ListenReturnCode> ListenAsync(RecycledBuffer buffer, ReceiveDelegate receiveAsync, CancellationToken cancellationToken)
+    public async Task<ListenReturnCode> ListenAsync(RecycledBuffer buffer, ReceiveAsyncDelegate receiveAsync, CancellationToken cancellationToken)
     {
         try
         {
@@ -87,6 +124,33 @@ public class Messenger : IDisposable
         }
     }
 
+    /// <throws>SocketReceiveException</throws>
+    public ReceiveMessageResult ReceiveMessage(RecycledBuffer buffer)
+    {
+        bool hasReceivedCount = _socket.ReceiveAll(_receiveCountSegment);
+        if (!hasReceivedCount)
+        {
+            return new ReceiveMessageResult(BufferUtility.Empty, ReceiveMessageReturnCode.ConnectionClosed);
+        }
+
+        int messageLength = _receiveCountSegment.ReadInt();
+
+        ArraySegment<byte> bytesSegment = buffer.Get(messageLength);
+
+        if (messageLength == 0)
+        {
+            return new ReceiveMessageResult(bytesSegment, ReceiveMessageReturnCode.Success);
+        }
+
+        _socket.ReceiveAll(bytesSegment);
+
+        return new ReceiveMessageResult
+        (
+            bytesSegment,
+            ReceiveMessageReturnCode.Success
+        );
+    }
+    
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
@@ -124,5 +188,13 @@ public class Messenger : IDisposable
         _sendCountSegment.WriteInt(message.Count);
         await _socket.SendAsync(_sendCountSegment, cancellationToken);
         await _socket.SendAsync(message, cancellationToken);
+    }
+
+    /// <throws>SocketSendException</throws>
+    public async void SendMessage(ArraySegment<byte> message)
+    {
+        _sendCountSegment.WriteInt(message.Count);
+        _socket.Send(_sendCountSegment);
+        _socket.Send(message);
     }
 }

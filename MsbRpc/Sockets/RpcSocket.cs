@@ -4,9 +4,11 @@ using MsbRpc.Sockets.Exceptions;
 
 namespace MsbRpc.Sockets;
 
+[PublicAPI]
 public class RpcSocket : IRpcSocket
 {
     private readonly Socket _socket;
+
     private bool _isDisposed;
 
     public RpcSocket(Socket socket)
@@ -17,8 +19,69 @@ public class RpcSocket : IRpcSocket
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
-
         _socket = socket;
+    }
+
+    /// <throws>SocketSendException</throws>
+    public void Send(ArraySegment<byte> bytes)
+    {
+        int bytesSent = _socket.Send(bytes.Array!, bytes.Offset, bytes.Count, SocketFlags.None, out SocketError socketError);
+        if ((socketError != SocketError.Success || bytesSent != bytes.Count) && !_isDisposed)
+        {
+            throw new RpcSocketSendException(this, bytes.Count, bytesSent);
+        }
+    }
+
+    /// <exception cref="RpcSocketReceiveException"></exception>
+    public bool ReceiveAll(ArraySegment<byte> buffer)
+    {
+        int receivedCount = 0;
+        int length = buffer.Count;
+        while (receivedCount < length)
+        {
+            int remainingCount = length - receivedCount;
+            var remaining = new ArraySegment<byte>(buffer.Array!, buffer.Offset + receivedCount, remainingCount);
+            int count = Receive(remaining);
+
+            if (count == 0) //no bytes received means connection closed
+            {
+                break;
+            }
+
+            receivedCount += count;
+        }
+
+        if (receivedCount == length)
+        {
+            return true;
+        }
+
+        if (receivedCount == 0)
+        {
+            //0 is a sometimes expected result, as it just means that the remote closed the connection
+            return false;
+        }
+
+        if (_isDisposed)
+        {
+            return false;
+        }
+        //The remote closing the connection before sending an expected amount of bytes? Now THAT's unexpected!
+        else
+        {
+            Dispose();
+            throw new RpcSocketReceiveException(this, length, receivedCount);
+        }
+    }
+
+    public int Receive(ArraySegment<byte> buffer)
+    {
+        int count = _socket.Receive(buffer.Array!, buffer.Offset, buffer.Count, SocketFlags.None, out SocketError error);
+        if (error != SocketError.Success && !_isDisposed)
+        {
+            throw new RpcSocketReceiveException(this, buffer.Count, count);
+        }
+        return count;
     }
 
     /// <inheritdoc cref="IRpcSocket.SendAsync" />
@@ -83,7 +146,7 @@ public class RpcSocket : IRpcSocket
     /// <returns>
     ///     The count of bytes that were received.
     ///     Zero if the connection was closed before any bytes could be read.
-    ///     Otherwise any positive number lower than the size of the provided byffer.
+    ///     Otherwise any positive number lower than the size of the provided buffer.
     /// </returns>
     [PublicAPI]
     public async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
@@ -118,8 +181,8 @@ public class RpcSocket : IRpcSocket
     {
         if (!_isDisposed)
         {
-            _socket.Dispose();
             _isDisposed = true;
+            _socket.Dispose();
         }
     }
 
