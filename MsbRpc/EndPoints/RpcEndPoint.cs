@@ -46,13 +46,14 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         };
     }
 
-    public Task<Messenger.ListenReturnCode> Listen(TaskCreationOptions taskCreationOptions = TaskCreationOptions.LongRunning)
-        => Task.Factory.StartNew(ListenSynchronously, CancellationToken.None, taskCreationOptions, TaskScheduler.Default);
+    public Task<Messenger.ListenReturnCode> Listen(IRpcResolver<TInboundProcedure> resolver, TaskCreationOptions taskCreationOptions = TaskCreationOptions.LongRunning)
+        => Task.Factory.StartNew(()=>ListenSynchronously(resolver), CancellationToken.None, taskCreationOptions, TaskScheduler.Default);
 
-    public Messenger.ListenReturnCode ListenSynchronously()
+    public Messenger.ListenReturnCode ListenSynchronously(IRpcResolver<TInboundProcedure> resolver)
     {
         _state.Transition(State.IdleInbound, State.Listening);
-        Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, ReceiveMessage);
+        
+        Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, message => ReceiveMessage(message, resolver));
 
         // receive message callback will only discontinue listening if procedure results in outbound state
         if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
@@ -74,7 +75,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         _state = State.Disposed;
     }
 
-    private bool ReceiveMessage(ArraySegment<byte> message)
+    private bool ReceiveMessage(ArraySegment<byte> message, IRpcResolver<TInboundProcedure> resolver)
     {
         int procedureIdValue = message.ReadInt();
 
@@ -84,7 +85,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
 
-        BufferWriter responseWriter = HandleRequest(procedure, new BufferReader(arguments));
+        BufferWriter responseWriter = resolver.Resolve(procedure, new BufferReader(arguments));
 
         _messenger.SendMessage(responseWriter.Buffer);
 
@@ -123,6 +124,35 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         return new BufferWriter(buffer, PrimitiveSerializer.IntSize);
     }
 
+    protected BufferReader SendRequest(TOutboundProcedure procedure, ArraySegment<byte> request)
+    {
+        int argumentByteCount = request.Count;
+
+        //GetRequestWriter makes sure to leave space for the procedure id in front of the buffer
+        request = new ArraySegment<byte>
+        (
+            request.Array!,
+            0,
+            argumentByteCount + PrimitiveSerializer.IntSize
+        );
+
+        request.WriteInt(GetProcedureIdValue(procedure));
+
+        _messenger.SendMessage(request);
+
+        LogSentCall(_typeName, GetName(procedure), argumentByteCount);
+
+        ReceiveMessageResult result = _messenger.ReceiveMessage(_buffer);
+
+        return result.ReturnCode switch
+        {
+            ReceiveMessageReturnCode.Success => new BufferReader(result.Message),
+            ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TOutboundProcedure>
+                (procedure, "connection closed while waiting for the response"),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+    
     /// <summary>
     ///     Sends an rpc request.
     /// </summary>
@@ -193,12 +223,6 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     protected virtual bool GetInvertsDirection(TInboundProcedure procedure) => throw CreateUndefinedProcedureException();
 
     protected virtual bool GetInvertsDirection(TOutboundProcedure procedure) => throw CreateUndefinedProcedureException();
-
-    /// <param name="procedure">id of the procedure to call</param>
-    /// <param name="argumentsBuffer">bytes of the arguments in recycled memory for the procedure to call</param>
-    /// <returns>bytes of the return value of the called procedure, may be in recycled memory as well</returns>
-    protected virtual BufferWriter HandleRequest(TInboundProcedure procedure, BufferReader argumentsBuffer)
-        => throw CreateUndefinedProcedureException();
 
     protected UndefinedProcedureException<TInboundProcedure, TOutboundProcedure> CreateUndefinedProcedureException
         ([CallerMemberName] string? callerMemberName = null)

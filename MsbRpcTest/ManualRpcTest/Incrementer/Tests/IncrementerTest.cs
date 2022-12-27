@@ -15,10 +15,12 @@ public class IncrementerTest : Test
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
+        
         var serverImplementation = new Implementation.Incrementer();
+        
         var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation);
 
-        Task<Messenger.ListenReturnCode> serverListenTask = server.Listen();
+        Task<Messenger.ListenReturnCode> serverListenTask = server.Listen(server.CreateResolver(serverImplementation));
 
         connection.CreateClientMessenger().Dispose();
 
@@ -115,7 +117,8 @@ public class IncrementerTest : Test
             var serverImplementation = new Implementation.Incrementer();
             var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation, LoggerFactory);
 
-            Task<Messenger.ListenReturnCode> listenTask = server.Listen();
+            Task<Messenger.ListenReturnCode> listenTask = server.Listen(server.CreateResolver(serverImplementation));
+            
             var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
 
             return new Setup(client, server, listenTask);

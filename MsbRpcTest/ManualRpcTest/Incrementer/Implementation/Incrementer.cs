@@ -2,7 +2,7 @@
 
 namespace MsbRpcTest.ManualRpcTest.Incrementer.Implementation;
 
-internal class Incrementer : IIncrementerServer
+internal class Incrementer : IIncrementerServerImplementation
 {
     public int Increment(int value) => value + 1;
 }

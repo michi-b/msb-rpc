@@ -1,6 +1,6 @@
 ﻿namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
 
-public interface IIncrementerServer
+public interface IIncrementerServerImplementation
 {
     int Increment(int value);
 }
