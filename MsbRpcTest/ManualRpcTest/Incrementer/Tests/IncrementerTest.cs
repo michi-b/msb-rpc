@@ -15,12 +15,9 @@ public class IncrementerTest : Test
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
-        
-        var serverImplementation = new Implementation.Incrementer();
-        
-        var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation);
+        var server = new IncrementerServerEndPoint(connection.CreateServerMessenger());
 
-        Task<Messenger.ListenReturnCode> serverListenTask = server.Listen(server.CreateResolver(serverImplementation));
+        Task<Messenger.ListenReturnCode> serverListenTask = CreateServerListenTask(server, cancellationToken);
 
         connection.CreateClientMessenger().Dispose();
 
@@ -114,11 +111,10 @@ public class IncrementerTest : Test
         {
             LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
-            var serverImplementation = new Implementation.Incrementer();
-            var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), serverImplementation, LoggerFactory);
+            var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), LoggerFactory);
 
-            Task<Messenger.ListenReturnCode> listenTask = server.Listen(server.CreateResolver(serverImplementation));
-            
+            Task<Messenger.ListenReturnCode> listenTask = CreateServerListenTask(server, cancellationToken);
+
             var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
 
             return new Setup(client, server, listenTask);
@@ -130,5 +126,16 @@ public class IncrementerTest : Test
             await ServerListenTask;
             Server.Dispose();
         }
+    }
+
+    private static Task<Messenger.ListenReturnCode> CreateServerListenTask(IncrementerServerEndPoint server, CancellationToken cancellationToken)
+    {
+        return Task.Factory.StartNew
+        (
+            () => server.Listen(new Implementation.Incrementer()),
+            cancellationToken,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default
+        );
     }
 }

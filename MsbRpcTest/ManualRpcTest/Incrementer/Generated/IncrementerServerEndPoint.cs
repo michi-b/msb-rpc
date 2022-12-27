@@ -1,4 +1,6 @@
-﻿using MsbRpc.EndPoints;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MsbRpc.EndPoints;
+using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpcTest.ManualRpcTest.Incrementer.Generated;
@@ -8,7 +10,6 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
     public IncrementerServerEndPoint
     (
         MsbRpc.Messaging.Messenger messenger,
-        IIncrementerServerImplementation incrementerServerImplementation,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultBufferSize
     ) : base
@@ -25,6 +26,8 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.RpcEndPoint<Incremente
 
     protected override bool GetInvertsDirection(IncrementerServerProcedure procedure) => procedure.GetInvertsDirection();
 
+    public Messenger.ListenReturnCode Listen(IIncrementerServerImplementation implementation) => base.Listen(CreateResolver(implementation));
+    
     public Resolver CreateResolver(IIncrementerServerImplementation implementation)
     {
         return new Resolver(this, implementation);

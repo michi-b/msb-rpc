@@ -46,13 +46,10 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         };
     }
 
-    public Task<Messenger.ListenReturnCode> Listen(IRpcResolver<TInboundProcedure> resolver, TaskCreationOptions taskCreationOptions = TaskCreationOptions.LongRunning)
-        => Task.Factory.StartNew(()=>ListenSynchronously(resolver), CancellationToken.None, taskCreationOptions, TaskScheduler.Default);
-
-    public Messenger.ListenReturnCode ListenSynchronously(IRpcResolver<TInboundProcedure> resolver)
+    public Messenger.ListenReturnCode Listen(IRpcResolver<TInboundProcedure> resolver)
     {
         _state.Transition(State.IdleInbound, State.Listening);
-        
+
         Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, message => ReceiveMessage(message, resolver));
 
         // receive message callback will only discontinue listening if procedure results in outbound state
@@ -152,7 +149,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
+
     /// <summary>
     ///     Sends an rpc request.
     /// </summary>
