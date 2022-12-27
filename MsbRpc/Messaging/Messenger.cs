@@ -191,7 +191,7 @@ public class Messenger : IDisposable
     }
 
     /// <throws>SocketSendException</throws>
-    public async void SendMessage(ArraySegment<byte> message)
+    public void SendMessage(ArraySegment<byte> message)
     {
         _sendCountSegment.WriteInt(message.Count);
         _socket.Send(_sendCountSegment);

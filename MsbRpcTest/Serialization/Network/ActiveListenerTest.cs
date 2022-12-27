@@ -37,6 +37,6 @@ public class ActiveListenerTest : ListenerTest
         await TestMultipleIntMessagesAreDelivered();
     }
 
-    protected override Task<List<ArraySegment<byte>>> ListenAsync(Messenger messenger, CancellationToken cancellationToken)
-        => MessagesListener.ListenAsync(messenger, cancellationToken);
+    protected override Task<List<ArraySegment<byte>>> Listen(Messenger messenger)
+        => MessagesListener.Listen(messenger, TaskCreationOptions.None);
 }

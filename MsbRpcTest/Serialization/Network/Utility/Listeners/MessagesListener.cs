@@ -34,21 +34,4 @@ public static class MessagesListener
         );
         return messages;
     }
-
-    public static async Task<List<ArraySegment<byte>>> ListenAsync(Messenger messenger, CancellationToken cancellationToken)
-    {
-        List<ArraySegment<byte>> messages = new();
-        var buffer = new RecycledBuffer();
-        await messenger.ListenAsync
-        (
-            buffer,
-            (message, _) =>
-            {
-                messages.Add(message.Copy());
-                return ValueTask.FromResult(false);
-            },
-            cancellationToken
-        );
-        return messages;
-    }
 }

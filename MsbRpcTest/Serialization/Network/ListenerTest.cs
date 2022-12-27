@@ -10,7 +10,7 @@ namespace MsbRpcTest.Serialization.Network;
 
 public abstract class ListenerTest : Test
 {
-    protected abstract Task<List<ArraySegment<byte>>> ListenAsync(Messenger messenger, CancellationToken cancellationToken);
+    protected abstract Task<List<ArraySegment<byte>>> Listen(Messenger messenger);
 
     protected async Task TestClosingConnectionStopsListening()
     {
@@ -124,7 +124,7 @@ public abstract class ListenerTest : Test
         LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
         Messenger client = connection.CreateClientMessenger();
         Messenger server = connection.CreateServerMessenger();
-        return (client, ListenAsync(server, cancellationToken));
+        return (client, Listen(server));
     }
 
     private static void Log(IReadOnlyList<ArraySegment<byte>> messages)
