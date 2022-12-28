@@ -19,6 +19,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+      <ProjectReference Include="..\MsbRpc.Generator\MsbRpc.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     </ItemGroup>
 
 </Project>
