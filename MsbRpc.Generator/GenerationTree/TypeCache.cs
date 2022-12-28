@@ -1,4 +1,5 @@
-﻿using MsbRpc.Generator.Info;
+﻿using System.Collections.Generic;
+using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 

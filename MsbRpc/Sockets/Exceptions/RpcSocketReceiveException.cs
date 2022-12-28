@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Sockets.Exceptions;
+﻿using System;
+
+namespace MsbRpc.Sockets.Exceptions;
 
 public class RpcSocketReceiveException : RpcSocketException
 {

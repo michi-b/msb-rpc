@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.EndPoints;
+﻿using System;
+
+namespace MsbRpc.EndPoints;
 
 public static class EndPointDirectionExtensions
 {

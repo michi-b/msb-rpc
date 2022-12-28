@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.Info.Comparers;
+﻿using System.Collections.Generic;
+
+namespace MsbRpc.Generator.Info.Comparers;
 
 internal class TargetComparer : IEqualityComparer<ContractInfo>
 {

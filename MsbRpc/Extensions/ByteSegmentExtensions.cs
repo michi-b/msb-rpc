@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Extensions;
+﻿using System;
+
+namespace MsbRpc.Extensions;
 
 public static class ByteSegmentExtensions
 {

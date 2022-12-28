@@ -1,4 +1,8 @@
-﻿namespace MsbRpc.Sockets;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace MsbRpc.Sockets;
 
 public interface IRpcSocket : IDisposable
 {

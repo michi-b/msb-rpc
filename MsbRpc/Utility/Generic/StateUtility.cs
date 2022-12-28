@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+using System;
+using System.Collections;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using JetBrains.Annotations;
 using MsbRpc.Exceptions;
 
@@ -65,7 +69,7 @@ public static class StateUtility<TState> where TState : Enum
     [Conditional("DEBUG")]
     public static void AssertIsAmong(TState[] expected, TState actual, [CallerMemberName] string? operationName = null)
     {
-        if (!expected.Contains(actual))
+        if (!((IList)expected).Contains(actual))
         {
             throw new InvalidStateException<TState>(expected, actual, operationName);
         }

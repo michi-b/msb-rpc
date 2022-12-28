@@ -1,16 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <ImplicitUsings>true</ImplicitUsings>
+        <IncludeBuildOutput>true</IncludeBuildOutput>
+        <ImplicitUsings>false</ImplicitUsings>
         <LangVersion>latest</LangVersion>
-        <PackageId>MsbRps</PackageId>
-        <Description>A Roslyn source generator based remote procedure call framework</Description>
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <Version>0.0.0-preview.10</Version>
+        <Title>MsbRpc</Title>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <Authors>Michael Simon Brunner</Authors>
+        <Description>Suplementary library to use the package MsbRpc.Generator. Provides Basic implementations for binary primitive serialization and RPC endpoint code.</Description>
+        <PackageProjectUrl>https://github.com/michi-b/msb-rpc</PackageProjectUrl>
+        <RepositoryUrl>git@github.com:michi-b/msb-rpc.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>MIT License  Copyright (c) 2022 michi-b  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</Copyright>
+        <PackageTags>remote-procedure-call source-generator serialization sockets client-server tcp</PackageTags>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Exceptions\" />
+        <None Include="..\icon.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+            <Link>icon.png</Link>
+        </None>
+        <None Include="..\LICENSE.txt">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+            <Link>LICENSE.txt</Link>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -19,5 +41,10 @@
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
+    
+    <PropertyGroup>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
 
 </Project>

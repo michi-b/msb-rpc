@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.Extensions;
+﻿using System;
+
+namespace MsbRpc.Generator.Extensions;
 
 [Flags]
 public enum BlockAdditions

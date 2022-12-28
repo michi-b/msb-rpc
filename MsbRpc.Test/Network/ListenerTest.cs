@@ -38,7 +38,8 @@ public abstract class ListenerTest : Test
         Log(messages);
 
         Assert.IsTrue(messages.Count == 1);
-        Assert.AreEqual(value, messages[0][0]);
+        ArraySegment<byte> arraySegment = messages[0];
+        Assert.AreEqual(value, arraySegment.ElementAt(0));
     }
 
     protected async Task TestEmptyMessageIsDelivered()
@@ -141,7 +142,8 @@ public abstract class ListenerTest : Test
             writer.WriteLine($"message {i} is {message.Count} bytes:");
 
             writer.Indent++;
-            writer.WriteLine($"{{{string.Join(',', message)}}}");
+            string[] bytes = message.Select(b => b.ToString()).ToArray();
+            writer.WriteLine($"{{{string.Join(", ", bytes)}}}");
             writer.Indent--;
         }
 

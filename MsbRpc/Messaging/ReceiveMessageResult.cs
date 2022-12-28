@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Messaging;
+﻿using System;
+
+namespace MsbRpc.Messaging;
 
 public readonly struct ReceiveMessageResult
 {

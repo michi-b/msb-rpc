@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿#nullable enable
+using System;
+using JetBrains.Annotations;
 
 namespace MsbRpc.Sockets.Exceptions;
 

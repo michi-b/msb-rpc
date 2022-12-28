@@ -1,4 +1,5 @@
-﻿using MsbRpc.Generator.Enums;
+﻿using System;
+using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.GenerationTree.Names;
 
 namespace MsbRpc.Generator.GenerationTree;

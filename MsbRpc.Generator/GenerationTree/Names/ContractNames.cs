@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.GenerationTree.Names;
+﻿using System;
+
+namespace MsbRpc.Generator.GenerationTree.Names;
 
 internal readonly struct ContractNames
 {

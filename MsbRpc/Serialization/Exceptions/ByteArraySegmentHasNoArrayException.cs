@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Serialization.Exceptions;
+﻿using System;
+
+namespace MsbRpc.Serialization.Exceptions;
 
 public class ByteArraySegmentHasNoArrayException : NullReferenceException
 {

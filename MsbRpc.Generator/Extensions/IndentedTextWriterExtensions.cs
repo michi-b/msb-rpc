@@ -1,4 +1,6 @@
-﻿using System.CodeDom.Compiler;
+﻿using System;
+using System.CodeDom.Compiler;
+using System.Threading.Tasks;
 
 namespace MsbRpc.Generator.Extensions;
 

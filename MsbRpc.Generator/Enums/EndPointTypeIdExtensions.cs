@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.Enums;
+﻿using System;
+
+namespace MsbRpc.Generator.Enums;
 
 internal static class EndPointTypeIdExtensions
 {

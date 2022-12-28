@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿#nullable enable
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MsbRpc.Exceptions;
 

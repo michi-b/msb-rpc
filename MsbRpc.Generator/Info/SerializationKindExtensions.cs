@@ -1,4 +1,5 @@
-﻿using static MsbRpc.Generator.IndependentNames;
+﻿using System;
+using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.Info;
 

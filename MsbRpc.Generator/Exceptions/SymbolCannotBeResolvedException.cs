@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.Exceptions;
+﻿using System;
+
+namespace MsbRpc.Generator.Exceptions;
 
 public class SymbolCannotBeResolvedException : Exception
 {
