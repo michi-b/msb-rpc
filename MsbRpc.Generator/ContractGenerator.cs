@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsbRpc.Generator.CodeWriters.Files;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
@@ -12,7 +14,7 @@ using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator;
 
-[Generator]
+[Generator("C#")]
 public class ContractGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -64,10 +66,24 @@ public class ContractGenerator : IIncrementalGenerator
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
     {
-        ContractNode contract = new(ref contractInfo);
-        Task serverGenerationTask = GenerateEndPoint(context, contract, contract.Server);
-        Task clientGenerationTask = GenerateEndPoint(context, contract, contract.Client);
-        Task.WaitAll(serverGenerationTask, clientGenerationTask);
+        try
+        {
+            ContractNode contract = new(ref contractInfo, context);
+            if (contract.IsValid)
+            {
+                Task serverGenerationTask = GenerateEndPoint(context, contract, contract.Server);
+                Task clientGenerationTask = GenerateEndPoint(context, contract, contract.Client);
+                Task.WaitAll(serverGenerationTask, clientGenerationTask);
+            }
+            else
+            {
+                context.ReportContractGenerationError(contract);
+            }
+        }
+        catch (Exception exception)
+        {
+            context.ReportContractGenerationException(ref contractInfo, exception);
+        }
     }
 
     private static async Task GenerateEndPoint(SourceProductionContext context, ContractNode contract, EndPoint endPoint)

@@ -1,7 +1,6 @@
-﻿using MsbRpc.Generator.GenerationTree.Names;
-using static MsbRpc.Generator.IndependentNames;
+﻿using static MsbRpc.Generator.IndependentNames;
 
-namespace MsbRpc.Generator.GenerationTree;
+namespace MsbRpc.Generator.GenerationTree.Names;
 
 internal class ProcedureCollectionNames
 {

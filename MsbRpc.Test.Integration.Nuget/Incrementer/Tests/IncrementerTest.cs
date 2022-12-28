@@ -41,12 +41,10 @@ public class IncrementerTest : Test
 
         Socket serverSocket = await acceptClientTask;
 
-        
-        
         //create client and server
         var serverEndPoint = new IncrementerServerEndPoint(new Messenger(new RpcSocket(serverSocket)), LoggerFactory);
         var clientEndPoint = new IncrementerClientEndPoint(new Messenger(new RpcSocket(clientSocket)), LoggerFactory);
-        
+
         Assert.IsTrue(serverEndPoint.State == State.IdleInbound);
         Assert.IsTrue(clientEndPoint.State == State.IdleOutbound);
 
@@ -58,20 +56,20 @@ public class IncrementerTest : Test
             TaskCreationOptions.LongRunning,
             TaskScheduler.Default
         );
-        
+
         int value = 5;
         for (int i = 0; i < 10; i++)
         {
             value = await clientEndPoint.IncrementAsync(value, cancellationToken);
         }
-        
+
         Assert.AreEqual(15, value);
-        
+
         clientEndPoint.Dispose();
         Assert.IsTrue(clientEndPoint.State == State.Disposed);
 
         Messenger.ListenReturnCode listenReturnCode = await serverTask;
-        
+
         Assert.IsTrue(listenReturnCode == Messenger.ListenReturnCode.ConnectionClosed);
         Assert.IsTrue(serverEndPoint.State == State.Disposed);
     }

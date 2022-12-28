@@ -6,15 +6,36 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class TypeNode
 {
     public readonly string? ConstantSizeExpression;
+
     public readonly bool IsConstantSize;
+
+    public readonly bool IsValidParameter;
+
+    public readonly bool IsValidReturnType;
+
     public readonly TypeNames Names;
+
     public readonly SerializationKind SerializationKind;
 
-    public TypeNode(ref TypeInfo info)
+    public TypeNode(string fullName, SerializationKind serializationKind)
     {
-        SerializationKindUtility.TryGetPrimitiveSerializationKind($"{info.Namespace}.{info.LocalName}", out SerializationKind);
-        Names = new TypeNames(info, SerializationKind);
-        ConstantSizeExpression = SerializationKind.GetConstantSizeExpression();
-        IsConstantSize = ConstantSizeExpression != null;
+        SerializationKind = serializationKind;
+
+        if (serializationKind == SerializationKind.Unresolved)
+        {
+            Names = TypeNames.CreateInvalid(fullName);
+            ConstantSizeExpression = null;
+            IsConstantSize = false;
+            IsValidParameter = false;
+            IsValidReturnType = false;
+        }
+        else
+        {
+            Names = new TypeNames(fullName, SerializationKind);
+            ConstantSizeExpression = SerializationKind.GetConstantSizeExpression();
+            IsConstantSize = ConstantSizeExpression != null;
+            IsValidParameter = serializationKind.GetIsValidParameterType();
+            IsValidReturnType = serializationKind.GetIsValidReturnType();
+        }
     }
 }

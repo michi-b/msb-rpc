@@ -5,9 +5,31 @@ namespace MsbRpc.Generator.Info;
 
 internal static class SerializationKindExtensions
 {
-    public static bool GetIsPrimitive(this SerializationKind target)
+    public static string? GetKeyword(this SerializationKind serializationKind)
     {
-        return target switch
+        return serializationKind switch
+        {
+            SerializationKind.Byte => "byte",
+            SerializationKind.Sbyte => "sbyte",
+            SerializationKind.Bool => "bool",
+            SerializationKind.Char => "char",
+            SerializationKind.Int => "int",
+            SerializationKind.Long => "long",
+            SerializationKind.Short => "short",
+            SerializationKind.Uint => "uint",
+            SerializationKind.Ulong => "ulong",
+            SerializationKind.Ushort => "ushort",
+            SerializationKind.Float => "float",
+            SerializationKind.Double => "double",
+            SerializationKind.Decimal => "decimal",
+            SerializationKind.Void => "void",
+            _ => null
+        };
+    }
+
+    public static bool GetIsValidParameterType(this SerializationKind serializationKind)
+    {
+        return serializationKind switch
         {
             SerializationKind.Byte => true,
             SerializationKind.Sbyte => true,
@@ -22,6 +44,29 @@ internal static class SerializationKindExtensions
             SerializationKind.Float => true,
             SerializationKind.Double => true,
             SerializationKind.Decimal => true,
+            SerializationKind.Void => false,
+            _ => false
+        };
+    }
+
+    public static bool GetIsValidReturnType(this SerializationKind serializationKind)
+    {
+        return serializationKind switch
+        {
+            SerializationKind.Byte => true,
+            SerializationKind.Sbyte => true,
+            SerializationKind.Bool => true,
+            SerializationKind.Char => true,
+            SerializationKind.Int => true,
+            SerializationKind.Long => true,
+            SerializationKind.Short => true,
+            SerializationKind.Uint => true,
+            SerializationKind.Ulong => true,
+            SerializationKind.Ushort => true,
+            SerializationKind.Float => true,
+            SerializationKind.Double => true,
+            SerializationKind.Decimal => true,
+            SerializationKind.Void => true,
             _ => false
         };
     }
@@ -68,33 +113,26 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static bool HasKeyword(this SerializationKind serializationKind) => serializationKind.GetIsPrimitive();
-
-    public static bool GetKeyword(this SerializationKind serializationKind, out string? keyword)
+    public static string GetName(this SerializationKind target)
     {
-        if (serializationKind.GetIsPrimitive())
+        return target switch
         {
-            keyword = serializationKind switch
-            {
-                SerializationKind.Byte => SerializationKindUtility.ByteKeyword,
-                SerializationKind.Sbyte => SerializationKindUtility.SbyteKeyword,
-                SerializationKind.Bool => SerializationKindUtility.BoolKeyword,
-                SerializationKind.Char => SerializationKindUtility.CharKeyword,
-                SerializationKind.Int => SerializationKindUtility.IntKeyword,
-                SerializationKind.Long => SerializationKindUtility.LongKeyword,
-                SerializationKind.Short => SerializationKindUtility.ShortKeyword,
-                SerializationKind.Uint => SerializationKindUtility.UintKeyword,
-                SerializationKind.Ulong => SerializationKindUtility.UlongKeyword,
-                SerializationKind.Ushort => SerializationKindUtility.UshortKeyword,
-                SerializationKind.Float => SerializationKindUtility.FloatKeyword,
-                SerializationKind.Double => SerializationKindUtility.DoubleKeyword,
-                SerializationKind.Decimal => SerializationKindUtility.DecimalKeyword,
-                _ => throw new ArgumentOutOfRangeException(nameof(serializationKind), serializationKind, null)
-            };
-            return true;
-        }
-
-        keyword = null;
-        return false;
+            SerializationKind.Unresolved => nameof(SerializationKind.Unresolved),
+            SerializationKind.Byte => nameof(SerializationKind.Byte),
+            SerializationKind.Sbyte => nameof(SerializationKind.Sbyte),
+            SerializationKind.Bool => nameof(SerializationKind.Bool),
+            SerializationKind.Char => nameof(SerializationKind.Char),
+            SerializationKind.Int => nameof(SerializationKind.Int),
+            SerializationKind.Long => nameof(SerializationKind.Long),
+            SerializationKind.Short => nameof(SerializationKind.Short),
+            SerializationKind.Uint => nameof(SerializationKind.Uint),
+            SerializationKind.Ulong => nameof(SerializationKind.Ulong),
+            SerializationKind.Ushort => nameof(SerializationKind.Ushort),
+            SerializationKind.Float => nameof(SerializationKind.Float),
+            SerializationKind.Double => nameof(SerializationKind.Double),
+            SerializationKind.Decimal => nameof(SerializationKind.Decimal),
+            SerializationKind.Void => nameof(SerializationKind.Void),
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
     }
 }

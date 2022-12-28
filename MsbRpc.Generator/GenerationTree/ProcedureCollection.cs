@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.GenerationTree.Names;
 using MsbRpc.Generator.Info;
 
@@ -9,8 +10,10 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ProcedureCollection : IReadOnlyList<Procedure>
 {
     private readonly Procedure[] _procedures;
+    public readonly bool IsValid = true;
     public readonly int LastIndex;
     public readonly ProcedureCollectionNames Names;
+
     public Procedure this[int index] => _procedures[index];
 
     public int Count { get; }
@@ -19,7 +22,8 @@ internal class ProcedureCollection : IReadOnlyList<Procedure>
     (
         ImmutableArray<ProcedureInfo> procedures,
         EndPointNames endPointNames,
-        TypeCache typeCache
+        TypeNodeCache typeNodeCache,
+        SourceProductionContext context
     )
     {
         Names = new ProcedureCollectionNames(endPointNames);
@@ -29,7 +33,9 @@ internal class ProcedureCollection : IReadOnlyList<Procedure>
         _procedures = new Procedure[Count];
         for (int i = 0; i < Count; i++)
         {
-            _procedures[i] = new Procedure(procedures[i], Names, i, typeCache);
+            var procedure = new Procedure(procedures[i], Names, i, typeNodeCache, context);
+            IsValid = IsValid && procedure.IsValid;
+            _procedures[i] = procedure;
         }
     }
 

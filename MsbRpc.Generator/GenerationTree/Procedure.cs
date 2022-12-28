@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree.Names;
 using MsbRpc.Generator.Info;
 
@@ -8,20 +10,42 @@ internal class Procedure
 {
     public readonly string EnumValueString;
     public readonly bool InvertsDirection;
+    public readonly bool IsValid;
     public readonly ProcedureNames Names;
     public readonly ParameterCollection? Parameters;
     public readonly TypeNode ReturnType;
 
-    public Procedure(ProcedureInfo procedureInfo, ProcedureCollectionNames procedureCollectionNames, int definitionIndex, TypeCache typeCache)
+    public Procedure
+    (
+        ProcedureInfo procedureInfo,
+        ProcedureCollectionNames procedureCollectionNames,
+        int definitionIndex,
+        TypeNodeCache typeNodeCache,
+        SourceProductionContext context
+    )
     {
         Names = new ProcedureNames(procedureCollectionNames, procedureInfo);
-        ReturnType = typeCache.GetOrAdd(procedureInfo.ReturnType);
+
+        ReturnType = typeNodeCache.GetOrAdd(procedureInfo.ReturnType, context);
+        if (!ReturnType.IsValidReturnType)
+        {
+            context.ReportTypeIsNotAValidRpcReturnType(ReturnType);
+        }
+
+        IsValid = ReturnType.IsValidReturnType;
+
         EnumValueString = definitionIndex.ToString();
         InvertsDirection = procedureInfo.InvertsDirection;
 
         ImmutableArray<ParameterInfo> parameterInfos = procedureInfo.Parameters;
-        Parameters = parameterInfos.Length > 0
-            ? new ParameterCollection(parameterInfos, typeCache)
-            : null;
+        if (parameterInfos.Length > 0)
+        {
+            Parameters = new ParameterCollection(parameterInfos, typeNodeCache, context);
+            IsValid = IsValid && Parameters.IsValid;
+        }
+        else
+        {
+            Parameters = null;
+        }
     }
 }
