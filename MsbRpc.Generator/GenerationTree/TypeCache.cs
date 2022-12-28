@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public readonly struct TypeCache
+internal readonly struct TypeCache
 {
     private readonly Dictionary<TypeInfo, TypeNode> _cache = new();
 

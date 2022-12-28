@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Info;
 
-public static class SerializationKindUtility
+internal static class SerializationKindUtility
 {
     public const string ByteTypeName = "System.Byte";
     public const string SbyteTypeName = "System.SByte";

@@ -3,7 +3,7 @@ using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class ProcedureCollectionNames
+internal class ProcedureCollectionNames
 {
     /// <summary>
     ///     enum type name (local to generated namespace)

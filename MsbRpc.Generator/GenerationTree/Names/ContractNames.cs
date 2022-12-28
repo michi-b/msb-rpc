@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.GenerationTree.Names;
 
-public readonly struct ContractNames
+internal readonly struct ContractNames
 {
     public ContractNames(string contractNamespace, string contractInterfaceName)
     {

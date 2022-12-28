@@ -1,10 +1,9 @@
-﻿using MsbRpc.EndPoints;
-using MsbRpc.Generator.Extensions;
+﻿using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.GenerationTree.Names;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class EndPoint
+internal class EndPoint
 {
     public readonly ProcedureCollection? InboundProcedures;
     public readonly string InitialDirectionEnumValue;

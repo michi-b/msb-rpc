@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Info;
 
-public readonly struct ParameterInfo : IEquatable<ParameterInfo>
+internal readonly struct ParameterInfo : IEquatable<ParameterInfo>
 {
     public string Name { get; }
     public TypeInfo Type { get; }

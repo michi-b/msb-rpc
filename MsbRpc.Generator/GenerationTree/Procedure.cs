@@ -4,7 +4,7 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class Procedure
+internal class Procedure
 {
     public readonly string EnumValueString;
     public readonly bool InvertsDirection;

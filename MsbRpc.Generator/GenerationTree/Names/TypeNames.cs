@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.GenerationTree.Names;
 
-public class TypeNames
+internal class TypeNames
 {
     public readonly string Name;
 

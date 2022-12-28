@@ -6,7 +6,7 @@ using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters;
 
-public static class OutboundRpcWriter
+internal static class OutboundRpcWriter
 {
     public static async ValueTask WriteAsync(IndentedTextWriter writer, ProcedureCollection procedures)
     {

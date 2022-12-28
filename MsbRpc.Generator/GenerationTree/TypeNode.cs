@@ -3,7 +3,7 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class TypeNode
+internal class TypeNode
 {
     public readonly string? ConstantSizeExpression;
     public readonly bool IsConstantSize;

@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Info;
 
-public readonly struct TypeInfo : IEquatable<TypeInfo>
+internal readonly struct TypeInfo : IEquatable<TypeInfo>
 {
     public string LocalName { get; }
     public string Namespace { get; }

@@ -4,7 +4,7 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class ParameterCollection : IReadOnlyList<Parameter>
+internal class ParameterCollection : IReadOnlyList<Parameter>
 {
     private readonly Parameter[] _parameters;
     public readonly IReadOnlyList<Parameter> ConstantSizeParameters;

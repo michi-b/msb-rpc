@@ -1,9 +1,10 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.Enums;
 
 namespace MsbRpc.Generator.Info;
 
-public struct ContractInfo : IEquatable<ContractInfo>
+internal struct ContractInfo : IEquatable<ContractInfo>
 {
     public string InterfaceName { get; }
     public string Namespace { get; }

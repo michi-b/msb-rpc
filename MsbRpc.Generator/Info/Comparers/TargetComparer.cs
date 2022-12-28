@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Info.Comparers;
 
-public class TargetComparer : IEqualityComparer<ContractInfo>
+internal class TargetComparer : IEqualityComparer<ContractInfo>
 {
     public static TargetComparer Instance { get; } = new();
 

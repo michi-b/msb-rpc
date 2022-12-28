@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.GenerationTree.Names;
 
-public class ProcedureNames
+internal class ProcedureNames
 {
     public readonly string Async;
     public readonly string EnumValue;

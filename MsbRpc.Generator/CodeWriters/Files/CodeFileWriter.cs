@@ -7,7 +7,7 @@ using MsbRpc.Generator.GenerationTree;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
-public abstract class CodeFileWriter
+internal abstract class CodeFileWriter
 {
     protected readonly string GeneratedNamespace;
 

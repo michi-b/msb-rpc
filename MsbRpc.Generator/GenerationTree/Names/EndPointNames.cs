@@ -1,8 +1,9 @@
-﻿using static MsbRpc.Generator.IndependentNames;
+﻿using MsbRpc.Generator.Enums;
+using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree.Names;
 
-public readonly struct EndPointNames
+internal readonly struct EndPointNames
 {
     public EndPointNames(ContractNames contract, EndPointTypeId endPointType)
     {

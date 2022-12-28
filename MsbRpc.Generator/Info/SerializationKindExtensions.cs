@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Info;
 
-public static class SerializationKindExtensions
+internal static class SerializationKindExtensions
 {
     public static bool GetIsPrimitive(this SerializationKind target)
     {

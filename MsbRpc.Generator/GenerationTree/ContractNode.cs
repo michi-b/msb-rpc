@@ -1,10 +1,11 @@
 ﻿using System.Collections.Immutable;
+using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.GenerationTree.Names;
 using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class ContractNode
+internal class ContractNode
 {
     public readonly EndPoint Client;
     public readonly ProcedureCollection? ClientProcedures;

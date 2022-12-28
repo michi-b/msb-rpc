@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
-public readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
+internal readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
 {
     public string Name { get; }
     public ImmutableArray<ParameterInfo> Parameters { get; }

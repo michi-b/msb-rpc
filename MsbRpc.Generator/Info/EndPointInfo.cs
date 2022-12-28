@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Info;
 
-public readonly struct EndPointInfo : IEquatable<EndPointInfo>
+internal readonly struct EndPointInfo : IEquatable<EndPointInfo>
 {
     public ImmutableArray<ProcedureInfo> Procedures { get; }
 

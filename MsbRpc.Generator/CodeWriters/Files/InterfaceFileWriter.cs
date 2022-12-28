@@ -4,7 +4,7 @@ using MsbRpc.Generator.GenerationTree;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
-public class InterfaceFileWriter : CodeFileWriter
+internal class InterfaceFileWriter : CodeFileWriter
 {
     private readonly string _interfaceName;
     private readonly ProcedureCollection _procedures;

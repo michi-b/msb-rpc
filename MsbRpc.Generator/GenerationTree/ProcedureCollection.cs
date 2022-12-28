@@ -5,7 +5,7 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class ProcedureCollection : IReadOnlyList<Procedure>
+internal class ProcedureCollection : IReadOnlyList<Procedure>
 {
     private readonly Procedure[] _procedures;
     public readonly int LastIndex;

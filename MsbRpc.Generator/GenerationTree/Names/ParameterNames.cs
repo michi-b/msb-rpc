@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.GenerationTree.Names;
 
-public readonly struct ParameterNames
+internal readonly struct ParameterNames
 {
     public readonly string Name;
     public readonly string SizeVariable;

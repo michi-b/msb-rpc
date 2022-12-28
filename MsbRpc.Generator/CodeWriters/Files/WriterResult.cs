@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
-public struct WriterResult
+internal struct WriterResult
 {
     public readonly SourceText SourceText;
     public readonly string FileName;
