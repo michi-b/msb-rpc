@@ -48,7 +48,7 @@ internal static class IndependentNames
         public const string EndpointGetProcedureName = "GetName";
         public const string EndPointGetProcedureInvertsDirection = "GetInvertsDirection";
         public const string EndPointHandleRequest = "HandleRequest";
-        
+
         public const string RpcResolverExecute = "Execute";
     }
 
@@ -68,7 +68,7 @@ internal static class IndependentNames
         public const string EndPointImplementation = "implementation";
         public const string RpcEndPoint = "endPoint";
     }
-    
+
     public static class Fields
     {
         public const string RpcResolverEndPoint = "_endPoint";

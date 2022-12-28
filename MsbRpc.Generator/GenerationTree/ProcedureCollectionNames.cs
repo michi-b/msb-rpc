@@ -9,6 +9,6 @@ public class ProcedureCollectionNames
     ///     enum type name (local to generated namespace)
     /// </summary>
     public readonly string EnumType;
-    public ProcedureCollectionNames(EndPointNames endPoint) 
-        => EnumType = $"{endPoint.PascalCaseName}{ProcedurePostfix}";
+
+    public ProcedureCollectionNames(EndPointNames endPoint) => EnumType = $"{endPoint.PascalCaseName}{ProcedurePostfix}";
 }

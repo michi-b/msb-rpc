@@ -7,6 +7,7 @@
         <ImplicitUsings>true</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <PackageId>MsbRps.CodeAnalysis</PackageId>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
         <Description>Source generator for MsbRps, a Roslyn source generator based remote procedure call framework</Description>
     </PropertyGroup>
 
@@ -20,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" />
         <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
     </ItemGroup>
 

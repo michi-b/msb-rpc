@@ -15,16 +15,13 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
         <PackageReference Include="coverlet.collector" Version="3.1.0" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.0.1" />
+        <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.1-dev-10301" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Misbat.CodeAnalysis.Test\Misbat.CodeAnalysis.Test.csproj" />
-        <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" />
-        <ProjectReference Include="..\MsbRpc.Generator\MsbRpc.Generator.csproj" />
         <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
     </ItemGroup>
 
@@ -32,6 +29,10 @@
       <Reference Include="System.Threading.Tasks.Extensions">
         <HintPath>..\..\..\Program Files\dotnet\shared\Microsoft.NETCore.App\6.0.12\System.Threading.Tasks.Extensions.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Serialization" />
     </ItemGroup>
 
 </Project>

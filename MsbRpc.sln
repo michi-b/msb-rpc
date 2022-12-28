@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsbRpc.Generator.Attributes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRpc.Test.Integration", "MsbRpc.Test.Integration\MsbRpc.Test.Integration.csproj", "{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRpc.Test.Generator", "MsbRpc.Test.Generator\MsbRpc.Test.Generator.csproj", "{9B40A8A9-355D-4961-92EF-B85900682FAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|x86.ActiveCfg = Release|Any CPU
 		{4A5DAECA-A50A-4BC4-B8AA-C87B2BA26194}.Release|x86.Build.0 = Release|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Debug|x86.Build.0 = Debug|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|x86.ActiveCfg = Release|Any CPU
+		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

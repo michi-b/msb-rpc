@@ -20,6 +20,6 @@ public readonly struct EndPointNames
     public readonly string CamelCaseName;
 
     public readonly string ImplementationInterface;
-    
+
     public const string DefaultBufferSizeConstant = "DefaultBufferSize";
 }
