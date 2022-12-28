@@ -6,9 +6,19 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
         <LangVersion>latest</LangVersion>
-        <PackageId>MsbRps.CodeAnalysis</PackageId>
         <IncludeBuildOutput>false</IncludeBuildOutput>
-        <Description>Source generator for MsbRps, a Roslyn source generator based remote procedure call framework</Description>
+        <Description>Remote Procedure Call Framework based on TCP Sockets, binary serialization and using an incremental Roslyn source generator to automate serialization and procedure remoting code.</Description>
+        <PackageProjectUrl>https://github.com/michi-b/msb-rpc</PackageProjectUrl>
+        <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+        <RepositoryUrl>git@github.com:michi-b/msb-rpc.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>remote-procedure-call source-generator serialization sockets client-server tcp</PackageTags>
+        <file>icon.png</file>
+        <PackageIcon>icon.png</PackageIcon>
+        <Authors>michi-b</Authors>
+        <PackageId>MsbRpc.Generator</PackageId>
+        <Version>0.0.0-preview.0</Version>
+        <Copyright>MIT License  Copyright (c) 2022 michi-b  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</Copyright>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,6 +32,10 @@
 
     <ItemGroup>
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="$(OutputPath)\MsbRpc.Generator.Attributes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="$(OutputPath)\MsbRpc.Generator.Attributes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false" />
     </ItemGroup>
+    
+    
 
 </Project>
