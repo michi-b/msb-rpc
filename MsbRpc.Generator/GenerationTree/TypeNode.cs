@@ -9,6 +9,8 @@ internal class TypeNode
 
     public readonly bool IsConstantSize;
 
+    public readonly bool IsVoid;
+
     public readonly bool IsValidParameter;
 
     public readonly bool IsValidReturnType;
@@ -28,6 +30,7 @@ internal class TypeNode
             IsConstantSize = false;
             IsValidParameter = false;
             IsValidReturnType = false;
+            IsVoid = false;
         }
         else
         {
@@ -36,6 +39,7 @@ internal class TypeNode
             IsConstantSize = ConstantSizeExpression != null;
             IsValidParameter = serializationKind.GetIsValidParameterType();
             IsValidReturnType = serializationKind.GetIsValidReturnType();
+            IsVoid = serializationKind == SerializationKind.Void;
         }
     }
 }
