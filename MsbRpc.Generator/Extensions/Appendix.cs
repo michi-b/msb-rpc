@@ -3,7 +3,7 @@
 namespace MsbRpc.Generator.Extensions;
 
 [Flags]
-public enum BlockAdditions
+public enum Appendix
 {
     None = 0,
     Semicolon = 1 << 0,

@@ -2,7 +2,6 @@
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
@@ -12,30 +11,29 @@ namespace MsbRpc.Generator.CodeWriters;
 
 internal static class InboundRpcWriter
 {
-    public static async ValueTask WriteAsync(IndentedTextWriter writer, ProcedureCollection procedures)
+    public static void Write(IndentedTextWriter writer, ProcedureCollection procedures)
     {
         foreach (Procedure procedure in procedures)
         {
-            await writer.WriteLineAsync();
-            await WriteProcedureCallAsync(writer, procedure);
+            writer.WriteLine();
+            WriteProcedureCall(writer, procedure);
         }
     }
 
-    private static async ValueTask WriteProcedureCallAsync(IndentedTextWriter writer, Procedure procedure)
+    private static void WriteProcedureCall(IndentedTextWriter writer, Procedure procedure)
     {
         //header
-        await writer.WriteAsync($"private {Types.BufferWriter} {procedure.Names.Name}");
-        await writer.WriteLineAsync($"({Types.BufferReader} {Parameters.ArgumentsBufferReader})");
+        writer.Write($"private {Types.BufferWriter} {procedure.Names.Name}");
+        writer.WriteLine($"({Types.BufferReader} {Parameters.ArgumentsBufferReader})");
 
         //body
-        await writer.EnterBlockAsync();
+        using (writer.InBlock())
         {
-            await WriteProcedureCallBodyAsync(writer, procedure);
+            WriteProcedureCallBody(writer, procedure);
         }
-        await writer.ExitBlockAsync();
     }
 
-    private static async Task WriteProcedureCallBodyAsync(IndentedTextWriter writer, Procedure procedure)
+    private static void WriteProcedureCallBody(IndentedTextWriter writer, Procedure procedure)
     {
         ParameterCollection? parameters = procedure.Parameters;
 
@@ -47,7 +45,7 @@ internal static class InboundRpcWriter
                 string? bufferReadMethodName = parameter.Type.SerializationKind.GetBufferReadMethodName();
                 if (bufferReadMethodName != null)
                 {
-                    await WriteReadParameterAsync(writer, parameter, bufferReadMethodName);
+                    WriteReadParameter(writer, parameter, bufferReadMethodName);
                 }
                 else
                 {
@@ -56,30 +54,30 @@ internal static class InboundRpcWriter
             }
         }
 
-        await writer.WriteLineAsync();
+        writer.WriteLine();
 
         //invoke implementation
         const string procedureResultVariable = Variables.ProcedureResult;
         string invocationWithoutParameters = $"{procedure.ReturnType.Names.Name} {procedureResultVariable}"
-                                             + $" = {Fields.RpcImplementation}.{procedure.Names.Name}";
+                                             + $" = this.{Fields.RpcImplementation}.{procedure.Names.Name}";
         if (parameters != null)
         {
-            await writer.WriteAsync($"{invocationWithoutParameters}(");
-            await writer.WriteAsync(string.Join(", ", parameters.Select(p => p.Names.ReceivedArgument)));
-            await writer.WriteLineAsync(");");
+            writer.Write($"{invocationWithoutParameters}(");
+            writer.Write(string.Join(", ", parameters.Select(p => p.Names.ReceivedArgument)));
+            writer.WriteLine(");");
         }
         else
         {
-            await writer.WriteLineAsync($"{invocationWithoutParameters}();");
+            writer.WriteLine($"{invocationWithoutParameters}();");
         }
 
-        await writer.WriteLineAsync();
+        writer.WriteLine();
 
         const string resultSizeVariable = Variables.RpcResultSize;
         string? constantResultSizeExpression = procedure.ReturnType.ConstantSizeExpression;
         if (constantResultSizeExpression != null)
         {
-            await writer.WriteLineAsync($"const int {resultSizeVariable} = {constantResultSizeExpression};");
+            writer.WriteLine($"const int {resultSizeVariable} = {constantResultSizeExpression};");
         }
         else
         {
@@ -87,15 +85,15 @@ internal static class InboundRpcWriter
         }
 
         const string resultWriterVariable = Variables.RpcResultWriter;
-        await writer.WriteAsync($"{Types.BufferWriter} {resultWriterVariable} = ");
-        await writer.WriteLineAsync($"{Fields.RpcResolverEndPoint}.{Methods.EndPointGetResponseWriter}({resultSizeVariable});");
-        await writer.WriteLineAsync($"{resultWriterVariable}.{Methods.BufferWrite}({procedureResultVariable});");
-        await writer.WriteLineAsync($"return {resultWriterVariable};");
+        writer.Write($"{Types.BufferWriter} {resultWriterVariable} = ");
+        writer.WriteLine($"this.{Fields.RpcResolverEndPoint}.{Methods.EndPointGetResponseWriter}({resultSizeVariable});");
+        writer.WriteLine($"{resultWriterVariable}.{Methods.BufferWrite}({procedureResultVariable});");
+        writer.WriteLine($"return {resultWriterVariable};");
     }
 
-    private static async ValueTask WriteReadParameterAsync(TextWriter writer, Parameter parameter, string bufferReadMethodName)
+    private static void WriteReadParameter(TextWriter writer, Parameter parameter, string bufferReadMethodName)
     {
-        await writer.WriteAsync($"{parameter.Type.Names.Name} {parameter.Names.ReceivedArgument} ");
-        await writer.WriteLineAsync($"= {Parameters.ArgumentsBufferReader}.{bufferReadMethodName}();");
+        writer.Write($"{parameter.Type.Names.Name} {parameter.Names.ReceivedArgument} ");
+        writer.WriteLine($"= {Parameters.ArgumentsBufferReader}.{bufferReadMethodName}();");
     }
 }

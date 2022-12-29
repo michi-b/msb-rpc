@@ -9,11 +9,11 @@ internal class TypeNode
 
     public readonly bool IsConstantSize;
 
-    public readonly bool IsVoid;
-
     public readonly bool IsValidParameter;
 
     public readonly bool IsValidReturnType;
+
+    public readonly bool IsVoid;
 
     public readonly TypeNames Names;
 

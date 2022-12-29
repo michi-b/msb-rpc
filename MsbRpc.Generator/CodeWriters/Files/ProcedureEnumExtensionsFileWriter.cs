@@ -1,6 +1,5 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using System.Threading.Tasks;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.IndependentNames;
@@ -21,55 +20,51 @@ internal class ProcedureEnumExtensionsFileWriter : CodeFileWriter
     {
         _procedures = procedures;
         _className = $"{_procedures.Names.EnumType}{ExtensionsPostFix}";
-        FileName = $"{GeneratedNamespace}.{_className}{GeneratedFilePostfix}";
+        FileName = $"{_className}{GeneratedFilePostfix}";
         _procedureParameterOutOfRangeLine = GetArgumentOutOfRangeExceptionSwitchExpressionCase(Parameters.Procedure);
         _returnProcedureSwitchExpressionLine = $"return {Parameters.Procedure} switch";
     }
 
-    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
+    protected override void Write(IndentedTextWriter writer)
     {
-        await writer.WriteLineAsync($"public static class {_className}");
-        await writer.EnterBlockAsync();
+        writer.WriteLine($"public static class {_className}");
+        using (writer.InBlock(Appendix.None))
         {
-            await WriteGetNameExtensionAsync(writer);
+            WriteGetNameExtension(writer);
 
-            await writer.WriteLineAsync();
+            writer.WriteLine();
 
-            await WriteGetInvertsDirectionExtensionAsync(writer);
+            WriteGetInvertsDirectionExtension(writer);
         }
-        await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
-    private async ValueTask WriteGetNameExtensionAsync(IndentedTextWriter writer)
+    private void WriteGetNameExtension(IndentedTextWriter writer)
     {
         string GetCaseCode(Procedure procedure) => $"nameof({procedure.Names.EnumValue})";
-        await WriteExtensionAsync(writer, "string", Methods.GetNameProcedureEnumExtension, GetCaseCode);
+        WriteExtension(writer, "string", Methods.GetNameProcedureEnumExtension, GetCaseCode);
     }
 
-    private async ValueTask WriteGetInvertsDirectionExtensionAsync(IndentedTextWriter writer)
+    private void WriteGetInvertsDirectionExtension(IndentedTextWriter writer)
     {
         string GetCaseCode(Procedure procedure) => procedure.InvertsDirection ? "true" : "false";
-        await WriteExtensionAsync(writer, "bool", Methods.GetInvertsDirectionProcedureExtension, GetCaseCode);
+        WriteExtension(writer, "bool", Methods.GetInvertsDirectionProcedureExtension, GetCaseCode);
     }
 
-    private async ValueTask WriteExtensionAsync
-        (IndentedTextWriter writer, string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression)
+    private void WriteExtension(IndentedTextWriter writer, string returnType, string extensionMethodName, Func<Procedure, string> getCaseExpression)
     {
-        await writer.WriteLineAsync($"public static {returnType} {extensionMethodName}(this {_procedures.Names.EnumType} {Parameters.Procedure})");
-        await writer.EnterBlockAsync();
+        writer.WriteLine($"public static {returnType} {extensionMethodName}(this {_procedures.Names.EnumType} {Parameters.Procedure})");
+        using (writer.InBlock())
         {
-            await writer.WriteLineAsync(_returnProcedureSwitchExpressionLine);
-            await writer.EnterBlockAsync();
+            writer.WriteLine(_returnProcedureSwitchExpressionLine);
+            using (writer.InBlock(Appendix.SemicolonAndNewline))
             {
                 foreach (Procedure procedure in _procedures)
                 {
-                    await writer.WriteLineAsync($"{procedure.Names.EnumValue} => {getCaseExpression(procedure)},");
+                    writer.WriteLine($"{procedure.Names.EnumValue} => {getCaseExpression(procedure)},");
                 }
 
-                await writer.WriteLineAsync(_procedureParameterOutOfRangeLine);
+                writer.WriteLine(_procedureParameterOutOfRangeLine);
             }
-            await writer.ExitBlockAsync(BlockAdditions.SemicolonAndNewline);
         }
-        await writer.ExitBlockAsync();
     }
 }

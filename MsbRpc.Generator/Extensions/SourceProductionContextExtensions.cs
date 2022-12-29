@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.CodeWriters.Files;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.DiagnosticDescriptors;
@@ -54,5 +55,11 @@ internal static class SourceProductionContextExtensions
                 exception.Message
             )
         );
+    }
+
+    public static void GenerateFile(this SourceProductionContext context, CodeFileWriter writer)
+    {
+        CodeFileWriter.Result result = writer.Generate();
+        context.AddSource(result.FileName, result.Code);
     }
 }

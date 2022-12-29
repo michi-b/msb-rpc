@@ -1,6 +1,5 @@
 ﻿using System.CodeDom.Compiler;
 using System.IO;
-using System.Threading.Tasks;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 
@@ -16,52 +15,51 @@ internal class InterfaceFileWriter : CodeFileWriter
     {
         _procedures = procedures;
         _interfaceName = endPoint.Names.ImplementationInterface;
-        FileName = $"{GeneratedNamespace}.{_interfaceName}{IndependentNames.GeneratedFilePostfix}";
+        FileName = $"{_interfaceName}{IndependentNames.GeneratedFilePostfix}";
     }
 
-    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
+    protected override void Write(IndentedTextWriter writer)
     {
-        await writer.WriteLineAsync($"public interface {_interfaceName}");
-        await writer.EnterBlockAsync();
+        writer.WriteLine($"public interface {_interfaceName}");
+        using (writer.InBlock(Appendix.None))
         {
             int lastIndex = _procedures.LastIndex;
 
             for (int i = 0; i < lastIndex; i++)
             {
-                await WriteInterfaceMethodAsync(writer, _procedures[i]);
+                WriteInterfaceMethod(writer, _procedures[i]);
             }
 
-            await WriteInterfaceMethodAsync(writer, _procedures[lastIndex]);
+            WriteInterfaceMethod(writer, _procedures[lastIndex]);
         }
-        await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
-    private static async ValueTask WriteInterfaceMethodAsync(TextWriter writer, Procedure procedure)
+    private static void WriteInterfaceMethod(TextWriter writer, Procedure procedure)
     {
-        await writer.WriteAsync(procedure.ReturnType.Names.Name);
-        await writer.WriteAsync(' ');
-        await writer.WriteAsync(procedure.Names.Name);
-        await writer.WriteAsync('(');
+        writer.Write(procedure.ReturnType.Names.Name);
+        writer.Write(' ');
+        writer.Write(procedure.Names.Name);
+        writer.Write('(');
         {
             ParameterCollection? parameters = procedure.Parameters;
             if (parameters != null)
             {
                 for (int i = 0; i < parameters.LastIndex; i++)
                 {
-                    await WriteInterfaceMethodParameterAsync(writer, parameters[i]);
-                    await writer.WriteAsync(", ");
+                    WriteInterfaceMethodParameter(writer, parameters[i]);
+                    writer.Write(", ");
                 }
 
-                await WriteInterfaceMethodParameterAsync(writer, parameters[parameters.LastIndex]);
+                WriteInterfaceMethodParameter(writer, parameters[parameters.LastIndex]);
             }
         }
-        await writer.WriteLineAsync(");");
+        writer.WriteLine(");");
     }
 
-    private static async ValueTask WriteInterfaceMethodParameterAsync(TextWriter writer, Parameter parameter)
+    private static void WriteInterfaceMethodParameter(TextWriter writer, Parameter parameter)
     {
-        await writer.WriteAsync(parameter.Type.Names.Name);
-        await writer.WriteAsync(' ');
-        await writer.WriteAsync(parameter.Names.Name);
+        writer.Write(parameter.Type.Names.Name);
+        writer.Write(' ');
+        writer.Write(parameter.Names.Name);
     }
 }

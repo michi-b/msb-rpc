@@ -1,5 +1,4 @@
 ﻿using System.CodeDom.Compiler;
-using System.Threading.Tasks;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.IndependentNames;
@@ -16,23 +15,22 @@ internal class ProcedureEnumFileWriter : CodeFileWriter
         : base(contract)
     {
         Procedures = procedures;
-        FileName = $"{GeneratedNamespace}.{Procedures.Names.EnumType}{GeneratedFilePostfix}";
+        FileName = $"{Procedures.Names.EnumType}{GeneratedFilePostfix}";
     }
 
-    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
+    protected override void Write(IndentedTextWriter writer)
     {
         string GetEnumMemberDefinition(int i) => $"{Procedures[i].Names.Name} = {Procedures[i].EnumValueString}";
 
-        await writer.WriteLineAsync($"public enum {Procedures.Names.EnumType}");
-        await writer.EnterBlockAsync();
+        writer.WriteLine($"public enum {Procedures.Names.EnumType}");
+        using (writer.InBlock(Appendix.None))
         {
             for (int i = 0; i < Procedures.LastIndex; i++)
             {
-                await writer.WriteLineAsync($"{GetEnumMemberDefinition(i)},");
+                writer.WriteLine($"{GetEnumMemberDefinition(i)},");
             }
 
-            await writer.WriteLineAsync(GetEnumMemberDefinition(Procedures.LastIndex));
+            writer.WriteLine(GetEnumMemberDefinition(Procedures.LastIndex));
         }
-        await writer.ExitBlockAsync(BlockAdditions.None);
     }
 }

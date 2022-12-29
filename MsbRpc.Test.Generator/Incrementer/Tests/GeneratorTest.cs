@@ -53,14 +53,14 @@ public interface IIncrementer
     [TestMethod]
     public async Task GeneratorHasOneResult()
     {
-        CodeTestResult result = await RunCodeTest(CodeTest.LoggingOptions.All);
+        CodeTestResult result = await RunCodeTest(loggingOptions: CodeTest.LoggingOptions.All);
         Assert.AreEqual(1, result.GeneratorResults.Count);
     }
 
     [TestMethod]
     public async Task GeneratorThrowsNoException()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(CodeTest.LoggingOptions.None);
+        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(loggingOptions: CodeTest.LoggingOptions.None);
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         Assert.AreEqual(null, rpcGeneratorResult.Exception);
     }
@@ -68,14 +68,22 @@ public interface IIncrementer
     [TestMethod]
     public async Task GeneratorReportsNoDiagnostics()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator();
+        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(loggingOptions: CodeTest.LoggingOptions.GeneratorDiagnostics);
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         ImmutableArray<Diagnostic> diagnostics = rpcGeneratorResult.Diagnostics;
         Assert.AreEqual(0, diagnostics.Length);
     }
 
     [TestMethod]
-    public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator(CodeTest.LoggingOptions.Code));
+    public async Task FinalCompilationReportsNoDiagnostics()
+    {
+        CodeTestResult result = await RunCodeTest(loggingOptions: CodeTest.LoggingOptions.FinalDiagnostics);
+        ImmutableArray<Diagnostic> diagnostics = result.Compilation.GetDiagnostics();
+        Assert.AreEqual(0, diagnostics.Length);
+    }
+
+    [TestMethod]
+    public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator(loggingOptions: CodeTest.LoggingOptions.Code));
 
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
@@ -109,16 +117,33 @@ public interface IIncrementer
 
     private async Task TestGenerates(string shortFileName)
     {
-        GeneratorDriverRunResult result = await RunGenerator();
+        bool IsTargetDiagnostic
+            (Diagnostic diagnostic)
+            => diagnostic.Location.SourceTree == null || diagnostic.Location.SourceTree.GetShortFilename() == shortFileName;
+
+        GeneratorDriverRunResult result = await RunGenerator(IsTargetDiagnostic);
         SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
         Assert.IsNotNull(tree);
         await Logger.LogTreeAsync(tree, nameof(GeneratesServerProcedureEnum), CancellationToken);
         Logger.LogInformation("Full file path is '{TreeFilePath}'", tree.FilePath);
     }
 
-    private async Task<GeneratorDriverRunResult> RunGenerator(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics)
-        => (await RunCodeTest(loggingOptions)).GeneratorResults[typeof(ContractGenerator)].GetRunResult();
+    private async Task<GeneratorDriverRunResult> RunGenerator
+    (
+        Predicate<Diagnostic>? diagnosticFilter = null,
+        CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics
+    )
+        => (await RunCodeTest(diagnosticFilter, loggingOptions)).GeneratorResults[typeof(ContractGenerator)].GetRunResult();
 
-    private async Task<CodeTestResult> RunCodeTest(CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics)
-        => (await CodeTest.Run(CancellationToken, LoggerFactory, loggingOptions)).Result;
+    private async Task<CodeTestResult> RunCodeTest
+    (
+        Predicate<Diagnostic>? diagnosticFilter = null,
+        CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.None
+    )
+    {
+        CodeTest codeTest = diagnosticFilter != null
+            ? CodeTest.Configure(configuration => configuration.WithAdditionalDiagnosticFilters(diagnosticFilter))
+            : CodeTest;
+        return (await codeTest.Run(CancellationToken, LoggerFactory, loggingOptions)).Result;
+    }
 }

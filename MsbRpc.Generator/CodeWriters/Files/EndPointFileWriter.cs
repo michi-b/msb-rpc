@@ -1,5 +1,4 @@
 ﻿using System.CodeDom.Compiler;
-using System.Threading.Tasks;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.GenerationTree.Names;
@@ -42,93 +41,90 @@ internal class EndPointFileWriter : CodeFileWriter
             : Types.UndefinedProcedureEnum;
 
         _className = $"{endPoint.Names.PascalCaseName}EndPoint";
-        FileName = $"{GeneratedNamespace}.{_className}{GeneratedFilePostfix}";
+        FileName = $"{_className}{GeneratedFilePostfix}";
     }
 
-    protected override async ValueTask WriteAsync(IndentedTextWriter writer)
+    protected override void Write(IndentedTextWriter writer)
     {
         //header
-        await writer.WriteAsync($"public class {_className} : {Types.EndPoint}");
-        await writer.WriteLineAsync($"<{_inboundProceduresEnumTypeName}, {_outboundProceduresEnumTypeName}>");
+        writer.Write($"public class {_className} : {Types.EndPoint}");
+        writer.WriteLine($"<{_inboundProceduresEnumTypeName}, {_outboundProceduresEnumTypeName}>");
 
         //body
-        await writer.EnterBlockAsync();
+        using (writer.InBlock())
         {
-            await WriteConstructorAsync(writer);
+            WriteConstructor(writer);
 
             if (_outboundProcedures != null)
             {
-                await OutboundRpcWriter.WriteAsync(writer, _outboundProcedures);
+                OutboundRpcWriter.Write(writer, _outboundProcedures);
             }
 
             if (_inboundProcedures != null)
             {
-                await WriteProcedureEnumUtilityOverrides(writer, _inboundProceduresEnumTypeName);
+                WriteProcedureEnumUtilityOverrides(writer, _inboundProceduresEnumTypeName);
             }
 
             if (_outboundProcedures != null)
             {
-                await WriteProcedureEnumUtilityOverrides(writer, _outboundProceduresEnumTypeName);
+                WriteProcedureEnumUtilityOverrides(writer, _outboundProceduresEnumTypeName);
             }
 
             //write inbound procedures
             if (_inboundProcedures != null)
             {
-                await WriteRpcReceivingAsync(writer, _inboundProcedures);
+                WriteRpcReceiving(writer, _inboundProcedures);
             }
         }
-        await writer.ExitBlockAsync(BlockAdditions.None);
     }
 
-    private async Task WriteProcedureEnumUtilityOverrides(IndentedTextWriter writer, string enumTypeName)
+    private void WriteProcedureEnumUtilityOverrides(IndentedTextWriter writer, string enumTypeName)
     {
-        await writer.WriteLineAsync();
-        await writer.WriteAsync($"protected override string {Methods.EndpointGetProcedureName}({enumTypeName} {Parameters.Procedure})");
-        await writer.WriteLineAsync($" => {Parameters.Procedure}.{Methods.GetNameProcedureEnumExtension}();");
-        await writer.WriteLineAsync();
-        await writer.WriteAsync($"protected override bool {Methods.EndPointGetProcedureInvertsDirection}({enumTypeName} {Parameters.Procedure})");
-        await writer.WriteLineAsync($" => {Parameters.Procedure}.{Methods.GetInvertsDirectionProcedureExtension}();");
+        writer.WriteLine();
+        writer.Write($"protected override string {Methods.EndpointGetProcedureName}({enumTypeName} {Parameters.Procedure})");
+        writer.WriteLine($" => {Parameters.Procedure}.{Methods.GetNameProcedureEnumExtension}();");
+        writer.WriteLine();
+        writer.Write($"protected override bool {Methods.EndPointGetProcedureInvertsDirection}({enumTypeName} {Parameters.Procedure})");
+        writer.WriteLine($" => {Parameters.Procedure}.{Methods.GetInvertsDirectionProcedureExtension}();");
     }
 
-    private async ValueTask WriteConstructorAsync(IndentedTextWriter writer)
+    private void WriteConstructor(IndentedTextWriter writer)
     {
         //header
-        await writer.WriteLineAsync($"public {_className}");
-        await writer.EnterParenthesesBlockAsync();
+        writer.WriteLine($"public {_className}");
+        using (writer.InParenthesesBlock())
         {
-            await writer.WriteLineAsync($"{Types.Messenger} {Parameters.Messenger},");
-            await writer.WriteLineAsync($"{Types.LoggerFactoryInterface}? {Parameters.LoggerFactory} = null,");
-            await writer.WriteLineAsync($"int {Parameters.InitialBufferSize} = {EndPointNames.DefaultBufferSizeConstant}");
+            writer.WriteLine($"{Types.Messenger} {Parameters.Messenger},");
+            writer.WriteLine($"{Types.LoggerFactoryInterface}? {Parameters.LoggerFactory} = null,");
+            writer.WriteLine($"int {Parameters.InitialBufferSize} = {EndPointNames.DefaultBufferSizeConstant}");
         }
-        await writer.ExitParenthesesBlockAsync(BlockAdditions.None);
 
         //base constructor call
         writer.Indent++;
         {
-            await writer.WriteLineAsync(" : base");
-            await writer.EnterParenthesesBlockAsync();
+            writer.WriteLine(" : base");
+            using (writer.InParenthesesBlock(Appendix.None))
             {
-                await writer.WriteLineAsync($"{Parameters.Messenger},");
-                await writer.WriteLineAsync($"{_endPoint.InitialDirectionEnumValue},");
-                await writer.WriteLineAsync($"{Parameters.LoggerFactory} != null");
+                writer.WriteLine($"{Parameters.Messenger},");
+                writer.WriteLine($"{_endPoint.InitialDirectionEnumValue},");
+                writer.WriteLine($"{Parameters.LoggerFactory} != null");
                 writer.Indent++;
                 {
-                    await writer.WriteLineAsync($"? {Methods.CreateLogger}<{_className}>({Parameters.LoggerFactory})");
-                    await writer.WriteLineAsync($": new {Types.NullLogger}<{_className}>(),");
+                    writer.WriteLine($"? {Methods.CreateLogger}<{_className}>({Parameters.LoggerFactory})");
+                    writer.WriteLine($": new {Types.NullLogger}<{_className}>(),");
                 }
                 writer.Indent--;
-                await writer.WriteLineAsync($"{Parameters.InitialBufferSize}");
+                writer.WriteLine($"{Parameters.InitialBufferSize}");
             }
 
-            await writer.ExitParenthesesBlockAsync(BlockAdditions.None);
-            await writer.WriteLineAsync(" { }");
+            writer.WriteLine(" { }");
         }
         writer.Indent--;
     }
 
-    private async Task WriteRpcReceivingAsync(IndentedTextWriter writer, ProcedureCollection procedures)
+    private void WriteRpcReceiving(IndentedTextWriter writer, ProcedureCollection procedures)
     {
-        await writer.WriteLineAsync();
+        writer.WriteLine();
 
         const string implementation = Parameters.EndPointImplementation;
         const string listen = Methods.EndPointListen;
@@ -145,58 +141,55 @@ internal class EndPointFileWriter : CodeFileWriter
         string resolverInterface = $"{Types.RpcResolverInterface}<{procedureType}>";
 
         //listen override
-        await writer.WriteAsync($"public {listenReturnCode} {listen}({implementationParameterDeclaration})");
-        await writer.WriteLineAsync($" => base.{listen}({createResolver}({implementation}));");
-        await writer.WriteLineAsync();
+        writer.Write($"public {listenReturnCode} {listen}({implementationParameterDeclaration})");
+        writer.WriteLine($" => base.{listen}({createResolver}({implementation}));");
+        writer.WriteLine();
 
         //create resolver
-        await writer.WriteAsync($"public {resolver} {createResolver}({implementationParameterDeclaration})");
-        await writer.WriteLineAsync($" => new {resolver}(this, {implementation});");
-        await writer.WriteLineAsync();
+        writer.Write($"public {resolver} {createResolver}({implementationParameterDeclaration})");
+        writer.WriteLine($" => new {resolver}(this, {implementation});");
+        writer.WriteLine();
 
         //resolver class
-        await writer.WriteLineAsync($"public class {resolver} : {resolverInterface}");
-        await writer.EnterBlockAsync();
+        writer.WriteLine($"public class {resolver} : {resolverInterface}");
+        using (writer.InBlock())
         {
             //fields
-            await writer.WriteLineAsync($"private readonly {_className} {Fields.RpcResolverEndPoint};");
-            await writer.WriteLineAsync($"private readonly {implementationInterface} {Fields.RpcImplementation};");
-            await writer.WriteLineAsync();
+            writer.WriteLine($"private readonly {_className} {Fields.RpcResolverEndPoint};");
+            writer.WriteLine($"private readonly {implementationInterface} {Fields.RpcImplementation};");
+            writer.WriteLine();
 
             //constructor
-            await writer.WriteLineAsync($"public {resolver}({_className} {Parameters.RpcEndPoint}, {implementationParameterDeclaration})");
-            await writer.EnterBlockAsync();
+            writer.WriteLine($"public {resolver}({_className} {Parameters.RpcEndPoint}, {implementationParameterDeclaration})");
+            using (writer.InBlock())
             {
-                await writer.WriteLineAsync($"{Fields.RpcResolverEndPoint} = {Parameters.RpcEndPoint};");
-                await writer.WriteLineAsync($"{Fields.RpcImplementation} = {implementation};");
+                writer.WriteLine($"this.{Fields.RpcResolverEndPoint} = {Parameters.RpcEndPoint};");
+                writer.WriteLine($"this.{Fields.RpcImplementation} = {implementation};");
             }
-            await writer.ExitBlockAsync();
-            await writer.WriteLineAsync();
+
+            writer.WriteLine();
 
             //execute header
-            await writer.WriteAsync($"{Types.BufferWriter} {resolverInterface}.{Methods.RpcResolverExecute}");
-            await writer.WriteLineAsync($"({procedureType} {procedure}, {Types.BufferReader} {arguments})");
+            writer.Write($"{Types.BufferWriter} {resolverInterface}.{Methods.RpcResolverExecute}");
+            writer.WriteLine($"({procedureType} {procedure}, {Types.BufferReader} {arguments})");
             //execute body
-            await writer.EnterBlockAsync();
+            using (writer.InBlock())
             {
-                await writer.WriteLineAsync($"return {procedure} switch");
-                await writer.EnterBlockAsync();
+                writer.WriteLine($"return {procedure} switch");
+                using (writer.InBlock(Appendix.SemicolonAndNewline))
                 {
                     foreach (Procedure currentProcedure in procedures)
                     {
                         string switchCase =
-                            $"{currentProcedure.Names.EnumValue} => {currentProcedure.Names.Name}({Parameters.ArgumentsBufferReader}),";
-                        await writer.WriteLineAsync(switchCase);
+                            $"{currentProcedure.Names.EnumValue} => this.{currentProcedure.Names.Name}({Parameters.ArgumentsBufferReader}),";
+                        writer.WriteLine(switchCase);
                     }
 
-                    await writer.WriteLineAsync($"_ => throw new {Types.ArgumentOutOfRangeException}(nameof({procedure}), {procedure}, null)");
+                    writer.WriteLine($"_ => throw new {Types.ArgumentOutOfRangeException}(nameof({procedure}), {procedure}, null)");
                 }
-                await writer.ExitBlockAsync(BlockAdditions.SemicolonAndNewline);
             }
-            await writer.ExitBlockAsync();
 
-            await InboundRpcWriter.WriteAsync(writer, procedures);
+            InboundRpcWriter.Write(writer, procedures);
         }
-        await writer.ExitBlockAsync();
     }
 }

@@ -1,6 +1,5 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Threading.Tasks;
+﻿using System.CodeDom.Compiler;
+using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Extensions;
 
@@ -8,61 +7,8 @@ public static class IndentedTextWriterExtensions
 {
     public static string GetResult(this IndentedTextWriter writer) => writer.InnerWriter.ToString();
 
-    public static async ValueTask EnterBlockAsync(this IndentedTextWriter writer)
-    {
-        await writer.WriteLineAsync("{");
-        writer.Indent++;
-    }
+    public static ParenthesesBlockScope InParenthesesBlock(this IndentedTextWriter writer, Appendix additions = Appendix.NewLine)
+        => new(writer, additions);
 
-    public static async ValueTask ExitBlockAsync(this IndentedTextWriter writer, BlockAdditions additions = BlockAdditions.NewLine)
-    {
-        writer.Indent--;
-
-        switch (additions)
-        {
-            case BlockAdditions.None:
-                await writer.WriteAsync("}");
-                break;
-            case BlockAdditions.Semicolon:
-                await writer.WriteAsync("};");
-                break;
-            case BlockAdditions.NewLine:
-                await writer.WriteLineAsync("}");
-                break;
-            case BlockAdditions.SemicolonAndNewline:
-                await writer.WriteLineAsync("};");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(additions), additions, null);
-        }
-    }
-
-    public static async ValueTask EnterParenthesesBlockAsync(this IndentedTextWriter writer)
-    {
-        await writer.WriteLineAsync("(");
-        writer.Indent++;
-    }
-
-    public static async ValueTask ExitParenthesesBlockAsync(this IndentedTextWriter writer, BlockAdditions additions = BlockAdditions.NewLine)
-    {
-        writer.Indent--;
-
-        switch (additions)
-        {
-            case BlockAdditions.None:
-                await writer.WriteAsync(")");
-                break;
-            case BlockAdditions.Semicolon:
-                await writer.WriteAsync(");");
-                break;
-            case BlockAdditions.NewLine:
-                await writer.WriteLineAsync(")");
-                break;
-            case BlockAdditions.SemicolonAndNewline:
-                await writer.WriteLineAsync(");");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(additions), additions, null);
-        }
-    }
+    public static BlockScope InBlock(this IndentedTextWriter writer, Appendix additions = Appendix.NewLine) => new(writer, additions);
 }
