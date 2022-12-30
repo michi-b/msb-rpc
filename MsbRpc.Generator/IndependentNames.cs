@@ -28,6 +28,8 @@ internal static class IndependentNames
         public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
         public const string LocalEndPointResolver = "Resolver";
         public const string RpcResolverInterface = "MsbRpc.EndPoints.IRpcResolver";
+        public const string ByteArraySegment = "System.ArraySegment<byte>";
+        public const string BufferUtility = "MsbRpc.Serialization.Buffers.BufferUtility";
     }
 
     public static class Methods
@@ -73,6 +75,8 @@ internal static class IndependentNames
     {
         public const string RpcResolverEndPoint = "_endPoint";
         public const string RpcImplementation = "_implementation";
+        public const string BufferEmpty = "Empty";
+        public const string BufferWriterBuffer = "Buffer";
     }
 
     public static class EnumValues

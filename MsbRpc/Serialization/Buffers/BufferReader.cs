@@ -7,13 +7,13 @@ namespace MsbRpc.Serialization.Buffers;
 
 public struct BufferReader
 {
-    private readonly ArraySegment<byte> _segment;
+    private readonly ArraySegment<byte> _buffer;
     private int _position;
 
-    public BufferReader(ArraySegment<byte> segment)
+    public BufferReader(ArraySegment<byte> buffer)
     {
         _position = 0;
-        _segment = segment;
+        _buffer = buffer;
     }
 
     private int PostIncrementPosition(int increment)
@@ -24,41 +24,41 @@ public struct BufferReader
     }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public byte ReadByte() => _segment.ReadByte(PostIncrementPosition(ByteSize));
+    public byte ReadByte() => _buffer.ReadByte(PostIncrementPosition(ByteSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public sbyte ReadSbyte() => _segment.ReadSbyte(PostIncrementPosition(SbyteSize));
+    public sbyte ReadSbyte() => _buffer.ReadSbyte(PostIncrementPosition(SbyteSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public bool ReadBool() => _segment.ReadBool(PostIncrementPosition(BoolSize));
+    public bool ReadBool() => _buffer.ReadBool(PostIncrementPosition(BoolSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public char ReadChar() => _segment.ReadChar(PostIncrementPosition(CharSize));
+    public char ReadChar() => _buffer.ReadChar(PostIncrementPosition(CharSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public int ReadInt() => _segment.ReadInt(PostIncrementPosition(IntSize));
+    public int ReadInt() => _buffer.ReadInt(PostIncrementPosition(IntSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public long ReadLong() => _segment.ReadLong(PostIncrementPosition(LongSize));
+    public long ReadLong() => _buffer.ReadLong(PostIncrementPosition(LongSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public short ReadShort() => _segment.ReadShort(PostIncrementPosition(ShortSize));
+    public short ReadShort() => _buffer.ReadShort(PostIncrementPosition(ShortSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public uint ReadUint() => _segment.ReadUint(PostIncrementPosition(UintSize));
+    public uint ReadUint() => _buffer.ReadUint(PostIncrementPosition(UintSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public ulong ReadUlong() => _segment.ReadUlong(PostIncrementPosition(UlongSize));
+    public ulong ReadUlong() => _buffer.ReadUlong(PostIncrementPosition(UlongSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public ushort ReadUshort() => _segment.ReadUshort(PostIncrementPosition(UshortSize));
+    public ushort ReadUshort() => _buffer.ReadUshort(PostIncrementPosition(UshortSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public float ReadFloat() => _segment.ReadFloat(PostIncrementPosition(FloatSize));
+    public float ReadFloat() => _buffer.ReadFloat(PostIncrementPosition(FloatSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public double ReadDouble() => _segment.ReadDouble(PostIncrementPosition(DoubleSize));
+    public double ReadDouble() => _buffer.ReadDouble(PostIncrementPosition(DoubleSize));
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public decimal ReadDecimal() => _segment.ReadDecimal(PostIncrementPosition(DecimalSize));
+    public decimal ReadDecimal() => _buffer.ReadDecimal(PostIncrementPosition(DecimalSize));
 }

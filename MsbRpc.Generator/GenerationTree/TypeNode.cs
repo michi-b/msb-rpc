@@ -42,4 +42,6 @@ internal class TypeNode
             IsVoid = serializationKind == SerializationKind.Void;
         }
     }
+
+    public override string ToString() => $"{Names.FullName} ({SerializationKind.GetName()})";
 }

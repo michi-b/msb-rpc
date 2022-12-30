@@ -18,6 +18,9 @@ public class GeneratorTest : Test
 public interface IIncrementer
 {
     int Increment(int value);
+    public void Store(int value);
+    public void IncrementStored();
+    public int GetStored();
 }";
 
     private static readonly CodeTest CodeTest = new CodeTest

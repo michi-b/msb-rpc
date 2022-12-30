@@ -9,9 +9,12 @@ public struct BufferWriter
 {
     private int _position;
 
-    public BufferWriter(ArraySegment<byte> segment, int position = 0)
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    public readonly ArraySegment<byte> Buffer;
+
+    public BufferWriter(ArraySegment<byte> buffer, int position = 0)
     {
-        Buffer = segment;
+        Buffer = buffer;
         _position = position;
     }
 
@@ -21,9 +24,6 @@ public struct BufferWriter
         _position += increment;
         return position;
     }
-
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public ArraySegment<byte> Buffer { get; }
 
     [PublicAPI(Messages.ForUseInGeneratedCode)]
     public void Write(byte value)

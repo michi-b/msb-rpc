@@ -1,4 +1,5 @@
 ﻿using System.CodeDom.Compiler;
+using System.IO;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.GenerationTree.Names;
@@ -57,7 +58,7 @@ internal class EndPointFileWriter : CodeFileWriter
 
             if (_outboundProcedures != null)
             {
-                OutboundRpcWriter.Write(writer, _outboundProcedures);
+                RpcInvocationWriter.Write(writer, _outboundProcedures);
             }
 
             if (_inboundProcedures != null)
@@ -73,12 +74,12 @@ internal class EndPointFileWriter : CodeFileWriter
             //write inbound procedures
             if (_inboundProcedures != null)
             {
-                WriteRpcReceiving(writer, _inboundProcedures);
+                RpcResolverWriter.Write(writer, _inboundProcedures, _endPoint, _className);
             }
         }
     }
 
-    private void WriteProcedureEnumUtilityOverrides(IndentedTextWriter writer, string enumTypeName)
+    private static void WriteProcedureEnumUtilityOverrides(TextWriter writer, string enumTypeName)
     {
         writer.WriteLine();
         writer.Write($"protected override string {Methods.EndpointGetProcedureName}({enumTypeName} {Parameters.Procedure})");
@@ -120,76 +121,5 @@ internal class EndPointFileWriter : CodeFileWriter
             writer.WriteLine(" { }");
         }
         writer.Indent--;
-    }
-
-    private void WriteRpcReceiving(IndentedTextWriter writer, ProcedureCollection procedures)
-    {
-        writer.WriteLine();
-
-        const string implementation = Parameters.EndPointImplementation;
-        const string listen = Methods.EndPointListen;
-        const string listenReturnCode = Types.MessengerListenReturnCode;
-        const string createResolver = Methods.EndPointCreateResolver;
-        const string resolver = Types.LocalEndPointResolver;
-        const string procedure = Parameters.Procedure;
-        const string arguments = Parameters.ArgumentsBufferReader;
-
-        string procedureType = procedures.Names.EnumType;
-        string implementationInterface = _endPoint.Names.ImplementationInterface;
-
-        string implementationParameterDeclaration = $"{implementationInterface} {implementation}";
-        string resolverInterface = $"{Types.RpcResolverInterface}<{procedureType}>";
-
-        //listen override
-        writer.Write($"public {listenReturnCode} {listen}({implementationParameterDeclaration})");
-        writer.WriteLine($" => base.{listen}({createResolver}({implementation}));");
-        writer.WriteLine();
-
-        //create resolver
-        writer.Write($"public {resolver} {createResolver}({implementationParameterDeclaration})");
-        writer.WriteLine($" => new {resolver}(this, {implementation});");
-        writer.WriteLine();
-
-        //resolver class
-        writer.WriteLine($"public class {resolver} : {resolverInterface}");
-        using (writer.InBlock())
-        {
-            //fields
-            writer.WriteLine($"private readonly {_className} {Fields.RpcResolverEndPoint};");
-            writer.WriteLine($"private readonly {implementationInterface} {Fields.RpcImplementation};");
-            writer.WriteLine();
-
-            //constructor
-            writer.WriteLine($"public {resolver}({_className} {Parameters.RpcEndPoint}, {implementationParameterDeclaration})");
-            using (writer.InBlock())
-            {
-                writer.WriteLine($"this.{Fields.RpcResolverEndPoint} = {Parameters.RpcEndPoint};");
-                writer.WriteLine($"this.{Fields.RpcImplementation} = {implementation};");
-            }
-
-            writer.WriteLine();
-
-            //execute header
-            writer.Write($"{Types.BufferWriter} {resolverInterface}.{Methods.RpcResolverExecute}");
-            writer.WriteLine($"({procedureType} {procedure}, {Types.BufferReader} {arguments})");
-            //execute body
-            using (writer.InBlock())
-            {
-                writer.WriteLine($"return {procedure} switch");
-                using (writer.InBlock(Appendix.SemicolonAndNewline))
-                {
-                    foreach (Procedure currentProcedure in procedures)
-                    {
-                        string switchCase =
-                            $"{currentProcedure.Names.EnumValue} => this.{currentProcedure.Names.Name}({Parameters.ArgumentsBufferReader}),";
-                        writer.WriteLine(switchCase);
-                    }
-
-                    writer.WriteLine($"_ => throw new {Types.ArgumentOutOfRangeException}(nameof({procedure}), {procedure}, null)");
-                }
-            }
-
-            InboundRpcWriter.Write(writer, procedures);
-        }
     }
 }

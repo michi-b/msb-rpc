@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace MsbRpc.Test.Integration.Nuget.Incrementer.Tests;
+namespace MsbRpc.Test.Integration;
 
 public class Test
 {

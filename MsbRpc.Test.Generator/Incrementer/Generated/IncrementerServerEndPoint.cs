@@ -1,5 +1,6 @@
 ﻿using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.Test.Generator.Incrementer.Generated;
 
@@ -39,16 +40,32 @@ public class IncrementerServerEndPoint : EndPoints.RpcEndPoint<IncrementerServer
             _implementation = implementation;
         }
 
-        BufferWriter EndPoints.IRpcResolver<IncrementerServerProcedure>.Execute(IncrementerServerProcedure procedure, BufferReader arguments)
+        ArraySegment<byte> EndPoints.IRpcResolver<IncrementerServerProcedure>.Execute(IncrementerServerProcedure procedure, BufferReader arguments)
         {
             return procedure switch
             {
                 IncrementerServerProcedure.Increment => Increment(arguments),
+                IncrementerServerProcedure.Store => Store(arguments),
+                IncrementerServerProcedure.IncrementStored => IncrementStored(arguments),
+                IncrementerServerProcedure.GetStored => GetStored(arguments),
                 _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
             };   
         }
-        
-        private BufferWriter Increment(BufferReader argumentsReader)
+
+        private ArraySegment<byte> GetStored(BufferReader arguments)
+        {
+            int result = _implementation.GetStored();
+
+            const int resultSize = PrimitiveSerializer.IntSize;
+
+            BufferWriter responseWriter = _endPoint.GetResponseWriter(resultSize);
+
+            responseWriter.Write(result);
+
+            return responseWriter.Buffer;
+        }
+
+        private ArraySegment<byte> Increment(BufferReader argumentsReader)
         {
             // Read request arguments.
             int valueArgument = argumentsReader.ReadInt();
@@ -63,7 +80,23 @@ public class IncrementerServerEndPoint : EndPoints.RpcEndPoint<IncrementerServer
 
             responseWriter.Write(result);
 
-            return responseWriter;
+            return responseWriter.Buffer;
+        }
+
+        private ArraySegment<byte> Store(BufferReader arguments)
+        {
+            int valueArgument = arguments.ReadInt();
+            
+            _implementation.Store(valueArgument);
+
+            return MsbRpc.Serialization.Buffers.BufferUtility.Empty;
+        }
+
+        private ArraySegment<byte> IncrementStored(BufferReader arguments)
+        {
+            _implementation.IncrementStored();
+
+            return MsbRpc.Serialization.Buffers.BufferUtility.Empty;
         }
     }
 }

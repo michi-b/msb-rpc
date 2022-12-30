@@ -3,4 +3,7 @@
 public interface IIncrementerServerImplementation
 {
     int Increment(int value);
+    void Store(int value);
+    void IncrementStored();
+    int GetStored();
 }

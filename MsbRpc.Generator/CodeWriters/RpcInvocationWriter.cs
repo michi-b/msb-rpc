@@ -9,25 +9,42 @@ using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters;
 
-internal static class OutboundRpcWriter
+internal static class RpcInvocationWriter
 {
     public static void Write(IndentedTextWriter writer, ProcedureCollection procedures)
     {
         foreach (Procedure procedure in procedures)
         {
             writer.WriteLine();
-            WriteProcedureCall(writer, procedures, procedure);
+            WriteInvocation(writer, procedures, procedure);
         }
     }
 
-    private static void WriteProcedureCall(IndentedTextWriter writer, ProcedureCollection procedures, Procedure procedure)
+    private static string GetSendAndAwaitRequestExpression(bool hasParameters)
+        => hasParameters
+            ? $"await this.{Methods.EndPointSendRequestAsync}("
+              + $"{Variables.Procedure}, "
+              + $"{Variables.ArgumentsWriter}.{Properties.BufferWriterBuffer}, "
+              + $"{Parameters.CancellationToken})"
+            : $"await this.{Methods.EndPointSendRequestAsync}("
+              + $"{Variables.Procedure}, "
+              + $"{IndependentCode.EmptyBufferExpression}, "
+              + $"{Parameters.CancellationToken})";
+
+    private static void WriteInvocation(IndentedTextWriter writer, ProcedureCollection procedures, Procedure procedure)
     {
         //header
         ParameterCollection? parameters = procedure.Parameters;
 
-        writer.Write($"public async {Types.VaLueTask}<{procedure.ReturnType.Names.Name}> {procedure.Names.Name}");
+        writer.Write($"public async {Types.VaLueTask}");
+        if (!procedure.ReturnType.IsVoid)
+        {
+            writer.Write($"<{procedure.ReturnType.Names.Name}>");
+        }
 
-        writer.Write('(');
+        writer.Write($" {procedure.Names.Async}(");
+
+        //parameters
         if (parameters != null)
         {
             foreach (Parameter t in parameters)
@@ -56,42 +73,55 @@ internal static class OutboundRpcWriter
     {
         writer.WriteLine($"this.{Methods.EndPointEnterCalling}();");
         writer.WriteLine();
+
         if (parameters != null)
         {
             WriteParametersSizeSumCalculation(writer, parameters);
-        }
 
-        writer.WriteLine();
-        writer.WriteLine
-        (
-            $"{Types.BufferWriter} {Variables.ArgumentsWriter}"
-            + $" = this.{Methods.EndPointGetRequestWriter}({Variables.ParametersSizeSum});"
-        );
-        writer.WriteLine();
-        if (parameters != null)
-        {
+            writer.WriteLine();
+
+            writer.WriteLine
+            (
+                $"{Types.BufferWriter} {Variables.ArgumentsWriter}"
+                + $" = this.{Methods.EndPointGetRequestWriter}({Variables.ParametersSizeSum});"
+            );
+            writer.WriteLine();
             foreach (Parameter parameter in parameters)
             {
                 writer.WriteLine(IndependentCode.GetBufferWrite(parameter.Names.Name));
             }
+
+            writer.WriteLine();
         }
 
-        writer.WriteLine();
         writer.WriteLine($"const {procedures.Names.EnumType} {Variables.Procedure} = {procedure.Names.EnumValue};");
         writer.WriteLine();
 
-        //send request
-        writer.WriteLine
-        (
-            $"{Types.BufferReader} {Variables.ResultReader} "
-            + $"= await this.{Methods.EndPointSendRequestAsync}("
-            + $"{Variables.Procedure}, "
-            + $"{Variables.ArgumentsWriter}.{Properties.BufferWriterBuffer}, "
-            + $"{Parameters.CancellationToken});"
-        );
+        bool hasReturnValue = !procedure.ReturnType.IsVoid;
+
+        if (hasReturnValue)
+        {
+            WriteSendRequestWithReturn(writer, procedure);
+        }
+        else
+        {
+            writer.WriteLine($"{GetSendAndAwaitRequestExpression(parameters != null)};");
+        }
+
+        writer.WriteLine();
+        writer.WriteLine($"this.{Methods.EndPointExitCalling}({Variables.Procedure});");
+        if (hasReturnValue)
+        {
+            writer.WriteLine();
+            writer.WriteLine($"return {Variables.ProcedureResult};");
+        }
+    }
+
+    private static void WriteSendRequestWithReturn(TextWriter writer, Procedure procedure)
+    {
+        writer.WriteLine($"{Types.BufferReader} {Variables.ResultReader} = new({GetSendAndAwaitRequestExpression(procedure.Parameters != null)});");
         writer.WriteLine();
 
-        //read result
         TypeNode returnType = procedure.ReturnType;
         string? bufferReadMethodName = returnType.SerializationKind.GetBufferReadMethodName();
         if (bufferReadMethodName != null)
@@ -101,13 +131,8 @@ internal static class OutboundRpcWriter
         }
         else
         {
-            throw new InvalidOperationException($"there is not buffer read method for the return type {returnType.Names.FullName}");
+            throw new InvalidOperationException($"there is not buffer read method for the return type {returnType}");
         }
-
-        writer.WriteLine();
-        writer.WriteLine($"this.{Methods.EndPointExitCalling}({Variables.Procedure});");
-        writer.WriteLine();
-        writer.WriteLine($"return {Variables.ProcedureResult};");
     }
 
     private static void WriteParametersSizeSumCalculation(IndentedTextWriter writer, ParameterCollection parameters)

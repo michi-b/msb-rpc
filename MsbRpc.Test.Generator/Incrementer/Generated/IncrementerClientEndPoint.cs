@@ -2,6 +2,8 @@
 
 // ReSharper disable RedundantNameQualifier
 
+using MsbRpc.Serialization.Buffers;
+
 namespace MsbRpc.Test.Generator.Incrementer.Generated;
 
 public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.EndPoints.UndefinedProcedure, IncrementerServerProcedure>
@@ -39,7 +41,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
 
         const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
 
-        MsbRpc.Serialization.Buffers.BufferReader responseReader = await SendRequestAsync(procedure, writer.Buffer, cancellationToken);
+        MsbRpc.Serialization.Buffers.BufferReader responseReader = new(await SendRequestAsync(procedure, writer.Buffer, cancellationToken));
 
         // Read response.        
 

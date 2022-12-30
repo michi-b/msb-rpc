@@ -26,10 +26,11 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
     [PublicAPI] protected readonly ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> Logger;
 
+    private object _stateLock = new();
     private State _state;
-
     [PublicAPI] public State State => _state;
 
+    
     protected RpcEndPoint
     (
         Messenger messenger,
@@ -42,24 +43,33 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
         Logger = logger;
         _messenger = messenger;
         _buffer = new RecycledBuffer(initialBufferSize);
-        _state = direction switch
+        lock (_stateLock)
         {
-            EndPointDirection.Inbound => State.IdleInbound,
-            EndPointDirection.Outbound => State.IdleOutbound,
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
-        };
+            _state = direction switch
+            {
+                EndPointDirection.Inbound => State.IdleInbound,
+                EndPointDirection.Outbound => State.IdleOutbound,
+                _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            };
+        }
     }
 
     public Messenger.ListenReturnCode Listen(IRpcResolver<TInboundProcedure> resolver)
     {
-        _state.Transition(State.IdleInbound, State.Listening);
+        lock (_stateLock)
+        {
+            _state.Transition(State.IdleInbound, State.Listening);
+        }
 
         Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, message => ReceiveMessage(message, resolver));
 
         // receive message callback will only discontinue listening if procedure results in outbound state
         if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
         {
-            _state.Transition(State.Listening, State.IdleOutbound);
+            lock (_stateLock)
+            {
+                _state.Transition(State.Listening, State.IdleOutbound);
+            }
         }
         // otherwise, connection has got to be lost
         else
@@ -73,6 +83,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     public void Dispose()
     {
         _messenger.Dispose();
+        
         _state = State.Disposed;
     }
 
@@ -86,16 +97,19 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         LogReceivedCall(_typeName, GetName(procedure), arguments.Count);
 
-        BufferWriter responseWriter = resolver.Execute(procedure, new BufferReader(arguments));
+        ArraySegment<byte> response = resolver.Execute(procedure, new BufferReader(arguments));
 
-        _messenger.SendMessage(responseWriter.Buffer);
+        _messenger.SendMessage(response);
 
         bool invertsDirection = GetInvertsDirection(procedure);
         if (invertsDirection)
         {
-            _state = State.IdleOutbound;
+            lock (_stateLock)
+            {
+                _state = State.IdleOutbound;
+            }
         }
-
+        
         return invertsDirection;
     }
 
@@ -129,17 +143,19 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     {
         int argumentByteCount = request.Count;
 
-        //GetRequestWriter makes sure to leave space for the procedure id in front of the buffer
-        request = new ArraySegment<byte>
-        (
-            request.Array!,
-            0,
-            argumentByteCount + PrimitiveSerializer.IntSize
-        );
+        ArraySegment<byte> requestWithProcedureId = request.Array == BufferUtility.Empty.Array
+            ? _buffer.Get(PrimitiveSerializer.IntSize)
+            //GetRequestWriter makes sure to leave space for the procedure id in front of the buffer new ArraySegment<byte>
+            : new ArraySegment<byte>
+            (
+                request.Array!,
+                0,
+                argumentByteCount + PrimitiveSerializer.IntSize
+            );
 
-        request.WriteInt(GetProcedureIdValue(procedure));
+        requestWithProcedureId.WriteInt(GetProcedureIdValue(procedure));
 
-        _messenger.SendMessage(request);
+        _messenger.SendMessage(requestWithProcedureId);
 
         LogSentCall(_typeName, GetName(procedure), argumentByteCount);
 
@@ -161,7 +177,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     /// <param name="request">Bytes of the request, formerly retrieved via <see cref="GetRequestWriter" />.</param>
     /// <param name="cancellationToken">Token for operation cancellation.</param>
     /// <returns>the response message</returns>
-    protected async ValueTask<BufferReader> SendRequestAsync
+    protected async ValueTask<ArraySegment<byte>> SendRequestAsync
         (TOutboundProcedure procedure, ArraySegment<byte> request, CancellationToken cancellationToken)
     {
         int argumentByteCount = request.Count;
@@ -184,7 +200,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
         return result.ReturnCode switch
         {
-            ReceiveMessageReturnCode.Success => new BufferReader(result.Message),
+            ReceiveMessageReturnCode.Success => result.Message,
             ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TOutboundProcedure>
                 (procedure, "connection closed while waiting for the response"),
             _ => throw new ArgumentOutOfRangeException()
@@ -193,16 +209,22 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
     protected void EnterCalling()
     {
-        _state.Transition(State.IdleOutbound, State.Calling);
+        lock (_stateLock)
+        {
+            _state.Transition(State.IdleOutbound, State.Calling);
+        }
     }
 
     protected void ExitCalling(TOutboundProcedure procedure)
     {
-        _state.Transition
-        (
-            State.Calling,
-            GetInvertsDirection(procedure) ? State.IdleInbound : State.IdleOutbound
-        );
+        lock (_stateLock)
+        {
+            _state.Transition
+            (
+                State.Calling,
+                GetInvertsDirection(procedure) ? State.IdleInbound : State.IdleOutbound
+            );
+        }
     }
 
     private static TInboundProcedure GetInboundProcedure(int id)

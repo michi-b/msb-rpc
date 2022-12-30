@@ -12,4 +12,6 @@ internal readonly struct Parameter
         Names = new ParameterNames(name);
         Type = type;
     }
+
+    public override string ToString() => $"{Names.Name} ({Type})";
 }
