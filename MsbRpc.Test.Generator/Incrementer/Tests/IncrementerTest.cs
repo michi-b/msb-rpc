@@ -1,6 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
-using MsbRpc.Test.Generator.Incrementer.Generated;
+using MsbRpc.Test.Generator.Incrementer.Gen;
 using MsbRpc.Test.Network.Utility;
 
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
@@ -98,7 +101,7 @@ public class IncrementerTest : Test
     {
         return Task.Factory.StartNew
         (
-            () => server.Listen(new Implementation.Incrementer()),
+            () => server.Listen(new Incrementer()),
             cancellationToken,
             TaskCreationOptions.LongRunning,
             TaskScheduler.Default

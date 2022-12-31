@@ -17,11 +17,11 @@ public class UndefinedProcedureException<TInboundProcedure, TOutboundProcedure> 
         "Invalid call to method '{0}' of endpoint with type '{1}' because ther are no outbound procedures defined.";
 
     public UndefinedProcedureException
-        (RpcEndPoint<TInboundProcedure, TOutboundProcedure> endPoint, [CallerMemberName] string? callerMemberName = null) : base
+        (TwoWaysEndPoint<TInboundProcedure, TOutboundProcedure> endPoint, [CallerMemberName] string? callerMemberName = null) : base
         (GetMessage(endPoint, callerMemberName!)) { }
 
     private static string GetMessage
-        (RpcEndPoint<TInboundProcedure, TOutboundProcedure> endPoint, string callerMemberName)
+        (TwoWaysEndPoint<TInboundProcedure, TOutboundProcedure> endPoint, string callerMemberName)
         => string.Format(GetMessageTemplate(), callerMemberName, endPoint.GetType().FullName);
 
     private static string GetMessageTemplate()

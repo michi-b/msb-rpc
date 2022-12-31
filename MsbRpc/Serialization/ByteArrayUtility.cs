@@ -6,7 +6,7 @@ namespace MsbRpc.Serialization;
 
 public static class ByteArrayUtility
 {
-    public const int DefaultSize = BufferUtility.DefaultSize;
+    public const int DefaultSize = BufferUtility.DefaultInitialSize;
 
     [PublicAPI] public static readonly byte[] Empty = Array.Empty<byte>();
 

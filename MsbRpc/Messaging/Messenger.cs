@@ -71,7 +71,6 @@ public class Messenger : IDisposable
                     {
                         return ListenReturnCode.OperationDiscontinued;
                     }
-
                     break;
                 case ReceiveMessageReturnCode.ConnectionClosed:
                     return ListenReturnCode.ConnectionClosed;

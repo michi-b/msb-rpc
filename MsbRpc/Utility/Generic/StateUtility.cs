@@ -104,4 +104,42 @@ public static class StateUtility<TState> where TState : Enum
         action?.Invoke();
         state = stateTo;
     }
+    
+    [PublicAPI]
+    public static void Transition
+    (
+        ref TState state,
+        object stateLock,
+        TState stateFrom,
+        TState stateTo,
+        Action? action = null,
+        [CallerMemberName] string? operationName = null
+    )
+    {
+        lock (stateLock)
+        {
+            AssertIs(state, stateFrom, operationName);
+            action?.Invoke();
+            state = stateTo;
+        }
+    }
+
+    [PublicAPI]
+    public static void Transition
+    (
+        ref TState state,
+        object stateLock,
+        TState[] allowedStatesFrom,
+        TState stateTo,
+        Action? action = null,
+        [CallerMemberName] string? operationName = null
+    )
+    {
+        lock (stateLock)
+        {
+            AssertIsAmong(allowedStatesFrom, state, operationName);
+            action?.Invoke();
+            state = stateTo;
+        }
+    }
 }

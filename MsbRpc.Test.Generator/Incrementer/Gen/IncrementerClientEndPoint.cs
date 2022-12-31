@@ -1,12 +1,8 @@
-﻿// ReSharper disable InlineTemporaryVariable
+﻿// ReSharper disable once CheckNamespace
+namespace Incrementer.Generated;
 
-// ReSharper disable RedundantNameQualifier
 
-using MsbRpc.Serialization.Buffers;
-
-namespace MsbRpc.Test.Generator.Incrementer.Generated;
-
-public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.EndPoints.UndefinedProcedure, IncrementerServerProcedure>
+public class IncrementerClientEndPoint : MsbRpc.EndPoints.TwoWaysEndPoint<MsbRpc.EndPoints.UndefinedProcedure, IncrementerProcedure>
 {
     public IncrementerClientEndPoint
     (
@@ -39,7 +35,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
 
         // Send request.
 
-        const IncrementerServerProcedure procedure = IncrementerServerProcedure.Increment;
+        const IncrementerProcedure procedure = IncrementerProcedure.Increment;
 
         MsbRpc.Serialization.Buffers.BufferReader responseReader = new(await SendRequestAsync(procedure, writer.Buffer, cancellationToken));
 
@@ -52,7 +48,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.RpcEndPoint<MsbRpc.End
         return response;
     }
 
-    protected override string GetName(IncrementerServerProcedure procedure) => procedure.GetName();
+    protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
 
-    protected override bool GetInvertsDirection(IncrementerServerProcedure procedure) => procedure.GetInvertsDirection();
+    protected override bool GetInvertsDirection(IncrementerProcedure procedure) => procedure.GetInvertsDirection();
 }

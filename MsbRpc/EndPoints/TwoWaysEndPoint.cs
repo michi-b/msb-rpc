@@ -14,28 +14,27 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 [PublicAPI(Messages.GeneratorTarget)]
-public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure> : IDisposable
+public abstract partial class TwoWaysEndPoint<TInboundProcedure, TOutboundProcedure> : IDisposable
     where TInboundProcedure : Enum
     where TOutboundProcedure : Enum
 {
-    protected const int DefaultBufferSize = BufferUtility.DefaultSize;
+    protected const int DefaultBufferSize = BufferUtility.DefaultInitialSize;
     private readonly RecycledBuffer _buffer;
 
     private readonly Messenger _messenger;
     private readonly string _typeName;
 
-    [PublicAPI] protected readonly ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> Logger;
+    [PublicAPI] protected readonly ILogger<TwoWaysEndPoint<TInboundProcedure, TOutboundProcedure>> Logger;
+    private State _state;
 
     private object _stateLock = new();
-    private State _state;
     [PublicAPI] public State State => _state;
 
-    
-    protected RpcEndPoint
+    protected TwoWaysEndPoint
     (
         Messenger messenger,
         EndPointDirection direction,
-        ILogger<RpcEndPoint<TInboundProcedure, TOutboundProcedure>> logger,
+        ILogger<TwoWaysEndPoint<TInboundProcedure, TOutboundProcedure>> logger,
         int initialBufferSize = DefaultBufferSize
     )
     {
@@ -56,20 +55,14 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
     public Messenger.ListenReturnCode Listen(IRpcResolver<TInboundProcedure> resolver)
     {
-        lock (_stateLock)
-        {
-            _state.Transition(State.IdleInbound, State.Listening);
-        }
+        _state.Transition(_stateLock, State.IdleInbound, State.Listening);
 
         Messenger.ListenReturnCode listenReturnCode = _messenger.Listen(_buffer, message => ReceiveMessage(message, resolver));
 
         // receive message callback will only discontinue listening if procedure results in outbound state
         if (listenReturnCode == Messenger.ListenReturnCode.OperationDiscontinued)
         {
-            lock (_stateLock)
-            {
-                _state.Transition(State.Listening, State.IdleOutbound);
-            }
+            _state.Transition(_stateLock, State.Listening, State.IdleOutbound);
         }
         // otherwise, connection has got to be lost
         else
@@ -83,7 +76,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
     public void Dispose()
     {
         _messenger.Dispose();
-        
+
         _state = State.Disposed;
     }
 
@@ -109,7 +102,7 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
                 _state = State.IdleOutbound;
             }
         }
-        
+
         return invertsDirection;
     }
 
@@ -209,22 +202,17 @@ public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure>
 
     protected void EnterCalling()
     {
-        lock (_stateLock)
-        {
-            _state.Transition(State.IdleOutbound, State.Calling);
-        }
+        _state.Transition(_stateLock, State.IdleOutbound, State.Calling);
     }
 
     protected void ExitCalling(TOutboundProcedure procedure)
     {
-        lock (_stateLock)
-        {
-            _state.Transition
-            (
-                State.Calling,
-                GetInvertsDirection(procedure) ? State.IdleInbound : State.IdleOutbound
-            );
-        }
+        _state.Transition
+        (
+            _stateLock,
+            State.Calling,
+            GetInvertsDirection(procedure) ? State.IdleInbound : State.IdleOutbound
+        );
     }
 
     private static TInboundProcedure GetInboundProcedure(int id)

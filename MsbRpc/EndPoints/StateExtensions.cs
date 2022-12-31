@@ -1,17 +1,18 @@
 ﻿using System.Diagnostics;
-using StateUtility = MsbRpc.Utility.Generic.StateUtility<MsbRpc.EndPoints.State>;
 
 namespace MsbRpc.EndPoints;
+
+using StateUtility = Utility.Generic.StateUtility<State>;
 
 public static class StateExtensions
 {
     private static readonly State[] RespondingStates = { State.Listening };
     private static readonly State[] RequestingStates = { State.Calling };
 
-    public static void Transition(this ref State target, State stateFrom, State stateTo)
+    public static void Transition(this ref State target, object stateLock, State stateFrom, State stateTo)
     {
 #if DEBUG
-        StateUtility.Transition(ref target, stateFrom, stateTo);
+        StateUtility.Transition(ref target, stateLock, stateFrom, stateTo);
 #else
         target = stateTo;
 #endif

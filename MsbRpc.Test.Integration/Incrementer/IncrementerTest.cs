@@ -12,7 +12,7 @@ namespace MsbRpc.Test.Integration.Incrementer;
 [TestClass]
 public class IncrementerTest : Test
 {
-     [TestMethod]
+    [TestMethod]
     public async Task CanIncrement10TimesFrom5To15()
     {
         CancellationToken cancellationToken = CancellationToken;

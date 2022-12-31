@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Generator.Attributes;
-
-namespace MsbRpc.Test.Generator.Incrementer.Input;
+// ReSharper disable CheckNamespace
+namespace Incrementer;
 
 [RpcContract]
 public interface IIncrementer

@@ -1,8 +1,7 @@
-﻿using MsbRpc.Test.Generator.Incrementer.Generated;
+﻿// ReSharper disable once CheckNamespace
+namespace Incrementer;
 
-namespace MsbRpc.Test.Generator.Incrementer.Implementation;
-
-internal class Incrementer : IIncrementerServerImplementation
+internal class Incrementer : IIncrementer
 {
     private int _stored;
 

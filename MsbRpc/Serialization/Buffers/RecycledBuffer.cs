@@ -7,7 +7,7 @@ public class RecycledBuffer
 {
     private byte[] _bytes;
 
-    public RecycledBuffer(int count = BufferUtility.DefaultSize)
+    public RecycledBuffer(int count = BufferUtility.DefaultInitialSize)
     {
         Debug.Assert(count >= 0);
         _bytes = count == 0 ? ByteArrayUtility.Empty : new byte[count];

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MsbRpc.EndPoints;
 
-public abstract partial class RpcEndPoint<TInboundProcedure, TOutboundProcedure> where TInboundProcedure : Enum
+public abstract partial class TwoWaysEndPoint<TInboundProcedure, TOutboundProcedure> where TInboundProcedure : Enum
     where TOutboundProcedure : Enum
 {
     [LoggerMessage

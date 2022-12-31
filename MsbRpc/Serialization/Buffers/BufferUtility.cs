@@ -5,7 +5,7 @@ namespace MsbRpc.Serialization.Buffers;
 
 public static class BufferUtility
 {
-    public const int DefaultSize = 1024;
+    public const int DefaultInitialSize = 1024;
 
     [PublicAPI] public static readonly ArraySegment<byte> Empty = new(ByteArrayUtility.Empty, 0, 0);
 
