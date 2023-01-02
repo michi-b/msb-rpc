@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Incrementer.Generated;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
-using MsbRpc.Test.Generator.Incrementer.Gen;
 using MsbRpc.Test.Network.Utility;
 
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
@@ -18,7 +18,7 @@ public class IncrementerTest : Test
 
         using LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
-        var server = new IncrementerServerEndPoint(connection.CreateServerMessenger());
+        var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), new global::Incrementer.Incrementer(), LoggerFactory);
 
         Task<Messenger.ListenReturnCode> serverListenTask = CreateServerListenTask(server, cancellationToken);
 
@@ -98,15 +98,13 @@ public class IncrementerTest : Test
     }
 
     private static Task<Messenger.ListenReturnCode> CreateServerListenTask(IncrementerServerEndPoint server, CancellationToken cancellationToken)
-    {
-        return Task.Factory.StartNew
+        => Task.Factory.StartNew
         (
-            () => server.Listen(new Incrementer()),
+            server.Listen,
             cancellationToken,
             TaskCreationOptions.LongRunning,
             TaskScheduler.Default
         );
-    }
 
     private class Setup : IAsyncDisposable
     {
@@ -125,7 +123,7 @@ public class IncrementerTest : Test
         {
             LocalConnection connection = await LocalConnection.ConnectAsync(cancellationToken);
 
-            var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), LoggerFactory);
+            var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), new global::Incrementer.Incrementer(), LoggerFactory);
 
             Task<Messenger.ListenReturnCode> listenTask = CreateServerListenTask(server, cancellationToken);
 

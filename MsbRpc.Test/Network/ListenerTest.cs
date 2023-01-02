@@ -24,7 +24,11 @@ public abstract class ListenerTest : Test
     protected async Task TestSingleByteMessagesIsDelivered()
     {
         const byte value = 123;
-        ArraySegment<byte> message = BufferUtility.Create(value);
+        
+        Message message = BufferUtility.CreateMessage(PrimitiveSerializer.ByteSize);
+        
+        message.Buffer.WriteByte(value);
+        
         CancellationToken cancellationToken = CancellationToken;
 
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
@@ -50,7 +54,7 @@ public abstract class ListenerTest : Test
 
         using (client)
         {
-            await client.SendMessageAsync(BufferUtility.Empty, cancellationToken);
+            await client.SendMessageAsync(Message.Empty, cancellationToken);
         }
 
         MessageList messages = await listen;
@@ -67,14 +71,13 @@ public abstract class ListenerTest : Test
 
         CancellationToken cancellationToken = CancellationToken;
 
-        byte[] messageOut = new byte[PrimitiveSerializer.IntSize];
-        messageOut.WriteInt(value);
-        var messageOutSegment = new ArraySegment<byte>(messageOut);
+        Message message = BufferUtility.CreateMessage(PrimitiveSerializer.IntSize);
+        message.Buffer.WriteInt(value);
 
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
         using (client)
         {
-            await client.SendMessageAsync(messageOutSegment, cancellationToken);
+            await client.SendMessageAsync(message, cancellationToken);
         }
 
         MessageList messagesIn = await listen;
@@ -97,12 +100,12 @@ public abstract class ListenerTest : Test
 
         using (client)
         {
-            byte[] message = new byte[PrimitiveSerializer.IntSize];
+            Message message = BufferUtility.CreateMessage(PrimitiveSerializer.IntSize);
+            ArraySegment<byte> messageBuffer = message.Buffer;
             foreach (int value in values)
             {
-                message.WriteInt(value);
-                var messageSegment = new ArraySegment<byte>(message);
-                await client.SendMessageAsync(messageSegment, cancellationToken);
+                messageBuffer.WriteInt(value);
+                await client.SendMessageAsync(message, cancellationToken);
             }
         }
 

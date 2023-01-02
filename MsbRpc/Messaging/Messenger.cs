@@ -17,9 +17,7 @@ public class Messenger : IDisposable
     /// </summary>
     /// <param name="message">the received message</param>
     /// <returns>true if listening should be continued, otherwise false</returns>
-    public delegate ValueTask<bool> ReceiveAsyncDelegate(ArraySegment<byte> message, CancellationToken cancellationToken);
-
-    public delegate bool ReceiveDelegate(ArraySegment<byte> message);
+    public delegate ValueTask<bool> ReceiveAsyncDelegate(Message message, CancellationToken cancellationToken);
 
     public enum ListenReturnCode
     {
@@ -39,9 +37,10 @@ public class Messenger : IDisposable
         OperationDiscontinued
     }
 
+    private static readonly ReceiveMessageResult ReceiveMessageConnectionClosedResult = new(Message.Empty, ReceiveMessageReturnCode.ConnectionClosed);
+    private static readonly ReceiveMessageResult ReceiveEmptyMessageResult = new(Message.Empty, ReceiveMessageReturnCode.Success);
+    
     private const int CountSize = PrimitiveSerializer.IntSize;
-    private readonly ArraySegment<byte> _receiveCountSegment = BufferUtility.Create(CountSize);
-    private readonly ArraySegment<byte> _sendCountSegment = BufferUtility.Create(CountSize);
     private readonly RpcSocket _socket;
     private bool _disposed;
 
@@ -59,7 +58,7 @@ public class Messenger : IDisposable
         _disposed = true;
     }
 
-    public ListenReturnCode Listen(RecycledBuffer buffer, ReceiveDelegate receive)
+    public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
     {
         while (true)
         {
@@ -81,76 +80,107 @@ public class Messenger : IDisposable
     }
 
     /// <throws>SocketReceiveException</throws>
-    public ReceiveMessageResult ReceiveMessage(RecycledBuffer buffer)
+    public ReceiveMessageResult ReceiveMessage(RpcBuffer buffer)
     {
-        bool hasReceivedCount = _socket.ReceiveAll(_receiveCountSegment);
-        if (!hasReceivedCount)
+        if(TryReceiveCount(buffer, out int count))
         {
-            return new ReceiveMessageResult(BufferUtility.Empty, ReceiveMessageReturnCode.ConnectionClosed);
+
+            Message message = buffer.GetMessage(count);
+
+            if (count == 0)
+            {
+                return ReceiveEmptyMessageResult;
+            }
+
+            _socket.ReceiveAll(message.Buffer);
+
+            return new ReceiveMessageResult ( message, ReceiveMessageReturnCode.Success );
         }
 
-        int messageLength = _receiveCountSegment.ReadInt();
-
-        ArraySegment<byte> bytesSegment = buffer.Get(messageLength);
-
-        if (messageLength == 0)
-        {
-            return new ReceiveMessageResult(bytesSegment, ReceiveMessageReturnCode.Success);
-        }
-
-        _socket.ReceiveAll(bytesSegment);
-
-        return new ReceiveMessageResult
-        (
-            bytesSegment,
-            ReceiveMessageReturnCode.Success
-        );
+        return ReceiveMessageConnectionClosedResult;
     }
 
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async ValueTask<ReceiveMessageResult> ReceiveMessageAsync(RecycledBuffer buffer, CancellationToken cancellationToken)
+    public async ValueTask<ReceiveMessageResult> ReceiveMessageAsync(RpcBuffer buffer, CancellationToken cancellationToken)
     {
-        bool hasReceivedCount = await _socket.ReceiveAllAsync(_receiveCountSegment, cancellationToken);
-        if (!hasReceivedCount)
+        if (TryReceiveCount(buffer, out int count))
         {
-            return new ReceiveMessageResult(BufferUtility.Empty, ReceiveMessageReturnCode.ConnectionClosed);
+            Message message = buffer.GetMessage(count);
+
+            if (count == 0)
+            {
+                return ReceiveEmptyMessageResult;
+            }
+
+            await _socket.ReceiveAllAsync(message.Buffer, cancellationToken);
+
+            return new ReceiveMessageResult ( message, ReceiveMessageReturnCode.Success );
         }
+        
+        return ReceiveMessageConnectionClosedResult;
+    }
 
-        int messageLength = _receiveCountSegment.ReadInt();
-
-        ArraySegment<byte> bytesSegment = buffer.Get(messageLength);
-
-        if (messageLength == 0)
+    private ReceiveMessageResult ReceiveMessage(Message message)
+    {
+        ArraySegment<byte> buffer = message.Buffer;
+        
+        if (buffer.Count == 0)
         {
-            return new ReceiveMessageResult(bytesSegment, ReceiveMessageReturnCode.Success);
+            return ReceiveEmptyMessageResult;
         }
-
-        await _socket.ReceiveAllAsync(bytesSegment, cancellationToken);
-
+        
+        _socket.ReceiveAll(buffer);
+        
         return new ReceiveMessageResult
         (
-            bytesSegment,
+            message,
             ReceiveMessageReturnCode.Success
         );
+    }
+    
+    private async ValueTask<ReceiveMessageResult> ReceiveMessageAsync(Message message, CancellationToken cancellationToken)
+    {
+        ArraySegment<byte> buffer = message.Buffer;
+        
+        if (buffer.Count == 0)
+        {
+            return ReceiveEmptyMessageResult;
+        }
+        
+        await _socket.ReceiveAllAsync(buffer, cancellationToken);
+        
+        return new ReceiveMessageResult
+        (
+            message,
+            ReceiveMessageReturnCode.Success
+        );
+    }
+
+    private bool TryReceiveCount(RpcBuffer buffer, out int count)
+    {
+        ArraySegment<byte> countBuffer = buffer.Get(PrimitiveSerializer.IntSize);
+        if (_socket.ReceiveAll(countBuffer))
+        {
+            count = countBuffer.ReadInt();
+            return true;
+        }
+        count = 0;
+        return false;
     }
 
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketSendException</throws>
     [PublicAPI]
-    public async ValueTask SendMessageAsync(ArraySegment<byte> message, CancellationToken cancellationToken)
+    public async ValueTask SendMessageAsync(Message message, CancellationToken cancellationToken)
     {
-        _sendCountSegment.WriteInt(message.Count);
-        await _socket.SendAsync(_sendCountSegment, cancellationToken);
-        await _socket.SendAsync(message, cancellationToken);
+        await _socket.SendAsync(message.GetFullMessageBuffer(), cancellationToken);
     }
 
     /// <throws>SocketSendException</throws>
-    public void SendMessage(ArraySegment<byte> message)
+    public void SendMessage(Message message)
     {
-        _sendCountSegment.WriteInt(message.Count);
-        _socket.Send(_sendCountSegment);
-        _socket.Send(message);
+        _socket.Send(message.GetFullMessageBuffer());
     }
 }

@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
-using MsbRpc.Serialization.Primitives;
 using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
@@ -24,31 +23,19 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
         Debug.Assert(Enum.GetUnderlyingType(typeof(TProcedure)) == typeof(int));
     }
     
-    protected BufferReader SendRequest(TProcedure procedure, ArraySegment<byte> request)
+    protected Message SendRequest(Request request)
     {
-        int argumentByteCount = request.Count;
+        Messenger.SendMessage(new Message(request));
 
-        ArraySegment<byte> requestWithProcedureId = request.Array == BufferUtility.Empty.Array
-            ? Buffer.Get(PrimitiveSerializer.IntSize)
-            //GetRequestWriter makes sure to leave space for the procedure id in front of the buffer new ArraySegment<byte>
-            : new ArraySegment<byte>
-            (
-                request.Array!,
-                0,
-                argumentByteCount + PrimitiveSerializer.IntSize
-            );
-
-        requestWithProcedureId.WriteInt(GetProcedureId(procedure));
-
-        Messenger.SendMessage(requestWithProcedureId);
-
-        LogSentCall(Logger, TypeName, GetName(procedure), argumentByteCount);
+        TProcedure procedure = GetProcedure(request.ProcedureId);
+        
+        LogSentCall(Logger, TypeName, GetName(procedure), request.Buffer.Count);
 
         ReceiveMessageResult result = Messenger.ReceiveMessage(Buffer);
 
         return result.ReturnCode switch
         {
-            ReceiveMessageReturnCode.Success => new BufferReader(result.Message),
+            ReceiveMessageReturnCode.Success => result.Message,
             ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedure>
                 (procedure, "connection closed while waiting for the response"),
             _ => throw new ArgumentOutOfRangeException()
@@ -56,7 +43,7 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
     }
 
     private static int GetProcedureId(TProcedure value) => Unsafe.As<TProcedure, int>(ref value);
-
+    
     [LoggerMessage
     (
         EventId = (int)LogEventIds.RpcEndPointSentCall,

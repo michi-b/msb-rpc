@@ -22,13 +22,13 @@ public static class MessagesListener
     public static List<ArraySegment<byte>> Listen(Messenger messenger)
     {
         List<ArraySegment<byte>> messages = new();
-        var buffer = new RecycledBuffer();
+        var buffer = new RpcBuffer();
         messenger.Listen
         (
             buffer,
             message =>
             {
-                messages.Add(message.Copy());
+                messages.Add(message.Buffer.Copy());
                 return false;
             }
         );

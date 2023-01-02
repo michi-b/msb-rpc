@@ -1,35 +1,36 @@
 ﻿// ReSharper disable once CheckNamespace
+
+using System.Threading;
+using MsbRpc.Serialization.Buffers;
+
 namespace Incrementer.Generated;
 
 
-public class IncrementerClientEndPoint : MsbRpc.EndPoints.TwoWaysEndPoint<MsbRpc.EndPoints.UndefinedProcedure, IncrementerProcedure>
+public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<IncrementerProcedure>
 {
     public IncrementerClientEndPoint
     (
         MsbRpc.Messaging.Messenger messenger,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
-        int initialBufferSize = DefaultBufferSize
+        int initialBufferSize = DefaultInitialBufferSize
     ) : base
         (
             messenger,
-            MsbRpc.EndPoints.EndPointDirection.Outbound,
-            loggerFactory != null
-                ? Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger<IncrementerClientEndPoint>(loggerFactory)
-                : new Microsoft.Extensions.Logging.Abstractions.NullLogger<IncrementerClientEndPoint>(),
+            CreateLogger<IncrementerClientEndPoint>(loggerFactory),
             initialBufferSize
         ) { }
 
     public async System.Threading.Tasks.ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)
     {
-        EnterCalling();
-
         // Write request arguments
 
         const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        MsbRpc.Serialization.Buffers.BufferWriter writer = GetRequestWriter(constantArgumentSizeSum);
+        Request request = Buffer.GetRequest(constantArgumentSizeSum, GetId(IncrementerProcedure.Increment));
+        
+        MsbRpc.Serialization.Buffers.BufferWriter writer = request.GetWriter();
 
         writer.Write(value);
 
@@ -37,18 +38,18 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.TwoWaysEndPoint<MsbRpc
 
         const IncrementerProcedure procedure = IncrementerProcedure.Increment;
 
-        MsbRpc.Serialization.Buffers.BufferReader responseReader = new(await SendRequestAsync(procedure, writer.Buffer, cancellationToken));
+        Message responseMessage = base.SendRequest(request);
+        BufferReader responseReader = responseMessage.GetReader();
 
         // Read response.        
 
         int response = responseReader.ReadInt();
 
-        ExitCalling(procedure);
-
         return response;
     }
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
-
-    protected override bool GetInvertsDirection(IncrementerProcedure procedure) => procedure.GetInvertsDirection();
+    protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
+    protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
+    protected override bool GetIsFinal(IncrementerProcedure procedure) => procedure.GetIsFinal();
 }

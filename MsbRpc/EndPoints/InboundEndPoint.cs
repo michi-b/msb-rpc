@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
-using MsbRpc.Serialization.Primitives;
 using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
@@ -30,21 +29,20 @@ public abstract partial class InboundEndPoint<TProcedure, TImplementation> : One
 
     public Messenger.ListenReturnCode Listen()
     {
-        return Messenger.Listen(Buffer, message => ReceiveMessage(message));
+        return Messenger.Listen(Buffer, ReceiveMessage);
     }
 
-    private bool ReceiveMessage(ArraySegment<byte> message)
+    private bool ReceiveMessage(Message message)
     {
-        int procedureIdValue = message.ReadInt();
-        TProcedure procedure = GetProcedure(procedureIdValue);
-        ArraySegment<byte> arguments = message.GetOffsetSubSegment(PrimitiveSerializer.IntSize);
-        LogReceivedCall(Logger, TypeName, GetName(procedure), arguments.Count);
-        ArraySegment<byte> response = Execute(procedure, new BufferReader(arguments));
+        Request request = new(message);
+        TProcedure procedure = GetProcedure(request.ProcedureId);
+        LogReceivedCall(Logger, TypeName, GetName(procedure), request.Length);
+        Message response = Execute(procedure, request);
         Messenger.SendMessage(response);
-        return GetStopsListening(procedure);
+        return GetIsFinal(procedure);
     }
 
-    protected BufferWriter GetResultWriter(int size) => new BufferWriter(Buffer.Get(size));
+    protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);
 
     [LoggerMessage
     (
@@ -54,5 +52,5 @@ public abstract partial class InboundEndPoint<TProcedure, TImplementation> : One
     )]
     partial void LogReceivedCall(ILogger logger, string endPointTypeName, string procedureName, int argumentsByteCount);
 
-    protected abstract ArraySegment<byte> Execute(TProcedure procedure, BufferReader arguments);
+    protected abstract Message Execute(TProcedure procedure, Request request);
 }

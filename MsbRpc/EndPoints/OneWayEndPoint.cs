@@ -8,7 +8,7 @@ namespace MsbRpc.EndPoints;
 public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure : Enum
 {
     protected Messenger Messenger { get; }
-    protected RecycledBuffer Buffer { get; }
+    protected RpcBuffer Buffer { get; }
     protected ILogger Logger { get; }
     protected string TypeName { get; }
     private bool IsDisposed { get; set; }
@@ -24,7 +24,7 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
     {
         Messenger = messenger;
         Logger = logger;
-        Buffer = new RecycledBuffer(initialBufferSize);
+        Buffer = new RpcBuffer(initialBufferSize);
         TypeName = GetType().Name;
     }
 
@@ -42,7 +42,11 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
         ? loggerFactory.CreateLogger<TEndPoint>()
         : new Microsoft.Extensions.Logging.Abstractions.NullLogger<TEndPoint>();
 
-    protected abstract TProcedure GetProcedure(int procedureId);
     protected abstract string GetName(TProcedure procedure);
-    protected abstract bool GetStopsListening(TProcedure procedure);
+    
+    protected abstract TProcedure GetProcedure(int procedureId);
+    
+    protected abstract int GetId(TProcedure procedure);
+    
+    protected abstract bool GetIsFinal(TProcedure procedure);
 }

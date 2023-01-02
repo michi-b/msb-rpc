@@ -15,7 +15,7 @@ public static class IncrementerProcedureExtensions
         };
     }
 
-    public static bool GetStopsListening(this IncrementerProcedure procedure)
+    public static bool GetIsFinal(this IncrementerProcedure procedure)
     {
         return procedure switch
         {
@@ -27,7 +27,19 @@ public static class IncrementerProcedureExtensions
         };
     }
 
-    public static IncrementerProcedure GetProcedure(int procedureId)
+    public static int GetId(this IncrementerProcedure procedure)
+    {
+        return procedure switch
+        {
+            IncrementerProcedure.Increment => 0,
+            IncrementerProcedure.Store => 1,
+            IncrementerProcedure.IncrementStored => 2,
+            IncrementerProcedure.GetStored => 3,
+            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+        };
+    }
+
+    public static IncrementerProcedure FromId(int procedureId)
     {
         return procedureId switch
         {
