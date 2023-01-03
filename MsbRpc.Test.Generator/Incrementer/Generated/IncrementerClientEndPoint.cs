@@ -1,8 +1,7 @@
-﻿// ReSharper disable once CheckNamespace
-
-using System.Threading;
+﻿using System.Threading;
 using MsbRpc.Serialization.Buffers;
 
+// ReSharper disable once CheckNamespace
 namespace Incrementer.Generated;
 
 
@@ -36,8 +35,6 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
 
         // Send request.
 
-        const IncrementerProcedure procedure = IncrementerProcedure.Increment;
-
         Message responseMessage = base.SendRequest(request);
         BufferReader responseReader = responseMessage.GetReader();
 
@@ -51,5 +48,5 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
     protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
-    protected override bool GetIsFinal(IncrementerProcedure procedure) => procedure.GetIsFinal();
+    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetIsFinal();
 }

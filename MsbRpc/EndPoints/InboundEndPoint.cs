@@ -27,10 +27,7 @@ public abstract partial class InboundEndPoint<TProcedure, TImplementation> : One
         )
         => Implementation = implementation;
 
-    public Messenger.ListenReturnCode Listen()
-    {
-        return Messenger.Listen(Buffer, ReceiveMessage);
-    }
+    public ListenReturnCode Listen() => Messenger.Listen(Buffer, ReceiveMessage);
 
     private bool ReceiveMessage(Message message)
     {
@@ -38,8 +35,8 @@ public abstract partial class InboundEndPoint<TProcedure, TImplementation> : One
         TProcedure procedure = GetProcedure(request.ProcedureId);
         LogReceivedCall(Logger, TypeName, GetName(procedure), request.Length);
         Message response = Execute(procedure, request);
-        Messenger.SendMessage(response);
-        return GetIsFinal(procedure);
+        Messenger.Send(response);
+        return GetClosesCommunication(procedure);
     }
 
     protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);
@@ -50,7 +47,7 @@ public abstract partial class InboundEndPoint<TProcedure, TImplementation> : One
         Level = LogLevel.Trace,
         Message = "{endPointTypeName} received a call to {procedureName} with {argumentsByteCount} argument bytes"
     )]
-    partial void LogReceivedCall(ILogger logger, string endPointTypeName, string procedureName, int argumentsByteCount);
+    private static partial void LogReceivedCall(ILogger logger, string endPointTypeName, string procedureName, int argumentsByteCount);
 
     protected abstract Message Execute(TProcedure procedure, Request request);
 }

@@ -19,7 +19,7 @@ public readonly struct Message
     {
         Debug.Assert(bytes.Length >= count + Offset);
         Buffer = new ArraySegment<byte>(bytes, Offset, count);
-        bytes.WriteInt(count, 0);
+        bytes.WriteInt(count);
     }
 
     public int Length => Buffer.Count;

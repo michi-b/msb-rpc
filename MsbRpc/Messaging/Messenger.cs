@@ -11,36 +11,9 @@ namespace MsbRpc.Messaging;
 [PublicAPI]
 public class Messenger : IDisposable
 {
-    /// <summary>
-    ///     receive delegate for asynchronous listen method
-    ///     that is invoked each time a message is received
-    /// </summary>
-    /// <param name="message">the received message</param>
-    /// <returns>true if listening should be continued, otherwise false</returns>
-    public delegate ValueTask<bool> ReceiveAsyncDelegate(Message message, CancellationToken cancellationToken);
-
-    public enum ListenReturnCode
-    {
-        /// <summary>
-        ///     listening stopped by connection close
-        /// </summary>
-        ConnectionClosed,
-
-        /// <summary>
-        ///     listening stopped because the operation was canceled
-        /// </summary>
-        OperationCanceled,
-
-        /// <summary>
-        ///     listening stopped because the receive delegate returned true
-        /// </summary>
-        OperationDiscontinued
-    }
-
-    private static readonly ReceiveMessageResult ReceiveMessageConnectionClosedResult = new(Message.Empty, ReceiveMessageReturnCode.ConnectionClosed);
-    private static readonly ReceiveMessageResult ReceiveEmptyMessageResult = new(Message.Empty, ReceiveMessageReturnCode.Success);
-    
     private const int CountSize = PrimitiveSerializer.IntSize;
+    private static readonly ReceiveResult ClosedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionClosed);
+    private static readonly ReceiveResult EmptyReceiveResult = new(Message.Empty, ReceiveReturnCode.Success);
     private readonly RpcSocket _socket;
     private bool _disposed;
 
@@ -62,16 +35,39 @@ public class Messenger : IDisposable
     {
         while (true)
         {
-            ReceiveMessageResult receiveResult = ReceiveMessage(buffer);
+            ReceiveResult receiveResult = ReceiveMessage(buffer);
             switch (receiveResult.ReturnCode)
             {
-                case ReceiveMessageReturnCode.Success:
+                case ReceiveReturnCode.Success:
                     if (receive(receiveResult.Message))
                     {
                         return ListenReturnCode.OperationDiscontinued;
                     }
+
                     break;
-                case ReceiveMessageReturnCode.ConnectionClosed:
+                case ReceiveReturnCode.ConnectionClosed:
+                    return ListenReturnCode.ConnectionClosed;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+    public async ValueTask<ListenReturnCode> ListenAsync(RpcBuffer buffer, Func<Message, bool> receive, CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            ReceiveResult receiveResult = await ReceiveMessageAsync(buffer, cancellationToken);
+            switch (receiveResult.ReturnCode)
+            {
+                case ReceiveReturnCode.Success:
+                    if (receive(receiveResult.Message))
+                    {
+                        return ListenReturnCode.OperationDiscontinued;
+                    }
+
+                    break;
+                case ReceiveReturnCode.ConnectionClosed:
                     return ListenReturnCode.ConnectionClosed;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -80,30 +76,7 @@ public class Messenger : IDisposable
     }
 
     /// <throws>SocketReceiveException</throws>
-    public ReceiveMessageResult ReceiveMessage(RpcBuffer buffer)
-    {
-        if(TryReceiveCount(buffer, out int count))
-        {
-
-            Message message = buffer.GetMessage(count);
-
-            if (count == 0)
-            {
-                return ReceiveEmptyMessageResult;
-            }
-
-            _socket.ReceiveAll(message.Buffer);
-
-            return new ReceiveMessageResult ( message, ReceiveMessageReturnCode.Success );
-        }
-
-        return ReceiveMessageConnectionClosedResult;
-    }
-
-    /// <throws>OperationCanceledException</throws>
-    /// <throws>SocketReceiveException</throws>
-    [PublicAPI]
-    public async ValueTask<ReceiveMessageResult> ReceiveMessageAsync(RpcBuffer buffer, CancellationToken cancellationToken)
+    public ReceiveResult ReceiveMessage(RpcBuffer buffer)
     {
         if (TryReceiveCount(buffer, out int count))
         {
@@ -111,50 +84,89 @@ public class Messenger : IDisposable
 
             if (count == 0)
             {
-                return ReceiveEmptyMessageResult;
+                return EmptyReceiveResult;
             }
+
+            _socket.ReceiveAll(message.Buffer);
+
+            return new ReceiveResult(message, ReceiveReturnCode.Success);
+        }
+
+        return ClosedConnectionReceiveResult;
+    }
+
+    /// <throws>OperationCanceledException</throws>
+    /// <throws>SocketReceiveException</throws>
+    [PublicAPI]
+    public async ValueTask<ReceiveResult> ReceiveMessageAsync(RpcBuffer buffer, CancellationToken cancellationToken)
+    {
+        ArraySegment<byte> countSegment = buffer.Get(PrimitiveSerializer.IntSize);
+        if (await _socket.ReceiveAllAsync(countSegment, cancellationToken))
+        {
+            int count = countSegment.ReadInt();
+
+            if (count == 0)
+            {
+                return EmptyReceiveResult;
+            }
+
+            Message message = buffer.GetMessage(count);
 
             await _socket.ReceiveAllAsync(message.Buffer, cancellationToken);
 
-            return new ReceiveMessageResult ( message, ReceiveMessageReturnCode.Success );
+            return new ReceiveResult(message, ReceiveReturnCode.Success);
         }
-        
-        return ReceiveMessageConnectionClosedResult;
+
+        return ClosedConnectionReceiveResult;
     }
 
-    private ReceiveMessageResult ReceiveMessage(Message message)
+    /// <throws>OperationCanceledException</throws>
+    /// <throws>SocketSendException</throws>
+    [PublicAPI]
+    public async ValueTask SendAsync(Message message, CancellationToken cancellationToken)
+    {
+        await _socket.SendAsync(message.GetFullMessageBuffer(), cancellationToken);
+    }
+
+    /// <throws>SocketSendException</throws>
+    public void Send(Message message)
+    {
+        _socket.Send(message.GetFullMessageBuffer());
+    }
+
+    private ReceiveResult Receive(Message message)
     {
         ArraySegment<byte> buffer = message.Buffer;
-        
+
         if (buffer.Count == 0)
         {
-            return ReceiveEmptyMessageResult;
+            return EmptyReceiveResult;
         }
-        
+
         _socket.ReceiveAll(buffer);
-        
-        return new ReceiveMessageResult
+
+        return new ReceiveResult
         (
             message,
-            ReceiveMessageReturnCode.Success
+            ReceiveReturnCode.Success
         );
     }
-    
-    private async ValueTask<ReceiveMessageResult> ReceiveMessageAsync(Message message, CancellationToken cancellationToken)
+
+    private async ValueTask<ReceiveResult> ReceiveAsync(Message message, CancellationToken cancellationToken)
     {
         ArraySegment<byte> buffer = message.Buffer;
-        
+
         if (buffer.Count == 0)
         {
-            return ReceiveEmptyMessageResult;
+            return EmptyReceiveResult;
         }
-        
+
         await _socket.ReceiveAllAsync(buffer, cancellationToken);
-        
-        return new ReceiveMessageResult
+
+        return new ReceiveResult
         (
             message,
-            ReceiveMessageReturnCode.Success
+            ReceiveReturnCode.Success
         );
     }
 
@@ -166,21 +178,8 @@ public class Messenger : IDisposable
             count = countBuffer.ReadInt();
             return true;
         }
+
         count = 0;
         return false;
-    }
-
-    /// <throws>OperationCanceledException</throws>
-    /// <throws>SocketSendException</throws>
-    [PublicAPI]
-    public async ValueTask SendMessageAsync(Message message, CancellationToken cancellationToken)
-    {
-        await _socket.SendAsync(message.GetFullMessageBuffer(), cancellationToken);
-    }
-
-    /// <throws>SocketSendException</throws>
-    public void SendMessage(Message message)
-    {
-        _socket.Send(message.GetFullMessageBuffer());
     }
 }

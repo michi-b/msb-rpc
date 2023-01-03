@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Messaging;
@@ -22,21 +24,40 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
     {
         Debug.Assert(Enum.GetUnderlyingType(typeof(TProcedure)) == typeof(int));
     }
+
+    protected async ValueTask<Message> SendRequestAsync(Request request, CancellationToken cancellationToken)
+    {
+        await Messenger.SendAsync(new Message(request), cancellationToken);
+        
+        TProcedure procedure = GetProcedure(request.ProcedureId);
+        
+        LogSentCall(Logger, TypeName, GetName(procedure), request.Buffer.Count);
+
+        ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer, cancellationToken);
+
+        return result.ReturnCode switch
+        {
+            ReceiveReturnCode.Success => result.Message,
+            ReceiveReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedure>
+                (procedure, "connection closed while waiting for the response"),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
     
     protected Message SendRequest(Request request)
     {
-        Messenger.SendMessage(new Message(request));
+        Messenger.Send(new Message(request));
 
         TProcedure procedure = GetProcedure(request.ProcedureId);
         
         LogSentCall(Logger, TypeName, GetName(procedure), request.Buffer.Count);
 
-        ReceiveMessageResult result = Messenger.ReceiveMessage(Buffer);
+        ReceiveResult result = Messenger.ReceiveMessage(Buffer);
 
         return result.ReturnCode switch
         {
-            ReceiveMessageReturnCode.Success => result.Message,
-            ReceiveMessageReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedure>
+            ReceiveReturnCode.Success => result.Message,
+            ReceiveReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedure>
                 (procedure, "connection closed while waiting for the response"),
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -50,5 +71,5 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
         Level = LogLevel.Trace,
         Message = "{endPointTypeName} sent a request to {procedureName} with {argumentsByteCount} argument bytes"
     )]
-    partial void LogSentCall(ILogger logger, string endPointTypeName, string procedureName, int argumentsByteCount);
+    private static partial void LogSentCall(ILogger logger, string endPointTypeName, string procedureName, int argumentsByteCount);
 }

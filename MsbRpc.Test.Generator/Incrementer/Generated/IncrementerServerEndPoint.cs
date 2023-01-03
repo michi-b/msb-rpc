@@ -92,5 +92,5 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
 
-    protected override bool GetIsFinal(IncrementerProcedure procedure) => procedure.GetIsFinal();
+    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetIsFinal();
 }

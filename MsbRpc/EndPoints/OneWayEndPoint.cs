@@ -48,5 +48,5 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
     
     protected abstract int GetId(TProcedure procedure);
     
-    protected abstract bool GetIsFinal(TProcedure procedure);
+    protected abstract bool GetClosesCommunication(TProcedure procedure);
 }

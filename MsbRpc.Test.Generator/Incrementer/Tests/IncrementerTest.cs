@@ -20,7 +20,7 @@ public class IncrementerTest : Test
 
         var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), new global::Incrementer.Incrementer(), LoggerFactory);
 
-        Task<Messenger.ListenReturnCode> serverListenTask = CreateServerListenTask(server, cancellationToken);
+        Task<ListenReturnCode> serverListenTask = CreateServerListenTask(server, cancellationToken);
 
         connection.CreateClientMessenger().Dispose();
 
@@ -97,7 +97,7 @@ public class IncrementerTest : Test
         Assert.AreEqual(expectedResult, lastResult);
     }
 
-    private static Task<Messenger.ListenReturnCode> CreateServerListenTask(IncrementerServerEndPoint server, CancellationToken cancellationToken)
+    private static Task<ListenReturnCode> CreateServerListenTask(IncrementerServerEndPoint server, CancellationToken cancellationToken)
         => Task.Factory.StartNew
         (
             server.Listen,
@@ -110,9 +110,9 @@ public class IncrementerTest : Test
     {
         public IncrementerClientEndPoint Client { get; }
         private IncrementerServerEndPoint Server { get; }
-        private Task<Messenger.ListenReturnCode> ServerListenTask { get; }
+        private Task<ListenReturnCode> ServerListenTask { get; }
 
-        private Setup(IncrementerClientEndPoint client, IncrementerServerEndPoint server, Task<Messenger.ListenReturnCode> serverListenTask)
+        private Setup(IncrementerClientEndPoint client, IncrementerServerEndPoint server, Task<ListenReturnCode> serverListenTask)
         {
             Client = client;
             Server = server;
@@ -125,7 +125,7 @@ public class IncrementerTest : Test
 
             var server = new IncrementerServerEndPoint(connection.CreateServerMessenger(), new global::Incrementer.Incrementer(), LoggerFactory);
 
-            Task<Messenger.ListenReturnCode> listenTask = CreateServerListenTask(server, cancellationToken);
+            Task<ListenReturnCode> listenTask = CreateServerListenTask(server, cancellationToken);
 
             var client = new IncrementerClientEndPoint(connection.CreateClientMessenger(), LoggerFactory);
 
