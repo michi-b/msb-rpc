@@ -6,7 +6,7 @@ namespace MsbRpc.Generator.Attributes;
 [MeansImplicitUse(ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.WithMembers)]
 public class RpcContractAttribute : Attribute
 {
-    [PublicAPI] public readonly RpcDirection InitialDirection;
+    [PublicAPI] public readonly RpcContractType ContractType;
 
-    public RpcContractAttribute(RpcDirection initialDirection = RpcDirection.ClientToServer) => InitialDirection = initialDirection;
+    public RpcContractAttribute(RpcContractType contractType) => ContractType = contractType;
 }

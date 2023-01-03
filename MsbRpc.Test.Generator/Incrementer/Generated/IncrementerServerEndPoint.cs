@@ -17,7 +17,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
     (
         messenger,
         implementation,
-        CreateLogger<IncrementerServerEndPoint>(loggerFactory),
+        MsbRpc.Utility.LoggerFactoryExtensions.TryCreateLogger<IncrementerClientEndPoint>(loggerFactory),
         initialBufferSize
     ) { }
 
@@ -29,6 +29,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
             IncrementerProcedure.Store => Store(request),
             IncrementerProcedure.IncrementStored => IncrementStored(),
             IncrementerProcedure.GetStored => GetStored(),
+            IncrementerProcedure.End => End(),
             _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
@@ -86,11 +87,18 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
         return Message.Empty;
     }
 
+    private Message End()
+    {
+        this.Implementation.End();
+
+        return Message.Empty;
+    }
+
     protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
     
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
 
-    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetIsFinal();
+    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetClosesConnection();
 }

@@ -27,9 +27,9 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
 
     protected async ValueTask<Message> SendRequestAsync(Request request, CancellationToken cancellationToken)
     {
-        await Messenger.SendAsync(new Message(request), cancellationToken);
-        
         TProcedure procedure = GetProcedure(request.ProcedureId);
+        
+        await Messenger.SendAsync(new Message(request), cancellationToken);
         
         LogSentCall(Logger, TypeName, GetName(procedure), request.Buffer.Count);
 
@@ -67,7 +67,7 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
     
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.RpcEndPointSentCall,
+        EventId = (int)LogEventIds.OutboundEndPointRequestedCall,
         Level = LogLevel.Trace,
         Message = "{endPointTypeName} sent a request to {procedureName} with {argumentsByteCount} argument bytes"
     )]

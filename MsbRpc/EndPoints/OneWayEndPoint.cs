@@ -11,8 +11,8 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
     protected RpcBuffer Buffer { get; }
     protected ILogger Logger { get; }
     protected string TypeName { get; }
+    public int Port { get; }
     private bool IsDisposed { get; set; }
-
     protected const int DefaultInitialBufferSize = 1024;
     
     protected OneWayEndPoint
@@ -26,9 +26,10 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
         Logger = logger;
         Buffer = new RpcBuffer(initialBufferSize);
         TypeName = GetType().Name;
+        Port = Messenger.Port;
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         if (!IsDisposed)
         {
@@ -37,10 +38,6 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
             IsDisposed = true;
         }
     }
-    
-    protected static ILogger CreateLogger<TEndPoint>(ILoggerFactory? loggerFactory) => loggerFactory != null
-        ? loggerFactory.CreateLogger<TEndPoint>()
-        : new Microsoft.Extensions.Logging.Abstractions.NullLogger<TEndPoint>();
 
     protected abstract string GetName(TProcedure procedure);
     

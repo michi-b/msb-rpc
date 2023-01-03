@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using MsbRpc.Serialization.Buffers;
-
+// ReSharper disable RedundantBaseQualifier
+// ReSharper disable RedundantNameQualifier
 // ReSharper disable once CheckNamespace
 namespace Incrementer.Generated;
 
@@ -15,16 +16,13 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
     ) : base
         (
             messenger,
-            CreateLogger<IncrementerClientEndPoint>(loggerFactory),
+            MsbRpc.Utility.LoggerFactoryExtensions.TryCreateLogger<IncrementerClientEndPoint>(loggerFactory),
             initialBufferSize
         ) { }
 
     public async System.Threading.Tasks.ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)
     {
-        // Write request arguments
-
         const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
-
         const int constantArgumentSizeSum = valueArgumentSize;
 
         Request request = Buffer.GetRequest(constantArgumentSizeSum, GetId(IncrementerProcedure.Increment));
@@ -33,20 +31,56 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
 
         writer.Write(value);
 
-        // Send request.
-
-        Message responseMessage = base.SendRequest(request);
+        Message responseMessage = await base.SendRequestAsync(request, cancellationToken);
         BufferReader responseReader = responseMessage.GetReader();
-
-        // Read response.        
 
         int response = responseReader.ReadInt();
 
         return response;
     }
+    
+    public async System.Threading.Tasks.ValueTask StoreAsync(int value, CancellationToken cancellationToken)
+    {
+        const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
+        const int constantArgumentSizeSum = valueArgumentSize;
+
+        Request request = Buffer.GetRequest(constantArgumentSizeSum, GetId(IncrementerProcedure.Store));
+        
+        MsbRpc.Serialization.Buffers.BufferWriter writer = request.GetWriter();
+
+        writer.Write(value);
+
+        await base.SendRequestAsync(request, cancellationToken);
+    }
+
+    public async System.Threading.Tasks.ValueTask IncrementStored(CancellationToken cancellationToken)
+    {
+        Request request = Buffer.GetRequest(0, GetId(IncrementerProcedure.IncrementStored));
+
+        await base.SendRequestAsync(request, cancellationToken);
+    }
+    
+    public async System.Threading.Tasks.ValueTask<int> GetStored(CancellationToken cancellationToken)
+    {
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.GetStored));
+
+        Message responseMessage = await base.SendRequestAsync(request, cancellationToken);
+        BufferReader responseReader = responseMessage.GetReader();
+
+        int response = responseReader.ReadInt();
+
+        return response;
+    }
+    
+    public async System.Threading.Tasks.ValueTask EndAsync(CancellationToken cancellationToken)
+    {
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.End));
+        await base.SendRequestAsync(request, cancellationToken);
+        Dispose();
+    }
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
     protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
-    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetIsFinal();
+    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetClosesConnection();
 }

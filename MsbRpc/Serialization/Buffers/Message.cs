@@ -8,12 +8,12 @@ namespace MsbRpc.Serialization.Buffers;
 public readonly struct Message
 {
     public const int Offset = PrimitiveSerializer.IntSize;
-    
+
     public readonly ArraySegment<byte> Buffer;
 
     public static readonly Message Empty = new(new byte[Offset], 0);
 
-    public Message(Request request) => Buffer = request.Buffer;
+    public Message(Request request) : this(request.Buffer.Array!, request.Buffer.Count + Request.Offset - Offset) { }
 
     public Message(byte[] bytes, int count)
     {
@@ -24,9 +24,9 @@ public readonly struct Message
 
     public int Length => Buffer.Count;
 
-    public BufferReader GetReader() => new BufferReader(Buffer);
+    public BufferReader GetReader() => new(Buffer);
 
-    public BufferWriter GetWriter() => new BufferWriter(Buffer);
+    public BufferWriter GetWriter() => new(Buffer);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ArraySegment<byte> GetFullMessageBuffer() => new(Buffer.Array!, 0, Buffer.Count + Offset);

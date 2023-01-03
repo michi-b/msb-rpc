@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ public class RpcSocket : IRpcSocket
     private readonly Socket _socket;
 
     private bool _isDisposed;
+    public readonly int Port;
 
     public RpcSocket(Socket socket)
     {
@@ -22,7 +24,15 @@ public class RpcSocket : IRpcSocket
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
+        
+        var endPoint = socket.LocalEndPoint as IPEndPoint;
+        if (endPoint == null)
+        {
+            throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
+        }
 
+        Port = endPoint.Port;
+        
         _socket = socket;
     }
 

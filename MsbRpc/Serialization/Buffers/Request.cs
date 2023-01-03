@@ -15,8 +15,8 @@ public readonly struct Request
 
     public Request(Message message)
     {
-        Debug.Assert(message.Length >= Offset);
-        Buffer = message.Buffer;
+        Debug.Assert(message.Length >= Offset - Message.Offset);
+        Buffer = new ArraySegment<byte>(message.Buffer.Array!, Offset, message.Buffer.Count + Message.Offset - Offset);
         ProcedureId = Buffer.Array!.ReadInt(Message.Offset);
     }
     

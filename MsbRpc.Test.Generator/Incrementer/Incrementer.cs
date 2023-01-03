@@ -1,5 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
-namespace Incrementer;
+﻿using Incrementer;
+
+namespace MsbRpc.Test.Generator.Incrementer;
 
 internal class Incrementer : IIncrementer
 {
@@ -18,4 +19,6 @@ internal class Incrementer : IIncrementer
     }
 
     public int GetStored() => _stored;
+
+    public void End() { }
 }

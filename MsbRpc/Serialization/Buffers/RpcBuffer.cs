@@ -18,6 +18,12 @@ public class RpcBuffer
         Fit(count + Request.Offset);
         return new Request(_bytes, count, id);
     }
+    
+    public Request GetRequest(int id)
+    {
+        Fit(Request.Offset);
+        return new Request(_bytes, 0, id);
+    }
 
     public Message GetMessage(int count)
     {
