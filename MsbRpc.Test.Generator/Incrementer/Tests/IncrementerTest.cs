@@ -19,7 +19,7 @@ public class IncrementerTest : Test
     [TestMethod]
     public async Task CanConnectAndDisconnect()
     {
-        IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
+        using IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
         IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
 
         WaitForThreads();
@@ -29,14 +29,12 @@ public class IncrementerTest : Test
 
         WaitForThreads();
         Assert.AreEqual(0, server.CreateConnectionDump().Length);
-
-        server.Dispose();
     }
 
     [TestMethod]
     public async Task CanConnectTwoClientsAndDisconnect()
     {
-        IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
+        using IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
 
         IncrementerClientEndPoint client1 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
         WaitForThreads();
@@ -53,22 +51,26 @@ public class IncrementerTest : Test
         client2.Dispose();
         WaitForThreads();
         Assert.AreEqual(0, server.CreateConnectionDump().Length);
-
-        server.Dispose();
     }
 
-    private static void WaitForThreads()
+    [TestMethod]
+    public async Task CanDisposeServerPrematurely()
     {
-        Thread.Sleep(100);
+        IncrementerClientEndPoint client;
+        using (IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory))
+        {
+            client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        }
+        client.Dispose();
     }
 
-    //
     // [TestMethod]
     // public async Task Increments0To1()
     // {
     //     const int testValue = 0;
     //     const int expectedResult = 1;
-    //
+    //     IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
+    //     IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
     //     CancellationToken cancellationToken = CancellationToken;
     //     int result;
     //     await using (var setup = await Setup.CreateAsync(cancellationToken))
@@ -131,4 +133,9 @@ public class IncrementerTest : Test
     //
     //     Assert.AreEqual(expectedResult, lastResult);
     // }
+
+    private static void WaitForThreads()
+    {
+        Thread.Sleep(100);
+    }
 }

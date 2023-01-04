@@ -13,10 +13,11 @@ public class Messenger : IDisposable
 {
     private const int CountSize = PrimitiveSerializer.IntSize;
     private static readonly ReceiveResult ClosedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionClosed);
+    private static readonly ReceiveResult DisposedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionDisposed);
     private static readonly ReceiveResult EmptyReceiveResult = new(Message.Empty, ReceiveReturnCode.Success);
     private readonly RpcSocket _socket;
     public readonly int Port;
-    private bool _disposed;
+    private bool _isDisposed;
 
     public Messenger(RpcSocket socket)
     {
@@ -26,14 +27,12 @@ public class Messenger : IDisposable
 
     public void Dispose()
     {
-        if (_disposed)
+        if (!_isDisposed)
         {
-            return;
+            GC.SuppressFinalize(this);
+            _isDisposed = true;
+            _socket.Dispose();
         }
-
-        _socket.Dispose();
-
-        _disposed = true;
     }
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
@@ -52,6 +51,8 @@ public class Messenger : IDisposable
                     break;
                 case ReceiveReturnCode.ConnectionClosed:
                     return ListenReturnCode.ConnectionClosed;
+                case ReceiveReturnCode.ConnectionDisposed:
+                    return ListenReturnCode.ConnectionDisposed;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -83,18 +84,29 @@ public class Messenger : IDisposable
     /// <throws>SocketReceiveException</throws>
     public ReceiveResult ReceiveMessage(RpcBuffer buffer)
     {
-        if (TryReceiveCount(buffer, out int count))
+        try
         {
-            Message message = buffer.GetMessage(count);
-
-            if (count == 0)
+            if (TryReceiveCount(buffer, out int count))
             {
-                return EmptyReceiveResult;
+                Message message = buffer.GetMessage(count);
+
+                if (count == 0)
+                {
+                    return EmptyReceiveResult;
+                }
+
+                _socket.ReceiveAll(message.Buffer);
+
+                return new ReceiveResult(message, ReceiveReturnCode.Success);
             }
-
-            _socket.ReceiveAll(message.Buffer);
-
-            return new ReceiveResult(message, ReceiveReturnCode.Success);
+        }
+        catch (ObjectDisposedException)
+        {
+            if (_isDisposed)
+            {
+                return DisposedConnectionReceiveResult;
+            }
+            throw;
         }
 
         return ClosedConnectionReceiveResult;
@@ -105,21 +117,32 @@ public class Messenger : IDisposable
     [PublicAPI]
     public async ValueTask<ReceiveResult> ReceiveMessageAsync(RpcBuffer buffer, CancellationToken cancellationToken)
     {
-        ArraySegment<byte> countSegment = buffer.Get(PrimitiveSerializer.IntSize);
-        if (await _socket.ReceiveAllAsync(countSegment, cancellationToken))
+        try
         {
-            int count = countSegment.ReadInt();
-
-            if (count == 0)
+            ArraySegment<byte> countSegment = buffer.Get(PrimitiveSerializer.IntSize);
+            if (await _socket.ReceiveAllAsync(countSegment, cancellationToken))
             {
-                return EmptyReceiveResult;
+                int count = countSegment.ReadInt();
+
+                if (count == 0)
+                {
+                    return EmptyReceiveResult;
+                }
+
+                Message message = buffer.GetMessage(count);
+
+                await _socket.ReceiveAllAsync(message.Buffer, cancellationToken);
+
+                return new ReceiveResult(message, ReceiveReturnCode.Success);
             }
-
-            Message message = buffer.GetMessage(count);
-
-            await _socket.ReceiveAllAsync(message.Buffer, cancellationToken);
-
-            return new ReceiveResult(message, ReceiveReturnCode.Success);
+        }
+        catch (ObjectDisposedException)
+        {
+            if (_isDisposed)
+            {
+                return DisposedConnectionReceiveResult;
+            }
+            throw;
         }
 
         return ClosedConnectionReceiveResult;

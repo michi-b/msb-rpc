@@ -16,7 +16,7 @@ public class RpcSocketReceiveException : RpcSocketException
         : base
         (
             socket,
-            $"Failed to send receive data due to exception: {innerException.GetType().Name}: {innerException.Message}" + SocketHasBeenDisposedMessage,
+            $"Failed to receive data due to exception: {innerException.GetType().Name}: {innerException.Message}" + SocketHasBeenDisposedMessage,
             innerException
         ) { }
 }

@@ -10,5 +10,6 @@ public enum ListenReturnCode
     /// <summary>
     ///     listening stopped because the receive delegate returned true
     /// </summary>
-    OperationDiscontinued
+    OperationDiscontinued,
+    ConnectionDisposed
 }

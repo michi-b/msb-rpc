@@ -194,6 +194,7 @@ public class RpcSocket : IRpcSocket
     {
         if (!_isDisposed)
         {
+            GC.SuppressFinalize(this);
             _isDisposed = true;
             _socket.Dispose();
         }
