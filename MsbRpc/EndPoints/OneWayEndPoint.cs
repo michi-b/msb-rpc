@@ -5,11 +5,13 @@ using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure : Enum
+public abstract class OneWayEndPoint<TEndPoint, TProcedure> : IDisposable 
+    where TEndPoint : OneWayEndPoint<TEndPoint, TProcedure>
+    where TProcedure : Enum
 {
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
-    protected ILogger Logger { get; }
+    protected ILogger<TEndPoint> Logger { get; }
     protected string TypeName { get; }
     public int Port { get; }
     private bool IsDisposed { get; set; }
@@ -18,7 +20,8 @@ public abstract class OneWayEndPoint<TProcedure> : IDisposable where TProcedure 
     protected OneWayEndPoint
     (
         Messenger messenger,
-        ILogger logger,
+        // ReSharper disable once ContextualLoggerProblem
+        ILogger<TEndPoint> logger,
         int initialBufferSize = BufferUtility.DefaultInitialSize
     )
     {

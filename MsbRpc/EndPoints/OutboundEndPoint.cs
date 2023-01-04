@@ -12,12 +12,15 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 [PublicAPI(Messages.ForUseInGeneratedCode)]
-public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TProcedure> where TProcedure : Enum
+public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : OneWayEndPoint<TEndPoint, TProcedure> 
+    where TEndPoint : OutboundEndPoint<TEndPoint, TProcedure>
+    where TProcedure : Enum
 {
     protected OutboundEndPoint
     (
         Messenger messenger,
-        ILogger logger,
+        // ReSharper disable once ContextualLoggerProblem
+        ILogger<TEndPoint> logger,
         int initialBufferSize = BufferUtility.DefaultInitialSize
     )
         : base(messenger, logger, initialBufferSize)
@@ -71,5 +74,5 @@ public abstract partial class OutboundEndPoint<TProcedure> : OneWayEndPoint<TPro
         Level = LogLevel.Trace,
         Message = "{endPointTypeName} sent a request to {procedureName} with {argumentsByteCount} argument bytes"
     )]
-    private static partial void LogSentCall(ILogger logger, string endPointTypeName, string procedureName, int argumentsByteCount);
+    private static partial void LogSentCall(ILogger<TEndPoint> logger, string endPointTypeName, string procedureName, int argumentsByteCount);
 }

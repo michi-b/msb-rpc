@@ -1,11 +1,8 @@
 ﻿// ReSharper disable CheckNamespace
 
-using System;
-using MsbRpc.Serialization.Buffers;
-
 namespace Incrementer.Generated;
 
-public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<IncrementerProcedure, IIncrementer>
+public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<IncrementerServerEndPoint, IncrementerProcedure, IIncrementer>
 {
     public IncrementerServerEndPoint
     (
@@ -17,11 +14,11 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
     (
         messenger,
         implementation,
-        MsbRpc.Utility.LoggerFactoryExtensions.TryCreateLogger<IncrementerClientEndPoint>(loggerFactory),
+        MsbRpc.Utility.LoggerFactoryExtensions.CreateLoggerOptional<IncrementerServerEndPoint>(loggerFactory),
         initialBufferSize
     ) { }
 
-    protected override Message Execute(IncrementerProcedure procedure, Request request)
+    protected override MsbRpc.Serialization.Buffers.Message Execute(IncrementerProcedure procedure, MsbRpc.Serialization.Buffers.Request request)
     {
         return procedure switch
         {
@@ -30,27 +27,27 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
             IncrementerProcedure.IncrementStored => IncrementStored(),
             IncrementerProcedure.GetStored => GetStored(),
             IncrementerProcedure.End => End(),
-            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
 
-    private Message GetStored()
+    private MsbRpc.Serialization.Buffers.Message GetStored()
     {
         int result = Implementation.GetStored();
 
         const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
-        Message message = Buffer.GetMessage(resultSize);
-        BufferWriter resultWriter = message.GetWriter();
+        MsbRpc.Serialization.Buffers.Message message = Buffer.GetMessage(resultSize);
+        MsbRpc.Serialization.Buffers.BufferWriter resultWriter = message.GetWriter();
 
         resultWriter.Write(result);
 
         return message;
     }
 
-    private Message Increment(Request request)
+    private MsbRpc.Serialization.Buffers.Message Increment(MsbRpc.Serialization.Buffers.Request request)
     {
-        BufferReader requestReader = request.GetReader();
+        MsbRpc.Serialization.Buffers.BufferReader requestReader = request.GetReader();
         
         // Read request arguments.
         int valueArgument = requestReader.ReadInt();
@@ -61,37 +58,37 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
         // Send response.
         const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
-        Message message = Buffer.GetMessage(resultSize);
-        BufferWriter resultWriter = message.GetWriter();
+        MsbRpc.Serialization.Buffers.Message message = Buffer.GetMessage(resultSize);
+        MsbRpc.Serialization.Buffers.BufferWriter resultWriter = message.GetWriter();
 
         resultWriter.Write(result);
 
         return message;
     }
 
-    private Message Store(Request request)
+    private MsbRpc.Serialization.Buffers.Message Store(MsbRpc.Serialization.Buffers.Request request)
     {
-        BufferReader requestReader = request.GetReader();
+        MsbRpc.Serialization.Buffers.BufferReader requestReader = request.GetReader();
         
         int valueArgument = requestReader.ReadInt();
 
         this.Implementation.Store(valueArgument);
 
-        return Message.Empty;
+        return MsbRpc.Serialization.Buffers.Message.Empty;
     }
 
-    private Message IncrementStored()
+    private MsbRpc.Serialization.Buffers.Message IncrementStored()
     {
         this.Implementation.IncrementStored();
 
-        return Message.Empty;
+        return MsbRpc.Serialization.Buffers.Message.Empty;
     }
 
-    private Message End()
+    private MsbRpc.Serialization.Buffers.Message End()
     {
         this.Implementation.End();
 
-        return Message.Empty;
+        return MsbRpc.Serialization.Buffers.Message.Empty;
     }
 
     protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();

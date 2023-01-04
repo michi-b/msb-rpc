@@ -10,7 +10,7 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation> : IDisposable
-    where TEndPoint : InboundEndPoint<TProcedure, TImplementation>
+    where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
     where TProcedure : Enum
 {
     private static readonly string EndPointTypename = typeof(TEndPoint).Name;
@@ -19,7 +19,7 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
     private bool _isDisposed;
 
     public RootEndPointRegistry(ILoggerFactory loggerFactory)
-        => _logger = loggerFactory.TryCreateLogger<RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>>();
+        => _logger = loggerFactory.CreateLoggerOptional<RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>>();
 
     public void AddAndStart(TEndPoint endPoint)
     {

@@ -11,7 +11,7 @@ using MsbRpc.Sockets;
 namespace MsbRpc.EndPoints;
 
 public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : IDisposable
-    where TEndPoint : InboundEndPoint<TProcedure, TImplementation>
+    where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
     where TProcedure : Enum
 {
     [PublicAPI] public readonly int Port;

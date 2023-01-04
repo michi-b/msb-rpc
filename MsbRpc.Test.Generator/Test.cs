@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,9 @@ namespace MsbRpc.Test.Generator;
 
 public class Test
 {
-    [PublicAPI] protected static readonly ILoggerFactory LoggerFactory;
+    protected static readonly ILoggerFactory LoggerFactory;
+    protected static readonly IPAddress LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
+    
 
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global

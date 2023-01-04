@@ -17,4 +17,5 @@ public enum LogEventIds
     RootEndPointDeregisteredOnRegistryDisposal,
     RootEndPointThrewException,
     ServerConnectionCountChanged,
+    MessengerConnectionFailed
 }

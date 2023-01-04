@@ -8,7 +8,9 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 [PublicAPI(Messages.ForUseInGeneratedCode)]
-public abstract partial class InboundEndPoint<TProcedure, TImplementation> : OneWayEndPoint<TProcedure> where TProcedure : Enum
+public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : OneWayEndPoint<TEndPoint, TProcedure>
+    where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
+    where TProcedure : Enum
 {
     public readonly TImplementation Implementation;
     
@@ -16,7 +18,8 @@ public abstract partial class InboundEndPoint<TProcedure, TImplementation> : One
     (
         Messenger messenger,
         TImplementation implementation,
-        ILogger logger,
+        // ReSharper disable once ContextualLoggerProblem
+        ILogger<TEndPoint> logger,
         int initialBufferSize = BufferUtility.DefaultInitialSize
     )
         : base

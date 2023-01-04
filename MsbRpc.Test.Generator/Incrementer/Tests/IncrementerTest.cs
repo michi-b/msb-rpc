@@ -1,42 +1,39 @@
 ﻿using System.Net;
-using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Incrementer.Generated;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Messaging;
-using MsbRpc.Sockets;
 
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
 
 [TestClass]
 public class IncrementerTest : Test
 {
+    private static void WaitForThreads()
+    {
+        Thread.Sleep(100);
+    }
+    
     [TestMethod]
     public void CanServerListen()
     {
         IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
-        Thread.Sleep(100);
+        WaitForThreads();
         server.Dispose();
     }
 
     [TestMethod]
-    public void CanConnectAndDisconnect()
+    public async Task CanConnectAndDisconnect()
     {
         IncrementerServer server = IncrementerServer.Start(()=> new Incrementer(), LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
         
-        IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
-        int port = server.Port;
-        
-        Socket clientSocket = new(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        clientSocket.Connect(localHost, port);
-        var clientMessenger = new Messenger(new RpcSocket(clientSocket));
-
-        IncrementerClientEndPoint client = new(clientMessenger, LoggerFactory);
-        Thread.Sleep(100);
+        WaitForThreads();
         Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        
         client.Dispose();
-
-        Thread.Sleep(100);
+        
+        WaitForThreads();
         Assert.AreEqual(0, server.CreateConnectionDump().Length);
         
         server.Dispose();
