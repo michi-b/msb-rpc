@@ -39,6 +39,30 @@ public class IncrementerTest : Test
         server.Dispose();
     }
     
+    [TestMethod]
+    public async Task CanConnectTwoClientsAndDisconnect()
+    {
+        IncrementerServer server = IncrementerServer.Start(()=> new Incrementer(), LoggerFactory);
+        
+        IncrementerClientEndPoint client1 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        WaitForThreads();
+        Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        
+        IncrementerClientEndPoint client2 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        WaitForThreads();
+        Assert.AreEqual(2, server.CreateConnectionDump().Length);
+        
+        client1.Dispose();
+        WaitForThreads();
+        Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        
+        client2.Dispose();
+        WaitForThreads();
+        Assert.AreEqual(0, server.CreateConnectionDump().Length);
+        
+        server.Dispose();
+    }
+    
     //
     // [TestMethod]
     // public async Task Increments0To1()
