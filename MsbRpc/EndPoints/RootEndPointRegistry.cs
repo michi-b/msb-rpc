@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Utility;
 
@@ -43,10 +44,12 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
             var thread = new Thread(() => RunEndPoint(endPoint));
             _entries.Add(port, new Entry(endPoint, thread));
             LogEndPointRegistered(_logger, _serverName, EndPointTypename, port);
+            LogConnectionCount(_logger, _serverName, _entries.Count);
             thread.Start();
         }
     }
 
+    [PublicAPI]
     public Entry[] CreateDump()
     {
         lock (this)
@@ -55,6 +58,7 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
             {
                 throw new ObjectDisposedException(EndPointTypename);
             }
+
             return _entries.Values.ToArray();
         }
     }
@@ -67,17 +71,21 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
             {
                 _isDisposed = true;
 
-                foreach (Entry entry in _entries.Values)
+                KeyValuePair<int, Entry>[] entries = _entries.ToArray();
+
+                foreach (KeyValuePair<int, Entry> entry in entries)
                 {
-                    entry.EndPoint.Dispose();
+                    entry.Value.EndPoint.Dispose();
                 }
 
-                foreach (Entry entry in _entries.Values)
+                foreach (KeyValuePair<int, Entry> entry in entries)
                 {
-                    entry.Thread.Join();
+                    entry.Value.Thread.Join();
+                    LogEndPointDeregisteredOnDisposal(_logger, _serverName, EndPointTypename, entry.Key);
                 }
 
                 _entries.Clear();
+                LogConnectionCount(_logger, _serverName, 0);
             }
         }
     }
@@ -122,8 +130,10 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
                     {
                         endPoint.Dispose();
                         _entries[port].Thread.Join();
+                        _entries.Remove(port);
+                        LogEndPointDeregistered(_logger, _serverName, EndPointTypename, port);
+                        LogConnectionCount(_logger, _serverName, _entries.Count);
                     }
-                    LogEndPointDeregistered(_logger, _serverName, EndPointTypename, port);
                 }
             }
         }
@@ -131,8 +141,16 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
 
     [LoggerMessage
     (
+        EventId = (int)LogEventIds.RootEndPointRegistryConnectionCountChanged,
+        Level = LogLevel.Information,
+        Message = "{ServerName} with port {Port} now has {ConnectionCount} connection."
+    )]
+    private static partial void LogConnectionCount(ILogger logger, string serverName, int connectionCount);
+
+    [LoggerMessage
+    (
         EventId = (int)LogEventIds.RootEndPointThrewException,
-        Level = LogLevel.Debug,
+        Level = LogLevel.Error,
         Message = "{EndPointTypeName} with port {Port} threw an exception."
     )]
     private static partial void LogEndPointThrewException(ILogger logger, string endPointTypeName, int port, Exception exception);
@@ -144,6 +162,14 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
         Message = "{ServerName} deregistered {EndPointTypeName} with port {Port}."
     )]
     private static partial void LogEndPointDeregistered(ILogger logger, string serverName, string endPointTypeName, int port);
+
+    [LoggerMessage
+    (
+        EventId = (int)LogEventIds.RootEndPointDeregisteredOnRegistryDisposal,
+        Level = LogLevel.Debug,
+        Message = "{ServerName} deregistered {EndPointTypeName} with port {Port} on endpoint registry disposal."
+    )]
+    private static partial void LogEndPointDeregisteredOnDisposal(ILogger logger, string serverName, string endPointTypeName, int port);
 
     [LoggerMessage
     (

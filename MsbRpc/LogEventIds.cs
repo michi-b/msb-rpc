@@ -13,6 +13,7 @@ public enum LogEventIds
     ServerStoppedListeningDueToException,
     RootEndPointRegistered,
     RootEndPointDeregistered,
-    RootEndPointThrewException
-    
+    RootEndPointDeregisteredOnRegistryDisposal,
+    RootEndPointThrewException,
+    RootEndPointRegistryConnectionCountChanged
 }
