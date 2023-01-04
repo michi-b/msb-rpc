@@ -91,8 +91,6 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
         return MsbRpc.Serialization.Buffers.Message.Empty;
     }
 
-    protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
-    
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();

@@ -18,7 +18,7 @@ public class RpcBuffer
         Fit(count + Request.Offset);
         return new Request(_bytes, count, id);
     }
-    
+
     public Request GetRequest(int id)
     {
         Fit(Request.Offset);

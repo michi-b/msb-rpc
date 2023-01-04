@@ -19,7 +19,7 @@ public readonly struct Request
         Buffer = new ArraySegment<byte>(message.Buffer.Array!, Offset, message.Buffer.Count + Message.Offset - Offset);
         ProcedureId = Buffer.Array!.ReadInt(Message.Offset);
     }
-    
+
     public Request(byte[] bytes, int count, int procedureId)
     {
         Debug.Assert(bytes.Length >= count + Offset);
@@ -28,12 +28,12 @@ public readonly struct Request
         bytes.WriteInt(procedureId, PrimitiveSerializer.IntSize);
         ProcedureId = procedureId;
     }
-    
+
     public int Length => Buffer.Count;
 
-    public BufferReader GetReader() => new BufferReader(Buffer);
+    public BufferReader GetReader() => new(Buffer);
 
-    public BufferWriter GetWriter() => new BufferWriter(Buffer);
+    public BufferWriter GetWriter() => new(Buffer);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ArraySegment<byte> GetFullMessageBuffer() => new(Buffer.Array!, 0, Buffer.Count + Offset);

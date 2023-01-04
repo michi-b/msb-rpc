@@ -21,9 +21,10 @@ public static partial class MessengerFactory
             LogConnectionFailed(logger, serverEndPoint, exception);
             throw;
         }
+
         return new Messenger(new RpcSocket(socket));
     }
-    
+
     [LoggerMessage
     (
         EventId = (int)LogEventIds.MessengerConnectionFailed,

@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Incrementer.Generated;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,11 +8,6 @@ namespace MsbRpc.Test.Generator.Incrementer.Tests;
 [TestClass]
 public class IncrementerTest : Test
 {
-    private static void WaitForThreads()
-    {
-        Thread.Sleep(100);
-    }
-    
     [TestMethod]
     public void CanServerListen()
     {
@@ -25,44 +19,49 @@ public class IncrementerTest : Test
     [TestMethod]
     public async Task CanConnectAndDisconnect()
     {
-        IncrementerServer server = IncrementerServer.Start(()=> new Incrementer(), LoggerFactory);
+        IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
         IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
-        
+
         WaitForThreads();
         Assert.AreEqual(1, server.CreateConnectionDump().Length);
-        
+
         client.Dispose();
-        
+
         WaitForThreads();
         Assert.AreEqual(0, server.CreateConnectionDump().Length);
-        
+
         server.Dispose();
     }
-    
+
     [TestMethod]
     public async Task CanConnectTwoClientsAndDisconnect()
     {
-        IncrementerServer server = IncrementerServer.Start(()=> new Incrementer(), LoggerFactory);
-        
+        IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
+
         IncrementerClientEndPoint client1 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
         WaitForThreads();
         Assert.AreEqual(1, server.CreateConnectionDump().Length);
-        
+
         IncrementerClientEndPoint client2 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
         WaitForThreads();
         Assert.AreEqual(2, server.CreateConnectionDump().Length);
-        
+
         client1.Dispose();
         WaitForThreads();
         Assert.AreEqual(1, server.CreateConnectionDump().Length);
-        
+
         client2.Dispose();
         WaitForThreads();
         Assert.AreEqual(0, server.CreateConnectionDump().Length);
-        
+
         server.Dispose();
     }
-    
+
+    private static void WaitForThreads()
+    {
+        Thread.Sleep(100);
+    }
+
     //
     // [TestMethod]
     // public async Task Increments0To1()

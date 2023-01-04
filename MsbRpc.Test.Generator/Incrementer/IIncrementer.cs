@@ -10,7 +10,7 @@ public interface IIncrementer
     public void Store(int value);
     public void IncrementStored();
     public int GetStored();
-    
+
     [RpcMethod(true)]
     public void End();
 }

@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
+using MsbRpc.Utility.Generic;
 
 namespace MsbRpc.EndPoints;
 
-using StateUtility = Utility.Generic.StateUtility<State>;
+using StateUtility = StateUtility<State>;
 
 public static class StateExtensions
 {

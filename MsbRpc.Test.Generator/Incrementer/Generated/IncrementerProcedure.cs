@@ -1,8 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
 namespace Incrementer.Generated;
 
-
-
 public enum IncrementerProcedure
 {
     Increment = 0,

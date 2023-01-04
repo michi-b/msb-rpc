@@ -5,19 +5,17 @@ using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class OneWayEndPoint<TEndPoint, TProcedure> : IDisposable 
-    where TEndPoint : OneWayEndPoint<TEndPoint, TProcedure>
+public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
+    where TEndPoint : EndPoint<TEndPoint, TProcedure>
     where TProcedure : Enum
 {
+    protected const int DefaultInitialBufferSize = 1024;
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
     protected ILogger<TEndPoint> Logger { get; }
-    protected string TypeName { get; }
-    public int Port { get; }
     private bool IsDisposed { get; set; }
-    protected const int DefaultInitialBufferSize = 1024;
-    
-    protected OneWayEndPoint
+
+    protected EndPoint
     (
         Messenger messenger,
         // ReSharper disable once ContextualLoggerProblem
@@ -28,8 +26,6 @@ public abstract class OneWayEndPoint<TEndPoint, TProcedure> : IDisposable
         Messenger = messenger;
         Logger = logger;
         Buffer = new RpcBuffer(initialBufferSize);
-        TypeName = GetType().Name;
-        Port = Messenger.Port;
     }
 
     public virtual void Dispose()
@@ -43,10 +39,8 @@ public abstract class OneWayEndPoint<TEndPoint, TProcedure> : IDisposable
     }
 
     protected abstract string GetName(TProcedure procedure);
-    
+
     protected abstract TProcedure GetProcedure(int procedureId);
-    
-    protected abstract int GetId(TProcedure procedure);
-    
+
     protected abstract bool GetClosesCommunication(TProcedure procedure);
 }

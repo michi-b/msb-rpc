@@ -15,8 +15,8 @@ public class Messenger : IDisposable
     private static readonly ReceiveResult ClosedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionClosed);
     private static readonly ReceiveResult EmptyReceiveResult = new(Message.Empty, ReceiveReturnCode.Success);
     private readonly RpcSocket _socket;
-    private bool _disposed;
     public readonly int Port;
+    private bool _disposed;
 
     public Messenger(RpcSocket socket)
     {

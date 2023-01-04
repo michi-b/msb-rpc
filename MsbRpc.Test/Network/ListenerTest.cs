@@ -24,11 +24,11 @@ public abstract class ListenerTest : Test
     protected async Task TestSingleByteMessagesIsDelivered()
     {
         const byte value = 123;
-        
+
         Message message = BufferUtility.CreateMessage(PrimitiveSerializer.ByteSize);
-        
+
         message.Buffer.WriteByte(value);
-        
+
         CancellationToken cancellationToken = CancellationToken;
 
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);

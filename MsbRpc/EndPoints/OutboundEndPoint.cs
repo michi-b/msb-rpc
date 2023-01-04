@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -12,7 +11,7 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 [PublicAPI(Messages.ForUseInGeneratedCode)]
-public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : OneWayEndPoint<TEndPoint, TProcedure> 
+public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoint, TProcedure>
     where TEndPoint : OutboundEndPoint<TEndPoint, TProcedure>
     where TProcedure : Enum
 {
@@ -31,10 +30,10 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : OneWayEn
     protected async ValueTask<Message> SendRequestAsync(Request request, CancellationToken cancellationToken)
     {
         TProcedure procedure = GetProcedure(request.ProcedureId);
-        
+
         await Messenger.SendAsync(new Message(request), cancellationToken);
-        
-        LogSentCall(Logger, TypeName, GetName(procedure), request.Buffer.Count);
+
+        LogSentCall(Logger, GetName(procedure), request.Buffer.Count);
 
         ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer, cancellationToken);
 
@@ -46,14 +45,14 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : OneWayEn
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
+
     protected Message SendRequest(Request request)
     {
         Messenger.Send(new Message(request));
 
         TProcedure procedure = GetProcedure(request.ProcedureId);
-        
-        LogSentCall(Logger, TypeName, GetName(procedure), request.Buffer.Count);
+
+        LogSentCall(Logger, GetName(procedure), request.Buffer.Count);
 
         ReceiveResult result = Messenger.ReceiveMessage(Buffer);
 
@@ -66,13 +65,13 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : OneWayEn
         };
     }
 
-    private static int GetProcedureId(TProcedure value) => Unsafe.As<TProcedure, int>(ref value);
-    
+    protected abstract int GetId(TProcedure value);
+
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.OutboundEndPointRequestedCall,
+        EventId = (int)LogEventIds.OutboundEndPointSentRequest,
         Level = LogLevel.Trace,
-        Message = "{endPointTypeName} sent a request to {procedureName} with {argumentsByteCount} argument bytes"
+        Message = "Sent a request to {procedureName} with {argumentsByteCount} argument bytes"
     )]
-    private static partial void LogSentCall(ILogger<TEndPoint> logger, string endPointTypeName, string procedureName, int argumentsByteCount);
+    private static partial void LogSentCall(ILogger<TEndPoint> logger, string procedureName, int argumentsByteCount);
 }

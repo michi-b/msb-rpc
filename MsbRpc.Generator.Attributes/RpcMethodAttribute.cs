@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Attributes;
 
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public class RpcMethodAttribute : Attribute
 {
     public readonly bool DiscontinuesCommunication;

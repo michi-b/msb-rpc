@@ -12,9 +12,9 @@ namespace MsbRpc.Sockets;
 public class RpcSocket : IRpcSocket
 {
     private readonly Socket _socket;
+    public readonly int Port;
 
     private bool _isDisposed;
-    public readonly int Port;
 
     public RpcSocket(Socket socket)
     {
@@ -24,7 +24,7 @@ public class RpcSocket : IRpcSocket
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
-        
+
         var endPoint = socket.LocalEndPoint as IPEndPoint;
         if (endPoint == null)
         {
@@ -32,7 +32,7 @@ public class RpcSocket : IRpcSocket
         }
 
         Port = endPoint.Port;
-        
+
         _socket = socket;
     }
 

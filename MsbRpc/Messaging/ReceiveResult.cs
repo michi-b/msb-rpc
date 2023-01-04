@@ -9,6 +9,7 @@ public readonly struct ReceiveResult
         Message = message;
         ReturnCode = returnCode;
     }
+
     public Message Message { get; }
     public ReceiveReturnCode ReturnCode { get; }
 }

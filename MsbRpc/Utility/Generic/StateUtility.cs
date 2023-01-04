@@ -104,7 +104,7 @@ public static class StateUtility<TState> where TState : Enum
         action?.Invoke();
         state = stateTo;
     }
-    
+
     [PublicAPI]
     public static void Transition
     (

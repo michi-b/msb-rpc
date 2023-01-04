@@ -13,7 +13,6 @@ public class Test
 {
     protected static readonly ILoggerFactory LoggerFactory;
     protected static readonly IPAddress LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
-    
 
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -27,7 +26,7 @@ public class Test
         Logger logger = new LoggerConfiguration()
             .Enrich.WithThreadId()
             .Enrich.WithThreadName()
-            .MinimumLevel.Verbose()
+            .MinimumLevel.Debug()
             .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{ThreadId}:{ThreadName}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger()!;
         Debug.Assert(logger != null);

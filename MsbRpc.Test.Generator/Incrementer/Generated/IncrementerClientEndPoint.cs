@@ -2,27 +2,23 @@
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable InlineTemporaryVariable
 
-using System.Net;
-using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
-
 // ReSharper disable once CheckNamespace
 namespace Incrementer.Generated;
 
 
 public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<IncrementerClientEndPoint, IncrementerProcedure>
 {
-    [UsedImplicitly]
-    private readonly ILogger<IncrementerClientEndPoint> _logger;
+    [JetBrains.Annotations.UsedImplicitly]
+    private readonly Microsoft.Extensions.Logging.ILogger<IncrementerClientEndPoint> _logger;
 
     public static async System.Threading.Tasks.ValueTask<IncrementerClientEndPoint> ConnectAsync
     (
-        IPAddress address,
+        System.Net.IPAddress address,
         int port,
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultInitialBufferSize
     )
-        => await IncrementerClientEndPoint.ConnectAsync(new IPEndPoint(address, port), loggerFactory, initialBufferSize);
+        => await IncrementerClientEndPoint.ConnectAsync(new System.Net.IPEndPoint(address, port), loggerFactory, initialBufferSize);
 
     public static async System.Threading.Tasks.ValueTask<IncrementerClientEndPoint> ConnectAsync
     (
