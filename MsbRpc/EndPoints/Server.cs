@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -18,7 +19,7 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
     protected readonly Func<TImplementation> GetImplementation;
     protected readonly ILogger Logger;
     protected readonly ILoggerFactory LoggerFactory;
-    protected readonly string TypeName;
+    protected readonly string ThreadName;
 
     private const int DefaultListenBacklogSize = 100;
     private readonly RootEndPointRegistry<TEndPoint, TProcedure, TImplementation> _connections;
@@ -28,8 +29,6 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
 
     protected Server(Func<TImplementation> getImplementation, ILoggerFactory loggerFactory, ILogger logger, int port = 0)
     {
-        TypeName = GetType().Name;
-        _connections = new RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>(TypeName, loggerFactory);
         GetImplementation = getImplementation;
         LoggerFactory = loggerFactory;
         Logger = logger;
@@ -37,17 +36,20 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
         IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
         _listenSocket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         _listenSocket.Bind(new IPEndPoint(localHost, port));
+        
+        var listenEndPoint = _listenSocket.LocalEndPoint as IPEndPoint;
+        Port = port == 0 ? listenEndPoint!.Port : port;
+        ThreadName = $"{GetType().Name}:{Port}";
         if (port == 0)
         {
-            var listenEndPoint = (IPEndPoint)_listenSocket.LocalEndPoint;
-            Port = listenEndPoint.Port;
-            LogWasCreatedWithEphemeralPort(Logger, TypeName, Port);
+            LogWasCreatedWithEphemeralPort(Logger, ThreadName);
         }
         else
         {
             Port = port;
-            LogWasCreatedWithSpecifiedPort(Logger, TypeName, Port);
+            LogWasCreatedWithSpecifiedPort(Logger, ThreadName);
         }
+        _connections = new RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>(loggerFactory);
     }
 
     [PublicAPI]
@@ -57,17 +59,33 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException(TypeName);
+                throw new ObjectDisposedException(ThreadName);
             }
 
             if (_listenThread != null)
             {
-                throw new InvalidOperationException($"{TypeName} is already started.");
+                throw new InvalidOperationException($"{ThreadName} is already started.");
             }
 
-            _listenThread = new Thread(() => Run(backlog));
+            _listenThread = new Thread(() => Run(backlog))
+            {
+                Name = ThreadName,
+            };
             _listenThread.Start();
             return _listenThread;
+        }
+    }
+
+    public KeyValuePair<int, RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>.Entry>[] CreateConnectionDump()
+    {
+        lock (this)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(ThreadName);
+            }
+
+            return _connections.CreateDump();
         }
     }
 
@@ -76,10 +94,12 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
         try
         {
             _listenSocket.Listen(backlog);
-            LogStartedListening(Logger, TypeName, Port);
+            LogStartedListening(Logger);
             while (true)
             {
                 Socket newConnectionSocket = _listenSocket.Accept();
+                var newConnectionEndPoint = (IPEndPoint)newConnectionSocket.LocalEndPoint;
+                LogAcceptedNewConnection(Logger, newConnectionEndPoint.Port);
                 lock (this)
                 {
                     if (_isDisposed)
@@ -96,17 +116,17 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
         {
             if (_isDisposed && socketException.SocketErrorCode == SocketError.Interrupted)
             {
-                LogStoppedListeningDueToDisposal(Logger, TypeName, Port);
+                LogStoppedListeningDueToDisposal(Logger);
             }
             else
             {
-                LogStoppedListeningDueToException(Logger, TypeName, Port, socketException);
+                LogStoppedListeningDueToException(Logger, socketException);
                 throw;
             }
         }
         catch (Exception exception)
         {
-            LogStoppedListeningDueToException(Logger, TypeName, Port, exception);
+            LogStoppedListeningDueToException(Logger, exception);
             throw;
         }
         finally
@@ -135,39 +155,47 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
     (
         EventId = (int)LogEventIds.ServerWasCreatedWithEphemeralPort,
         Level = LogLevel.Debug,
-        Message = "{ServerType} was created with ephemeral port {Port}."
+        Message = "{ServerType} was created on ephemeral port."
     )]
-    private static partial void LogWasCreatedWithEphemeralPort(ILogger logger, string serverType, int port);
+    private static partial void LogWasCreatedWithEphemeralPort(ILogger logger, string serverType);
 
     [LoggerMessage
     (
         EventId = (int)LogEventIds.ServerWasCreatedWithSpecifiedPort,
         Level = LogLevel.Debug,
-        Message = "{ServerType} was created with specified port {Port}."
+        Message = "{ServerType} was created on specified port."
     )]
-    private static partial void LogWasCreatedWithSpecifiedPort(ILogger logger, string serverType, int port);
+    private static partial void LogWasCreatedWithSpecifiedPort(ILogger logger, string serverType);
 
     [LoggerMessage
     (
         EventId = (int)LogEventIds.ServerStartedListening,
         Level = LogLevel.Information,
-        Message = "{ServerType} started listening on port {Port}."
+        Message = "Started listening."
     )]
-    private static partial void LogStartedListening(ILogger logger, string serverType, int port);
+    private static partial void LogStartedListening(ILogger logger);
 
     [LoggerMessage
     (
         EventId = (int)LogEventIds.ServerStoppedListeningDueToDisposal,
         Level = LogLevel.Information,
-        Message = "{ServerType} stopped listening on port {Port} due to disposal."
+        Message = "Stopped listening due to disposal."
     )]
-    private static partial void LogStoppedListeningDueToDisposal(ILogger logger, string serverType, int port);
+    private static partial void LogStoppedListeningDueToDisposal(ILogger logger);
 
     [LoggerMessage
     (
         EventId = (int)LogEventIds.ServerStoppedListeningDueToException,
         Level = LogLevel.Error,
-        Message = "{ServerType} stopped listening on port {Port} due to an exception."
+        Message = "Stopped listening due to an exception."
     )]
-    private static partial void LogStoppedListeningDueToException(ILogger logger, string serverType, int port, Exception exception);
+    private static partial void LogStoppedListeningDueToException(ILogger logger, Exception exception);
+
+    [LoggerMessage
+    (
+        EventId = (int)LogEventIds.ServerAcceptedNewConnection,
+        Level = LogLevel.Trace,
+        Message = "Accepted new connection on port {Port}."
+    )]
+    private static partial void LogAcceptedNewConnection(ILogger logger, int port);
 }

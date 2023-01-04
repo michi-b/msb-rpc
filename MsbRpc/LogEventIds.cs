@@ -9,11 +9,12 @@ public enum LogEventIds
     ServerWasCreatedWithSpecifiedPort,
     ServerWasCreatedWithEphemeralPort,
     ServerStartedListening,
+    ServerAcceptedNewConnection,
     ServerStoppedListeningDueToDisposal,
     ServerStoppedListeningDueToException,
     RootEndPointRegistered,
     RootEndPointDeregistered,
     RootEndPointDeregisteredOnRegistryDisposal,
     RootEndPointThrewException,
-    RootEndPointRegistryConnectionCountChanged
+    ServerConnectionCountChanged,
 }

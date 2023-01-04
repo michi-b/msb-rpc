@@ -1,9 +1,10 @@
-﻿using System;
+﻿using System.Net;
+using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 using Incrementer.Generated;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Test.Network.Utility;
+using MsbRpc.Messaging;
+using MsbRpc.Sockets;
 
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
 
@@ -14,14 +15,31 @@ public class IncrementerTest : Test
     public void CanServerListen()
     {
         IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
-        Thread.Sleep(1000);
+        Thread.Sleep(100);
         server.Dispose();
     }
 
     [TestMethod]
-    public void CanConnectToServer()
+    public void CanConnectAndDisconnect()
     {
-            
+        IncrementerServer server = IncrementerServer.Start(()=> new Incrementer(), LoggerFactory);
+        
+        IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
+        int port = server.Port;
+        
+        Socket clientSocket = new(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        clientSocket.Connect(localHost, port);
+        var clientMessenger = new Messenger(new RpcSocket(clientSocket));
+
+        IncrementerClientEndPoint client = new(clientMessenger, LoggerFactory);
+        Thread.Sleep(100);
+        Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        client.Dispose();
+
+        Thread.Sleep(100);
+        Assert.AreEqual(0, server.CreateConnectionDump().Length);
+        
+        server.Dispose();
     }
     
     //
