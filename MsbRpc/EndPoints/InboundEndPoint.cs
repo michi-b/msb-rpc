@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Contracts;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Utility;
@@ -10,6 +11,7 @@ namespace MsbRpc.EndPoints;
 [PublicAPI(Messages.ForUseInGeneratedCode)]
 public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TEndPoint, TProcedure>
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
+    where TImplementation : IRpcContract
     where TProcedure : Enum
 {
     public readonly TImplementation Implementation;
@@ -60,7 +62,7 @@ public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementa
         LogReceivedCall(Logger, GetName(procedure), request.Length);
         Message response = Execute(procedure, request);
         Messenger.Send(response);
-        return GetClosesCommunication(procedure);
+        return Implementation.RandToCompletion;
     }
 
     protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);

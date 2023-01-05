@@ -5,12 +5,14 @@ using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Contracts;
 using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
 public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation> : IDisposable
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
+    where TImplementation : IRpcContract
     where TProcedure : Enum
 {
     private static readonly string EndPointTypename = typeof(TEndPoint).Name;

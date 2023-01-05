@@ -16,19 +16,6 @@ public static class IncrementerProcedureExtensions
         };
     }
 
-    public static bool GetClosesConnection(this IncrementerProcedure procedure)
-    {
-        return procedure switch
-        {
-            IncrementerProcedure.Increment => false,
-            IncrementerProcedure.Store => false,
-            IncrementerProcedure.IncrementStored => false,
-            IncrementerProcedure.GetStored => false,
-            IncrementerProcedure.End => true,
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
-        };
-    }
-
     public static int GetId(this IncrementerProcedure procedure)
     {
         return procedure switch

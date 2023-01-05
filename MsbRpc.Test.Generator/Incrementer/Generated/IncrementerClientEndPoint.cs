@@ -110,5 +110,4 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
     protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
-    protected override bool GetClosesCommunication(IncrementerProcedure procedure) => procedure.GetClosesConnection();
 }

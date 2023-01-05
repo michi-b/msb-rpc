@@ -1,10 +1,11 @@
-﻿using MsbRpc.Generator.Attributes;
+﻿using MsbRpc.Contracts;
+using MsbRpc.Generator.Attributes;
 
 // ReSharper disable CheckNamespace
 namespace Incrementer;
 
 [RpcContract(RpcContractType.ServerRoot)]
-public interface IIncrementer
+public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
     public void Store(int value);

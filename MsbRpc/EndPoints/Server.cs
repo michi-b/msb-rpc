@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Contracts;
 using MsbRpc.Messaging;
 using MsbRpc.Sockets;
 
@@ -12,6 +13,7 @@ namespace MsbRpc.EndPoints;
 
 public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : IDisposable
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
+    where TImplementation : IRpcContract
     where TProcedure : Enum
 {
     private const int DefaultListenBacklogSize = 100;

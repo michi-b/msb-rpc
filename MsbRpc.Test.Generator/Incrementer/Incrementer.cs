@@ -4,21 +4,27 @@ namespace MsbRpc.Test.Generator.Incrementer;
 
 internal class Incrementer : IIncrementer
 {
-    private int _stored;
+    private int _value;
+    public bool RandToCompletion { get; private set; }
 
     public int Increment(int value) => value + 1;
 
     public void Store(int value)
     {
-        _stored = value;
+        _value = value;
     }
 
     public void IncrementStored()
     {
-        _stored++;
+        _value++;
     }
 
-    public int GetStored() => _stored;
+    public int GetStored() => _value;
 
-    public void End() { }
+    public void End()
+    {
+        RandToCompletion = true;
+    }
+
+    public void Dispose() { }
 }

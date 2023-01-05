@@ -41,6 +41,4 @@ public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
     protected abstract string GetName(TProcedure procedure);
 
     protected abstract TProcedure GetProcedure(int procedureId);
-
-    protected abstract bool GetClosesCommunication(TProcedure procedure);
 }
