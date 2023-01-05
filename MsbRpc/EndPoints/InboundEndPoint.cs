@@ -38,7 +38,14 @@ public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementa
         try
         {
             ListenReturnCode listenReturnCode = Messenger.Listen(Buffer, ReceiveMessage);
-            LogStoppedListening(Logger, listenReturnCode.GetName());
+            if (RanToCompletion)
+            {
+                LogRanToCompletion(Logger, listenReturnCode.GetName());
+            }
+            else
+            {
+                LogStoppedListeningWithoutRunningToCompletion(Logger, listenReturnCode.GetName());
+            }
         }
         finally
         {
@@ -60,10 +67,19 @@ public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementa
         Request request = new(message);
         TProcedure procedure = GetProcedure(request.ProcedureId);
         LogReceivedCall(Logger, GetName(procedure), request.Length);
-        Message response = Execute(procedure, request);
-        Messenger.Send(response);
-        return Implementation.RandToCompletion;
+        Response response = Execute(procedure, request);
+        RanToCompletion = response.RanToCompletion;
+        Messenger.Send(new Message(response));
+        return RanToCompletion;
     }
+
+    [LoggerMessage
+    (
+        EventId = (int)LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion,
+        Level = LogLevel.Warning,
+        Message = "Stopped listening without running to completion with return code {ListenReturnCodeName}."
+    )]
+    private static partial void LogStoppedListeningWithoutRunningToCompletion(ILogger logger, string listenReturnCodeName);
 
     protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);
 
@@ -77,11 +93,11 @@ public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementa
 
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.InboundEndPointStoppedListening,
+        EventId = (int)LogEventIds.InboundEndPointRanToCompletion,
         Level = LogLevel.Information,
-        Message = "Stopped listening with return code {ListenReturnCodeName}."
+        Message = "Ran to completion with return code {ListenReturnCodeName}."
     )]
-    private static partial void LogStoppedListening(ILogger logger, string listenReturnCodeName);
+    private static partial void LogRanToCompletion(ILogger logger, string listenReturnCodeName);
 
     [LoggerMessage
     (
@@ -91,5 +107,5 @@ public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementa
     )]
     private static partial void LogReceivedCall(ILogger logger, string procedureName, int argumentsByteCount);
 
-    protected abstract Message Execute(TProcedure procedure, Request request);
+    protected abstract Response Execute(TProcedure procedure, Request request);
 }

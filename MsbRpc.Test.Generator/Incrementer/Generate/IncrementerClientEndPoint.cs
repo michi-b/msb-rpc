@@ -3,6 +3,7 @@
 // ReSharper disable InlineTemporaryVariable
 
 // ReSharper disable once CheckNamespace
+// ReSharper disable MemberCanBePrivate.Global
 namespace Incrementer.Generated;
 
 
@@ -44,35 +45,37 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
         logger,
         initialBufferSize
     )
-    {
-        _logger = logger;
-    }
+        => _logger = logger;
 
     public async System.Threading.Tasks.ValueTask<int> IncrementAsync(int value, System.Threading.CancellationToken cancellationToken)
     {
+        base.AssertIsOperable();
+        
         const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        MsbRpc.Serialization.Buffers.Request request = Buffer.GetRequest(constantArgumentSizeSum, GetId(IncrementerProcedure.Increment));
+        MsbRpc.Serialization.Buffers.Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.Increment), constantArgumentSizeSum);
         
         MsbRpc.Serialization.Buffers.BufferWriter writer = request.GetWriter();
 
         writer.Write(value);
 
-        MsbRpc.Serialization.Buffers.Message responseMessage = await base.SendRequestAsync(request, cancellationToken);
+        MsbRpc.Serialization.Buffers.Response responseMessage = await base.SendRequestAsync(request, cancellationToken);
         MsbRpc.Serialization.Buffers.BufferReader responseReader = responseMessage.GetReader();
 
-        int response = responseReader.ReadInt();
+        int result = responseReader.ReadInt();
 
-        return response;
+        return result;
     }
 
     public async System.Threading.Tasks.ValueTask StoreAsync(int value, System.Threading.CancellationToken cancellationToken)
     {
+        base.AssertIsOperable();
+
         const int valueArgumentSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        MsbRpc.Serialization.Buffers.Request request = Buffer.GetRequest(constantArgumentSizeSum, GetId(IncrementerProcedure.Store));
+        MsbRpc.Serialization.Buffers.Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.Store), constantArgumentSizeSum);
         
         MsbRpc.Serialization.Buffers.BufferWriter writer = request.GetWriter();
 
@@ -81,30 +84,35 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
         await base.SendRequestAsync(request, cancellationToken);
     }
 
-    public async System.Threading.Tasks.ValueTask IncrementStored(System.Threading.CancellationToken cancellationToken)
+    public async System.Threading.Tasks.ValueTask IncrementStoredAsync(System.Threading.CancellationToken cancellationToken)
     {
-        MsbRpc.Serialization.Buffers.Request request = Buffer.GetRequest(0, GetId(IncrementerProcedure.IncrementStored));
+        base.AssertIsOperable();
+        
+        MsbRpc.Serialization.Buffers.Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.IncrementStored), 0);
 
         await base.SendRequestAsync(request, cancellationToken);
     }
     
-    public async System.Threading.Tasks.ValueTask<int> GetStored(System.Threading.CancellationToken cancellationToken)
+    public async System.Threading.Tasks.ValueTask<int> GetStoredAsync(System.Threading.CancellationToken cancellationToken)
     {
-        MsbRpc.Serialization.Buffers.Request request = Buffer.GetRequest(GetId(IncrementerProcedure.GetStored));
+        base.AssertIsOperable();
+        
+        MsbRpc.Serialization.Buffers.Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.GetStored));
 
-        MsbRpc.Serialization.Buffers.Message responseMessage = await base.SendRequestAsync(request, cancellationToken);
-        MsbRpc.Serialization.Buffers.BufferReader responseReader = responseMessage.GetReader();
+        MsbRpc.Serialization.Buffers.Response response = await base.SendRequestAsync(request, cancellationToken);
+        MsbRpc.Serialization.Buffers.BufferReader responseReader = response.GetReader();
 
-        int response = responseReader.ReadInt();
+        int result = responseReader.ReadInt();
 
-        return response;
+        return result;
     }
     
-    public async System.Threading.Tasks.ValueTask EndAsync(System.Threading.CancellationToken cancellationToken)
+    public async System.Threading.Tasks.ValueTask FinishAsync(System.Threading.CancellationToken cancellationToken)
     {
-        MsbRpc.Serialization.Buffers.Request request = Buffer.GetRequest(GetId(IncrementerProcedure.End));
+        base.AssertIsOperable();
+
+        MsbRpc.Serialization.Buffers.Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.End));
         await base.SendRequestAsync(request, cancellationToken);
-        Dispose();
     }
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();

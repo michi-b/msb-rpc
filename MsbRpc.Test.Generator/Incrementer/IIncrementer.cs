@@ -13,5 +13,5 @@ public interface IIncrementer : IRpcContract
     public int GetStored();
 
     [RpcMethod(true)]
-    public void End();
+    public void Finish();
 }

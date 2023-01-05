@@ -17,7 +17,7 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
     where TProcedure : Enum
 {
     private const int DefaultListenBacklogSize = 100;
-    private readonly RootEndPointRegistry<TEndPoint, TProcedure, TImplementation> _connections;
+    private readonly ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> _connections;
     private readonly Socket _listenSocket;
 
     protected readonly Func<TImplementation> GetImplementation;
@@ -51,7 +51,7 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
             LogWasCreatedWithSpecifiedPort(Logger, ThreadName);
         }
 
-        _connections = new RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>(loggerFactory);
+        _connections = new ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>(loggerFactory);
     }
 
     [PublicAPI]
@@ -75,7 +75,7 @@ public abstract partial class Server<TEndPoint, TProcedure, TImplementation> : I
         }
     }
 
-    public KeyValuePair<int, RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>.Entry>[] CreateConnectionDump()
+    public KeyValuePair<int, ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>.Entry>[] CreateConnectionDump()
     {
         lock (this)
         {

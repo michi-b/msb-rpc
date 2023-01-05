@@ -4,7 +4,8 @@ public enum LogEventIds
 {
     InboundEndPointStartedListening,
     InboundEndPointReceivedCall,
-    InboundEndPointStoppedListening,
+    InboundEndPointStoppedListeningWithoutRunningToCompletion,
+    InboundEndPointRanToCompletion,
     OutboundEndPointSentRequest,
     ServerWasCreatedWithSpecifiedPort,
     ServerWasCreatedWithEphemeralPort,
@@ -13,9 +14,9 @@ public enum LogEventIds
     ServerImmediatelyDisposedNewConnection,
     ServerStoppedListeningDueToDisposal,
     ServerStoppedListeningDueToException,
-    RootEndPointRegistered,
-    RootEndPointDeregistered,
-    RootEndPointDeregisteredOnRegistryDisposal,
-    RootEndPointThrewException,
-    MessengerConnectionFailed
+    ServerEndPointRegistered,
+    ServerEndPointDeregistered,
+    ServerEndPointDeregisteredOnRegistryDisposal,
+    ServerEndPointThrewException,
+    MessengerConnectionFailed,
 }

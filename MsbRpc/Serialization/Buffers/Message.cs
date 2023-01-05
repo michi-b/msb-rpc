@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using MsbRpc.Serialization.Primitives;
+using MsbRpc.Utility;
 
 namespace MsbRpc.Serialization.Buffers;
 
@@ -14,6 +16,8 @@ public readonly struct Message
     public static readonly Message Empty = new(new byte[Offset], 0);
 
     public Message(Request request) : this(request.Buffer.Array!, request.Buffer.Count + Request.Offset - Offset) { }
+    
+    public Message(Response response) : this(response.Buffer.Array!, response.Buffer.Count + Response.Offset - Offset) { }
 
     public Message(byte[] bytes, int count)
     {
@@ -24,8 +28,12 @@ public readonly struct Message
 
     public int Length => Buffer.Count;
 
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferReader GetReader() => new(Buffer);
 
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferWriter GetWriter() => new(Buffer);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

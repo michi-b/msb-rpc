@@ -13,16 +13,16 @@ public class RpcBuffer
         _bytes = count == 0 ? ByteArrayUtility.Empty : new byte[count];
     }
 
-    public Request GetRequest(int count, int id)
+    public Request GetRequest(int id, int count = 0)
     {
         Fit(count + Request.Offset);
         return new Request(_bytes, count, id);
     }
 
-    public Request GetRequest(int id)
+    public Response GetResponse(bool ranToCompletion, int count = 0)
     {
-        Fit(Request.Offset);
-        return new Request(_bytes, 0, id);
+        Fit(count + Request.Offset);
+        return new Response(_bytes, count, ranToCompletion);
     }
 
     public Message GetMessage(int count)

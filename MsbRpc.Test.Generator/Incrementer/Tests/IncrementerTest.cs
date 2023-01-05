@@ -1,15 +1,22 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Incrementer.Generated;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.EndPoints;
 
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
 
 [TestClass]
 public class IncrementerTest : Test
 {
+    private static readonly ILogger<IncrementerTest> Logger;
+    
+    static IncrementerTest() => Logger = LoggerFactory.CreateLogger<IncrementerTest>();
+
     [TestMethod]
-    public void CanServerListen()
+    public void Listens()
     {
         IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
         WaitForThreads();
@@ -17,7 +24,7 @@ public class IncrementerTest : Test
     }
 
     [TestMethod]
-    public async Task CanConnectAndDisconnect()
+    public async Task ConnectsAndDisconnects()
     {
         using IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
         IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
@@ -32,7 +39,7 @@ public class IncrementerTest : Test
     }
 
     [TestMethod]
-    public async Task CanConnectTwoClientsAndDisconnect()
+    public async Task ConnectsAndDisconnectsTwoClients()
     {
         using IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
 
@@ -64,75 +71,102 @@ public class IncrementerTest : Test
         client.Dispose();
     }
 
-    // [TestMethod]
-    // public async Task Increments0To1()
-    // {
-    //     const int testValue = 0;
-    //     const int expectedResult = 1;
-    //     IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
-    //     IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
-    //     CancellationToken cancellationToken = CancellationToken;
-    //     int result;
-    //     await using (var setup = await Setup.CreateAsync(cancellationToken))
-    //     {
-    //         IncrementerClientEndPoint client = setup.Client;
-    //         result = await client.IncrementAsync(testValue, cancellationToken);
-    //     }
-    //
-    //     Assert.AreEqual(expectedResult, result);
-    // }
-    //
-    // [TestMethod]
-    // public async Task Increments99To100()
-    // {
-    //     const int testValue = 99;
-    //     const int expectedResult = 100;
-    //
-    //     CancellationToken cancellationToken = CancellationToken;
-    //     int result;
-    //     await using (var setup = await Setup.CreateAsync(cancellationToken))
-    //     {
-    //         result = await setup.Client.IncrementAsync(testValue, cancellationToken);
-    //     }
-    //
-    //     Assert.AreEqual(expectedResult, result);
-    // }
-    //
-    // [TestMethod]
-    // public async Task IncrementsMinus1To0()
-    // {
-    //     const int testValue = -1;
-    //     const int expectedResult = 0;
-    //
-    //     CancellationToken cancellationToken = CancellationToken;
-    //     int result;
-    //     await using (var setup = await Setup.CreateAsync(cancellationToken))
-    //     {
-    //         result = await setup.Client.IncrementAsync(testValue, cancellationToken);
-    //     }
-    //
-    //     Assert.AreEqual(expectedResult, result);
-    // }
-    //
-    // [TestMethod]
-    // public async Task Increments0To10()
-    // {
-    //     const int testValue = 0;
-    //     const int expectedResult = 10;
-    //
-    //     CancellationToken cancellationToken = CancellationToken;
-    //
-    //     int lastResult = testValue;
-    //     await using (var setup = await Setup.CreateAsync(cancellationToken))
-    //     {
-    //         for (int i = 0; i < expectedResult - testValue; i++)
-    //         {
-    //             lastResult = await setup.Client.IncrementAsync(lastResult, cancellationToken);
-    //         }
-    //     }
-    //
-    //     Assert.AreEqual(expectedResult, lastResult);
-    // }
+    [TestMethod]
+    public async Task Increments0To1()
+    {
+        const int testValue = 0;
+        const int expectedResult = 1;
+        
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+
+        int result = await client.IncrementAsync(testValue, CancellationToken);
+        
+        Assert.AreEqual(expectedResult, result);
+    }
+
+    [TestMethod]
+    public async Task Increments99To100()
+    {
+        const int testValue = 99;
+        const int expectedResult = 100;
+        
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+
+        int result = await client.IncrementAsync(testValue, CancellationToken);
+        
+        Assert.AreEqual(expectedResult, result);
+    }
+
+    [TestMethod]
+    public async Task IncrementsMinus1To0()
+    {
+        const int testValue = -1;
+        const int expectedResult = 0;
+        
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+
+        int result = await client.IncrementAsync(testValue, CancellationToken);
+        
+        Assert.AreEqual(expectedResult, result);
+    }
+    
+    [TestMethod]
+    public async Task Increments0To10()
+    {
+        const int testValue = 0;
+        const int expectedResult = 10;
+        
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+
+        int lastResult = testValue;
+        for (int i = 0; i < expectedResult - testValue; i++)
+        {
+            lastResult = await client.IncrementAsync(lastResult, CancellationToken);
+        }
+        
+        Assert.AreEqual(expectedResult, lastResult);
+    }
+    
+    [TestMethod]
+    public async Task Increments0To10Stored()
+    {
+        const int testValue = 0;
+        const int expectedResult = 10;
+        
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+
+        await client.StoreAsync(testValue, CancellationToken);
+        for (int i = 0; i < 10; i++)
+        {
+            await client.IncrementStoredAsync(CancellationToken);
+        }
+        int result = await client.GetStoredAsync(CancellationToken);
+        
+        Assert.AreEqual(expectedResult, result);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(EndPointRanToCompletionException))]
+    public async Task IncrementingAfterFinishingThrowsRanToCompletionException()
+    {
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        await client.FinishAsync(CancellationToken);
+        try
+        {
+            await client.IncrementAsync(0, CancellationToken);
+        }
+        catch (EndPointRanToCompletionException exception)
+        {
+            Logger.LogInformation("Exception message: {ExceptionMessage}", exception.Message);
+            throw;
+        }
+    }
 
     private static void WaitForThreads()
     {

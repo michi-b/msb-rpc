@@ -21,10 +21,12 @@ internal class Incrementer : IIncrementer
 
     public int GetStored() => _value;
 
-    public void End()
+    public void Finish()
     {
         RandToCompletion = true;
     }
+    
+    public static Incrementer Create() => new();
 
     public void Dispose() { }
 }

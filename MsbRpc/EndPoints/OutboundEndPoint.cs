@@ -27,7 +27,13 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
         Debug.Assert(Enum.GetUnderlyingType(typeof(TProcedure)) == typeof(int));
     }
 
-    protected async ValueTask<Message> SendRequestAsync(Request request, CancellationToken cancellationToken)
+    private static RpcRequestException<TProcedure> GetConnectionClosedException(TProcedure procedure)
+        => new(procedure, "Connection closed while waiting for the response.");
+
+    private static RpcRequestException<TProcedure> GetConnectionDisposedException(TProcedure procedure)
+        => new(procedure, "Connection disposed while waiting for the response.");
+
+    protected async ValueTask<Response> SendRequestAsync(Request request, CancellationToken cancellationToken)
     {
         TProcedure procedure = GetProcedure(request.ProcedureId);
 
@@ -37,13 +43,23 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
 
         ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer, cancellationToken);
 
-        return result.ReturnCode switch
+        switch (result.ReturnCode)
         {
-            ReceiveReturnCode.Success => result.Message,
-            ReceiveReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedure>
-                (procedure, "connection closed while waiting for the response"),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+            case ReceiveReturnCode.Success:
+                Response response = new(result.Message);
+                if (response.RanToCompletion)
+                {
+                    RanToCompletion = true;
+                    Dispose();
+                }
+                return response;
+            case ReceiveReturnCode.ConnectionClosed:
+                throw GetConnectionClosedException(procedure);
+            case ReceiveReturnCode.ConnectionDisposed:
+                throw GetConnectionDisposedException(procedure);
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     protected Message SendRequest(Request request)
@@ -59,8 +75,8 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
         return result.ReturnCode switch
         {
             ReceiveReturnCode.Success => result.Message,
-            ReceiveReturnCode.ConnectionClosed => throw new RpcRequestException<TProcedure>
-                (procedure, "connection closed while waiting for the response"),
+            ReceiveReturnCode.ConnectionClosed => throw GetConnectionClosedException(procedure),
+            ReceiveReturnCode.ConnectionDisposed => throw GetConnectionDisposedException(procedure),
             _ => throw new ArgumentOutOfRangeException()
         };
     }

@@ -10,19 +10,19 @@ using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
-public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation> : IDisposable
+public partial class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : IDisposable
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
     where TImplementation : IRpcContract
     where TProcedure : Enum
 {
     private static readonly string EndPointTypename = typeof(TEndPoint).Name;
     private readonly Dictionary<int, Entry> _connections = new(); // key is managed thread id
-    private readonly ILogger<RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>> _logger;
+    private readonly ILogger<ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>> _logger;
     private int _connectionCount;
     private bool _isDisposed;
 
-    public RootEndPointRegistry(ILoggerFactory loggerFactory)
-        => _logger = loggerFactory.CreateLoggerOptional<RootEndPointRegistry<TEndPoint, TProcedure, TImplementation>>();
+    public ServerEndPointRegistry(ILoggerFactory loggerFactory)
+        => _logger = loggerFactory.CreateLoggerOptional<ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>>();
 
     public void AddAndStart(TEndPoint endPoint)
     {
@@ -125,7 +125,7 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
 
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.RootEndPointThrewException,
+        EventId = (int)LogEventIds.ServerEndPointThrewException,
         Level = LogLevel.Error,
         Message = "An exception occured."
     )]
@@ -133,7 +133,7 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
 
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.RootEndPointRegistered,
+        EventId = (int)LogEventIds.ServerEndPointRegistered,
         Level = LogLevel.Debug,
         Message = "Registered new endpoint with thread id {TargetThreadId}. Connection count is {ConnectionCount}."
     )]
@@ -141,7 +141,7 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
 
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.RootEndPointDeregistered,
+        EventId = (int)LogEventIds.ServerEndPointDeregistered,
         Level = LogLevel.Debug,
         Message = "Deregistered endpoint. Connection count is {ConnectionCount}."
     )]
@@ -149,7 +149,7 @@ public partial class RootEndPointRegistry<TEndPoint, TProcedure, TImplementation
 
     [LoggerMessage
     (
-        EventId = (int)LogEventIds.RootEndPointDeregisteredOnRegistryDisposal,
+        EventId = (int)LogEventIds.ServerEndPointDeregisteredOnRegistryDisposal,
         Level = LogLevel.Debug,
         Message = "Deregistered {EndPointTypeName} with thread id {TargetThreadId} during server disposal. Connection count is {ConnectionCount}."
     )]
