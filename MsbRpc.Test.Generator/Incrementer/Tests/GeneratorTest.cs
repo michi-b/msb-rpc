@@ -11,6 +11,8 @@ using Misbat.CodeAnalysis.Test.Utility;
 using MsbRpc.EndPoints;
 using MsbRpc.Generator;
 using MsbRpc.Generator.Attributes;
+using Serilog;
+using Serilog.Core;
 
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
 
@@ -25,6 +27,9 @@ public interface IIncrementer
     public void IncrementStored();
     public int GetStored();
 }";
+
+    private static readonly ILoggerFactory LoggerFactory;
+    private static readonly ILogger<GeneratorTest> Logger;
 
     private static readonly CodeTest CodeTest = new CodeTest
         (
@@ -47,7 +52,15 @@ public interface IIncrementer
         .InNamespace("MsbRpc.Test.Serialization.ManualRpcTest.Incrementer.Input")
         .WithCode(Code);
 
-    private static readonly ILogger<GeneratorTest> Logger = LoggerFactory.CreateLogger<GeneratorTest>();
+    static GeneratorTest()
+    {
+        Logger logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .CreateLogger()!;
+        LoggerFactory = new LoggerFactory().AddSerilog(logger);
+        Logger = LoggerFactory.CreateLogger<GeneratorTest>();
+    }
 
     [TestMethod]
     public async Task GeneratorRuns()

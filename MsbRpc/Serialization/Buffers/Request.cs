@@ -34,7 +34,7 @@ public readonly struct Request
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferReader GetReader() => new(Buffer);
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferWriter GetWriter() => new(Buffer);
 }

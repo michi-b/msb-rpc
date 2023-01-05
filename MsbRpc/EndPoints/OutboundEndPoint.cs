@@ -52,6 +52,7 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
                     RanToCompletion = true;
                     Dispose();
                 }
+
                 return response;
             case ReceiveReturnCode.ConnectionClosed:
                 throw GetConnectionClosedException(procedure);

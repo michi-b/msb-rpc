@@ -25,7 +25,7 @@ internal class Incrementer : IIncrementer
     {
         RandToCompletion = true;
     }
-    
+
     public static Incrementer Create() => new();
 
     public void Dispose() { }

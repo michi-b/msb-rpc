@@ -16,7 +16,7 @@ public readonly struct Message
     public static readonly Message Empty = new(new byte[Offset], 0);
 
     public Message(Request request) : this(request.Buffer.Array!, request.Buffer.Count + Request.Offset - Offset) { }
-    
+
     public Message(Response response) : this(response.Buffer.Array!, response.Buffer.Count + Response.Offset - Offset) { }
 
     public Message(byte[] bytes, int count)

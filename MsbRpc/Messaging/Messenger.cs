@@ -106,6 +106,7 @@ public class Messenger : IDisposable
             {
                 return DisposedConnectionReceiveResult;
             }
+
             throw;
         }
 
@@ -142,6 +143,7 @@ public class Messenger : IDisposable
             {
                 return DisposedConnectionReceiveResult;
             }
+
             throw;
         }
 

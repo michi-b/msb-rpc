@@ -10,7 +10,7 @@ public readonly struct Response
     public const int Offset = Message.Offset + PrimitiveSerializer.BoolSize;
 
     public readonly ArraySegment<byte> Buffer;
-    
+
     public readonly bool RanToCompletion;
 
     public Response(Message message)
@@ -31,10 +31,10 @@ public readonly struct Response
     }
 
     public int Length => Buffer.Count;
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferReader GetReader() => new(Buffer);
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferWriter GetWriter() => new(Buffer);
 }

@@ -18,5 +18,5 @@ public enum LogEventIds
     ServerEndPointDeregistered,
     ServerEndPointDeregisteredOnRegistryDisposal,
     ServerEndPointThrewException,
-    MessengerConnectionFailed,
+    MessengerConnectionFailed
 }

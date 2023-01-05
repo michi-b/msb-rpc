@@ -4,5 +4,5 @@ public enum ReceiveReturnCode
 {
     Success = 0,
     ConnectionClosed = 1,
-    ConnectionDisposed = 2,
+    ConnectionDisposed = 2
 }
