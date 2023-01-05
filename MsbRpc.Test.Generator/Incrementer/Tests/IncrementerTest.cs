@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Incrementer.Generated;
@@ -166,6 +167,16 @@ public class IncrementerTest : Test
         int result = await client.GetStoredAsync(CancellationToken);
 
         Assert.AreEqual(expectedResult, result);
+    }
+
+    [TestMethod]
+    public async Task FinishProcedureMakesEndPointsRunToCompletion()
+    {
+        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
+        using IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        Assert.IsFalse(client.RanToCompletion);
+        await client.FinishAsync(CancellationToken);
+        Assert.IsTrue(client.RanToCompletion);
     }
 
     [TestMethod]

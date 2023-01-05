@@ -69,8 +69,8 @@ public class ContractGenerator : IIncrementalGenerator
             ContractNode contract = new(ref contractInfo, context);
             if (contract.IsValid)
             {
-                GenerateEndPoint(context, contract, contract.Server);
-                GenerateEndPoint(context, contract, contract.Client);
+                // GenerateEndPoint(context, contract, contract.Server);
+                // GenerateEndPoint(context, contract, contract.Client);
             }
             else
             {
@@ -89,16 +89,16 @@ public class ContractGenerator : IIncrementalGenerator
         ProcedureCollection? inboundProcedures = endPoint.InboundProcedures;
         if (inboundProcedures != null)
         {
-            context.GenerateFile(new ProcedureEnumFileWriter(contract, inboundProcedures));
-            context.GenerateFile(new ProcedureEnumExtensionsFileWriter(contract, inboundProcedures));
-            context.GenerateFile(new InterfaceFileWriter(contract, endPoint, inboundProcedures));
+            // context.GenerateFile(new ProcedureEnumFileWriter(contract, inboundProcedures));
+            // context.GenerateFile(new ProcedureEnumExtensionsFileWriter(contract, inboundProcedures));
+            // context.GenerateFile(new InterfaceFileWriter(contract, endPoint, inboundProcedures));
         }
 
         //generate endpoint
         ProcedureCollection? outboundProcedures = endPoint.OutboundProcedures;
         if (inboundProcedures != null || outboundProcedures != null)
         {
-            context.GenerateFile(new EndPointFileWriter(contract, endPoint, inboundProcedures, outboundProcedures));
+            // context.GenerateFile(new EndPointFileWriter(contract, endPoint, inboundProcedures, outboundProcedures));
         }
     }
 }

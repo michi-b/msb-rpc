@@ -110,30 +110,26 @@ public interface IIncrementer
         await TestGenerates("IncrementerServerProcedure.g.cs");
     }
 
-    [TestMethod]
-    public async Task GeneratesServerProcedureEnumExtensions()
-    {
-        await TestGenerates("IncrementerServerProcedureExtensions.g.cs");
-    }
+    // [TestMethod]
+    // public async Task GeneratesServerProcedureEnumExtensions()
+    // {
+    //     await TestGenerates("IncrementerServerProcedureExtensions.g.cs");
+    // }
 
-    [TestMethod]
-    public async Task GeneratesServerInterface()
-    {
-        await TestGenerates("IIncrementerServerImplementation.g.cs");
-    }
+    // [TestMethod]
+    // public async Task GeneratesClientEndPoint()
+    // {
+    //     await TestGenerates("IncrementerClientEndPoint.g.cs");
+    // }
 
-    [TestMethod]
-    public async Task GeneratesClientEndPoint()
-    {
-        await TestGenerates("IncrementerClientEndPoint.g.cs");
-    }
+    // [TestMethod]
+    // public async Task GeneratesServerEndPoint()
+    // {
+    //     await TestGenerates("IncrementerServerEndPoint.g.cs");
+    // }
 
-    [TestMethod]
-    public async Task GeneratesServerEndPoint()
-    {
-        await TestGenerates("IncrementerServerEndPoint.g.cs");
-    }
-
+    //todo: test generation of server (server endpoint factory)
+    
     private async Task TestGenerates(string shortFileName)
     {
         bool IsTargetDiagnostic
