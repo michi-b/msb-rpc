@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Misbat.CodeAnalysis.Test.CodeTest;
 using Misbat.CodeAnalysis.Test.Extensions;
 using Misbat.CodeAnalysis.Test.Utility;
+using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Generator;
 using MsbRpc.Generator.Attributes;
@@ -19,8 +20,8 @@ namespace MsbRpc.Test.Generator.Incrementer.Tests;
 [TestClass]
 public class GeneratorTest : Test
 {
-    private const string Code = @"[RpcContract]
-public interface IIncrementer
+    private const string Code = @"[RpcContract(RpcContractType.Server)]
+public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
     public void Store(int value);
@@ -41,7 +42,7 @@ public interface IIncrementer
                     MetadataReferenceUtility.SystemRuntime,
                     MetadataReferenceUtility.NetStandard,
                     MetadataReferenceUtility.FromType<RpcContractAttribute>(),
-                    MetadataReferenceUtility.FromType<EndPointDirection>(),
+                    MetadataReferenceUtility.FromType<IRpcContract>(),
                     MetadataReferenceUtility.FromType<ILoggerFactory>(),
                     MetadataReferenceUtility.FromType<ArgumentOutOfRangeException>(),
                     MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Tasks.Extensions")
@@ -49,6 +50,7 @@ public interface IIncrementer
             ).WithAdditionalGenerators(new ContractGenerator())
         )
         .WithAddedNamespaceImports("MsbRpc.Generator.Attributes")
+        .WithAddedNamespaceImports("MsbRpc.Contracts")
         .InNamespace("MsbRpc.Test.Serialization.ManualRpcTest.Incrementer.Input")
         .WithCode(Code);
 

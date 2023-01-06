@@ -2,7 +2,7 @@
 
 public enum RpcContractType
 {
-    ServerRoot,
+    Server,
     ClientToServer,
     ServerToClient
 }
