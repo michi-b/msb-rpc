@@ -2,16 +2,15 @@
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
-using static MsbRpc.Generator.IndependentNames;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
 internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 {
     private readonly string _className;
-    private readonly string _procedureParameterOutOfRangeLine;
     private readonly ProcedureCollectionNode _procedures;
-    private readonly string _returnProcedureSwitchExpressionLine;
     protected override string FileName { get; }
 
     public ProcedureEnumExtensionsWriter(ProcedureCollectionNode procedures)
@@ -20,14 +19,12 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
         _procedures = procedures;
         _className = $"{procedures.EnumName}{ExtensionsPostFix}";
         FileName = $"{_className}{GeneratedFilePostfix}";
-        _procedureParameterOutOfRangeLine = GetArgumentOutOfRangeExceptionSwitchExpressionCase(Parameters.Procedure);
-        _returnProcedureSwitchExpressionLine = $"return {Parameters.Procedure} switch";
     }
 
     protected override void Write(IndentedTextWriter writer)
     {
         writer.WriteLine($"public static class {_className}");
-        using (writer.InBlock(Appendix.None))
+        using (writer.GetBlock(Appendix.None))
         {
             WriteGetNameExtension(writer);
 
@@ -39,17 +36,17 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 
             //FromId method
             writer.WriteLine($"public static {_procedures.EnumName} {Methods.FromIdProcedureExtension}(int {Parameters.ProcedureId})");
-            using (writer.InBlock())
+            using (writer.GetBlock())
             {
                 writer.WriteLine($"return {Parameters.ProcedureId} switch");
-                using (writer.InBlock(Appendix.SemicolonAndNewline))
+                using (writer.GetBlock(Appendix.SemicolonAndNewline))
                 {
                     foreach (ProcedureNode procedure in _procedures)
                     {
                         writer.WriteLine($"{procedure.IntValueString} => {procedure.EnumValueString},");
                     }
 
-                    writer.WriteLine(GetArgumentOutOfRangeExceptionSwitchExpressionCase(Parameters.ProcedureId));
+                    writer.WriteLine(GetArgumentOutOfRangeSwitchExpressionCase(Parameters.ProcedureId));
                 }
             }
         }
@@ -71,17 +68,17 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
         (IndentedTextWriter writer, string returnType, string extensionMethodName, Func<ProcedureNode, string> getCaseExpression)
     {
         writer.WriteLine($"public static {returnType} {extensionMethodName}(this {_procedures.EnumName} {Parameters.Procedure})");
-        using (writer.InBlock())
+        using (writer.GetBlock())
         {
-            writer.WriteLine(_returnProcedureSwitchExpressionLine);
-            using (writer.InBlock(Appendix.SemicolonAndNewline))
+            writer.WriteLine(ReturnProcedureParameterSwitchExpressionLine);
+            using (writer.GetBlock(Appendix.SemicolonAndNewline))
             {
                 foreach (ProcedureNode procedure in _procedures)
                 {
                     writer.WriteLine($"{procedure.EnumValueString} => {getCaseExpression(procedure)},");
                 }
 
-                writer.WriteLine(_procedureParameterOutOfRangeLine);
+                writer.WriteLine(ProcedureParameterOutOfRangeSwitchExpressionCase);
             }
         }
     }

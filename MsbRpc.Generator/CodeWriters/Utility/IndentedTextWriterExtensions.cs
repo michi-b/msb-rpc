@@ -6,8 +6,8 @@ public static class IndentedTextWriterExtensions
 {
     public static string GetResult(this IndentedTextWriter writer) => writer.InnerWriter.ToString();
 
-    public static ParenthesesBlockScope InParenthesesBlock(this IndentedTextWriter writer, Appendix additions = Appendix.NewLine)
+    public static ParenthesesBlockScope GetParenthesesBlock(this IndentedTextWriter writer, Appendix additions = Appendix.NewLine)
         => new(writer, additions);
 
-    public static BlockScope InBlock(this IndentedTextWriter writer, Appendix additions = Appendix.NewLine) => new(writer, additions);
+    public static BlockScope GetBlock(this IndentedTextWriter writer, Appendix additions = Appendix.NewLine) => new(writer, additions);
 }

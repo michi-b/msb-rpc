@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.CodeWriters.Utility;
 
 namespace MsbRpc.Generator.Info;
 

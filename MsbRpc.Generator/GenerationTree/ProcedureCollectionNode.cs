@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Info;
-using static MsbRpc.Generator.IndependentNames;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 

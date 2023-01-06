@@ -1,4 +1,4 @@
-﻿using static MsbRpc.Generator.IndependentNames;
+﻿using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 

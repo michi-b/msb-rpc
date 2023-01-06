@@ -19,7 +19,7 @@ namespace MsbRpc.Test.Generator.Incrementer.Tests;
 [TestClass]
 public class GeneratorTest : Test
 {
-    private const string Code = @"[RpcContract(RpcContractType.Server)]
+    private const string Code = @"[RpcContract(RpcContractType.ClientToServerRoot)]
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);

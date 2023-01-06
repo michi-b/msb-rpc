@@ -17,11 +17,11 @@ public static class DiagnosticDescriptors
         true
     );
 
-    public static readonly DiagnosticDescriptor ContractGeneratorError = new DiagnosticDescriptor
+    public static readonly DiagnosticDescriptor InvalidGeneratorContract = new DiagnosticDescriptor
     (
         "MR1000",
         "Contract Generator Error",
-        "contract generator skipped code generation for contract '{0}' due to previous errors",
+        "contract generator skipped code generation for contract '{0}' because the contract is invalid",
         "Generator",
         DiagnosticSeverity.Error,
         true

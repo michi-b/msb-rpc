@@ -1,4 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
+
+using System;
+
 namespace Incrementer.Generated;
 
 public static class IncrementerProcedureExtensions
@@ -12,7 +15,7 @@ public static class IncrementerProcedureExtensions
             IncrementerProcedure.IncrementStored => nameof(IncrementerProcedure.IncrementStored),
             IncrementerProcedure.GetStored => nameof(IncrementerProcedure.GetStored),
             IncrementerProcedure.End => nameof(IncrementerProcedure.End),
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
 
@@ -25,7 +28,7 @@ public static class IncrementerProcedureExtensions
             IncrementerProcedure.IncrementStored => 2,
             IncrementerProcedure.GetStored => 3,
             IncrementerProcedure.End => 4,
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
 
@@ -38,7 +41,7 @@ public static class IncrementerProcedureExtensions
             2 => IncrementerProcedure.IncrementStored,
             3 => IncrementerProcedure.GetStored,
             4 => IncrementerProcedure.End,
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedureId), procedureId, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(procedureId), procedureId, null)
         };
     }
 }

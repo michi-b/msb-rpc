@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 

@@ -68,11 +68,12 @@ public class ContractGenerator : IIncrementalGenerator
                 ProcedureCollectionNode procedures = contract.Procedures;
                 context.GenerateFile(new ProcedureEnumFileWriter(procedures));
                 context.GenerateFile(new ProcedureEnumExtensionsWriter(procedures));
-                context.GenerateFile(new ServerEndPointWriter(contract.Server));
+                context.GenerateFile(EndPointWriter.Get(contract.Server));
+                // context.GenerateFile(EndPointWriter.Get(contract.Client));
             }
             else
             {
-                context.ReportContractGenerationError(contract);
+                context.ReportInvalidContract(contract);
             }
         }
         catch (Exception exception)

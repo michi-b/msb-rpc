@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator;
+﻿namespace MsbRpc.Generator.CodeWriters.Utility;
 
 internal static class IndependentNames
 {
@@ -16,6 +16,9 @@ internal static class IndependentNames
 
     public static class Types
     {
+        public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";
+        public const string OutboundEndPoint = "MsbRpc.EndPoints.OutboundEndPoint";
+        public const string LoggerInterface = "Microsoft.Extensions.Logging.ILogger";
         public const string LoggerFactoryInterface = "Microsoft.Extensions.Logging.ILoggerFactory";
         public const string Messenger = "MsbRpc.Messaging.Messenger";
         public const string MessengerListenReturnCode = "MsbRpc.Messaging.Messenger.ListenReturnCode";
@@ -27,7 +30,6 @@ internal static class IndependentNames
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
         public const string BufferWriter = "MsbRpc.Serialization.Buffers.BufferWriter";
         public const string BufferReader = "MsbRpc.Serialization.Buffers.BufferReader";
-        public const string EndPoint = "MsbRpc.EndPoints.RpcEndPoint";
         public const string UndefinedProcedureEnum = "MsbRpc.EndPoints.UndefinedProcedure";
         public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
         public const string LocalEndPointResolver = "Resolver";
@@ -59,6 +61,11 @@ internal static class IndependentNames
         public const string RpcResolverExecute = "Execute";
     }
 
+    public static class StaticMethods
+    {
+        public const string CreateLoggerOptional = "MsbRpc.Utility.LoggerFactoryExtensions.CreateLoggerOptional";
+    }
+
     public static class Constants
     {
         public const string EndPointDefaultInitialBufferSize = "DefaultInitialBufferSize";
@@ -67,22 +74,27 @@ internal static class IndependentNames
     public static class Parameters
     {
         public const string LoggerFactory = "loggerFactory";
+        public const string Logger = "logger";
         public const string Messenger = "messenger";
         public const string CancellationToken = "cancellationToken";
         public const string Procedure = "procedure";
         public const string ProcedureId = "procedureId";
         public const string InitialBufferSize = "initialBufferSize";
         public const string ArgumentsBufferReader = "arguments";
-        public const string EndPointImplementation = "implementation";
+        public const string ContractImplementation = "implementation";
         public const string RpcEndPoint = "endPoint";
     }
 
     public static class Fields
     {
-        public const string RpcResolverEndPoint = "_endPoint";
         public const string RpcImplementation = "_implementation";
         public const string BufferEmpty = "Empty";
         public const string BufferWriterBuffer = "Buffer";
+    }
+
+    public static class PrivateFields
+    {
+        public const string Logger = "_logger";
     }
 
     public static class EnumValues

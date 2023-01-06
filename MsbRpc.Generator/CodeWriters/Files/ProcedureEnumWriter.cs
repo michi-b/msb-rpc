@@ -1,7 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
-using static MsbRpc.Generator.IndependentNames;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
@@ -23,7 +23,7 @@ internal class ProcedureEnumFileWriter : CodeFileWriter
         string GetEnumMemberDefinition(int i) => $"{Procedures[i].Name} = {Procedures[i].IntValueString}";
 
         writer.WriteLine($"public enum {Procedures.EnumName}");
-        using (writer.InBlock(Appendix.None))
+        using (writer.GetBlock(Appendix.None))
         {
             for (int i = 0; i < Procedures.LastIndex; i++)
             {

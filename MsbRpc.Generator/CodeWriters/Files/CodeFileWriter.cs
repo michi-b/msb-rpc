@@ -44,7 +44,4 @@ internal abstract class CodeFileWriter
         writer.WriteFileHeader(_generatedNamespace);
         return writer;
     }
-
-    protected static string GetArgumentOutOfRangeExceptionSwitchExpressionCase(string variableName)
-        => $"_ => throw new {IndependentNames.Types.ArgumentOutOfRangeException}(nameof({variableName}), {variableName}, null)";
 }

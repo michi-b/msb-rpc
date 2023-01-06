@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Info;
-using static MsbRpc.Generator.IndependentNames;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -41,7 +41,7 @@ internal class ContractNode
             this,
             info.ContractType switch
             {
-                RpcContractType.Server => EndPointType.OutboundClient,
+                RpcContractType.ClientToServerRoot => EndPointType.OutboundClient,
                 RpcContractType.ClientToServer => EndPointType.OutboundClient,
                 RpcContractType.ServerToClient => EndPointType.InboundClient,
                 _ => throw new ArgumentOutOfRangeException()
@@ -53,7 +53,7 @@ internal class ContractNode
             this,
             info.ContractType switch
             {
-                RpcContractType.Server => EndPointType.Server,
+                RpcContractType.ClientToServerRoot => EndPointType.Server,
                 RpcContractType.ClientToServer => EndPointType.InboundServer,
                 RpcContractType.ServerToClient => EndPointType.OutboundServer,
                 _ => throw new ArgumentOutOfRangeException()
