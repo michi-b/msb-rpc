@@ -17,7 +17,7 @@ internal static class SourceProductionContextExtensions
             (
                 TypeIsNotAValidRpcParameter,
                 Location.None,
-                typeNode.Names.FullName,
+                typeNode.FullName,
                 typeNode.SerializationKind.GetName()
             )
         );
@@ -31,7 +31,7 @@ internal static class SourceProductionContextExtensions
             (
                 TypeIsNotAValidRpcReturnType,
                 Location.None,
-                typeNode.Names.FullName,
+                typeNode.FullName,
                 typeNode.SerializationKind.GetName()
             )
         );

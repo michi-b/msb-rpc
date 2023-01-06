@@ -14,8 +14,8 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
     private readonly string _returnProcedureSwitchExpressionLine;
     protected override string FileName { get; }
 
-    public ProcedureEnumExtensionsWriter(ContractNode contract, ProcedureCollection procedures)
-        : base(contract)
+    public ProcedureEnumExtensionsWriter(ProcedureCollection procedures)
+        : base(procedures.Contract)
     {
         _procedures = procedures;
         _className = $"{procedures.EnumName}{ExtensionsPostFix}";
@@ -48,6 +48,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
                     {
                         writer.WriteLine($"{procedure.IntValueString} => {procedure.EnumValueString},");
                     }
+
                     writer.WriteLine(GetArgumentOutOfRangeExceptionSwitchExpressionCase(Parameters.ProcedureId));
                 }
             }

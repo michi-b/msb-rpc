@@ -6,5 +6,5 @@ internal enum EndPointType
     InboundServer = 1,
     OutboundClient = 2,
     OutboundServer = 3,
-    Server = 4,
+    Server = 4
 }

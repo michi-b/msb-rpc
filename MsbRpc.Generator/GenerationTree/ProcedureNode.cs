@@ -7,17 +7,17 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class ProcedureNode
 {
-    public readonly bool IsValid;
-    public readonly ProcedureCollection Collection;
-    public readonly ParameterCollection? Parameters;
-    public readonly TypeNode ReturnType;
-
-    public readonly string Name;
     public readonly string AsyncName;
+    public readonly ProcedureCollection Collection;
     public readonly string EnumValueString;
     public readonly int IntValue;
     public readonly string IntValueString;
-    
+    public readonly bool IsValid;
+
+    public readonly string Name;
+    public readonly ParameterCollection? Parameters;
+    public readonly TypeNode ReturnType;
+
     public ProcedureNode
     (
         ProcedureInfo info,
@@ -28,14 +28,14 @@ internal class ProcedureNode
     )
     {
         Collection = collection;
-        
+
         Name = info.Name;
         AsyncName = $"{Name}{IndependentNames.AsyncPostFix}";
         EnumValueString = $"{collection.EnumName}.{Name}";
         IntValue = definitionIndex;
         IntValueString = definitionIndex.ToString();
 
-        ReturnType = typeNodeCache.GetOrAdd(info.ReturnType, context);
+        ReturnType = typeNodeCache.GetOrAdd(info.ReturnType);
         if (!ReturnType.IsValidReturnType)
         {
             context.ReportTypeIsNotAValidRpcReturnType(ReturnType);

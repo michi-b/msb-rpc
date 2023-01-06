@@ -7,29 +7,29 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ParameterCollection : IReadOnlyList<Parameter>
+internal class ParameterCollection : IReadOnlyList<ParameterNode>
 {
-    private readonly Parameter[] _parameters;
-    public readonly IReadOnlyList<Parameter> ConstantSizeParameters;
+    private readonly ParameterNode[] _parameters;
+    public readonly IReadOnlyList<ParameterNode> ConstantSizeParameters;
     public readonly bool HasOnlyConstantSizeParameters = true;
     public readonly bool IsValid;
     public readonly int LastIndex;
 
     public int Count { get; }
 
-    public Parameter this[int index] => _parameters[index];
+    public ParameterNode this[int index] => _parameters[index];
 
     public ParameterCollection(ImmutableArray<ParameterInfo> parameterInfos, TypeNodeCache typeNodeCache, SourceProductionContext context)
     {
         Count = parameterInfos.Length;
         LastIndex = Count - 1;
-        _parameters = new Parameter[Count];
-        List<Parameter> constantSizeParameters = new(Count);
+        _parameters = new ParameterNode[Count];
+        List<ParameterNode> constantSizeParameters = new(Count);
         IsValid = true;
         for (int i = 0; i < Count; i++)
         {
             ParameterInfo parameterInfo = parameterInfos[i];
-            TypeNode type = typeNodeCache.GetOrAdd(parameterInfo.Type, context);
+            TypeNode type = typeNodeCache.GetOrAdd(parameterInfo.Type);
 
             if (!type.IsValidParameter)
             {
@@ -37,7 +37,7 @@ internal class ParameterCollection : IReadOnlyList<Parameter>
                 IsValid = false;
             }
 
-            var parameter = new Parameter(parameterInfo.Name, type);
+            var parameter = new ParameterNode(parameterInfo.Name, type);
 
             bool isConstantSize = parameter.Type.IsConstantSize;
             HasOnlyConstantSizeParameters = HasOnlyConstantSizeParameters && isConstantSize;
@@ -57,7 +57,7 @@ internal class ParameterCollection : IReadOnlyList<Parameter>
         ConstantSizeParameters = constantSizeParameters;
     }
 
-    public IEnumerator<Parameter> GetEnumerator() => ((IEnumerable<Parameter>)_parameters).GetEnumerator();
+    public IEnumerator<ParameterNode> GetEnumerator() => ((IEnumerable<ParameterNode>)_parameters).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

@@ -1,22 +1,16 @@
-﻿using MsbRpc.Generator.GenerationTree.Names;
-using MsbRpc.Generator.Info;
+﻿using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
 internal class TypeNode
 {
     public readonly string? ConstantSizeExpression;
-
+    public readonly string FullName;
     public readonly bool IsConstantSize;
-
     public readonly bool IsValidParameter;
-
     public readonly bool IsValidReturnType;
-
     public readonly bool IsVoid;
-
-    public readonly TypeNames Names;
-
+    public readonly string Name;
     public readonly SerializationKind SerializationKind;
 
     public TypeNode(string fullName, SerializationKind serializationKind)
@@ -25,7 +19,8 @@ internal class TypeNode
 
         if (serializationKind == SerializationKind.Unresolved)
         {
-            Names = TypeNames.CreateInvalid(fullName);
+            FullName = fullName;
+            Name = fullName;
             ConstantSizeExpression = null;
             IsConstantSize = false;
             IsValidParameter = false;
@@ -34,7 +29,9 @@ internal class TypeNode
         }
         else
         {
-            Names = new TypeNames(fullName, SerializationKind);
+            FullName = fullName;
+            string? keyword = serializationKind.GetKeyword();
+            Name = keyword ?? FullName;
             ConstantSizeExpression = SerializationKind.GetConstantSizeExpression();
             IsConstantSize = ConstantSizeExpression != null;
             IsValidParameter = serializationKind.GetIsValidParameterType();
@@ -43,5 +40,5 @@ internal class TypeNode
         }
     }
 
-    public override string ToString() => $"{Names.FullName} ({SerializationKind.GetName()})";
+    public override string ToString() => $"{FullName} ({SerializationKind.GetName()})";
 }

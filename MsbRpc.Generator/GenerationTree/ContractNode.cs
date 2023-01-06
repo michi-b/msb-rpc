@@ -10,17 +10,17 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class ContractNode
 {
-
-    public readonly bool IsValid = true;
-    public readonly ProcedureCollection? Procedures;
+    public readonly string CamelCaseName;
     public readonly EndPointNode Client;
-    public readonly EndPointNode Server;
 
     public readonly string InterfaceName;
-    public readonly string PascalCaseName;
-    public readonly string CamelCaseName;
+
+    public readonly bool IsValid = true;
     public readonly string Namespace;
-    
+    public readonly string PascalCaseName;
+    public readonly ProcedureCollection Procedures;
+    public readonly EndPointNode Server;
+
     public ContractNode(ref ContractInfo info, SourceProductionContext context)
     {
         InterfaceName = info.InterfaceName;
@@ -32,9 +32,9 @@ internal class ContractNode
 
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 
-        Procedures = procedures.Length > 0 ? new ProcedureCollection(procedures, this, typeCache, context) : null;
+        Procedures = new ProcedureCollection(procedures, this, typeCache, context);
 
-        IsValid = IsValid && (Procedures == null || Procedures.IsValid);
+        IsValid = IsValid && Procedures.IsValid;
 
         Client = new EndPointNode
         (

@@ -12,7 +12,8 @@ internal static class IndependentNames
     public const string GeneratedNamespacePostFix = ".Generated";
     public const string ClientPostfix = "Client";
     public const string ServerPostfix = "Server";
-    
+    public const string EndPointPostfix = "EndPoint";
+
     public static class Types
     {
         public const string LoggerFactoryInterface = "Microsoft.Extensions.Logging.ILoggerFactory";
@@ -39,7 +40,7 @@ internal static class IndependentNames
     {
         public const string CreateLogger = "Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger";
         public const string GetNameProcedureExtension = "GetName";
-        public const string GetIdProcedureExtension= "GetId";
+        public const string GetIdProcedureExtension = "GetId";
         public const string FromIdProcedureExtension = "FromId";
         public const string BufferWrite = "Write";
 
@@ -58,9 +59,9 @@ internal static class IndependentNames
         public const string RpcResolverExecute = "Execute";
     }
 
-    public static class Properties
+    public static class Constants
     {
-        public const string BufferWriterBuffer = "Buffer";
+        public const string EndPointDefaultInitialBufferSize = "DefaultInitialBufferSize";
     }
 
     public static class Parameters
@@ -92,18 +93,18 @@ internal static class IndependentNames
 
     public static class Variables
     {
-        public const string ReceivedArgumentPostFix = "Argument";
+        public const string ReceivedPostfix = "Argument";
+        public const string SizePostfix = "Size";
         public const string ProcedureResult = "result";
         public const string Procedure = "procedure";
-        public const string SizeVariablePostFix = "Size";
         public const string ConstantSizeRpcParametersSize = "constantSizeParametersSizeSum";
         public const string ParametersSizeSum = "ParametersSizeSum";
-        public const string ArgumentsWriter = "argumentsWriter";
-        public const string ResultReader = "resultReader";
-        public const string RpcResultSize = "resultSize";
-        public const string RpcResultWriter = "resultWriter";
+        public const string RequestWriter = "requestWriter";
+        public const string ResponseReader = "responseReader";
+        public const string ResponseSize = "responseSize";
+        public const string ResponseWriter = "responseWriter";
     }
-    
+
     public static string ToCamelCase(this string target)
     {
         char firstChar = target[0];

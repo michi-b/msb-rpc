@@ -37,14 +37,14 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
             let attributeClass = attributeData.AttributeClass
             where TypeCheck.IsRpcContractAttribute(attributeClass)
             select attributeData).FirstOrDefault();
-        
+
         if (attributes == null)
         {
             return null;
         }
 
         RpcContractType? contractType = null;
-        
+
         foreach (KeyValuePair<string, TypedConstant> argument in attributes.GetArguments())
         {
             // ReSharper disable once ConvertSwitchStatementToSwitchExpression
@@ -60,7 +60,7 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
         {
             return null;
         }
-        
+
         string interfaceName = contract.Name;
         string namespaceName = contract.ContainingNamespace.ToDisplayString();
         ImmutableArray<ProcedureInfo> procedures = contract.GetMembers()
@@ -68,14 +68,20 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
             .Where(m => m != null)
             .Select(m => new ProcedureInfo(m!))
             .ToImmutableArray();
-        
+
+        if (procedures.Length == 0)
+        {
+            return null;
+        }
+
         return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value);
     }
 
-    public bool Equals(ContractInfo other) => InterfaceName == other.InterfaceName 
-                                              && Namespace == other.Namespace 
-                                              && Procedures.Equals(other.Procedures) 
-                                              && ContractType == other.ContractType;
+    public bool Equals(ContractInfo other)
+        => InterfaceName == other.InterfaceName
+           && Namespace == other.Namespace
+           && Procedures.Equals(other.Procedures)
+           && ContractType == other.ContractType;
 
     public override bool Equals(object? obj) => obj is ContractInfo other && Equals(other);
 

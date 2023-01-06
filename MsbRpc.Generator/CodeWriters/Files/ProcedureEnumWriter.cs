@@ -11,8 +11,8 @@ internal class ProcedureEnumFileWriter : CodeFileWriter
 
     private ProcedureCollection Procedures { get; }
 
-    public ProcedureEnumFileWriter(ContractNode contract, ProcedureCollection procedures)
-        : base(contract)
+    public ProcedureEnumFileWriter(ProcedureCollection procedures)
+        : base(procedures.Contract)
     {
         Procedures = procedures;
         FileName = $"{Procedures.EnumName}{GeneratedFilePostfix}";

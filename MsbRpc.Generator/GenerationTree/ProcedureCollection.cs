@@ -10,11 +10,11 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ProcedureCollection : IReadOnlyList<ProcedureNode>
 {
     private readonly ProcedureNode[] _procedures;
+    public readonly ContractNode Contract;
+    public readonly string EnumName;
     public readonly bool IsValid = true;
     public readonly int LastIndex;
-    public readonly string EnumName;
 
-    
     public ProcedureNode this[int index] => _procedures[index];
 
     public int Count { get; }
@@ -27,6 +27,7 @@ internal class ProcedureCollection : IReadOnlyList<ProcedureNode>
         SourceProductionContext context
     )
     {
+        Contract = contract;
         EnumName = $"{contract.PascalCaseName}{ProcedurePostfix}";
         Count = procedures.Length;
         LastIndex = Count - 1;
@@ -38,6 +39,8 @@ internal class ProcedureCollection : IReadOnlyList<ProcedureNode>
             IsValid = IsValid && procedure.IsValid;
             _procedures[i] = procedure;
         }
+
+        IsValid = IsValid && _procedures.Length > 0;
     }
 
     public IEnumerator<ProcedureNode> GetEnumerator() => ((IEnumerable<ProcedureNode>)_procedures).GetEnumerator();

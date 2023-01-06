@@ -49,12 +49,12 @@ public class ContractGenerator : IIncrementalGenerator
         }
 
         // check that interfaceSymbol is actually an interface and derives from IRpcContract
-        if (contractInterface.TypeKind != TypeKind.Interface 
+        if (contractInterface.TypeKind != TypeKind.Interface
             || !contractInterface.Interfaces.Any(TypeCheck.IsRpcContractInterface))
         {
             return null;
         }
-        
+
         return ContractInfo.Parse(contractInterface);
     }
 
@@ -63,16 +63,12 @@ public class ContractGenerator : IIncrementalGenerator
         try
         {
             ContractNode contract = new(ref contractInfo, context);
-            ProcedureCollection? procedures = contract.Procedures;
-            if (procedures != null)
-            {
-                context.GenerateFile(new ProcedureEnumFileWriter(contract, procedures));
-                context.GenerateFile(new ProcedureEnumExtensionsWriter(contract, procedures));
-            }
             if (contract.IsValid)
             {
-                // GenerateEndPoint(context, contract, contract.Server);
-                // GenerateEndPoint(context, contract, contract.Client);
+                ProcedureCollection procedures = contract.Procedures;
+                context.GenerateFile(new ProcedureEnumFileWriter(procedures));
+                context.GenerateFile(new ProcedureEnumExtensionsWriter(procedures));
+                context.GenerateFile(new ServerEndPointWriter(contract.Server));
             }
             else
             {

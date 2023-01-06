@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Info;
-using TypeInfo = MsbRpc.Generator.Info.TypeInfo;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -11,7 +9,7 @@ internal readonly struct TypeNodeCache
 
     public TypeNodeCache() { }
 
-    public TypeNode GetOrAdd(TypeInfo typeInfo, SourceProductionContext context)
+    public TypeNode GetOrAdd(TypeInfo typeInfo)
     {
         if (_cache.TryGetValue(typeInfo, out TypeNode? node))
         {

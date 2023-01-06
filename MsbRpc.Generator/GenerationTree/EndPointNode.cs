@@ -5,26 +5,25 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class EndPointNode
 {
-    public readonly ContractNode ContractNode;
-    public readonly EndPointType Type;
-    public readonly string PascalCaseName;
     public readonly string CamelCaseName;
+    public readonly ContractNode Contract;
+    public readonly string EndPointName;
     public readonly string ImplementationInterface;
-    public const string DefaultBufferSizeConstant = "DefaultBufferSize";
-    
+    public readonly string PascalCaseName;
+    public readonly EndPointType Type;
+
     public EndPointNode
     (
         ContractNode contract,
         EndPointType endPointType
     )
     {
-        ContractNode = contract;
+        Contract = contract;
         Type = endPointType;
         string upperCaseTypeId = Type.GetPostfix();
         PascalCaseName = $"{contract.PascalCaseName}{upperCaseTypeId}";
         CamelCaseName = $"{contract.CamelCaseName}{upperCaseTypeId}";
         ImplementationInterface = $"{InterfacePrefix}{PascalCaseName}{ImplementationPostfix}";
+        EndPointName = $"{PascalCaseName}{EndPointPostfix}";
     }
-    
-    
 }

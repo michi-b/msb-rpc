@@ -18,7 +18,8 @@ public static class AttributeDataExtensions
                 yield return new KeyValuePair<string, TypedConstant>(parameterNames[i], data.ConstructorArguments[i]);
             }
         }
-        foreach (KeyValuePair<string,TypedConstant> namedArgument in data.NamedArguments)
+
+        foreach (KeyValuePair<string, TypedConstant> namedArgument in data.NamedArguments)
         {
             yield return namedArgument;
         }
