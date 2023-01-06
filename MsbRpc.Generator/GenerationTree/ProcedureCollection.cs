@@ -21,12 +21,12 @@ internal class ProcedureCollection : IReadOnlyList<Procedure>
     public ProcedureCollection
     (
         ImmutableArray<ProcedureInfo> procedures,
-        EndPointNames endPointNames,
+        ContractNames contractNames,
         TypeNodeCache typeNodeCache,
         SourceProductionContext context
     )
     {
-        Names = new ProcedureCollectionNames(endPointNames);
+        Names = new ProcedureCollectionNames(contractNames);
         Count = procedures.Length;
         LastIndex = Count - 1;
 

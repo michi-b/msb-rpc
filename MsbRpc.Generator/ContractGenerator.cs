@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MsbRpc.Generator.AttributeData;
-using MsbRpc.Generator.AttributeDataUtility;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
@@ -78,25 +75,6 @@ public class ContractGenerator : IIncrementalGenerator
         catch (Exception exception)
         {
             context.ReportContractGenerationException(ref contractInfo, exception);
-        }
-    }
-
-    private static void GenerateEndPoint(SourceProductionContext context, ContractNode contract, EndPoint endPoint)
-    {
-        //generate inbound procedure enum and extensions and interface
-        ProcedureCollection? inboundProcedures = endPoint.InboundProcedures;
-        if (inboundProcedures != null)
-        {
-            // context.GenerateFile(new ProcedureEnumFileWriter(contract, inboundProcedures));
-            // context.GenerateFile(new ProcedureEnumExtensionsFileWriter(contract, inboundProcedures));
-            // context.GenerateFile(new InterfaceFileWriter(contract, endPoint, inboundProcedures));
-        }
-
-        //generate endpoint
-        ProcedureCollection? outboundProcedures = endPoint.OutboundProcedures;
-        if (inboundProcedures != null || outboundProcedures != null)
-        {
-            // context.GenerateFile(new EndPointFileWriter(contract, endPoint, inboundProcedures, outboundProcedures));
         }
     }
 }

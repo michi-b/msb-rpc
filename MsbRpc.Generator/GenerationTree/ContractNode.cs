@@ -9,11 +9,10 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ContractNode
 {
     public readonly EndPoint Client;
-    public readonly ProcedureCollection? ClientProcedures;
     public readonly bool IsValid = true;
     public readonly ContractNames Names;
     public readonly EndPoint Server;
-    public readonly ProcedureCollection? ServerProcedures;
+    public readonly ProcedureCollection? Procedures;
 
     public ContractNode(ref ContractInfo info, SourceProductionContext context)
     {
@@ -24,37 +23,23 @@ internal class ContractNode
         var clientNames = new EndPointNames(Names, EndPointTypeId.Client);
         var serverNames = new EndPointNames(Names, EndPointTypeId.Server);
 
-        bool areProceduresValid = true;
+        ImmutableArray<ProcedureInfo> procedures = info.Procedures;
+        
+        Procedures = procedures.Length > 0 ? new ProcedureCollection(procedures, Names, typeCache, context) : null;
+        
+        IsValid = IsValid && (Procedures == null || Procedures.IsValid);
 
-        ProcedureCollection? CreateProceduresDefinition(ImmutableArray<ProcedureInfo> procedures, EndPointNames endPointNames)
-        {
-            if (procedures.Length > 0)
-            {
-                var collection = new ProcedureCollection(procedures, endPointNames, typeCache, context);
-                areProceduresValid = areProceduresValid && collection.IsValid;
-                return collection;
-            }
-
-            return null;
-        }
-
-        ClientProcedures = CreateProceduresDefinition(info.Client.Procedures, clientNames);
-        ServerProcedures = CreateProceduresDefinition(info.Server.Procedures, serverNames);
-
-        IsValid = IsValid && areProceduresValid;
 
         Client = new EndPoint
         (
-            EndPointTypeId.Client,
-            this,
-            clientNames
+            clientNames,
+            Procedures
         );
 
         Server = new EndPoint
         (
-            EndPointTypeId.Server,
-            this,
-            serverNames
+            serverNames,
+            Procedures
         );
     }
 }

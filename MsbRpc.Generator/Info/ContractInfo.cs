@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.AttributeData;
 using MsbRpc.Generator.Attributes;
-using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;

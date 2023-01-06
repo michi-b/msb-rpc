@@ -9,5 +9,5 @@ internal class ProcedureCollectionNames
     /// </summary>
     public readonly string EnumType;
 
-    public ProcedureCollectionNames(EndPointNames endPoint) => EnumType = $"{endPoint.PascalCaseName}{ProcedurePostfix}";
+    public ProcedureCollectionNames(ContractNames contractNames) => EnumType = $"{contractNames.PascalCaseName}{ProcedurePostfix}";
 }
