@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Generator.Utility;
 
-public static class GeneratorAttributes
+internal static class TypeCheck
 {
     public static bool IsRpcContractAttribute(ISymbol attributeClass)
         => attributeClass is
@@ -16,5 +16,12 @@ public static class GeneratorAttributes
                     Name: "Generator", ContainingNamespace: { Name: "MsbRpc", ContainingNamespace: { IsGlobalNamespace: true } }
                 }
             }
+        };
+
+    public static bool IsRpcContractInterface(INamedTypeSymbol interfaceSymbol)
+        => interfaceSymbol is
+        {
+            Name: "IRpcContract",
+            ContainingNamespace: { Name: "Contracts", ContainingNamespace: { Name: "MsbRpc", ContainingNamespace: { IsGlobalNamespace: true } } }
         };
 }

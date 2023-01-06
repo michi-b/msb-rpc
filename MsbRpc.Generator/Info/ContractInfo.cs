@@ -1,48 +1,82 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.AttributeData;
+using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Enums;
+using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 
-internal struct ContractInfo : IEquatable<ContractInfo>
+internal readonly struct ContractInfo : IEquatable<ContractInfo>
 {
-    public string InterfaceName { get; }
-    public string Namespace { get; }
+    public readonly string InterfaceName;
+    public readonly string Namespace;
+    public readonly ImmutableArray<ProcedureInfo> Procedures;
+    public readonly RpcContractType ContractType;
 
-    public EndPointInfo Client;
-    public EndPointInfo Server;
-
-    public EndPointInfo this[EndPointTypeId endPoint]
-        => endPoint switch
-        {
-            EndPointTypeId.Client => Client,
-            EndPointTypeId.Server => Server,
-            _ => throw new ArgumentOutOfRangeException(nameof(endPoint), endPoint, null)
-        };
+    private ContractInfo
+    (
+        string interfaceName,
+        string namespaceName,
+        ImmutableArray<ProcedureInfo> procedures,
+        RpcContractType contractType
+    )
+    {
+        InterfaceName = interfaceName;
+        Namespace = namespaceName;
+        Procedures = procedures;
+        ContractType = contractType;
+    }
 
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
-    public ContractInfo(INamedTypeSymbol interfaceSymbol)
+    public static ContractInfo? Parse(INamedTypeSymbol contract)
     {
-        InterfaceName = interfaceSymbol.Name;
-        Namespace = interfaceSymbol.ContainingNamespace.ToDisplayString();
+        Microsoft.CodeAnalysis.AttributeData? attributes = (from attributeData in contract.GetAttributes()
+            let attributeClass = attributeData.AttributeClass
+            where TypeCheck.IsRpcContractAttribute(attributeClass)
+            select attributeData).FirstOrDefault();
+        
+        if (attributes == null)
+        {
+            return null;
+        }
 
-        ImmutableArray<ProcedureInfo> serverProcedures = interfaceSymbol.GetMembers()
+        RpcContractType? contractType = null;
+        
+        foreach (KeyValuePair<string, TypedConstant> argument in attributes.GetArguments())
+        {
+            // ReSharper disable once ConvertSwitchStatementToSwitchExpression
+            switch (argument.Key)
+            {
+                case "contractType":
+                    contractType = (RpcContractType)argument.Value.Value!;
+                    break;
+            }
+        }
+
+        if (contractType == null)
+        {
+            return null;
+        }
+        
+        string interfaceName = contract.Name;
+        string namespaceName = contract.ContainingNamespace.ToDisplayString();
+        ImmutableArray<ProcedureInfo> procedures = contract.GetMembers()
             .Select(m => m as IMethodSymbol)
             .Where(m => m != null)
             .Select(m => new ProcedureInfo(m!))
             .ToImmutableArray();
-
-        Server = new EndPointInfo(serverProcedures);
-
-        //todo: fill in correct client procedures
-        Client = new EndPointInfo(ImmutableArray<ProcedureInfo>.Empty);
+        
+        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value);
     }
 
-    public bool Equals
-        (ContractInfo other)
-        => Client.Equals(other.Client) && Server.Equals(other.Server) && InterfaceName == other.InterfaceName && Namespace == other.Namespace;
+    public bool Equals(ContractInfo other) => InterfaceName == other.InterfaceName 
+                                              && Namespace == other.Namespace 
+                                              && Procedures.Equals(other.Procedures) 
+                                              && ContractType == other.ContractType;
 
     public override bool Equals(object? obj) => obj is ContractInfo other && Equals(other);
 
@@ -50,10 +84,10 @@ internal struct ContractInfo : IEquatable<ContractInfo>
     {
         unchecked
         {
-            int hashCode = Client.GetHashCode();
-            hashCode = (hashCode * 397) ^ Server.GetHashCode();
-            hashCode = (hashCode * 397) ^ InterfaceName.GetHashCode();
+            int hashCode = InterfaceName.GetHashCode();
             hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
+            hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
+            hashCode = (hashCode * 397) ^ (int)ContractType;
             return hashCode;
         }
     }

@@ -1,13 +1,9 @@
-﻿using System.CodeDom.Compiler;
-using System.IO;
+﻿using System.IO;
 
-namespace MsbRpc.Generator.Extensions;
+namespace MsbRpc.Generator.CodeWriters.Utility;
 
 public static class TextWriterExtensions
 {
-    public static TextWriterParenthesesEnclosure EncloseInParentheses(this IndentedTextWriter writer, bool withTrailingNewLine = false)
-        => new(writer, withTrailingNewLine);
-
     public static void WriteFileHeader(this TextWriter writer, string fileScopedNamespace)
     {
         writer.WriteFileHeader();

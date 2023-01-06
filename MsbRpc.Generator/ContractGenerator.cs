@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MsbRpc.Generator.CodeWriters.Files;
+using MsbRpc.Generator.AttributeData;
+using MsbRpc.Generator.AttributeDataUtility;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
@@ -48,18 +50,14 @@ public class ContractGenerator : IIncrementalGenerator
             return null;
         }
 
-        // check that interfaceSymbol is actually an interface
-        if (contractInterface.TypeKind != TypeKind.Interface)
+        // check that interfaceSymbol is actually an interface and derives from IRpcContract
+        if (contractInterface.TypeKind != TypeKind.Interface 
+            || !contractInterface.Interfaces.Any(TypeCheck.IsRpcContractInterface))
         {
             return null;
         }
-
-        // check that interfaceSymbol has the RpcContract attribute
-        return contractInterface.GetAttributes()
-            .Select(attributeData => attributeData.AttributeClass!)
-            .Any(GeneratorAttributes.IsRpcContractAttribute)
-            ? new ContractInfo(contractInterface)
-            : null;
+        
+        return ContractInfo.Parse(contractInterface);
     }
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)

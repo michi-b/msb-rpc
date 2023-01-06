@@ -1,5 +1,6 @@
 ﻿using System.CodeDom.Compiler;
 using System.IO;
+using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 

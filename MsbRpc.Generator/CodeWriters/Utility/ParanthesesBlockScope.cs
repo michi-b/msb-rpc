@@ -1,8 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using MsbRpc.Generator.Extensions;
 
-namespace MsbRpc.Generator.Utility;
+namespace MsbRpc.Generator.CodeWriters.Utility;
 
 public readonly ref struct ParenthesesBlockScope
 {

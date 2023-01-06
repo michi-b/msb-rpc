@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Linq;
+using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;

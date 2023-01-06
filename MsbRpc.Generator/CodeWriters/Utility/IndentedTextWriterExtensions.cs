@@ -1,7 +1,6 @@
 ﻿using System.CodeDom.Compiler;
-using MsbRpc.Generator.Utility;
 
-namespace MsbRpc.Generator.Extensions;
+namespace MsbRpc.Generator.CodeWriters.Utility;
 
 public static class IndentedTextWriterExtensions
 {
