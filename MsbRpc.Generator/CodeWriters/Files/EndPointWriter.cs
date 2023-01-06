@@ -44,7 +44,7 @@ internal abstract class EndPointWriter : CodeFileWriter
 
         using (writer.GetBlock(Appendix.None))
         {
-            WriteConstructors(writer);
+            WriteConstructorsAndFactoryMethods(writer);
 
             writer.WriteLine();
 
@@ -58,7 +58,7 @@ internal abstract class EndPointWriter : CodeFileWriter
 
     protected abstract void WriteClassHeader(IndentedTextWriter writer);
 
-    protected abstract void WriteConstructors(IndentedTextWriter writer);
+    protected abstract void WriteConstructorsAndFactoryMethods(IndentedTextWriter writer);
     protected abstract void WriteProcedures(IndentedTextWriter writer);
     protected abstract void WriteProcedureEnumOverrides(IndentedTextWriter writer);
 }

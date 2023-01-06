@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 
@@ -8,15 +7,16 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class ProcedureNode
 {
-    public readonly string AsyncName;
     public readonly ProcedureCollectionNode CollectionNode;
-    public readonly string EnumValueString;
-    public readonly int IntValue;
-    public readonly string IntValueString;
+    public readonly bool HasParameters;
+    public readonly bool HasReturnValue;
     public readonly bool IsValid;
 
     public readonly string Name;
     public readonly ParameterCollectionNode? Parameters;
+    public readonly string ProcedureEnumIntValue;
+
+    public readonly string ProcedureEnumValue;
     public readonly TypeNode ReturnType;
 
     public ProcedureNode
@@ -31,10 +31,8 @@ internal class ProcedureNode
         CollectionNode = collectionNode;
 
         Name = info.Name;
-        AsyncName = $"{Name}{IndependentNames.AsyncPostFix}";
-        EnumValueString = $"{collectionNode.EnumName}.{Name}";
-        IntValue = definitionIndex;
-        IntValueString = definitionIndex.ToString();
+        ProcedureEnumValue = $"{collectionNode.ProcedureEnumName}.{Name}";
+        ProcedureEnumIntValue = definitionIndex.ToString();
 
         ReturnType = typeNodeCache.GetOrAdd(info.ReturnType);
         if (!ReturnType.IsValidReturnType)
@@ -42,10 +40,13 @@ internal class ProcedureNode
             context.ReportTypeIsNotAValidRpcReturnType(ReturnType);
         }
 
+        HasReturnValue = !ReturnType.IsVoid;
+
         IsValid = ReturnType.IsValidReturnType;
 
         ImmutableArray<ParameterInfo> parameterInfos = info.Parameters;
-        if (parameterInfos.Length > 0)
+        HasParameters = parameterInfos.Length > 0;
+        if (HasParameters)
         {
             Parameters = new ParameterCollectionNode(parameterInfos, typeNodeCache, context);
             IsValid = IsValid && Parameters.IsValid;

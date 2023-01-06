@@ -1,4 +1,5 @@
 ﻿using MsbRpc.Generator.Info;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -11,6 +12,8 @@ internal class TypeNode
     public readonly bool IsValidReturnType;
     public readonly bool IsVoid;
     public readonly string Name;
+
+    public readonly string? ReadFromRequestReaderExpression;
     public readonly SerializationKind SerializationKind;
 
     public TypeNode(string fullName, SerializationKind serializationKind)
@@ -37,6 +40,18 @@ internal class TypeNode
             IsValidParameter = serializationKind.GetIsValidParameterType();
             IsValidReturnType = serializationKind.GetIsValidReturnType();
             IsVoid = serializationKind == SerializationKind.Void;
+        }
+
+        if (IsValidParameter)
+        {
+            string? bufferReadMethodName = SerializationKind.GetBufferReadMethodName();
+            ReadFromRequestReaderExpression = bufferReadMethodName != null
+                ? $"{Variables.RequestReader}.{bufferReadMethodName}()"
+                : "NotYetImplemented";
+        }
+        else
+        {
+            ReadFromRequestReaderExpression = null;
         }
     }
 

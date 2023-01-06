@@ -8,5 +8,5 @@ public enum IncrementerProcedure
     Store = 1,
     IncrementStored = 2,
     GetStored = 3,
-    End = 4
+    Finish = 4
 }

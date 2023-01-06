@@ -4,8 +4,9 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class ParameterNode
 {
+    public readonly string ArgumentVariableName;
     public readonly string Name;
-    public readonly string ReceivedArgument;
+
     public readonly string SizeVariableName;
     public readonly TypeNode Type;
 
@@ -13,7 +14,7 @@ internal class ParameterNode
     {
         Name = name.ToCamelCase();
         SizeVariableName = Name + Variables.SizePostfix;
-        ReceivedArgument = Name + Variables.ReceivedPostfix;
+        ArgumentVariableName = Name + Variables.ArgumentPostfix;
         Type = type;
     }
 

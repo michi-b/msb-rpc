@@ -17,7 +17,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
         : base(procedures.Contract)
     {
         _procedures = procedures;
-        _className = $"{procedures.EnumName}{ExtensionsPostFix}";
+        _className = $"{procedures.ProcedureEnumName}{ExtensionsPostFix}";
         FileName = $"{_className}{GeneratedFilePostfix}";
     }
 
@@ -35,7 +35,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
             writer.WriteLine();
 
             //FromId method
-            writer.WriteLine($"public static {_procedures.EnumName} {Methods.FromIdProcedureExtension}(int {Parameters.ProcedureId})");
+            writer.WriteLine($"public static {_procedures.ProcedureEnumName} {Methods.FromIdProcedureExtension}(int {Parameters.ProcedureId})");
             using (writer.GetBlock())
             {
                 writer.WriteLine($"return {Parameters.ProcedureId} switch");
@@ -43,7 +43,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
                 {
                     foreach (ProcedureNode procedure in _procedures)
                     {
-                        writer.WriteLine($"{procedure.IntValueString} => {procedure.EnumValueString},");
+                        writer.WriteLine($"{procedure.ProcedureEnumIntValue} => {procedure.ProcedureEnumValue},");
                     }
 
                     writer.WriteLine(GetArgumentOutOfRangeSwitchExpressionCase(Parameters.ProcedureId));
@@ -54,32 +54,20 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 
     private void WriteGetNameExtension(IndentedTextWriter writer)
     {
-        string GetCaseCode(ProcedureNode procedure) => $"nameof({procedure.EnumValueString})";
-        WriteExtension(writer, "string", Methods.GetNameProcedureExtension, GetCaseCode);
+        WriteExtension(writer, "string", Methods.GetNameProcedureExtension, procedure => $"nameof({procedure.ProcedureEnumValue})");
     }
 
     private void WriteGetIdExtension(IndentedTextWriter writer)
     {
-        string GetCaseCode(ProcedureNode procedure) => procedure.IntValueString;
-        WriteExtension(writer, "int", Methods.GetIdProcedureExtension, GetCaseCode);
+        WriteExtension(writer, "int", Methods.GetIdProcedureExtension, procedure => procedure.ProcedureEnumIntValue);
     }
 
-    private void WriteExtension
-        (IndentedTextWriter writer, string returnType, string extensionMethodName, Func<ProcedureNode, string> getCaseExpression)
+    private void WriteExtension(IndentedTextWriter writer, string returnType, string methodName, Func<ProcedureNode, string> getCase)
     {
-        writer.WriteLine($"public static {returnType} {extensionMethodName}(this {_procedures.EnumName} {Parameters.Procedure})");
+        writer.WriteLine($"public static {returnType} {methodName}(this {_procedures.ProcedureEnumName} {Parameters.Procedure})");
         using (writer.GetBlock())
         {
-            writer.WriteLine(ReturnProcedureParameterSwitchExpressionLine);
-            using (writer.GetBlock(Appendix.SemicolonAndNewline))
-            {
-                foreach (ProcedureNode procedure in _procedures)
-                {
-                    writer.WriteLine($"{procedure.EnumValueString} => {getCaseExpression(procedure)},");
-                }
-
-                writer.WriteLine(ProcedureParameterOutOfRangeSwitchExpressionCase);
-            }
+            writer.WriteProcedureReturnSwitch(_procedures, getCase);
         }
     }
 }

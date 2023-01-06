@@ -14,7 +14,7 @@ public static class IncrementerProcedureExtensions
             IncrementerProcedure.Store => nameof(IncrementerProcedure.Store),
             IncrementerProcedure.IncrementStored => nameof(IncrementerProcedure.IncrementStored),
             IncrementerProcedure.GetStored => nameof(IncrementerProcedure.GetStored),
-            IncrementerProcedure.End => nameof(IncrementerProcedure.End),
+            IncrementerProcedure.Finish => nameof(IncrementerProcedure.Finish),
             _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
@@ -27,7 +27,7 @@ public static class IncrementerProcedureExtensions
             IncrementerProcedure.Store => 1,
             IncrementerProcedure.IncrementStored => 2,
             IncrementerProcedure.GetStored => 3,
-            IncrementerProcedure.End => 4,
+            IncrementerProcedure.Finish => 4,
             _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
@@ -40,7 +40,7 @@ public static class IncrementerProcedureExtensions
             1 => IncrementerProcedure.Store,
             2 => IncrementerProcedure.IncrementStored,
             3 => IncrementerProcedure.GetStored,
-            4 => IncrementerProcedure.End,
+            4 => IncrementerProcedure.Finish,
             _ => throw new ArgumentOutOfRangeException(nameof(procedureId), procedureId, null)
         };
     }

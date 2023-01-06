@@ -34,8 +34,9 @@ internal static class IndependentNames
         public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
         public const string LocalEndPointResolver = "Resolver";
         public const string RpcResolverInterface = "MsbRpc.EndPoints.IRpcResolver";
-        public const string ByteArraySegment = "System.ArraySegment<byte>";
         public const string BufferUtility = "MsbRpc.Serialization.Buffers.BufferUtility";
+        public const string Response = "MsbRpc.Serialization.Buffers.Response";
+        public const string Request = "MsbRpc.Serialization.Buffers.Request";
     }
 
     public static class Methods
@@ -47,18 +48,14 @@ internal static class IndependentNames
         public const string BufferWrite = "Write";
 
         //endpoints
-        public const string EndPointCreateResolver = "CreateResolver";
-        public const string EndPointListen = "Listen";
         public const string EndPointEnterCalling = "EnterCalling";
         public const string EndPointExitCalling = "ExitCalling";
         public const string EndPointSendRequestAsync = "SendRequestAsync";
         public const string EndPointGetRequestWriter = "GetRequestWriter";
         public const string EndPointGetResponseWriter = "GetResponseWriter";
         public const string EndpointGetProcedureName = "GetName";
-        public const string EndPointGetProcedureInvertsDirection = "GetInvertsDirection";
-        public const string EndPointHandleRequest = "HandleRequest";
-
-        public const string RpcResolverExecute = "Execute";
+        public const string InboundEndPointExecute = "Execute";
+        public const string GetReader = "GetReader";
     }
 
     public static class StaticMethods
@@ -83,6 +80,7 @@ internal static class IndependentNames
         public const string ArgumentsBufferReader = "arguments";
         public const string ContractImplementation = "implementation";
         public const string RpcEndPoint = "endPoint";
+        public const string Request = "request";
     }
 
     public static class Fields
@@ -105,13 +103,14 @@ internal static class IndependentNames
 
     public static class Variables
     {
-        public const string ReceivedPostfix = "Argument";
+        public const string ArgumentPostfix = "Argument";
         public const string SizePostfix = "Size";
         public const string ProcedureResult = "result";
         public const string Procedure = "procedure";
         public const string ConstantSizeRpcParametersSize = "constantSizeParametersSizeSum";
         public const string ParametersSizeSum = "ParametersSizeSum";
         public const string RequestWriter = "requestWriter";
+        public const string RequestReader = "requestReader";
         public const string ResponseReader = "responseReader";
         public const string ResponseSize = "responseSize";
         public const string ResponseWriter = "responseWriter";

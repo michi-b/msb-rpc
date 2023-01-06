@@ -10,7 +10,8 @@ using LoggerFactoryExtensions = MsbRpc.Utility.LoggerFactoryExtensions;
 
 namespace Incrementer.Generated;
 
-public class IncrementerServerEndPoint : InboundEndPoint<IncrementerServerEndPoint, IncrementerProcedure, IIncrementer>
+public class IncrementerServerEndPoint
+    : InboundEndPoint<IncrementerServerEndPoint, IncrementerProcedure, IIncrementer>
 {
     public IncrementerServerEndPoint
     (
@@ -48,7 +49,7 @@ public class IncrementerServerEndPoint : InboundEndPoint<IncrementerServerEndPoi
             IncrementerProcedure.Store => Store(request),
             IncrementerProcedure.IncrementStored => IncrementStored(),
             IncrementerProcedure.GetStored => GetStored(),
-            IncrementerProcedure.End => End(),
+            IncrementerProcedure.Finish => Finish(),
             _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
@@ -105,7 +106,7 @@ public class IncrementerServerEndPoint : InboundEndPoint<IncrementerServerEndPoi
         return Buffer.GetResponse(Implementation.RandToCompletion);
     }
 
-    private Response End()
+    private Response Finish()
     {
         Implementation.Finish();
         return Buffer.GetResponse(Implementation.RandToCompletion);

@@ -26,6 +26,7 @@ public interface IIncrementer : IRpcContract
     public void Store(int value);
     public void IncrementStored();
     public int GetStored();
+    public void Finish();
 }";
 
     private static readonly ILoggerFactory LoggerFactory;

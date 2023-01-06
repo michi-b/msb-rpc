@@ -1,14 +1,17 @@
-﻿using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+﻿using MsbRpc.Generator.GenerationTree;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Utility;
 
 internal static class IndependentCode
 {
-    public const string ReturnProcedureParameterSwitchExpressionLine = $"return {Parameters.Procedure} switch";
+    public const string ReturnProcedureSwitch = $"return {Parameters.Procedure} switch";
 
-    public const string MessengerParameterLine = $"{Types.Messenger} {Parameters.Messenger}";
+    public const string MessengerParameter = $"{Types.Messenger} {Parameters.Messenger}";
 
-    public const string NullableLoggerFactoryParameterLine = $"{Types.LoggerFactoryInterface}? {Parameters.LoggerFactory} = null";
+    public const string NullableLoggerFactoryParameter = $"{Types.LoggerFactoryInterface}? {Parameters.LoggerFactory} = null";
+
+    public const string RequestParameter = $"{Types.Response} {Parameters.Request}";
 
     /// <remarks>NO trailing comma</remarks>
     /// >
@@ -24,4 +27,9 @@ internal static class IndependentCode
 
     public static string GetArgumentOutOfRangeSwitchExpressionCase(string variableName)
         => $"_ => throw new {Types.ArgumentOutOfRangeException}(nameof({variableName}), {variableName}, null)";
+
+    public static string GetInboundProcedureMethodSignature(ProcedureNode procedure)
+        => procedure.HasParameters
+            ? $"{Types.Response} {procedure.Name}({RequestParameter})"
+            : $"{Types.Response} {procedure.Name}()";
 }

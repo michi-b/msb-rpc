@@ -15,14 +15,14 @@ internal class ProcedureEnumFileWriter : CodeFileWriter
         : base(procedures.Contract)
     {
         Procedures = procedures;
-        FileName = $"{Procedures.EnumName}{GeneratedFilePostfix}";
+        FileName = $"{Procedures.ProcedureEnumName}{GeneratedFilePostfix}";
     }
 
     protected override void Write(IndentedTextWriter writer)
     {
-        string GetEnumMemberDefinition(int i) => $"{Procedures[i].Name} = {Procedures[i].IntValueString}";
+        string GetEnumMemberDefinition(int i) => $"{Procedures[i].Name} = {Procedures[i].ProcedureEnumIntValue}";
 
-        writer.WriteLine($"public enum {Procedures.EnumName}");
+        writer.WriteLine($"public enum {Procedures.ProcedureEnumName}");
         using (writer.GetBlock(Appendix.None))
         {
             for (int i = 0; i < Procedures.LastIndex; i++)

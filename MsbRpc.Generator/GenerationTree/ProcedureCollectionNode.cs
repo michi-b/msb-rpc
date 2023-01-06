@@ -11,13 +11,15 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
 {
     private readonly ProcedureNode[] _procedures;
     public readonly ContractNode Contract;
-    public readonly string EnumName;
     public readonly bool IsValid = true;
     public readonly int LastIndex;
+    public readonly string ProcedureEnumName;
+    public readonly string ProcedureEnumParameter;
 
     public ProcedureNode this[int index] => _procedures[index];
 
-    public int Count { get; }
+    public int Length { get; }
+    public int Count => Length;
 
     public ProcedureCollectionNode
     (
@@ -28,12 +30,13 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
     )
     {
         Contract = contract;
-        EnumName = $"{contract.PascalCaseName}{ProcedurePostfix}";
-        Count = procedures.Length;
-        LastIndex = Count - 1;
+        ProcedureEnumName = $"{contract.PascalCaseName}{ProcedurePostfix}";
+        ProcedureEnumParameter = $"{ProcedureEnumName} {Parameters.Procedure}";
+        Length = procedures.Length;
+        LastIndex = Length - 1;
 
-        _procedures = new ProcedureNode[Count];
-        for (int i = 0; i < Count; i++)
+        _procedures = new ProcedureNode[Length];
+        for (int i = 0; i < Length; i++)
         {
             var procedure = new ProcedureNode(procedures[i], this, i, typeNodeCache, context);
             IsValid = IsValid && procedure.IsValid;
