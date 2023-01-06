@@ -13,7 +13,7 @@ internal abstract class CodeFileWriter
 
     protected abstract string FileName { get; }
 
-    protected CodeFileWriter(ContractNode contract) : this(contract.Names.GeneratedNamespace) { }
+    protected CodeFileWriter(ContractNode contract) : this(contract.Namespace) { }
 
     private CodeFileWriter(string generatedNamespace) => _generatedNamespace = generatedNamespace;
 

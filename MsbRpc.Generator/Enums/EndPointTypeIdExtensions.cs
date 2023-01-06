@@ -1,25 +1,19 @@
 ﻿using System;
+using static MsbRpc.Generator.IndependentNames;
 
 namespace MsbRpc.Generator.Enums;
 
 internal static class EndPointTypeIdExtensions
 {
-    public static string GetName(this EndPointTypeId target)
+    public static string GetPostfix(this EndPointType target)
     {
         return target switch
         {
-            EndPointTypeId.Client => "Client",
-            EndPointTypeId.Server => "Server",
-            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
-        };
-    }
-
-    public static EndPointDirection GetInitialDirection(this EndPointTypeId target)
-    {
-        return target switch
-        {
-            EndPointTypeId.Client => EndPointDirection.Outbound,
-            EndPointTypeId.Server => EndPointDirection.Inbound,
+            EndPointType.InboundClient => ClientPostfix,
+            EndPointType.InboundServer => ServerPostfix,
+            EndPointType.OutboundClient => ClientPostfix,
+            EndPointType.OutboundServer => ServerPostfix,
+            EndPointType.Server => ServerPostfix,
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }

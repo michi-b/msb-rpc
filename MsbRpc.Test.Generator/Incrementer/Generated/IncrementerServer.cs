@@ -33,5 +33,5 @@ public class IncrementerServer : MsbRpc.EndPoints.Server<IncrementerServerEndPoi
 
     protected override IncrementerServerEndPoint CreateEndPoint
         (MsbRpc.Messaging.Messenger messenger)
-        => new IncrementerServerEndPoint(messenger, this.GetImplementation(), this.LoggerFactory);
+        => new IncrementerServerEndPoint(messenger, GetImplementation(), LoggerFactory);
 }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.AttributeData;
 using MsbRpc.Generator.Attributes;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
@@ -33,7 +33,7 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
     public static ContractInfo? Parse(INamedTypeSymbol contract)
     {
-        Microsoft.CodeAnalysis.AttributeData? attributes = (from attributeData in contract.GetAttributes()
+        AttributeData? attributes = (from attributeData in contract.GetAttributes()
             let attributeClass = attributeData.AttributeClass
             where TypeCheck.IsRpcContractAttribute(attributeClass)
             select attributeData).FirstOrDefault();

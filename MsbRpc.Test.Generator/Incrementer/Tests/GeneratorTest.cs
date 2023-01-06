@@ -9,7 +9,6 @@ using Misbat.CodeAnalysis.Test.CodeTest;
 using Misbat.CodeAnalysis.Test.Extensions;
 using Misbat.CodeAnalysis.Test.Utility;
 using MsbRpc.Contracts;
-using MsbRpc.EndPoints;
 using MsbRpc.Generator;
 using MsbRpc.Generator.Attributes;
 using Serilog;
@@ -109,14 +108,14 @@ public interface IIncrementer : IRpcContract
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
     {
-        await TestGenerates("IncrementerServerProcedure.g.cs");
+        await TestGenerates("IncrementerProcedure.g.cs");
     }
 
-    // [TestMethod]
-    // public async Task GeneratesServerProcedureEnumExtensions()
-    // {
-    //     await TestGenerates("IncrementerServerProcedureExtensions.g.cs");
-    // }
+    [TestMethod]
+    public async Task GeneratesServerProcedureEnumExtensions()
+    {
+        await TestGenerates("IncrementerProcedureExtensions.g.cs");
+    }
 
     // [TestMethod]
     // public async Task GeneratesClientEndPoint()

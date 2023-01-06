@@ -22,7 +22,7 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
     {
         return procedure switch
         {
-            IncrementerProcedure.Increment => this.Increment(request),
+            IncrementerProcedure.Increment => Increment(request),
             IncrementerProcedure.Store => Store(request),
             IncrementerProcedure.IncrementStored => IncrementStored(),
             IncrementerProcedure.GetStored => GetStored(),
@@ -33,11 +33,11 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
 
     private MsbRpc.Serialization.Buffers.Response GetStored()
     {
-        int result = this.Implementation.GetStored();
+        int result = Implementation.GetStored();
 
         const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
-        MsbRpc.Serialization.Buffers.Response response = Buffer.GetResponse(this.Implementation.RandToCompletion, resultSize);
+        MsbRpc.Serialization.Buffers.Response response = Buffer.GetResponse(Implementation.RandToCompletion, resultSize);
         MsbRpc.Serialization.Buffers.BufferWriter responseWriter = response.GetWriter();
 
         responseWriter.Write(result);
@@ -53,12 +53,12 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
         int valueArgument = requestReader.ReadInt();
 
         // Execute procedure.
-        int result = this.Implementation.Increment(valueArgument);
+        int result = Implementation.Increment(valueArgument);
 
         // Send response.
         const int resultSize = MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize;
 
-        MsbRpc.Serialization.Buffers.Response response = Buffer.GetResponse(this.Implementation.RandToCompletion, resultSize);
+        MsbRpc.Serialization.Buffers.Response response = Buffer.GetResponse(Implementation.RandToCompletion, resultSize);
         MsbRpc.Serialization.Buffers.BufferWriter responseWriter = response.GetWriter();
 
         responseWriter.Write(result);
@@ -72,21 +72,21 @@ public class IncrementerServerEndPoint : MsbRpc.EndPoints.InboundEndPoint<Increm
         
         int valueArgument = requestReader.ReadInt();
 
-        this.Implementation.Store(valueArgument);
+        Implementation.Store(valueArgument);
 
-        return this.Buffer.GetResponse(this.Implementation.RandToCompletion);
+        return Buffer.GetResponse(Implementation.RandToCompletion);
     }
 
     private MsbRpc.Serialization.Buffers.Response IncrementStored()
     {
-        this.Implementation.IncrementStored();
-        return this.Buffer.GetResponse(this.Implementation.RandToCompletion);
+        Implementation.IncrementStored();
+        return Buffer.GetResponse(Implementation.RandToCompletion);
     }
 
     private MsbRpc.Serialization.Buffers.Response End()
     {
-        this.Implementation.Finish();
-        return this.Buffer.GetResponse(this.Implementation.RandToCompletion);
+        Implementation.Finish();
+        return Buffer.GetResponse(Implementation.RandToCompletion);
     }
 
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);

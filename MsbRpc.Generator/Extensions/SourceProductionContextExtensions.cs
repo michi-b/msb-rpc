@@ -39,7 +39,7 @@ internal static class SourceProductionContextExtensions
 
     public static void ReportContractGenerationError(this SourceProductionContext context, ContractNode contract)
     {
-        context.ReportDiagnostic(Diagnostic.Create(ContractGeneratorError, Location.None, contract.Names.PascalCaseName));
+        context.ReportDiagnostic(Diagnostic.Create(ContractGeneratorError, Location.None, contract.PascalCaseName));
     }
 
     public static void ReportContractGenerationException(this SourceProductionContext context, ref ContractInfo contractInfo, Exception exception)

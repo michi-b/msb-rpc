@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.AttributeData;
 using MsbRpc.Generator.Attributes;
+using MsbRpc.Generator.Extensions;
 
 namespace MsbRpc.Generator.AttributeDataUtility;
 
@@ -10,7 +10,7 @@ public struct RpcContractAttributeData : IEquatable<RpcContractAttributeData>
 {
     public RpcContractType ContractType;
 
-    public static bool TryParse(Microsoft.CodeAnalysis.AttributeData data, ref RpcContractAttributeData target)
+    public static bool TryParse(AttributeData data, ref RpcContractAttributeData target)
     {
         RpcContractType? contractType = null;
 

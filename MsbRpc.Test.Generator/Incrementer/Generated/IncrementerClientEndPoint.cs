@@ -19,7 +19,7 @@ public class IncrementerClientEndPoint : MsbRpc.EndPoints.OutboundEndPoint<Incre
         Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultInitialBufferSize
     )
-        => await IncrementerClientEndPoint.ConnectAsync(new System.Net.IPEndPoint(address, port), loggerFactory, initialBufferSize);
+        => await ConnectAsync(new System.Net.IPEndPoint(address, port), loggerFactory, initialBufferSize);
 
     public static async System.Threading.Tasks.ValueTask<IncrementerClientEndPoint> ConnectAsync
     (

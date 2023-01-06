@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MsbRpc.Generator.CodeWriters.Files;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
@@ -62,6 +63,12 @@ public class ContractGenerator : IIncrementalGenerator
         try
         {
             ContractNode contract = new(ref contractInfo, context);
+            ProcedureCollection? procedures = contract.Procedures;
+            if (procedures != null)
+            {
+                context.GenerateFile(new ProcedureEnumFileWriter(contract, procedures));
+                context.GenerateFile(new ProcedureEnumExtensionsWriter(contract, procedures));
+            }
             if (contract.IsValid)
             {
                 // GenerateEndPoint(context, contract, contract.Server);

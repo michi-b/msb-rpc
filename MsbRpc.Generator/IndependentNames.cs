@@ -9,7 +9,10 @@ internal static class IndependentNames
     public const string ExtensionsPostFix = "Extensions";
     public const string GeneratedFilePostfix = ".g.cs";
     public const string ImplementationPostfix = "Implementation";
-
+    public const string GeneratedNamespacePostFix = ".Generated";
+    public const string ClientPostfix = "Client";
+    public const string ServerPostfix = "Server";
+    
     public static class Types
     {
         public const string LoggerFactoryInterface = "Microsoft.Extensions.Logging.ILoggerFactory";
@@ -35,8 +38,9 @@ internal static class IndependentNames
     public static class Methods
     {
         public const string CreateLogger = "Microsoft.Extensions.Logging.LoggerFactoryExtensions.CreateLogger";
-        public const string GetNameProcedureEnumExtension = "GetName";
-        public const string GetInvertsDirectionProcedureExtension = "GetInvertsDirection";
+        public const string GetNameProcedureExtension = "GetName";
+        public const string GetIdProcedureExtension= "GetId";
+        public const string FromIdProcedureExtension = "FromId";
         public const string BufferWrite = "Write";
 
         //endpoints
@@ -65,6 +69,7 @@ internal static class IndependentNames
         public const string Messenger = "messenger";
         public const string CancellationToken = "cancellationToken";
         public const string Procedure = "procedure";
+        public const string ProcedureId = "procedureId";
         public const string InitialBufferSize = "initialBufferSize";
         public const string ArgumentsBufferReader = "arguments";
         public const string EndPointImplementation = "implementation";
@@ -98,7 +103,7 @@ internal static class IndependentNames
         public const string RpcResultSize = "resultSize";
         public const string RpcResultWriter = "resultWriter";
     }
-
+    
     public static string ToCamelCase(this string target)
     {
         char firstChar = target[0];
