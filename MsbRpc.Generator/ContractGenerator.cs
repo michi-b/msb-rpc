@@ -65,7 +65,7 @@ public class ContractGenerator : IIncrementalGenerator
             ContractNode contract = new(ref contractInfo, context);
             if (contract.IsValid)
             {
-                ProcedureCollection procedures = contract.Procedures;
+                ProcedureCollectionNode procedures = contract.Procedures;
                 context.GenerateFile(new ProcedureEnumFileWriter(procedures));
                 context.GenerateFile(new ProcedureEnumExtensionsWriter(procedures));
                 context.GenerateFile(new ServerEndPointWriter(contract.Server));

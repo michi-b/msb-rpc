@@ -59,8 +59,4 @@
         <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
     </ItemGroup>
     
-    <ItemGroup>
-      <Folder Include="GenerationTree\Names" />
-    </ItemGroup>
-    
 </Project>

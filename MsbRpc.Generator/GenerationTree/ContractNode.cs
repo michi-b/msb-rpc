@@ -18,7 +18,7 @@ internal class ContractNode
     public readonly bool IsValid = true;
     public readonly string Namespace;
     public readonly string PascalCaseName;
-    public readonly ProcedureCollection Procedures;
+    public readonly ProcedureCollectionNode Procedures;
     public readonly EndPointNode Server;
 
     public ContractNode(ref ContractInfo info, SourceProductionContext context)
@@ -32,7 +32,7 @@ internal class ContractNode
 
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 
-        Procedures = new ProcedureCollection(procedures, this, typeCache, context);
+        Procedures = new ProcedureCollectionNode(procedures, this, typeCache, context);
 
         IsValid = IsValid && Procedures.IsValid;
 

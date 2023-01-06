@@ -10,11 +10,11 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 {
     private readonly string _className;
     private readonly string _procedureParameterOutOfRangeLine;
-    private readonly ProcedureCollection _procedures;
+    private readonly ProcedureCollectionNode _procedures;
     private readonly string _returnProcedureSwitchExpressionLine;
     protected override string FileName { get; }
 
-    public ProcedureEnumExtensionsWriter(ProcedureCollection procedures)
+    public ProcedureEnumExtensionsWriter(ProcedureCollectionNode procedures)
         : base(procedures.Contract)
     {
         _procedures = procedures;

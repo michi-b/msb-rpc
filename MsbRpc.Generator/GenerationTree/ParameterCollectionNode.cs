@@ -7,7 +7,7 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ParameterCollection : IReadOnlyList<ParameterNode>
+internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
 {
     private readonly ParameterNode[] _parameters;
     public readonly IReadOnlyList<ParameterNode> ConstantSizeParameters;
@@ -19,7 +19,7 @@ internal class ParameterCollection : IReadOnlyList<ParameterNode>
 
     public ParameterNode this[int index] => _parameters[index];
 
-    public ParameterCollection(ImmutableArray<ParameterInfo> parameterInfos, TypeNodeCache typeNodeCache, SourceProductionContext context)
+    public ParameterCollectionNode(ImmutableArray<ParameterInfo> parameterInfos, TypeNodeCache typeNodeCache, SourceProductionContext context)
     {
         Count = parameterInfos.Length;
         LastIndex = Count - 1;

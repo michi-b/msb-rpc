@@ -8,30 +8,30 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ProcedureNode
 {
     public readonly string AsyncName;
-    public readonly ProcedureCollection Collection;
+    public readonly ProcedureCollectionNode CollectionNode;
     public readonly string EnumValueString;
     public readonly int IntValue;
     public readonly string IntValueString;
     public readonly bool IsValid;
 
     public readonly string Name;
-    public readonly ParameterCollection? Parameters;
+    public readonly ParameterCollectionNode? Parameters;
     public readonly TypeNode ReturnType;
 
     public ProcedureNode
     (
         ProcedureInfo info,
-        ProcedureCollection collection,
+        ProcedureCollectionNode collectionNode,
         int definitionIndex,
         TypeNodeCache typeNodeCache,
         SourceProductionContext context
     )
     {
-        Collection = collection;
+        CollectionNode = collectionNode;
 
         Name = info.Name;
         AsyncName = $"{Name}{IndependentNames.AsyncPostFix}";
-        EnumValueString = $"{collection.EnumName}.{Name}";
+        EnumValueString = $"{collectionNode.EnumName}.{Name}";
         IntValue = definitionIndex;
         IntValueString = definitionIndex.ToString();
 
@@ -46,7 +46,7 @@ internal class ProcedureNode
         ImmutableArray<ParameterInfo> parameterInfos = info.Parameters;
         if (parameterInfos.Length > 0)
         {
-            Parameters = new ParameterCollection(parameterInfos, typeNodeCache, context);
+            Parameters = new ParameterCollectionNode(parameterInfos, typeNodeCache, context);
             IsValid = IsValid && Parameters.IsValid;
         }
         else

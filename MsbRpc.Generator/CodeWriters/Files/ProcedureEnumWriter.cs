@@ -9,9 +9,9 @@ internal class ProcedureEnumFileWriter : CodeFileWriter
 {
     protected override string FileName { get; }
 
-    private ProcedureCollection Procedures { get; }
+    private ProcedureCollectionNode Procedures { get; }
 
-    public ProcedureEnumFileWriter(ProcedureCollection procedures)
+    public ProcedureEnumFileWriter(ProcedureCollectionNode procedures)
         : base(procedures.Contract)
     {
         Procedures = procedures;

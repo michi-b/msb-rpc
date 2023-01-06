@@ -2,12 +2,12 @@
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal readonly struct ParameterNode
+internal class ParameterNode
 {
-    public readonly TypeNode Type;
     public readonly string Name;
-    public readonly string SizeVariableName;
     public readonly string ReceivedArgument;
+    public readonly string SizeVariableName;
+    public readonly TypeNode Type;
 
     public ParameterNode(string name, TypeNode type)
     {
