@@ -110,7 +110,7 @@ internal class InboundEndPointWriter : EndPointWriter
                 writer.WriteLine();
                 foreach (ParameterNode parameter in parameters)
                 {
-                    writer.WriteLine($"{parameter.Type.Name} {parameter.ArgumentVariableName} = {parameter.Type.ReadFromRequestReaderExpression};");
+                    writer.WriteLine(parameter.GetRequestReadStatement());
                 }
 
                 writer.WriteLine();
@@ -133,7 +133,7 @@ internal class InboundEndPointWriter : EndPointWriter
             //return the result
             if (returnType.IsVoid)
             {
-                writer.WriteLine(ReturnEmptyResponseLine);
+                writer.WriteLine(ReturnEmptyResponseStatement);
             }
             else
             {

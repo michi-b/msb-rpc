@@ -41,7 +41,6 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
             var parameter = new ParameterNode(parameterInfo.Name, type);
 
             bool isConstantSize = parameter.Type.IsConstantSize;
-            HasOnlyConstantSizeParameters = HasOnlyConstantSizeParameters && isConstantSize;
 
             _parameters[i] = parameter;
 
@@ -51,7 +50,9 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
             }
             else
             {
-                HasOnlyConstantSizeParameters = false;
+                //only constant size parameters are supported atm
+                context.ReportTypeIsNotAValidRpcParameter(type);
+                IsValid = false;
             }
         }
 

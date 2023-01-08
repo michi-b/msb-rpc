@@ -13,7 +13,6 @@ internal class TypeNode
     public readonly bool IsVoid;
     public readonly string Name;
 
-    public readonly string? ReadFromRequestReaderExpression;
     public readonly SerializationKind SerializationKind;
 
     public TypeNode(string fullName, SerializationKind serializationKind)
@@ -41,18 +40,14 @@ internal class TypeNode
             IsValidReturnType = serializationKind.GetIsValidReturnType();
             IsVoid = serializationKind == SerializationKind.Void;
         }
+    }
 
-        if (IsValidParameter)
-        {
-            string? bufferReadMethodName = SerializationKind.GetBufferReadMethodName();
-            ReadFromRequestReaderExpression = bufferReadMethodName != null
-                ? $"{Variables.RequestReader}.{bufferReadMethodName}()"
-                : "NotYetImplemented";
-        }
-        else
-        {
-            ReadFromRequestReaderExpression = null;
-        }
+    public string GetResponseReadStatement() => $"{Name} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
+
+    public string GetBufferReadExpression(string bufferReaderExpression)
+    {
+        string? bufferReadMethodName = SerializationKind.GetBufferReadMethodName() ?? string.Empty;
+        return $"{bufferReaderExpression}.{bufferReadMethodName}()";
     }
 
     public override string ToString() => $"{FullName} ({SerializationKind.GetName()})";

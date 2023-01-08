@@ -61,6 +61,7 @@ internal static class IndependentNames
         public const string GetProcedureName = "GetName";
         public const string GetProcedureId = "GetId";
         public const string ConnectAsync = "ConnectAsync";
+        public const string AssertIsOperable = "AssertIsOperable";
 
         #region RpcBuffer
 
@@ -69,6 +70,7 @@ internal static class IndependentNames
         public const string GetWriter = "GetWriter";
         public const string GetResponse = "GetResponse";
         public const string GetRequest = "GetRequest";
+        public const string SendRequestAsync = "SendRequestAsync";
 
         #endregion
 
@@ -131,6 +133,7 @@ internal static class IndependentNames
 
         public const string Result = "result";
         public const string Response = "response";
+        public const string Request = "request";
         public const string RequestWriter = "requestWriter";
         public const string RequestSize = "requestSize";
         public const string RequestReader = "requestReader";
@@ -139,6 +142,7 @@ internal static class IndependentNames
         public const string ResponseWriter = "responseWriter";
         public const string Logger = "logger";
         public const string Messenger = "messenger";
+        public const string ConstantArgumentSizeSum = "constantArgumentSizeSum";
 
         #endregion
     }

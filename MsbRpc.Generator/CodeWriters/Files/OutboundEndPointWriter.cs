@@ -1,4 +1,5 @@
 ﻿using System.CodeDom.Compiler;
+using System.IO;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
@@ -63,7 +64,108 @@ internal class OutboundEndPointWriter : EndPointWriter
 
     protected override void WriteProcedures(IndentedTextWriter writer)
     {
-        //todo: implement
+        for (int i = 0; i < Procedures.Length; i++)
+        {
+            if (i > 0)
+            {
+                writer.WriteLine();
+            }
+
+            ProcedureNode procedure = Procedures[i];
+            WriteProcedureHeader(writer, procedure);
+            using (writer.GetBlock())
+            {
+                WriteProcedureBody(writer, procedure);
+            }
+        }
+    }
+
+    private static void WriteProcedureHeader(IndentedTextWriter writer, ProcedureNode procedure)
+    {
+        writer.Write("public async ");
+        writer.Write
+        (
+            procedure.HasReturnValue
+                ? $"{Types.VaLueTask}<{procedure.ReturnType.Name}>"
+                : $"{Types.VaLueTask}"
+        );
+        writer.WriteLine($" {procedure.Name}{AsyncPostFix}");
+        using (writer.GetParenthesesBlock())
+        {
+            ParameterCollectionNode? parameters = procedure.Parameters;
+            if (parameters != null)
+            {
+                foreach (ParameterNode parameter in parameters)
+                {
+                    writer.WriteLine($"{parameter.Type.Name} {parameter.Name},");
+                }
+            }
+
+            writer.WriteLine($"{Types.CancellationToken} {Parameters.CancellationToken}");
+        }
+    }
+
+    private static void WriteProcedureBody(TextWriter writer, ProcedureNode procedure)
+    {
+        writer.WriteLine($"base.{Methods.AssertIsOperable}();");
+
+        writer.WriteLine();
+
+        ParameterCollectionNode? parameters = procedure.Parameters;
+
+        string getProcedureIdExpression = $"this.{Methods.GetProcedureId}({procedure.ProcedureEnumValue})";
+
+        if (parameters != null)
+        {
+            foreach (ParameterNode parameter in parameters.ConstantSizeParameters)
+            {
+                writer.WriteLine($"const int {parameter.SizeVariableName} = {parameter.Type.ConstantSizeExpression};");
+            }
+
+            writer.Write($"const int {Variables.ConstantArgumentSizeSum} = ");
+
+            for (int i = 0; i < parameters.ConstantSizeParameters.Count; i++)
+            {
+                ParameterNode parameter = parameters.ConstantSizeParameters[i];
+                if (i > 0)
+                {
+                    writer.Write("+ ");
+                }
+
+                writer.Write(parameter.SizeVariableName);
+                writer.WriteLine(i == parameters.ConstantSizeParameters.Count - 1 ? ";" : string.Empty);
+            }
+
+            writer.WriteLine();
+
+            writer.WriteLine($"{RequestInitializationWithoutParameters}({getProcedureIdExpression}, {Variables.ConstantArgumentSizeSum});");
+            writer.WriteLine($"{RequestWriterInitializationStatement}");
+
+            writer.WriteLine();
+
+            foreach (ParameterNode parameter in parameters)
+            {
+                writer.WriteLine(parameter.WriteToRequestWriterStatement);
+            }
+        }
+        else
+        {
+            writer.WriteLine($"{RequestInitializationWithoutParameters}({getProcedureIdExpression});");
+        }
+
+        writer.WriteLine();
+
+        if (procedure.HasReturnValue)
+        {
+            writer.WriteLine(SendRequestStatementWithResponse);
+            writer.WriteLine(ResponseReaderInitializationStatement);
+            writer.WriteLine(procedure.ReturnType.GetResponseReadStatement());
+            writer.WriteLine($"return {Variables.Result};");
+        }
+        else
+        {
+            writer.WriteLine(SendRequestStatement);
+        }
     }
 
     protected override void WriteProcedureEnumOverrides(IndentedTextWriter writer)

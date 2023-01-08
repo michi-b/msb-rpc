@@ -13,20 +13,34 @@ internal static class IndependentCode
 
     public const string RequestParameter = $"{Types.Request} {Parameters.Request}";
 
-    public const string ReturnEmptyResponseLine = $"return {Fields.EndPointBuffer}.{Methods.GetResponse}"
-                                                  + $"({Fields.InboundEndpointImplementation}.{Properties.RanToCompletion});";
+    public const string ReturnEmptyResponseStatement = $"return {Fields.EndPointBuffer}.{Methods.GetResponse}"
+                                                       + $"({Fields.InboundEndpointImplementation}.{Properties.RanToCompletion});";
 
-    public const string GetResultSizeResponseLine = $"{Types.Response} {Variables.Response} = {Fields.EndPointBuffer}.{Methods.GetResponse}("
-                                                    + $"{Fields.InboundEndpointImplementation}.{Properties.RanToCompletion}, "
-                                                    + $"{Variables.ResultSize});";
+    public const string GetResultSizeResponseStatement = $"{Types.Response} {Variables.Response} = {Fields.EndPointBuffer}.{Methods.GetResponse}("
+                                                         + $"{Fields.InboundEndpointImplementation}.{Properties.RanToCompletion}, "
+                                                         + $"{Variables.ResultSize});";
 
-    public const string GetResponseWriterLine = $"{Types.BufferWriter} {Variables.ResponseWriter} = {Variables.Response}.{Methods.GetWriter}();";
+    public const string GetResponseWriterStatement = $"{Types.BufferWriter} {Variables.ResponseWriter} = {Variables.Response}.{Methods.GetWriter}();";
 
-    public const string WriteResultToResponseLine = $"{Variables.ResponseWriter}.{Methods.BufferWrite}({Variables.Result});";
+    public const string WriteResultToResponseStatement = $"{Variables.ResponseWriter}.{Methods.BufferWrite}({Variables.Result});";
 
-    public const string ReturnResponseLine = $"return {Variables.Response};";
+    public const string ReturnResponseStatement = $"return {Variables.Response};";
+
+    public const string SendRequestStatement = $"await base.{Methods.SendRequestAsync}({Variables.Request}, {Parameters.CancellationToken});";
+
+    public const string SendRequestStatementWithResponse = $"{Types.Response} {Variables.Response} = {SendRequestStatement}";
+
+    public const string ResponseReaderInitializationStatement =
+        $"{Types.BufferReader} {Variables.ResponseReader} = {Variables.Response}.{Methods.GetReader}();";
+
+    public const string RequestInitializationWithoutParameters
+        = $"{Types.Request} {Variables.Request} = base.{Fields.EndPointBuffer}.{Methods.GetRequest}";
+
+    public const string RequestWriterInitializationStatement =
+        $"{Types.BufferWriter} {Variables.RequestWriter} = {Variables.Request}.{Methods.GetWriter}();";
 
     public const string IPAddressParameter = $"{Types.IPAddress} {Parameters.IPAddress}";
+
     public const string PortParameter = $"int {Parameters.Port}";
 
     /// <remarks>NO trailing comma</remarks>

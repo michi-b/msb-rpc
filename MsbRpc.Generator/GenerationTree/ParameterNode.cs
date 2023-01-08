@@ -6,17 +6,20 @@ internal class ParameterNode
 {
     public readonly string ArgumentVariableName;
     public readonly string Name;
-
     public readonly string SizeVariableName;
     public readonly TypeNode Type;
+    public readonly string WriteToRequestWriterStatement;
 
     public ParameterNode(string name, TypeNode type)
     {
         Name = name.ToCamelCase();
-        SizeVariableName = Name + SizePostfix;
         ArgumentVariableName = Name + ArgumentPostfix;
+        SizeVariableName = ArgumentVariableName + SizePostfix;
         Type = type;
+        WriteToRequestWriterStatement = $"{Variables.RequestWriter}.{Methods.BufferWrite}({Name});";
     }
+
+    public string GetRequestReadStatement() => $"{Type.Name} {ArgumentVariableName} = {Type.GetBufferReadExpression(Variables.RequestReader)};";
 
     public override string ToString() => $"{Name} ({Type})";
 }

@@ -85,7 +85,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
     {
         base.AssertIsOperable();
 
-        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.IncrementStored));
+        Request request = base.Buffer.GetRequest(this.GetId(IncrementerProcedure.IncrementStored));
 
         await base.SendRequestAsync(request, cancellationToken);
     }

@@ -35,9 +35,9 @@ internal static class IndentedTextWriterExtensions
 
     public static void WriteReturnResultResponse(this IndentedTextWriter writer)
     {
-        writer.WriteLine(GetResultSizeResponseLine);
-        writer.WriteLine(GetResponseWriterLine);
-        writer.WriteLine(WriteResultToResponseLine);
-        writer.WriteLine(ReturnResponseLine);
+        writer.WriteLine(GetResultSizeResponseStatement);
+        writer.WriteLine(GetResponseWriterStatement);
+        writer.WriteLine(WriteResultToResponseStatement);
+        writer.WriteLine(ReturnResponseStatement);
     }
 }
