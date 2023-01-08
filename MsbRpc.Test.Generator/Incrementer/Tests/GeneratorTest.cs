@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
@@ -41,10 +42,10 @@ public interface IIncrementer : IRpcContract
                     MetadataReferenceUtility.MsCoreLib,
                     MetadataReferenceUtility.SystemRuntime,
                     MetadataReferenceUtility.NetStandard,
-                    MetadataReferenceUtility.FromType<RpcContractAttribute>(),
-                    MetadataReferenceUtility.FromType<IRpcContract>(),
-                    MetadataReferenceUtility.FromType<ILoggerFactory>(),
-                    MetadataReferenceUtility.FromType<ArgumentOutOfRangeException>(),
+                    MetadataReferenceUtility.FromType<RpcContractAttribute>(), //MsbRpc.Generator.Attributes
+                    MetadataReferenceUtility.FromType<IRpcContract>(), //MsbRpc
+                    MetadataReferenceUtility.FromType<ILoggerFactory>(), //Microsoft.Extensions.Logging
+                    MetadataReferenceUtility.FromType<IPAddress>(), //System.Net.Primitives
                     MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Tasks.Extensions")
                 )
             ).WithAdditionalGenerators(new ContractGenerator())
@@ -124,11 +125,11 @@ public interface IIncrementer : IRpcContract
         await TestGenerates("IncrementerServerEndPoint.g.cs");
     }
 
-    // [TestMethod]
-    // public async Task GeneratesClientEndPoint()
-    // {
-    //     await TestGenerates("IncrementerClientEndPoint.g.cs");
-    // }
+    [TestMethod]
+    public async Task GeneratesClientEndPoint()
+    {
+        await TestGenerates("IncrementerClientEndPoint.g.cs");
+    }
 
     //todo: test generation of server (server endpoint factory)
 

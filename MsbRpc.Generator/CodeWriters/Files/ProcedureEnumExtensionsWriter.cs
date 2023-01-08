@@ -9,7 +9,8 @@ namespace MsbRpc.Generator.CodeWriters.Files;
 
 internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 {
-    private readonly string _className;
+    //name of the generated class
+    private readonly string _name;
     private readonly ProcedureCollectionNode _procedures;
     protected override string FileName { get; }
 
@@ -17,13 +18,13 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
         : base(procedures.Contract)
     {
         _procedures = procedures;
-        _className = $"{procedures.ProcedureEnumName}{ExtensionsPostFix}";
-        FileName = $"{_className}{GeneratedFilePostfix}";
+        _name = procedures.ProcedureEnumExtensionsName;
+        FileName = $"{_name}{GeneratedFilePostfix}";
     }
 
     protected override void Write(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public static class {_className}");
+        writer.WriteLine($"public static class {_name}");
         using (writer.GetBlock(Appendix.None))
         {
             WriteGetNameExtension(writer);

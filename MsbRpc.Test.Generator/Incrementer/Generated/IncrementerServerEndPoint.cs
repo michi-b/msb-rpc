@@ -60,7 +60,7 @@ public class IncrementerServerEndPoint
 
         const int resultSize = PrimitiveSerializer.IntSize;
 
-        Response response = Buffer.GetResponse(Implementation.RandToCompletion, resultSize);
+        Response response = Buffer.GetResponse(Implementation.RanToCompletion, resultSize);
         BufferWriter responseWriter = response.GetWriter();
 
         responseWriter.Write(result);
@@ -81,7 +81,7 @@ public class IncrementerServerEndPoint
         // Send response.
         const int resultSize = PrimitiveSerializer.IntSize;
 
-        Response response = Buffer.GetResponse(Implementation.RandToCompletion, resultSize);
+        Response response = Buffer.GetResponse(Implementation.RanToCompletion, resultSize);
         BufferWriter responseWriter = response.GetWriter();
 
         responseWriter.Write(result);
@@ -97,19 +97,19 @@ public class IncrementerServerEndPoint
 
         Implementation.Store(valueArgument);
 
-        return Buffer.GetResponse(Implementation.RandToCompletion);
+        return Buffer.GetResponse(Implementation.RanToCompletion);
     }
 
     private Response IncrementStored()
     {
         Implementation.IncrementStored();
-        return Buffer.GetResponse(Implementation.RandToCompletion);
+        return Buffer.GetResponse(Implementation.RanToCompletion);
     }
 
     private Response Finish()
     {
         Implementation.Finish();
-        return Buffer.GetResponse(Implementation.RandToCompletion);
+        return Buffer.GetResponse(Implementation.RanToCompletion);
     }
 
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);

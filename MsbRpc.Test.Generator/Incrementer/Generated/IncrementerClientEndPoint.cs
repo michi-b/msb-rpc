@@ -33,24 +33,15 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
     public static async ValueTask<IncrementerClientEndPoint> ConnectAsync
     (
-        IPAddress address,
+        IPAddress ipAddress,
         int port,
         ILoggerFactory? loggerFactory = null,
         int initialBufferSize = DefaultInitialBufferSize
     )
-        => await ConnectAsync(new IPEndPoint(address, port), loggerFactory, initialBufferSize);
-
-    public static async ValueTask<IncrementerClientEndPoint> ConnectAsync
-    (
-        IPEndPoint serverEndPoint,
-        ILoggerFactory? loggerFactory = null,
-        int initialBufferSize = DefaultInitialBufferSize
-    )
     {
-        ILogger<IncrementerClientEndPoint> logger
-            = LoggerFactoryExtensions.CreateLoggerOptional<IncrementerClientEndPoint>(loggerFactory);
-        Messenger messenger = await MessengerFactory.ConnectAsync(serverEndPoint, logger);
-        return new IncrementerClientEndPoint(messenger, logger, initialBufferSize);
+        ILogger<IncrementerClientEndPoint> logger = LoggerFactoryExtensions.CreateLoggerOptional<IncrementerClientEndPoint>(loggerFactory);
+        MsbRpc.Messaging.Messenger messenger = await MessengerFactory.ConnectAsync ( new IPEndPoint(ipAddress, port), logger);
+        return new(messenger, logger, initialBufferSize);
     }
 
     public async ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)

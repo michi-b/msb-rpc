@@ -4,5 +4,5 @@ namespace MsbRpc.Contracts;
 
 public interface IRpcContract : IDisposable
 {
-    public bool RandToCompletion { get; }
+    public bool RanToCompletion { get; }
 }

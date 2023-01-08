@@ -5,7 +5,7 @@ namespace MsbRpc.Test.Generator.Incrementer;
 internal class Incrementer : IIncrementer
 {
     private int _value;
-    public bool RandToCompletion { get; private set; }
+    public bool RanToCompletion { get; private set; }
 
     public int Increment(int value) => value + 1;
 
@@ -23,7 +23,7 @@ internal class Incrementer : IIncrementer
 
     public void Finish()
     {
-        RandToCompletion = true;
+        RanToCompletion = true;
     }
 
     public static Incrementer Create() => new();

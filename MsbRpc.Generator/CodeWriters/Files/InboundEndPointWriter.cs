@@ -29,7 +29,7 @@ internal class InboundEndPointWriter : EndPointWriter
         {
             writer.WriteLine($"{MessengerParameter},");
             writer.WriteLine($"{contractImplementationParameterLine},");
-            writer.WriteLine($"{NullableLoggerFactoryParameter},");
+            writer.WriteLine($"{LoggerFactoryNullableParameter},");
             writer.WriteLine($"{InitialBufferSizeParameterLine}");
         }
 
@@ -39,7 +39,7 @@ internal class InboundEndPointWriter : EndPointWriter
             writer.WriteLine($"{Parameters.Messenger},");
             writer.WriteLine($"{contractImplementationArgumentLine},");
             writer.WriteLine($"{GetCreateLoggerArgumentLine(Name)},");
-            writer.WriteLine($"{Parameters.InitialBufferSize}");
+            writer.WriteLine(Parameters.InitialBufferSize);
         }
 
         writer.WriteLine(" { }");
@@ -52,8 +52,8 @@ internal class InboundEndPointWriter : EndPointWriter
         {
             writer.WriteLine($"{MessengerParameter},");
             writer.WriteLine($"{contractImplementationParameterLine},");
-            writer.WriteLine($"{GetCreateLoggerParameterLine(Name)},");
-            writer.WriteLine($"{InitialBufferSizeParameterLine}");
+            writer.WriteLine($"{GetLoggerParameterLine(Name)},");
+            writer.WriteLine(InitialBufferSizeParameterLine);
         }
 
         writer.WriteLine(" : base");
@@ -110,15 +110,40 @@ internal class InboundEndPointWriter : EndPointWriter
                 writer.WriteLine();
                 foreach (ParameterNode parameter in parameters)
                 {
-                    writer.WriteLine($"{parameter.ArgumentVariableName} = {parameter.Type.ReadFromRequestReaderExpression};");
+                    writer.WriteLine($"{parameter.Type.Name} {parameter.ArgumentVariableName} = {parameter.Type.ReadFromRequestReaderExpression};");
                 }
 
                 writer.WriteLine();
             }
 
+            TypeNode returnType = procedure.ReturnType;
+            string implementationField = Fields.InboundEndpointImplementation;
+
             //call the contract implementation
+            if (!returnType.IsVoid)
+            {
+                writer.Write($"{returnType.Name} {Variables.Result} = ");
+            }
+
+            writer.Write($"{implementationField}.{procedure.Name}");
+            writer.WriteLine(parameters != null ? $"({parameters.GetValueArgumentsString()});" : "();");
+
+            writer.WriteLine();
+
+            //return the result
+            if (returnType.IsVoid)
+            {
+                writer.WriteLine(ReturnEmptyResponseLine);
+            }
+            else
+            {
+                if (returnType.IsConstantSize)
+                {
+                    writer.WriteLine($"const int {Variables.ResultSize} = {returnType.ConstantSizeExpression};");
+                    writer.WriteLine();
+                    writer.WriteReturnResultResponse();
+                }
+            }
         }
     }
-
-    protected override void WriteProcedureEnumOverrides(IndentedTextWriter writer) { }
 }

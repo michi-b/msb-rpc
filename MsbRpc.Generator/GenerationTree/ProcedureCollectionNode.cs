@@ -13,6 +13,7 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
     public readonly ContractNode Contract;
     public readonly bool IsValid = true;
     public readonly int LastIndex;
+    public readonly string ProcedureEnumExtensionsName;
     public readonly string ProcedureEnumName;
     public readonly string ProcedureEnumParameter;
 
@@ -31,6 +32,7 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
     {
         Contract = contract;
         ProcedureEnumName = $"{contract.PascalCaseName}{ProcedurePostfix}";
+        ProcedureEnumExtensionsName = $"{ProcedureEnumName}{ExtensionsPostFix}";
         ProcedureEnumParameter = $"{ProcedureEnumName} {Parameters.Procedure}";
         Length = procedures.Length;
         LastIndex = Length - 1;

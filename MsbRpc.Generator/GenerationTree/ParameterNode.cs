@@ -13,8 +13,8 @@ internal class ParameterNode
     public ParameterNode(string name, TypeNode type)
     {
         Name = name.ToCamelCase();
-        SizeVariableName = Name + Variables.SizePostfix;
-        ArgumentVariableName = Name + Variables.ArgumentPostfix;
+        SizeVariableName = Name + SizePostfix;
+        ArgumentVariableName = Name + ArgumentPostfix;
         Type = type;
     }
 

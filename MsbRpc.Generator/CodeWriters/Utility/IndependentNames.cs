@@ -14,6 +14,9 @@ internal static class IndependentNames
     public const string ServerPostfix = "Server";
     public const string EndPointPostfix = "EndPoint";
 
+    public const string ArgumentPostfix = "Argument";
+    public const string SizePostfix = "Size";
+
     public static class Types
     {
         public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";
@@ -37,6 +40,9 @@ internal static class IndependentNames
         public const string BufferUtility = "MsbRpc.Serialization.Buffers.BufferUtility";
         public const string Response = "MsbRpc.Serialization.Buffers.Response";
         public const string Request = "MsbRpc.Serialization.Buffers.Request";
+        public const string IPAddress = "System.Net.IPAddress";
+        public const string MessengerFactory = "MsbRpc.Messaging.MessengerFactory";
+        public const string IPEndPoint = "System.Net.IPEndPoint";
     }
 
     public static class Methods
@@ -45,17 +51,28 @@ internal static class IndependentNames
         public const string GetNameProcedureExtension = "GetName";
         public const string GetIdProcedureExtension = "GetId";
         public const string FromIdProcedureExtension = "FromId";
-        public const string BufferWrite = "Write";
 
-        //endpoints
+        #region EndPoints
+
         public const string EndPointEnterCalling = "EnterCalling";
         public const string EndPointExitCalling = "ExitCalling";
-        public const string EndPointSendRequestAsync = "SendRequestAsync";
-        public const string EndPointGetRequestWriter = "GetRequestWriter";
-        public const string EndPointGetResponseWriter = "GetResponseWriter";
-        public const string EndpointGetProcedureName = "GetName";
         public const string InboundEndPointExecute = "Execute";
+        public const string GetProcedure = "GetProcedure";
+        public const string GetProcedureName = "GetName";
+        public const string GetProcedureId = "GetId";
+        public const string ConnectAsync = "ConnectAsync";
+
+        #region RpcBuffer
+
+        public const string BufferWrite = "Write";
         public const string GetReader = "GetReader";
+        public const string GetWriter = "GetWriter";
+        public const string GetResponse = "GetResponse";
+        public const string GetRequest = "GetRequest";
+
+        #endregion
+
+        #endregion
     }
 
     public static class StaticMethods
@@ -81,13 +98,20 @@ internal static class IndependentNames
         public const string ContractImplementation = "implementation";
         public const string RpcEndPoint = "endPoint";
         public const string Request = "request";
+        public const string IPAddress = "address";
+        public const string Port = "port";
+    }
+
+    public static class Properties
+    {
+        public const string RanToCompletion = "RanToCompletion";
     }
 
     public static class Fields
     {
-        public const string RpcImplementation = "_implementation";
         public const string BufferEmpty = "Empty";
-        public const string BufferWriterBuffer = "Buffer";
+        public const string EndPointBuffer = "Buffer";
+        public const string InboundEndpointImplementation = "Implementation";
     }
 
     public static class PrivateFields
@@ -103,17 +127,20 @@ internal static class IndependentNames
 
     public static class Variables
     {
-        public const string ArgumentPostfix = "Argument";
-        public const string SizePostfix = "Size";
-        public const string ProcedureResult = "result";
-        public const string Procedure = "procedure";
-        public const string ConstantSizeRpcParametersSize = "constantSizeParametersSizeSum";
-        public const string ParametersSizeSum = "ParametersSizeSum";
+        #region EndPoints
+
+        public const string Result = "result";
+        public const string Response = "response";
         public const string RequestWriter = "requestWriter";
+        public const string RequestSize = "requestSize";
         public const string RequestReader = "requestReader";
         public const string ResponseReader = "responseReader";
-        public const string ResponseSize = "responseSize";
+        public const string ResultSize = "resultSize";
         public const string ResponseWriter = "responseWriter";
+        public const string Logger = "logger";
+        public const string Messenger = "messenger";
+
+        #endregion
     }
 
     public static string ToCamelCase(this string target)

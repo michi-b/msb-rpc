@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
@@ -58,6 +59,8 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
     }
 
     public IEnumerator<ParameterNode> GetEnumerator() => ((IEnumerable<ParameterNode>)_parameters).GetEnumerator();
+
+    public string GetValueArgumentsString() => string.Join(", ", this.Select(parameter => parameter.ArgumentVariableName));
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

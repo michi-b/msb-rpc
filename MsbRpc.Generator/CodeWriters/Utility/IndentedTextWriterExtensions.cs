@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.GenerationTree;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 
 namespace MsbRpc.Generator.CodeWriters.Utility;
 
@@ -20,7 +21,7 @@ internal static class IndentedTextWriterExtensions
         Func<ProcedureNode, string> getCaseExpression
     )
     {
-        writer.WriteLine(IndependentCode.ReturnProcedureSwitch);
+        writer.WriteLine(ReturnProcedureSwitch);
         using (writer.GetBlock(Appendix.SemicolonAndNewline))
         {
             foreach (ProcedureNode procedure in procedures)
@@ -28,7 +29,15 @@ internal static class IndentedTextWriterExtensions
                 writer.WriteLine($"{procedure.ProcedureEnumValue} => {getCaseExpression(procedure)},");
             }
 
-            writer.WriteLine(IndependentCode.ProcedureParameterOutOfRangeSwitchExpressionCase);
+            writer.WriteLine(ProcedureParameterOutOfRangeSwitchExpressionCase);
         }
+    }
+
+    public static void WriteReturnResultResponse(this IndentedTextWriter writer)
+    {
+        writer.WriteLine(GetResultSizeResponseLine);
+        writer.WriteLine(GetResponseWriterLine);
+        writer.WriteLine(WriteResultToResponseLine);
+        writer.WriteLine(ReturnResponseLine);
     }
 }

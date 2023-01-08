@@ -13,8 +13,11 @@ internal abstract class EndPointWriter : CodeFileWriter
 
     protected readonly EndPointNode EndPoint;
 
-    //the endpoint class name
+    /// <summary>
+    ///     the concrete endpoint class name
+    /// </summary>
     protected readonly string Name;
+
     protected readonly ProcedureCollectionNode Procedures;
 
     protected override string FileName { get; }
@@ -33,7 +36,7 @@ internal abstract class EndPointWriter : CodeFileWriter
         return endPoint.Direction switch
         {
             EndPointDirection.Inbound => new InboundEndPointWriter(endPoint),
-            // EndPointDirection.Outbound => new OutboundEndPointWriter(endPoint),
+            EndPointDirection.Outbound => new OutboundEndPointWriter(endPoint),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -56,9 +59,30 @@ internal abstract class EndPointWriter : CodeFileWriter
         }
     }
 
+    protected virtual void WriteProcedureEnumOverrides(IndentedTextWriter writer)
+    {
+        WriteGetProcedureNameOverride(writer);
+
+        writer.WriteLine();
+
+        WriteGetProcedureOverride(writer);
+    }
+
+    private void WriteGetProcedureNameOverride(IndentedTextWriter writer)
+    {
+        writer.Write($"protected override {Procedures.ProcedureEnumName} {Methods.GetProcedure}(int {Parameters.ProcedureId}) => ");
+        writer.WriteLine($"{Procedures.ProcedureEnumExtensionsName}.{Methods.FromIdProcedureExtension}({Parameters.ProcedureId});");
+    }
+
+    private void WriteGetProcedureOverride(IndentedTextWriter writer)
+    {
+        writer.Write($"protected override string {Methods.GetProcedureName}({Procedures.ProcedureEnumName} {Parameters.Procedure}) => ");
+        writer.WriteLine($"{Procedures.ProcedureEnumExtensionsName}.{Methods.GetNameProcedureExtension}({Parameters.Procedure});");
+    }
+
     protected abstract void WriteClassHeader(IndentedTextWriter writer);
 
     protected abstract void WriteConstructorsAndFactoryMethods(IndentedTextWriter writer);
+
     protected abstract void WriteProcedures(IndentedTextWriter writer);
-    protected abstract void WriteProcedureEnumOverrides(IndentedTextWriter writer);
 }
