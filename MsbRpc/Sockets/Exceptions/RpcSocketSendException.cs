@@ -4,7 +4,7 @@ namespace MsbRpc.Sockets.Exceptions;
 
 public class RpcSocketSendException : RpcSocketException
 {
-    public RpcSocketSendException(IRpcSocket socket, int expectedBytesSent, int actualBytesSent)
+    public RpcSocketSendException(RpcSocket socket, int expectedBytesSent, int actualBytesSent)
         : base
         (
             socket,
@@ -12,7 +12,7 @@ public class RpcSocketSendException : RpcSocketException
             + SocketHasBeenDisposedMessage
         ) { }
 
-    public RpcSocketSendException(IRpcSocket socket, Exception innerException)
+    public RpcSocketSendException(RpcSocket socket, Exception innerException)
         : base
         (
             socket,

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using MsbRpc.Sockets.Exceptions;
@@ -9,7 +8,7 @@ using MsbRpc.Sockets.Exceptions;
 namespace MsbRpc.Sockets;
 
 [PublicAPI]
-public class RpcSocket : IRpcSocket
+public class RpcSocket : IDisposable
 {
     private readonly Socket _socket;
     public readonly int Port;
@@ -97,91 +96,6 @@ public class RpcSocket : IRpcSocket
         return count;
     }
 
-    /// <inheritdoc cref="IRpcSocket.SendAsync" />
-    [PublicAPI]
-    public async ValueTask SendAsync(ArraySegment<byte> bytes, CancellationToken cancellationToken)
-    {
-        using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
-        try
-        {
-            await SendAsync(bytes);
-        }
-        catch (RpcSocketSendException)
-        {
-            ThrowIfOperationIsCancelled(cancellationToken);
-            throw;
-        }
-        catch (Exception exception)
-        {
-            ThrowIfOperationIsCancelled(cancellationToken);
-            throw new RpcSocketSendException(this, exception);
-        }
-    }
-
-    /// <exception cref="RpcSocketReceiveException">
-    ///     Thrown when an error occurs while receiving data,
-    ///     for example when some bytes but not all could be read before the connection was closed.
-    /// </exception>
-    /// <summary>Awaits and fills all bytes of the provided buffer with next bytes read from the socket.</summary>
-    /// <param name="buffer">Buffer to receive bytes into.</param>
-    /// <param name="cancellationToken">Cancels the operation and disposes the socket.</param>
-    /// <returns>
-    ///     true if the whole buffer was filled with bytes from the socket,
-    ///     false if the connection was closed before any bytes could be read
-    /// </returns>
-    [PublicAPI]
-    public async ValueTask<bool> ReceiveAllAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
-    {
-        using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
-
-        try
-        {
-            return await ReceiveAllAsync(buffer);
-        }
-        catch (RpcSocketReceiveException)
-        {
-            ThrowIfOperationIsCancelled(cancellationToken);
-            throw;
-        }
-        catch (Exception exception)
-        {
-            ThrowIfOperationIsCancelled(cancellationToken);
-            throw new RpcSocketReceiveException(this, exception);
-        }
-    }
-
-    /// <exception cref="RpcSocketReceiveException">
-    ///     Thrown when an error occurs while receiving data.
-    /// </exception>
-    /// <summary>Fills the provided buffer with next currently available bytes read from the socket.</summary>
-    /// <param name="buffer">Buffer to receive bytes into. It's size limits how much bytes will be received at maximum.</param>
-    /// <param name="cancellationToken">Cancels the operation and disposes the socket.</param>
-    /// <returns>
-    ///     The count of bytes that were received.
-    ///     Zero if the connection was closed before any bytes could be read.
-    ///     Otherwise any positive number lower than the size of the provided buffer.
-    /// </returns>
-    [PublicAPI]
-    public async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
-    {
-        using CancellationTokenRegistration cancellationRegistration = RegisterCancellation(cancellationToken);
-
-        try
-        {
-            return await ReceiveAsync(buffer);
-        }
-        catch (RpcSocketReceiveException)
-        {
-            ThrowIfOperationIsCancelled(cancellationToken);
-            throw;
-        }
-        catch (Exception exception)
-        {
-            ThrowIfOperationIsCancelled(cancellationToken);
-            throw new RpcSocketReceiveException(this, exception);
-        }
-    }
-
     /// <summary>
     ///     disposes the underlying socket
     ///     this is done on any encountered exception
@@ -201,18 +115,24 @@ public class RpcSocket : IRpcSocket
     }
 
     /// <exception cref="RpcSocketSendException"></exception>
-    private async ValueTask SendAsync(ArraySegment<byte> bytes)
+    public async ValueTask SendAsync(ArraySegment<byte> bytes)
     {
-        int bytesSent = await _socket.SendAsync(bytes, SocketFlags.None);
-        if (bytesSent != bytes.Count)
+        try
         {
-            Dispose();
-            throw new RpcSocketSendException(this, bytes.Count, bytesSent);
+            int bytesSent = await _socket.SendAsync(bytes, SocketFlags.None);
+            if (bytesSent != bytes.Count)
+            {
+                throw new RpcSocketSendException(this, bytes.Count, bytesSent);
+            }
+        }
+        catch (Exception exception)
+        {
+            throw new RpcSocketSendException(this, exception);
         }
     }
 
     /// <exception cref="RpcSocketReceiveException"></exception>
-    private async ValueTask<bool> ReceiveAllAsync(ArraySegment<byte> buffer)
+    public async ValueTask<bool> ReceiveAllAsync(ArraySegment<byte> buffer)
     {
         int receivedCount = 0;
         int length = buffer.Count;
@@ -246,18 +166,18 @@ public class RpcSocket : IRpcSocket
         throw new RpcSocketReceiveException(this, length, receivedCount);
     }
 
-    private async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer) => await _socket.ReceiveAsync(buffer, SocketFlags.None);
-
-    private void ThrowIfOperationIsCancelled(CancellationToken cancellationToken)
+    /// <exception cref="RpcSocketReceiveException"></exception>
+    private async ValueTask<int> ReceiveAsync(ArraySegment<byte> buffer)
     {
-        if (cancellationToken.IsCancellationRequested)
+        try
         {
-            Dispose();
-            throw new OperationCanceledException("Sending operation was canceled, which closed the socket as a result", cancellationToken);
+            return await _socket.ReceiveAsync(buffer, SocketFlags.None);
+        }
+        catch (Exception exception)
+        {
+            throw new RpcSocketReceiveException(this, exception);
         }
     }
-
-    private CancellationTokenRegistration RegisterCancellation(CancellationToken cancellationToken) => cancellationToken.Register(CancelOperation);
 
     private void CancelOperation()
     {

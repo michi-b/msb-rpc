@@ -46,7 +46,7 @@ internal class TypeNode
 
     public string GetBufferReadExpression(string bufferReaderExpression)
     {
-        string? bufferReadMethodName = SerializationKind.GetBufferReadMethodName() ?? string.Empty;
+        string bufferReadMethodName = SerializationKind.GetBufferReadMethodName() ?? string.Empty;
         return $"{bufferReaderExpression}.{bufferReadMethodName}()";
     }
 

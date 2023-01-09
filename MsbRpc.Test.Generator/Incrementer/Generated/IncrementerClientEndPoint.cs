@@ -57,7 +57,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
         writer.Write(value);
 
-        Response responseMessage = await base.SendRequestAsync(request, cancellationToken);
+        Response responseMessage = await base.SendRequestAsync(request);
         BufferReader responseReader = responseMessage.GetReader();
 
         int result = responseReader.ReadInt();
@@ -78,7 +78,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
         writer.Write(value);
 
-        await base.SendRequestAsync(request, cancellationToken);
+        await base.SendRequestAsync(request);
     }
 
     public async ValueTask IncrementStoredAsync(CancellationToken cancellationToken)
@@ -87,7 +87,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
         Request request = base.Buffer.GetRequest(this.GetId(IncrementerProcedure.IncrementStored));
 
-        await base.SendRequestAsync(request, cancellationToken);
+        await base.SendRequestAsync(request);
     }
 
     public async ValueTask<int> GetStoredAsync(CancellationToken cancellationToken)
@@ -96,7 +96,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
         Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.GetStored));
 
-        Response response = await base.SendRequestAsync(request, cancellationToken);
+        Response response = await base.SendRequestAsync(request);
         BufferReader responseReader = response.GetReader();
 
         int result = responseReader.ReadInt();
@@ -109,7 +109,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         base.AssertIsOperable();
 
         Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.Finish));
-        await base.SendRequestAsync(request, cancellationToken);
+        await base.SendRequestAsync(request);
     }
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();

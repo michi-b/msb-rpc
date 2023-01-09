@@ -63,7 +63,7 @@ public class Messenger : IDisposable
     {
         while (true)
         {
-            ReceiveResult receiveResult = await ReceiveMessageAsync(buffer, cancellationToken);
+            ReceiveResult receiveResult = await ReceiveMessageAsync(buffer);
             switch (receiveResult.ReturnCode)
             {
                 case ReceiveReturnCode.Success:
@@ -116,12 +116,12 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async ValueTask<ReceiveResult> ReceiveMessageAsync(RpcBuffer buffer, CancellationToken cancellationToken)
+    public async ValueTask<ReceiveResult> ReceiveMessageAsync(RpcBuffer buffer)
     {
         try
         {
             ArraySegment<byte> countSegment = buffer.Get(PrimitiveSerializer.IntSize);
-            if (await _socket.ReceiveAllAsync(countSegment, cancellationToken))
+            if (await _socket.ReceiveAllAsync(countSegment))
             {
                 int count = countSegment.ReadInt();
 
@@ -132,7 +132,7 @@ public class Messenger : IDisposable
 
                 Message message = buffer.GetMessage(count);
 
-                await _socket.ReceiveAllAsync(message.Buffer, cancellationToken);
+                await _socket.ReceiveAllAsync(message.Buffer);
 
                 return new ReceiveResult(message, ReceiveReturnCode.Success);
             }
@@ -153,9 +153,9 @@ public class Messenger : IDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketSendException</throws>
     [PublicAPI]
-    public async ValueTask SendAsync(Message message, CancellationToken cancellationToken)
+    public async ValueTask SendAsync(Message message)
     {
-        await _socket.SendAsync(message.GetFullMessageBuffer(), cancellationToken);
+        await _socket.SendAsync(message.GetFullMessageBuffer());
     }
 
     /// <throws>SocketSendException</throws>
@@ -182,7 +182,7 @@ public class Messenger : IDisposable
         );
     }
 
-    private async ValueTask<ReceiveResult> ReceiveAsync(Message message, CancellationToken cancellationToken)
+    private async ValueTask<ReceiveResult> ReceiveAsync(Message message)
     {
         ArraySegment<byte> buffer = message.Buffer;
 
@@ -191,7 +191,7 @@ public class Messenger : IDisposable
             return EmptyReceiveResult;
         }
 
-        await _socket.ReceiveAllAsync(buffer, cancellationToken);
+        await _socket.ReceiveAllAsync(buffer);
 
         return new ReceiveResult
         (

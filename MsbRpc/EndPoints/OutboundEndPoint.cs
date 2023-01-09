@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -33,15 +32,15 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
     private static RpcRequestException<TProcedure> GetConnectionDisposedException(TProcedure procedure)
         => new(procedure, "Connection disposed while waiting for the response.");
 
-    protected async ValueTask<Response> SendRequestAsync(Request request, CancellationToken cancellationToken)
+    protected async ValueTask<Response> SendRequestAsync(Request request)
     {
         TProcedure procedure = GetProcedure(request.ProcedureId);
 
-        await Messenger.SendAsync(new Message(request), cancellationToken);
+        await Messenger.SendAsync(new Message(request));
 
         LogSentCall(Logger, GetName(procedure), request.Buffer.Count);
 
-        ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer, cancellationToken);
+        ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer);
 
         switch (result.ReturnCode)
         {

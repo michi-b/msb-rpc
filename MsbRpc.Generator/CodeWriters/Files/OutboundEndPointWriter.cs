@@ -95,13 +95,17 @@ internal class OutboundEndPointWriter : EndPointWriter
             ParameterCollectionNode? parameters = procedure.Parameters;
             if (parameters != null)
             {
-                foreach (ParameterNode parameter in parameters)
+                for (int i = 0; i < parameters.Count; i++)
                 {
-                    writer.WriteLine($"{parameter.Type.Name} {parameter.Name},");
+                    ParameterNode parameter = parameters[i];
+                    writer.WriteLine
+                    (
+                        i < parameters.Count - 1
+                            ? $"{parameter.Type.Name} {parameter.Name},"
+                            : $"{parameter.Type.Name} {parameter.Name}"
+                    );
                 }
             }
-
-            writer.WriteLine($"{Types.CancellationToken} {Parameters.CancellationToken}");
         }
     }
 

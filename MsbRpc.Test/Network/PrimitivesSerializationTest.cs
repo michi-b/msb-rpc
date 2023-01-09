@@ -28,7 +28,7 @@ public class PrimitivesSerializationTest : Test
 
         bytes.WriteInt(value);
 
-        await connection.Client.SendAsync(new ArraySegment<byte>(bytes, 0, sizeof(Int32)), cancellationToken);
+        await connection.Client.SendAsync(new ArraySegment<byte>(bytes, 0, sizeof(Int32)));
         connection.Client.Dispose();
 
         byte[] receivedBytes = await listenTask;
@@ -118,7 +118,7 @@ public class PrimitivesSerializationTest : Test
 
         using (RpcSocket clientSocket = connection.Client)
         {
-            await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount), cancellationToken);
+            await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, byteCount));
             clientSocket.Dispose();
         }
 

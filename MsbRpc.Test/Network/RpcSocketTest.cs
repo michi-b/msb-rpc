@@ -59,10 +59,10 @@ public class RpcSocketTest : Test
 
         const byte value = 123;
         var sendSegment = new ArraySegment<byte>(new[] { value });
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
 
         var receiveSegment = new ArraySegment<byte>(new byte[] { 0 });
-        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment);
         Assert.IsTrue(success);
 
         byte receivedValue = receiveSegment[0];
@@ -86,10 +86,10 @@ public class RpcSocketTest : Test
         const byte value2 = 98;
 
         var sendSegment = new ArraySegment<byte>(new[] { value0, value1, value2 });
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
 
         ArraySegment<byte> receiveSegment = BufferUtility.Create(3);
-        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment);
         Assert.IsTrue(success);
 
         byte receivedValue0 = receiveSegment[0];
@@ -117,14 +117,14 @@ public class RpcSocketTest : Test
         const byte value2 = 123;
 
         var sendSegment = new ArraySegment<byte>(new[] { value0 });
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
         sendSegment.Array![0] = value1;
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
         sendSegment.Array![0] = value2;
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
 
         ArraySegment<byte> receiveSegment = BufferUtility.Create(3);
-        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment);
         Assert.IsTrue(success);
 
         byte receivedValue0 = receiveSegment[0];
@@ -152,23 +152,23 @@ public class RpcSocketTest : Test
         const byte value2 = 255;
 
         var sendSegment = new ArraySegment<byte>(new[] { value0 });
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
         sendSegment.Array![0] = value1;
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
         sendSegment.Array![0] = value2;
-        await sender.SendAsync(sendSegment, cancellationToken);
+        await sender.SendAsync(sendSegment);
 
         ArraySegment<byte> receiveSegment = BufferUtility.Create(1);
 
-        bool success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveSegment);
         Assert.IsTrue(success);
         byte receivedValue0 = receiveSegment[0];
 
-        success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
+        success = await receiver.ReceiveAllAsync(receiveSegment);
         Assert.IsTrue(success);
         byte receivedValue1 = receiveSegment[0];
 
-        success = await receiver.ReceiveAllAsync(receiveSegment, cancellationToken);
+        success = await receiver.ReceiveAllAsync(receiveSegment);
         Assert.IsTrue(success);
         byte receivedValue2 = receiveSegment[0];
 
@@ -210,11 +210,11 @@ public class RpcSocketTest : Test
         sendBytesWriter.Write(booleanValue);
         sendBytesWriter.Write(sByteValue);
 
-        await sender.SendAsync(sendBytes, cancellationToken);
+        await sender.SendAsync(sendBytes);
 
         ArraySegment<byte> receiveBytes = BufferUtility.Create(arraySize);
 
-        bool success = await receiver.ReceiveAllAsync(receiveBytes, cancellationToken);
+        bool success = await receiver.ReceiveAllAsync(receiveBytes);
 
         Assert.IsTrue(success);
 

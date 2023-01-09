@@ -34,7 +34,7 @@ public abstract class ListenerTest : Test
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
         using (client)
         {
-            await client.SendAsync(message, cancellationToken);
+            await client.SendAsync(message);
         }
 
         MessageList messages = await listen;
@@ -54,7 +54,7 @@ public abstract class ListenerTest : Test
 
         using (client)
         {
-            await client.SendAsync(Message.Empty, cancellationToken);
+            await client.SendAsync(Message.Empty);
         }
 
         MessageList messages = await listen;
@@ -77,7 +77,7 @@ public abstract class ListenerTest : Test
         (Messenger client, Task<MessageList> listen) = await Setup(cancellationToken);
         using (client)
         {
-            await client.SendAsync(message, cancellationToken);
+            await client.SendAsync(message);
         }
 
         MessageList messagesIn = await listen;
@@ -105,7 +105,7 @@ public abstract class ListenerTest : Test
             foreach (int value in values)
             {
                 messageBuffer.WriteInt(value);
-                await client.SendAsync(message, cancellationToken);
+                await client.SendAsync(message);
             }
         }
 

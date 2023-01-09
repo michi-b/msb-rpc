@@ -26,7 +26,7 @@ internal static class IndependentCode
 
     public const string ReturnResponseStatement = $"return {Variables.Response};";
 
-    public const string SendRequestStatement = $"await base.{Methods.SendRequestAsync}({Variables.Request}, {Parameters.CancellationToken});";
+    public const string SendRequestStatement = $"await base.{Methods.SendRequestAsync}({Variables.Request});";
 
     public const string SendRequestStatementWithResponse = $"{Types.Response} {Variables.Response} = {SendRequestStatement}";
 
