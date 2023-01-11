@@ -9,42 +9,40 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 [PublicAPI(Messages.ForUseInGeneratedCode)]
-public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TEndPoint, TProcedure>
+public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TEndPoint, TProcedure>
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
     where TImplementation : IRpcContract
     where TProcedure : Enum
 {
     public readonly TImplementation Implementation;
 
+    private InboundEndPointConfiguration _configuration;
+
     protected InboundEndPoint
     (
         Messenger messenger,
         TImplementation implementation,
-        // ReSharper disable once ContextualLoggerProblem
-        ILogger<TEndPoint> logger,
-        int initialBufferSize = BufferUtility.DefaultInitialSize
-    )
-        : base
-        (
-            messenger,
-            logger,
-            initialBufferSize
-        )
-        => Implementation = implementation;
+        InboundEndPointConfiguration configuration
+    ) : base(messenger, configuration)
+    {
+        _configuration = configuration;
+        Implementation = implementation;
+    }
 
     public void Listen()
     {
-        LogStartedListening(Logger);
+        LogStartListening();
+
         try
         {
             ListenReturnCode listenReturnCode = Messenger.Listen(Buffer, ReceiveMessage);
             if (RanToCompletion)
             {
-                LogRanToCompletion(Logger, listenReturnCode.GetName());
+                LogRanToCompletion(listenReturnCode);
             }
             else
             {
-                LogStoppedListeningWithoutRunningToCompletion(Logger, listenReturnCode.GetName());
+                LogStoppedListeningWithoutRunningToCompletion(listenReturnCode);
             }
         }
         finally
@@ -66,46 +64,82 @@ public abstract partial class InboundEndPoint<TEndPoint, TProcedure, TImplementa
     {
         Request request = new(message);
         TProcedure procedure = GetProcedure(request.ProcedureId);
-        LogReceivedCall(Logger, GetName(procedure), request.Length);
+        LogReceivedCall(procedure, request.Length);
         Response response = Execute(procedure, request);
         RanToCompletion = response.RanToCompletion;
         Messenger.Send(new Message(response));
         return RanToCompletion;
     }
 
-    [LoggerMessage
-    (
-        EventId = (int)LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion,
-        Level = LogLevel.Warning,
-        Message = "Stopped listening without running to completion with return code {ListenReturnCodeName}."
-    )]
-    private static partial void LogStoppedListeningWithoutRunningToCompletion(ILogger logger, string listenReturnCodeName);
-
     protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);
 
-    [LoggerMessage
-    (
-        EventId = (int)LogEventIds.InboundEndPointStartedListening,
-        Level = LogLevel.Information,
-        Message = "Started listening."
-    )]
-    private static partial void LogStartedListening(ILogger logger);
+    private void LogStoppedListeningWithoutRunningToCompletion(ListenReturnCode listenReturnCode)
+    {
+        if (Logger != null)
+        {
+            if (_configuration.LogStoppedListeningWithoutRunningToCompletion.IsEnabled(Logger))
+            {
+                Logger.Log
+                (
+                    _configuration.LogStoppedListeningWithoutRunningToCompletion.Level,
+                    LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion,
+                    "Stopped listening without running to completion with listen return code: {ListenReturnCode}",
+                    listenReturnCode.GetName()
+                );
+            }
+        }
+    }
 
-    [LoggerMessage
-    (
-        EventId = (int)LogEventIds.InboundEndPointRanToCompletion,
-        Level = LogLevel.Information,
-        Message = "Ran to completion with return code {ListenReturnCodeName}."
-    )]
-    private static partial void LogRanToCompletion(ILogger logger, string listenReturnCodeName);
+    private void LogStartListening()
+    {
+        if (Logger != null)
+        {
+            if (_configuration.LogStartedListening.IsEnabled(Logger))
+            {
+                Logger.Log
+                (
+                    _configuration.LogStartedListening.Level,
+                    LogEventIds.InboundEndPointStartedListening,
+                    "Started listening"
+                );
+            }
+        }
+    }
 
-    [LoggerMessage
-    (
-        EventId = (int)LogEventIds.InboundEndPointReceivedCall,
-        Level = LogLevel.Trace,
-        Message = "Received a call to {ProcedureName} with {ArgumentsByteCount} argument bytes."
-    )]
-    private static partial void LogReceivedCall(ILogger logger, string procedureName, int argumentsByteCount);
+    private void LogRanToCompletion(ListenReturnCode listenReturnCode)
+    {
+        if (Logger != null)
+        {
+            if (_configuration.LogRanToCompletion.IsEnabled(Logger))
+            {
+                Logger.Log
+                (
+                    _configuration.LogRanToCompletion.Level,
+                    LogEventIds.InboundEndPointRanToCompletion,
+                    "Ran to completion {ListenReturnCode}",
+                    listenReturnCode.GetName()
+                );
+            }
+        }
+    }
+
+    private void LogReceivedCall(TProcedure procedure, int argumentByteCount)
+    {
+        if (Logger != null)
+        {
+            if (_configuration.LogReceivedCall.IsEnabled(Logger))
+            {
+                Logger.Log
+                (
+                    _configuration.LogReceivedCall.Level,
+                    LogEventIds.InboundEndPointReceivedCall,
+                    "Received call to {ProcedureName} with {ArgumentByteCount} argument bytes",
+                    GetName(procedure),
+                    argumentByteCount
+                );
+            }
+        }
+    }
 
     protected abstract Response Execute(TProcedure procedure, Request request);
 }

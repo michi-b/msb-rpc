@@ -19,7 +19,7 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
         Messenger messenger,
         // ReSharper disable once ContextualLoggerProblem
         ILogger<TEndPoint> logger,
-        int initialBufferSize = BufferUtility.DefaultInitialSize
+        int initialBufferSize = EndPointConfiguration.DefaultInitialSize
     )
         : base(messenger, logger, initialBufferSize)
     {
@@ -89,5 +89,5 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
         Level = LogLevel.Trace,
         Message = "Sent a request to {procedureName} with {argumentsByteCount} argument bytes"
     )]
-    private static partial void LogSentCall(ILogger<TEndPoint> logger, string procedureName, int argumentsByteCount);
+    private static partial void LogSentCall(ILogger<TEndPoint>? logger, string procedureName, int argumentsByteCount);
 }

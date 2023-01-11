@@ -85,6 +85,9 @@ public interface IIncrementer : IRpcContract
         GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(loggingOptions: CodeTest.LoggingOptions.None);
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         Assert.AreEqual(null, rpcGeneratorResult.Exception);
+        
+        Serilog.Extensions.Logging.
+        Logger.Log();
     }
 
     [TestMethod]

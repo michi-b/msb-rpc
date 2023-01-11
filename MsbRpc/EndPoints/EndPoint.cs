@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
@@ -13,8 +14,10 @@ public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
     protected const int DefaultInitialBufferSize = 1024;
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
-    protected ILogger<TEndPoint> Logger { get; }
+    protected ILogger<TEndPoint>? Logger { get; }
 
+    private EndPointConfiguration _configuration;
+    
     [PublicAPI] public bool IsDisposed { get; private set; }
 
     public bool RanToCompletion { get; protected set; }
@@ -22,14 +25,13 @@ public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
     protected EndPoint
     (
         Messenger messenger,
-        // ReSharper disable once ContextualLoggerProblem
-        ILogger<TEndPoint> logger,
-        int initialBufferSize = BufferUtility.DefaultInitialSize
+        EndPointConfiguration configuration
     )
     {
+        _configuration = configuration;
         Messenger = messenger;
-        Logger = logger;
-        Buffer = new RpcBuffer(initialBufferSize);
+        Logger = configuration.LoggerFactory?.CreateLogger<TEndPoint>();
+        Buffer = new RpcBuffer(configuration.InitialBufferSize);
     }
 
     public virtual void Dispose()
@@ -42,6 +44,7 @@ public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
         }
     }
 
+    [PublicAPI(Messages.ForUseInGeneratedCode)]
     protected void AssertIsOperable()
     {
         if (IsDisposed)

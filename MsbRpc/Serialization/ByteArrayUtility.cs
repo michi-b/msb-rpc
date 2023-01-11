@@ -1,12 +1,13 @@
 ﻿using System;
 using JetBrains.Annotations;
+using MsbRpc.EndPoints;
 using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.Serialization;
 
 public static class ByteArrayUtility
 {
-    public const int DefaultSize = BufferUtility.DefaultInitialSize;
+    public const int DefaultSize = EndPointConfiguration.DefaultInitialSize;
 
     [PublicAPI] public static readonly byte[] Empty = Array.Empty<byte>();
 
