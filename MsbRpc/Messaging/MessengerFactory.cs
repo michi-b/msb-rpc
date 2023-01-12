@@ -7,9 +7,9 @@ using MsbRpc.Sockets;
 
 namespace MsbRpc.Messaging;
 
-public static partial class MessengerFactory
+public static class MessengerFactory
 {
-    public static async ValueTask<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILogger logger)
+    public static async ValueTask<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILogger? logger = null)
     {
         Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         try
@@ -18,18 +18,21 @@ public static partial class MessengerFactory
         }
         catch (Exception exception)
         {
-            LogConnectionFailed(logger, serverEndPoint, exception);
+            if (logger != null)
+            {
+                LogConnectionFailed(logger, serverEndPoint, exception);
+            }
             throw;
         }
 
         return new Messenger(new RpcSocket(socket));
     }
 
-    [LoggerMessage
-    (
-        EventId = (int)LogEventIds.MessengerConnectionFailed,
-        Level = LogLevel.Error,
-        Message = "Failed to connect messenger to remote endpoint {endpoint}"
-    )]
-    private static partial void LogConnectionFailed(ILogger logger, IPEndPoint endPoint, Exception exception);
+    private static void LogConnectionFailed(ILogger logger, IPEndPoint endPoint, Exception exception)
+    {
+        if (logger.IsEnabled(LogLevel.Error))
+        {
+            logger.LogError(LogEventIds.MessengerConnectionFailed, exception, "Failed to connect messenger to remote endpoint {Endpoint}", endPoint);
+        }
+    }
 }

@@ -14,13 +14,12 @@ public class IncrementerServer : Server<IncrementerServerEndPoint, IncrementerPr
 {
     private IncrementerServer
     (
-        Func<IIncrementer> getImplementation,
+        Func<IIncrementer> createImplementation,
         ILoggerFactory loggerFactory,
         int port = 0
     )
         : base
         (
-            getImplementation,
             loggerFactory,
             LoggerFactoryExtensions.CreateLoggerOptional<IncrementerServer>(loggerFactory),
             port
@@ -38,5 +37,5 @@ public class IncrementerServer : Server<IncrementerServerEndPoint, IncrementerPr
         return server;
     }
 
-    protected override IncrementerServerEndPoint CreateEndPoint(Messenger messenger) => new(messenger, GetImplementation(), LoggerFactory);
+    protected override IncrementerServerEndPoint CreateEndPoint(Messenger messenger) => new(messenger, CreateImplementation(), LoggerFactory);
 }

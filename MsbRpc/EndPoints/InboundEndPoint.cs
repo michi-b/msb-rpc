@@ -85,7 +85,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
                 Logger.Log
                 (
                     configuration.Level,
-                    LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion,
+                    configuration.Id,
                     "Stopped listening without running to completion with listen return code: {ListenReturnCode}",
                     listenReturnCode.GetName()
                 );
@@ -103,7 +103,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
                 Logger.Log
                 (
                     configuration.Level,
-                    LogEventIds.InboundEndPointStartedListening,
+                    configuration.Id,
                     "Started listening"
                 );
             }
@@ -120,7 +120,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
                 Logger.Log
                 (
                     configuration.Level,
-                    LogEventIds.InboundEndPointRanToCompletion,
+                    configuration.Id,
                     "Ran to completion {ListenReturnCode}",
                     listenReturnCode.GetName()
                 );
@@ -138,7 +138,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
                 Logger.Log
                 (
                     configuration.Level,
-                    LogEventIds.InboundEndPointReceivedCall,
+                    configuration.Id,
                     "Received call to {ProcedureName} with {ArgumentByteCount} argument bytes",
                     GetName(procedure),
                     argumentByteCount

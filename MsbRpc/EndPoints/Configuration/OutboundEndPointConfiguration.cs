@@ -4,10 +4,7 @@ namespace MsbRpc.EndPoints.Configuration;
 
 public abstract class OutboundEndPointConfiguration : EndPointConfiguration
 {
-    public LogConfiguration LogSentCall { get; set; }
+    public LogConfiguration LogSentCall;
 
-    protected OutboundEndPointConfiguration()
-    {
-        LogSentCall = new LogConfiguration(LogLevel.Trace);
-    }
+    protected OutboundEndPointConfiguration() => LogSentCall = new LogConfiguration(LogEventIds.OutboundEndPointSentRequest, LogLevel.Trace);
 }

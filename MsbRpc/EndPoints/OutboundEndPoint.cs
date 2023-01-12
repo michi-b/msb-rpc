@@ -82,7 +82,7 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
 
     protected abstract int GetId(TProcedure value);
 
-    private void LogSentCall(TProcedure procedure, int argumentsByteCount)
+    private void LogSentCall(TProcedure procedure, int argumentByteCount)
     {
         if (Logger != null)
         {
@@ -92,10 +92,10 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
                 Logger.Log
                 (
                     configuration.Level,
-                    LogEventIds.OutboundEndPointSentRequest,
-                    "Sent a request to {procedureName} with {argumentsByteCount} argument bytes",
+                    configuration.Id,
+                    "Sent a request to {ProcedureName} with {ArgumentByteCount} argument bytes",
                     GetName(procedure),
-                    argumentsByteCount
+                    argumentByteCount
                 );
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using MsbRpc.EndPoints;
+using MsbRpc.EndPoints.Configuration;
 using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.Serialization;

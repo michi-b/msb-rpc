@@ -33,7 +33,7 @@ public static class LogEventIds
     public static readonly EventId ServerAcceptedNewConnection =
         new((int)Values.ServerAcceptedNewConnection, nameof(Values.ServerAcceptedNewConnection));
 
-    public static readonly EventId ServerImmediatelyDisposedNewConnection = new
+    public static readonly EventId ServerDisposedNewConnectionAfterDisposal = new
         ((int)Values.ServerImmediatelyDisposedNewConnection, nameof(Values.ServerImmediatelyDisposedNewConnection));
 
     public static readonly EventId ServerStoppedListeningDueToDisposal =

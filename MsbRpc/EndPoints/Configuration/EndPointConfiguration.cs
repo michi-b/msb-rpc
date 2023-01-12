@@ -1,11 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿namespace MsbRpc.EndPoints.Configuration;
 
-namespace MsbRpc.EndPoints;
-
-public class EndPointConfiguration
+public class EndPointConfiguration : Configuration
 {
     public int InitialBufferSize = DefaultInitialSize;
     
     public const int DefaultInitialSize = 1024;
-    public ILoggerFactory? LoggerFactory { get; set; } = null;
 }
