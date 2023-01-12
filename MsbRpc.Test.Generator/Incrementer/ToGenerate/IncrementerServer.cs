@@ -4,7 +4,6 @@
 
 using System;
 using Microsoft.Extensions.Logging;
-using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using LoggerFactoryExtensions = MsbRpc.Utility.LoggerFactoryExtensions;
 

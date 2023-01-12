@@ -40,8 +40,8 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
     )
     {
         ILogger<IncrementerClientEndPoint> logger = LoggerFactoryExtensions.CreateLoggerOptional<IncrementerClientEndPoint>(loggerFactory);
-        MsbRpc.Messaging.Messenger messenger = await MessengerFactory.ConnectAsync ( new IPEndPoint(ipAddress, port), logger);
-        return new(messenger, logger, initialBufferSize);
+        MsbRpc.Messaging.Messenger messenger = await MessengerFactory.ConnectAsync(new IPEndPoint(ipAddress, port), logger);
+        return new IncrementerClientEndPoint(messenger, logger, initialBufferSize);
     }
 
     public async ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)
@@ -85,7 +85,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
     {
         base.AssertIsOperable();
 
-        Request request = base.Buffer.GetRequest(this.GetId(IncrementerProcedure.IncrementStored));
+        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.IncrementStored));
 
         await base.SendRequestAsync(request);
     }
