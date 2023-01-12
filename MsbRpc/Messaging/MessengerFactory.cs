@@ -22,6 +22,7 @@ public static class MessengerFactory
             {
                 LogConnectionFailed(logger, serverEndPoint, exception);
             }
+
             throw;
         }
 

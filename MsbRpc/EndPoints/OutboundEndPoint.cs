@@ -11,12 +11,12 @@ using MsbRpc.Utility;
 namespace MsbRpc.EndPoints;
 
 [PublicAPI(Messages.ForUseInGeneratedCode)]
-public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoint, TProcedure>
+public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoint, TProcedure>
     where TEndPoint : OutboundEndPoint<TEndPoint, TProcedure>
     where TProcedure : Enum
 {
     private OutboundEndPointConfiguration _configuration;
-    
+
     protected OutboundEndPoint
     (
         Messenger messenger,

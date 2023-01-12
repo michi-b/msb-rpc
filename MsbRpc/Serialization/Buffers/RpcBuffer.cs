@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using MsbRpc.EndPoints;
 using MsbRpc.EndPoints.Configuration;
 
 namespace MsbRpc.Serialization.Buffers;

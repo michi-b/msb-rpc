@@ -11,7 +11,7 @@ public struct LogConfiguration
     public LogLevel Level;
 
     /// <summary>
-    /// Creates a disabled <see cref="LogConfiguration"/>.
+    ///     Creates a disabled <see cref="LogConfiguration" />.
     /// </summary>
     public LogConfiguration(EventId id)
     {
@@ -21,7 +21,7 @@ public struct LogConfiguration
     }
 
     /// <summary>
-    /// Creates ane enabled <see cref="LogConfiguration" />.
+    ///     Creates ane enabled <see cref="LogConfiguration" />.
     /// </summary>
     /// <param name="logLevel"></param>
     public LogConfiguration(EventId id, LogLevel logLevel)
@@ -30,7 +30,7 @@ public struct LogConfiguration
         Enabled = true;
         Level = logLevel;
     }
-    
+
     public LogConfiguration(EventId id, bool enabled, LogLevel level)
     {
         Id = id;
