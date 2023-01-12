@@ -1,22 +1,20 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
-using MsbRpc.Contracts;
+﻿using Microsoft.Extensions.Logging;
 
-namespace MsbRpc.EndPoints;
+namespace MsbRpc.EndPoints.Configuration;
 
-public class InboundEndPointConfiguration : EndPointConfiguration
+public abstract class InboundEndPointConfiguration : EndPointConfiguration
 {
     public LogConfiguration LogStoppedListeningWithoutRunningToCompletion { get; set; }
     public LogConfiguration LogStartedListening { get; set; }
     public LogConfiguration LogRanToCompletion { get; set; }
     public LogConfiguration LogReceivedCall { get; set; }
     
-    public InboundEndPointConfiguration()
+    protected InboundEndPointConfiguration()
     {
-        LogStoppedListeningWithoutRunningToCompletion = new LogConfiguration(true, LogLevel.Error);
-        LogStartedListening = new LogConfiguration(true, LogLevel.Information);
-        LogRanToCompletion = new LogConfiguration(true, LogLevel.Information);
-        LogReceivedCall = new LogConfiguration(true, LogLevel.Trace);
+        LogStoppedListeningWithoutRunningToCompletion = new LogConfiguration(LogLevel.Error);
+        LogStartedListening = new LogConfiguration(LogLevel.Information);
+        LogRanToCompletion = new LogConfiguration(LogLevel.Information);
+        LogReceivedCall = new LogConfiguration(LogLevel.Trace);
         LoggerFactory = null;
     }
 }

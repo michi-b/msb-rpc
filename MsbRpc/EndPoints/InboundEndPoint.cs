@@ -2,6 +2,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Contracts;
+using MsbRpc.EndPoints.Configuration;
+using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Utility;
@@ -77,11 +79,12 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     {
         if (Logger != null)
         {
-            if (_configuration.LogStoppedListeningWithoutRunningToCompletion.IsEnabled(Logger))
+            LogConfiguration configuration = _configuration.LogStoppedListeningWithoutRunningToCompletion;
+            if (Logger.GetIsEnabled(configuration))
             {
                 Logger.Log
                 (
-                    _configuration.LogStoppedListeningWithoutRunningToCompletion.Level,
+                    configuration.Level,
                     LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion,
                     "Stopped listening without running to completion with listen return code: {ListenReturnCode}",
                     listenReturnCode.GetName()
@@ -94,11 +97,12 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     {
         if (Logger != null)
         {
-            if (_configuration.LogStartedListening.IsEnabled(Logger))
+            LogConfiguration configuration = _configuration.LogStartedListening;
+            if (Logger.GetIsEnabled(configuration))
             {
                 Logger.Log
                 (
-                    _configuration.LogStartedListening.Level,
+                    configuration.Level,
                     LogEventIds.InboundEndPointStartedListening,
                     "Started listening"
                 );
@@ -110,11 +114,12 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     {
         if (Logger != null)
         {
-            if (_configuration.LogRanToCompletion.IsEnabled(Logger))
+            LogConfiguration configuration = _configuration.LogRanToCompletion;
+            if (Logger.GetIsEnabled(configuration))
             {
                 Logger.Log
                 (
-                    _configuration.LogRanToCompletion.Level,
+                    configuration.Level,
                     LogEventIds.InboundEndPointRanToCompletion,
                     "Ran to completion {ListenReturnCode}",
                     listenReturnCode.GetName()
@@ -127,11 +132,12 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     {
         if (Logger != null)
         {
-            if (_configuration.LogReceivedCall.IsEnabled(Logger))
+            LogConfiguration configuration = _configuration.LogReceivedCall;
+            if (Logger.GetIsEnabled(configuration))
             {
                 Logger.Log
                 (
-                    _configuration.LogReceivedCall.Level,
+                    configuration.Level,
                     LogEventIds.InboundEndPointReceivedCall,
                     "Received call to {ProcedureName} with {ArgumentByteCount} argument bytes",
                     GetName(procedure),

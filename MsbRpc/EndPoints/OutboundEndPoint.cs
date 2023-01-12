@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.EndPoints.Configuration;
+using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Utility;
@@ -14,17 +15,15 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
     where TEndPoint : OutboundEndPoint<TEndPoint, TProcedure>
     where TProcedure : Enum
 {
+    private OutboundEndPointConfiguration _configuration;
+    
     protected OutboundEndPoint
     (
         Messenger messenger,
-        // ReSharper disable once ContextualLoggerProblem
-        ILogger<TEndPoint> logger,
-        int initialBufferSize = EndPointConfiguration.DefaultInitialSize
+        OutboundEndPointConfiguration configuration
     )
-        : base(messenger, logger, initialBufferSize)
-    {
-        Debug.Assert(Enum.GetUnderlyingType(typeof(TProcedure)) == typeof(int));
-    }
+        : base(messenger, configuration)
+        => _configuration = configuration;
 
     private static RpcRequestException<TProcedure> GetConnectionClosedException(TProcedure procedure)
         => new(procedure, "Connection closed while waiting for the response.");
@@ -38,7 +37,7 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
 
         await Messenger.SendAsync(new Message(request));
 
-        LogSentCall(Logger, GetName(procedure), request.Buffer.Count);
+        LogSentCall(procedure, request.Buffer.Count);
 
         ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer);
 
@@ -68,7 +67,7 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
 
         TProcedure procedure = GetProcedure(request.ProcedureId);
 
-        LogSentCall(Logger, GetName(procedure), request.Buffer.Count);
+        LogSentCall(procedure, request.Buffer.Count);
 
         ReceiveResult result = Messenger.ReceiveMessage(Buffer);
 
@@ -83,11 +82,22 @@ public abstract partial class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint
 
     protected abstract int GetId(TProcedure value);
 
-    [LoggerMessage
-    (
-        EventId = (int)LogEventIds.OutboundEndPointSentRequest,
-        Level = LogLevel.Trace,
-        Message = "Sent a request to {procedureName} with {argumentsByteCount} argument bytes"
-    )]
-    private static partial void LogSentCall(ILogger<TEndPoint>? logger, string procedureName, int argumentsByteCount);
+    private void LogSentCall(TProcedure procedure, int argumentsByteCount)
+    {
+        if (Logger != null)
+        {
+            LogConfiguration configuration = _configuration.LogSentCall;
+            if (Logger.GetIsEnabled(configuration))
+            {
+                Logger.Log
+                (
+                    configuration.Level,
+                    LogEventIds.OutboundEndPointSentRequest,
+                    "Sent a request to {procedureName} with {argumentsByteCount} argument bytes",
+                    GetName(procedure),
+                    argumentsByteCount
+                );
+            }
+        }
+    }
 }
