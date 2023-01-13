@@ -1,16 +1,15 @@
 ﻿using System;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Attributes;
 using MsbRpc.Configuration;
 using MsbRpc.Contracts;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
-using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
-[PublicAPI(Messages.ForUseInGeneratedCode)]
+[MayBeUsedByGenerator]
 public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TEndPoint, TProcedure>
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
     where TImplementation : IRpcContract

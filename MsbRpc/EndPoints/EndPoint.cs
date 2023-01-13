@@ -1,11 +1,11 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Attributes;
 using MsbRpc.Configuration;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
-using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
@@ -42,7 +42,7 @@ public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
         }
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     protected void AssertIsOperable()
     {
         if (IsDisposed)

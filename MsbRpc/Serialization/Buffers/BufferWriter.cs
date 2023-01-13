@@ -1,6 +1,5 @@
 ﻿using System;
-using JetBrains.Annotations;
-using MsbRpc.Utility;
+using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
 namespace MsbRpc.Serialization.Buffers;
@@ -8,13 +7,11 @@ namespace MsbRpc.Serialization.Buffers;
 public struct BufferWriter
 {
     private int _position;
-
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
-    public readonly ArraySegment<byte> Buffer;
+    private readonly ArraySegment<byte> _buffer;
 
     public BufferWriter(ArraySegment<byte> buffer, int position = 0)
     {
-        Buffer = buffer;
+        _buffer = buffer;
         _position = position;
     }
 
@@ -25,81 +22,81 @@ public struct BufferWriter
         return position;
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(byte value)
     {
-        Buffer.WriteByte(value, PostIncrementPosition(ByteSize));
+        _buffer.WriteByte(value, PostIncrementPosition(ByteSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(sbyte value)
     {
-        Buffer.WriteSbyte(value, PostIncrementPosition(SbyteSize));
+        _buffer.WriteSbyte(value, PostIncrementPosition(SbyteSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(bool value)
     {
-        Buffer.WriteBool(value, PostIncrementPosition(BoolSize));
+        _buffer.WriteBool(value, PostIncrementPosition(BoolSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(char value)
     {
-        Buffer.WriteChar(value, PostIncrementPosition(CharSize));
+        _buffer.WriteChar(value, PostIncrementPosition(CharSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(int value)
     {
-        Buffer.WriteInt(value, PostIncrementPosition(IntSize));
+        _buffer.WriteInt(value, PostIncrementPosition(IntSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(long value)
     {
-        Buffer.WriteLong(value, PostIncrementPosition(LongSize));
+        _buffer.WriteLong(value, PostIncrementPosition(LongSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(short value)
     {
-        Buffer.WriteShort(value, PostIncrementPosition(ShortSize));
+        _buffer.WriteShort(value, PostIncrementPosition(ShortSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(uint value)
     {
-        Buffer.WriteUint(value, PostIncrementPosition(UintSize));
+        _buffer.WriteUint(value, PostIncrementPosition(UintSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(ulong value)
     {
-        Buffer.WriteUlong(value, PostIncrementPosition(UlongSize));
+        _buffer.WriteUlong(value, PostIncrementPosition(UlongSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(ushort value)
     {
-        Buffer.WriteUshort(value, PostIncrementPosition(UshortSize));
+        _buffer.WriteUshort(value, PostIncrementPosition(UshortSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(float value)
     {
-        Buffer.WriteFloat(value, PostIncrementPosition(FloatSize));
+        _buffer.WriteFloat(value, PostIncrementPosition(FloatSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(double value)
     {
-        Buffer.WriteDouble(value, PostIncrementPosition(DoubleSize));
+        _buffer.WriteDouble(value, PostIncrementPosition(DoubleSize));
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public void Write(decimal value)
     {
-        Buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
+        _buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
     }
 }

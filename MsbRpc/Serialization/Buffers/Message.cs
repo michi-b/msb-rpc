@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
+using MsbRpc.Attributes;
 using MsbRpc.Serialization.Primitives;
-using MsbRpc.Utility;
 
 namespace MsbRpc.Serialization.Buffers;
 
@@ -28,11 +27,11 @@ public readonly struct Message
 
     public int Length => Buffer.Count;
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferReader GetReader() => new(Buffer);
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferWriter GetWriter() => new(Buffer);
 

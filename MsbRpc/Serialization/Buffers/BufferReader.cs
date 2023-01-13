@@ -1,6 +1,5 @@
 ﻿using System;
-using JetBrains.Annotations;
-using MsbRpc.Utility;
+using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
 namespace MsbRpc.Serialization.Buffers;
@@ -23,42 +22,48 @@ public struct BufferReader
         return position;
     }
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public byte ReadByte() => _buffer.ReadByte(PostIncrementPosition(ByteSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
+
     public sbyte ReadSbyte() => _buffer.ReadSbyte(PostIncrementPosition(SbyteSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
+
     public bool ReadBool() => _buffer.ReadBool(PostIncrementPosition(BoolSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
+
     public char ReadChar() => _buffer.ReadChar(PostIncrementPosition(CharSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
+
     public int ReadInt() => _buffer.ReadInt(PostIncrementPosition(IntSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
+
     public long ReadLong() => _buffer.ReadLong(PostIncrementPosition(LongSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
+
     public short ReadShort() => _buffer.ReadShort(PostIncrementPosition(ShortSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public uint ReadUint() => _buffer.ReadUint(PostIncrementPosition(UintSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public ulong ReadUlong() => _buffer.ReadUlong(PostIncrementPosition(UlongSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public ushort ReadUshort() => _buffer.ReadUshort(PostIncrementPosition(UshortSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public float ReadFloat() => _buffer.ReadFloat(PostIncrementPosition(FloatSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public double ReadDouble() => _buffer.ReadDouble(PostIncrementPosition(DoubleSize));
 
-    [PublicAPI(Messages.ForUseInGeneratedCode)]
+    [MayBeUsedByGenerator]
     public decimal ReadDecimal() => _buffer.ReadDecimal(PostIncrementPosition(DecimalSize));
 }

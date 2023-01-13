@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Attributes;
 using MsbRpc.Configuration;
 using MsbRpc.Exceptions;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
-using MsbRpc.Utility;
 
 namespace MsbRpc.EndPoints;
 
-[PublicAPI(Messages.ForUseInGeneratedCode)]
+[MayBeUsedByGenerator]
 public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoint, TProcedure>
     where TEndPoint : OutboundEndPoint<TEndPoint, TProcedure>
     where TProcedure : Enum
