@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace MsbRpc.EndPoints;
+namespace MsbRpc.Exceptions;
 
 public class RpcRequestException<TProcedureId> : Exception where TProcedureId : Enum
 {

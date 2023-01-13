@@ -5,57 +5,57 @@ namespace MsbRpc;
 public static class LogEventIds
 {
     public static readonly EventId InboundEndPointStartedListening =
-        new((int)Values.InboundEndPointStartedListening, nameof(Values.InboundEndPointStartedListening));
+        new((int)Ids.InboundEndPointStartedListening, nameof(Ids.InboundEndPointStartedListening));
 
     public static readonly EventId InboundEndPointReceivedCall =
-        new((int)Values.InboundEndPointReceivedCall, nameof(Values.InboundEndPointReceivedCall));
+        new((int)Ids.InboundEndPointReceivedCall, nameof(Ids.InboundEndPointReceivedCall));
 
     public static readonly EventId InboundEndPointStoppedListeningWithoutRunningToCompletion = new
     (
-        (int)Values.InboundEndPointStoppedListeningWithoutRunningToCompletion,
-        nameof(Values.InboundEndPointStoppedListeningWithoutRunningToCompletion)
+        (int)Ids.InboundEndPointStoppedListeningWithoutRunningToCompletion,
+        nameof(Ids.InboundEndPointStoppedListeningWithoutRunningToCompletion)
     );
 
     public static readonly EventId InboundEndPointRanToCompletion =
-        new((int)Values.InboundEndPointRanToCompletion, nameof(Values.InboundEndPointRanToCompletion));
+        new((int)Ids.InboundEndPointRanToCompletion, nameof(Ids.InboundEndPointRanToCompletion));
 
     public static readonly EventId OutboundEndPointSentRequest =
-        new((int)Values.OutboundEndPointSentRequest, nameof(Values.OutboundEndPointSentRequest));
+        new((int)Ids.OutboundEndPointSentRequest, nameof(Ids.OutboundEndPointSentRequest));
 
     public static readonly EventId ServerWasCreatedWithSpecifiedPort =
-        new((int)Values.ServerWasCreatedWithSpecifiedPort, nameof(Values.ServerWasCreatedWithSpecifiedPort));
+        new((int)Ids.ServerWasCreatedWithSpecifiedPort, nameof(Ids.ServerWasCreatedWithSpecifiedPort));
 
     public static readonly EventId ServerWasCreatedWithEphemeralPort =
-        new((int)Values.ServerWasCreatedWithEphemeralPort, nameof(Values.ServerWasCreatedWithEphemeralPort));
+        new((int)Ids.ServerWasCreatedWithEphemeralPort, nameof(Ids.ServerWasCreatedWithEphemeralPort));
 
-    public static readonly EventId ServerStartedListening = new((int)Values.ServerStartedListening, nameof(Values.ServerStartedListening));
+    public static readonly EventId ServerStartedListening = new((int)Ids.ServerStartedListening, nameof(Ids.ServerStartedListening));
 
     public static readonly EventId ServerAcceptedNewConnection =
-        new((int)Values.ServerAcceptedNewConnection, nameof(Values.ServerAcceptedNewConnection));
+        new((int)Ids.ServerAcceptedNewConnection, nameof(Ids.ServerAcceptedNewConnection));
 
     public static readonly EventId ServerDisposedNewConnectionAfterDisposal = new
-        ((int)Values.ServerImmediatelyDisposedNewConnection, nameof(Values.ServerImmediatelyDisposedNewConnection));
+        ((int)Ids.ServerImmediatelyDisposedNewConnection, nameof(Ids.ServerImmediatelyDisposedNewConnection));
 
     public static readonly EventId ServerStoppedListeningDueToDisposal =
-        new((int)Values.ServerStoppedListeningDueToDisposal, nameof(Values.ServerStoppedListeningDueToDisposal));
+        new((int)Ids.ServerStoppedListeningDueToDisposal, nameof(Ids.ServerStoppedListeningDueToDisposal));
 
     public static readonly EventId ServerStoppedListeningDueToException = new
-        ((int)Values.ServerStoppedListeningDueToException, nameof(Values.ServerStoppedListeningDueToException));
+        ((int)Ids.ServerStoppedListeningDueToException, nameof(Ids.ServerStoppedListeningDueToException));
 
-    public static readonly EventId ServerEndPointRegistered = new((int)Values.ServerEndPointRegistered, nameof(Values.ServerEndPointRegistered));
+    public static readonly EventId ServerEndPointRegistered = new((int)Ids.ServerEndPointRegistered, nameof(Ids.ServerEndPointRegistered));
 
     public static readonly EventId ServerEndPointDeregistered =
-        new((int)Values.ServerEndPointDeregistered, nameof(Values.ServerEndPointDeregistered));
+        new((int)Ids.ServerEndPointDeregistered, nameof(Ids.ServerEndPointDeregistered));
 
     public static readonly EventId ServerEndPointDeregisteredOnRegistryDisposal = new
-        ((int)Values.ServerEndPointDeregisteredOnRegistryDisposal, nameof(Values.ServerEndPointDeregisteredOnRegistryDisposal));
+        ((int)Ids.ServerEndPointDeregisteredOnRegistryDisposal, nameof(Ids.ServerEndPointDeregisteredOnRegistryDisposal));
 
     public static readonly EventId ServerEndPointThrewException =
-        new((int)Values.ServerEndPointThrewException, nameof(Values.ServerEndPointThrewException));
+        new((int)Ids.ServerEndPointThrewException, nameof(Ids.ServerEndPointThrewException));
 
-    public static readonly EventId MessengerConnectionFailed = new((int)Values.MessengerConnectionFailed, nameof(Values.MessengerConnectionFailed));
+    public static readonly EventId MessengerConnectionFailed = new((int)Ids.MessengerConnectionFailed, nameof(Ids.MessengerConnectionFailed));
 
-    private enum Values
+    private enum Ids
     {
         InboundEndPointStartedListening,
         InboundEndPointReceivedCall,

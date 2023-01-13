@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace MsbRpc.EndPoints.Configuration;
+namespace MsbRpc.Configuration;
 
 public abstract class OutboundEndPointConfiguration : EndPointConfiguration
 {

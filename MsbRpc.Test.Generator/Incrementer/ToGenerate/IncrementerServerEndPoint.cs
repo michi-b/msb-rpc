@@ -1,14 +1,13 @@
-﻿// ReSharper disable CheckNamespace
-
-using System;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using Incrementer;
+using Incrementer.Generated;
+using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
-using LoggerFactoryExtensions = MsbRpc.Utility.LoggerFactoryExtensions;
 
-namespace Incrementer.Generated;
+namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
 public class IncrementerServerEndPoint
     : InboundEndPoint<IncrementerServerEndPoint, IncrementerProcedure, IIncrementer>
@@ -17,29 +16,15 @@ public class IncrementerServerEndPoint
     (
         Messenger messenger,
         IIncrementer implementation,
-        ILoggerFactory? loggerFactory = null,
-        int initialBufferSize = DefaultInitialBufferSize
-    ) : this
-    (
-        messenger,
-        implementation,
-        LoggerFactoryExtensions.CreateLoggerOptional<IncrementerServerEndPoint>(loggerFactory),
-        initialBufferSize
-    ) { }
-
-    private IncrementerServerEndPoint
-    (
-        Messenger messenger,
-        IIncrementer implementation,
-        ILogger<IncrementerServerEndPoint> logger,
-        int initialBufferSize = DefaultInitialBufferSize
+        Configuration configuration
     ) : base
     (
         messenger,
         implementation,
-        logger,
-        initialBufferSize
+        configuration
     ) { }
+
+    public class Configuration : InboundEndPointConfiguration { }
 
     protected override Response Execute(IncrementerProcedure procedure, Request request)
     {

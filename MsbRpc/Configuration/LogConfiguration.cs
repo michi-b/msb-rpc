@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace MsbRpc.EndPoints;
+namespace MsbRpc.Configuration;
 
 [PublicAPI]
 public struct LogConfiguration
@@ -23,7 +23,6 @@ public struct LogConfiguration
     /// <summary>
     ///     Creates ane enabled <see cref="LogConfiguration" />.
     /// </summary>
-    /// <param name="logLevel"></param>
     public LogConfiguration(EventId id, LogLevel logLevel)
     {
         Id = id;
@@ -38,5 +37,5 @@ public struct LogConfiguration
         Level = level;
     }
 
-    public bool IsEnabled(ILogger? logger) => Enabled && logger.IsEnabled(Level);
+    public bool IsEnabled(ILogger logger) => Enabled && logger.IsEnabled(Level);
 }

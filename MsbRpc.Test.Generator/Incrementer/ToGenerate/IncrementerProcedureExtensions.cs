@@ -1,8 +1,7 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using System;
+using Incrementer.Generated;
 
-using System;
-
-namespace Incrementer.Generated;
+namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
 public static class IncrementerProcedureExtensions
 {

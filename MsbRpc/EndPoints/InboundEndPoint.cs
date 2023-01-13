@@ -1,8 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration;
 using MsbRpc.Contracts;
-using MsbRpc.EndPoints.Configuration;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -121,7 +121,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Ran to completion {ListenReturnCode}",
+                    "Ran to completion with listen return code: {ListenReturnCode}",
                     listenReturnCode.GetName()
                 );
             }

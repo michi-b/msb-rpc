@@ -5,13 +5,14 @@ using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration;
 using MsbRpc.Contracts;
-using MsbRpc.EndPoints.Configuration;
+using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Sockets;
 
-namespace MsbRpc.EndPoints;
+namespace MsbRpc.Server;
 
 public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : IDisposable
     where TServer : Server<TServer, TEndPoint, TProcedure, TImplementation>

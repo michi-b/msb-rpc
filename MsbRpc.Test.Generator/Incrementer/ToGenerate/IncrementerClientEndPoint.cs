@@ -1,63 +1,56 @@
-﻿// ReSharper disable RedundantBaseQualifier
-// ReSharper disable RedundantNameQualifier
-// ReSharper disable InlineTemporaryVariable
-
-// ReSharper disable once CheckNamespace
-// ReSharper disable MemberCanBePrivate.Global
-
+﻿using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using Incrementer.Generated;
+using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
-using LoggerFactoryExtensions = MsbRpc.Utility.LoggerFactoryExtensions;
 
-namespace Incrementer.Generated;
+namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
 public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPoint, IncrementerProcedure>
 {
     private IncrementerClientEndPoint
     (
         Messenger messenger,
-        ILogger<IncrementerClientEndPoint> logger,
-        int initialBufferSize
+        Configuration configuration
     ) : base
     (
         messenger,
-        logger,
-        initialBufferSize
+        configuration
     ) { }
+
+    public class Configuration : OutboundEndPointConfiguration { }
 
     public static async ValueTask<IncrementerClientEndPoint> ConnectAsync
     (
-        IPAddress ipAddress,
-        int port,
-        ILoggerFactory? loggerFactory = null,
-        int initialBufferSize = DefaultInitialBufferSize
+        IPEndPoint endPoint,
+        Action<Configuration>? configure
     )
     {
-        ILogger<IncrementerClientEndPoint> logger = LoggerFactoryExtensions.CreateLoggerOptional<IncrementerClientEndPoint>(loggerFactory);
-        MsbRpc.Messaging.Messenger messenger = await MessengerFactory.ConnectAsync(new IPEndPoint(ipAddress, port), logger);
-        return new IncrementerClientEndPoint(messenger, logger, initialBufferSize);
+        var configuration = new Configuration();
+        configure?.Invoke(configuration);
+        Messenger messenger = await MessengerFactory.ConnectAsync(endPoint, configuration.LoggerFactory);
+        return new IncrementerClientEndPoint(messenger, configuration);
     }
 
     public async ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)
     {
-        base.AssertIsOperable();
+        AssertIsOperable();
 
         const int valueArgumentSize = PrimitiveSerializer.IntSize;
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.Increment), constantArgumentSizeSum);
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.Increment), constantArgumentSizeSum);
 
         BufferWriter writer = request.GetWriter();
 
         writer.Write(value);
 
-        Response responseMessage = await base.SendRequestAsync(request);
+        Response responseMessage = await SendRequestAsync(request);
         BufferReader responseReader = responseMessage.GetReader();
 
         int result = responseReader.ReadInt();
@@ -67,36 +60,36 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
     public async ValueTask StoreAsync(int value, CancellationToken cancellationToken)
     {
-        base.AssertIsOperable();
+        AssertIsOperable();
 
         const int valueArgumentSize = PrimitiveSerializer.IntSize;
         const int constantArgumentSizeSum = valueArgumentSize;
 
-        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.Store), constantArgumentSizeSum);
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.Store), constantArgumentSizeSum);
 
         BufferWriter writer = request.GetWriter();
 
         writer.Write(value);
 
-        await base.SendRequestAsync(request);
+        await SendRequestAsync(request);
     }
 
     public async ValueTask IncrementStoredAsync(CancellationToken cancellationToken)
     {
-        base.AssertIsOperable();
+        AssertIsOperable();
 
-        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.IncrementStored));
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.IncrementStored));
 
-        await base.SendRequestAsync(request);
+        await SendRequestAsync(request);
     }
 
     public async ValueTask<int> GetStoredAsync(CancellationToken cancellationToken)
     {
-        base.AssertIsOperable();
+        AssertIsOperable();
 
-        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.GetStored));
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.GetStored));
 
-        Response response = await base.SendRequestAsync(request);
+        Response response = await SendRequestAsync(request);
         BufferReader responseReader = response.GetReader();
 
         int result = responseReader.ReadInt();
@@ -106,10 +99,10 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
     public async ValueTask FinishAsync(CancellationToken cancellationToken)
     {
-        base.AssertIsOperable();
+        AssertIsOperable();
 
-        Request request = base.Buffer.GetRequest(GetId(IncrementerProcedure.Finish));
-        await base.SendRequestAsync(request);
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.Finish));
+        await SendRequestAsync(request);
     }
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MsbRpc.EndPoints;
+namespace MsbRpc.Exceptions;
 
 public class EndPointRanToCompletionException : ObjectDisposedException
 {

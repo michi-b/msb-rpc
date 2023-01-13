@@ -9,7 +9,7 @@ namespace MsbRpc.Messaging;
 
 public static class MessengerFactory
 {
-    public static async ValueTask<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILogger? logger = null)
+    public static async ValueTask<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory = null)
     {
         Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         try
@@ -18,9 +18,9 @@ public static class MessengerFactory
         }
         catch (Exception exception)
         {
-            if (logger != null)
+            if (loggerFactory != null)
             {
-                LogConnectionFailed(logger, serverEndPoint, exception);
+                LogConnectionFailed(loggerFactory.CreateLogger(nameof(MessengerFactory)), serverEndPoint, exception);
             }
 
             throw;

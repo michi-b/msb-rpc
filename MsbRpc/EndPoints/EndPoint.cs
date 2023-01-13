@@ -1,7 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using MsbRpc.EndPoints.Configuration;
+using MsbRpc.Configuration;
+using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Utility;

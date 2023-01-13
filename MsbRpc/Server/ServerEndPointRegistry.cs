@@ -5,11 +5,12 @@ using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration;
 using MsbRpc.Contracts;
-using MsbRpc.EndPoints.Configuration;
+using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
 
-namespace MsbRpc.EndPoints;
+namespace MsbRpc.Server;
 
 public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : IDisposable
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
@@ -158,7 +159,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                     configuration.Level,
                     configuration.Id,
                     "Registered new endpoint ({EndPointTypeName}) with thread id {TargetThreadId}. Connection count is {ConnectionCount}",
-                    nameof(TEndPoint),
+                    EndPointTypename,
                     threadId,
                     connectionCount
                 );
@@ -178,7 +179,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                     configuration.Level,
                     configuration.Id,
                     "Deregistered endpoint ({EndpointTypeName}). Connection count is {ConnectionCount}",
-                    nameof(TEndPoint),
+                    EndPointTypename,
                     connectionCount
                 );
             }
@@ -197,7 +198,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                     configuration.Level,
                     configuration.Id,
                     "Deregistered endpoint ({EndpointTypeName}) with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
-                    nameof(TEndPoint),
+                    EndPointTypename,
                     threadId,
                     connectionCount
                 );

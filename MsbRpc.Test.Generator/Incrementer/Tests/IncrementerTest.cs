@@ -1,10 +1,11 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Incrementer.Generated;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.EndPoints;
+using MsbRpc.Exceptions;
+using MsbRpc.Test.Generator.Incrementer.ToGenerate;
 using Serilog;
 using Serilog.Core;
 
@@ -34,7 +35,7 @@ public class IncrementerTest : Test
     [TestMethod]
     public void Listens()
     {
-        IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
+        IncrementerServer server = StartServer();
         WaitForThreads();
         server.Dispose();
     }
@@ -42,8 +43,8 @@ public class IncrementerTest : Test
     [TestMethod]
     public async Task ConnectsAndDisconnects()
     {
-        using IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
 
         WaitForThreads();
         Assert.AreEqual(1, server.CreateConnectionDump().Length);
@@ -57,13 +58,13 @@ public class IncrementerTest : Test
     [TestMethod]
     public async Task ConnectsAndDisconnectsTwoClients()
     {
-        using IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory);
+        using IncrementerServer server = StartServer();
 
-        IncrementerClientEndPoint client1 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        IncrementerClientEndPoint client1 = await ConnectClient(server);
         WaitForThreads();
         Assert.AreEqual(1, server.CreateConnectionDump().Length);
 
-        IncrementerClientEndPoint client2 = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        IncrementerClientEndPoint client2 = await ConnectClient(server);
         WaitForThreads();
         Assert.AreEqual(2, server.CreateConnectionDump().Length);
 
@@ -80,9 +81,9 @@ public class IncrementerTest : Test
     public async Task CanDisposeServerPrematurely()
     {
         IncrementerClientEndPoint client;
-        using (IncrementerServer server = IncrementerServer.Start(() => new Incrementer(), LoggerFactory))
+        using (IncrementerServer server = StartServer())
         {
-            client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+            client = await ConnectClient(server);
         }
 
         client.Dispose();
@@ -94,8 +95,8 @@ public class IncrementerTest : Test
         const int testValue = 0;
         const int expectedResult = 1;
 
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
 
         int result = await client.IncrementAsync(testValue, CancellationToken);
 
@@ -108,8 +109,8 @@ public class IncrementerTest : Test
         const int testValue = 99;
         const int expectedResult = 100;
 
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
 
         int result = await client.IncrementAsync(testValue, CancellationToken);
 
@@ -122,8 +123,8 @@ public class IncrementerTest : Test
         const int testValue = -1;
         const int expectedResult = 0;
 
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
 
         int result = await client.IncrementAsync(testValue, CancellationToken);
 
@@ -136,8 +137,8 @@ public class IncrementerTest : Test
         const int testValue = 0;
         const int expectedResult = 10;
 
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
 
         int lastResult = testValue;
         for (int i = 0; i < expectedResult - testValue; i++)
@@ -154,8 +155,8 @@ public class IncrementerTest : Test
         const int testValue = 0;
         const int expectedResult = 10;
 
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
 
         await client.StoreAsync(testValue, CancellationToken);
         for (int i = 0; i < 10; i++)
@@ -171,8 +172,8 @@ public class IncrementerTest : Test
     [TestMethod]
     public async Task FinishProcedureMakesEndPointsRunToCompletion()
     {
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        using IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
         Assert.IsFalse(client.RanToCompletion);
         await client.FinishAsync(CancellationToken);
         Assert.IsTrue(client.RanToCompletion);
@@ -182,8 +183,8 @@ public class IncrementerTest : Test
     [ExpectedException(typeof(EndPointRanToCompletionException))]
     public async Task IncrementingAfterFinishingThrowsRanToCompletionException()
     {
-        using IncrementerServer server = IncrementerServer.Start(Incrementer.Create, LoggerFactory);
-        IncrementerClientEndPoint client = await IncrementerClientEndPoint.ConnectAsync(LocalHost, server.Port, LoggerFactory);
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
         await client.FinishAsync(CancellationToken);
         try
         {
@@ -194,6 +195,32 @@ public class IncrementerTest : Test
             Logger.LogInformation("Exception message: {ExceptionMessage}", exception.Message);
             throw;
         }
+    }
+
+    private static void ConfigureServer(IncrementerServer.Configuration configuration)
+    {
+        configuration.LoggerFactory = LoggerFactory;
+    }
+
+    private static void ConfigureServerEndPoint(IncrementerServerEndPoint.Configuration configuration)
+    {
+        configuration.LoggerFactory = LoggerFactory;
+    }
+
+    private static void ConfigureClientEndPoint(IncrementerClientEndPoint.Configuration configuration)
+    {
+        configuration.LoggerFactory = LoggerFactory;
+    }
+
+    private static ValueTask<IncrementerClientEndPoint> ConnectClient(IncrementerServer server)
+    {
+        IPEndPoint endPoint = new(LocalHost, server.Port);
+        return IncrementerClientEndPoint.ConnectAsync(endPoint, ConfigureClientEndPoint);
+    }
+
+    private IncrementerServer StartServer()
+    {
+        return IncrementerServer.Start(() => new Incrementer(), ConfigureServer, ConfigureServerEndPoint);
     }
 
     private static void WaitForThreads()

@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.EndPoints.Configuration;
+﻿namespace MsbRpc.Configuration;
 
 public class EndPointConfiguration : Configuration
 {
