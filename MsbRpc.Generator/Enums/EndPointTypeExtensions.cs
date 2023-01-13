@@ -1,33 +1,27 @@
 ﻿using System;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using MsbRpc.Generator.Attributes;
 
 namespace MsbRpc.Generator.Enums;
 
-internal static class EndPointTypeExtensions
+internal static class RpcContractTypeExtensions
 {
-    public static string GetPostfix(this EndPointType target)
+    public static EndPointDirection GetDirection(this RpcContractType contractType, ConnectionEndType connectionEndType)
     {
-        return target switch
+        return connectionEndType switch
         {
-            EndPointType.InboundClient => ClientPostfix,
-            EndPointType.InboundServer => ServerPostfix,
-            EndPointType.OutboundClient => ClientPostfix,
-            EndPointType.OutboundServer => ServerPostfix,
-            EndPointType.Server => ServerPostfix,
-            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
-        };
-    }
-
-    public static EndPointDirection GetDirection(this EndPointType target)
-    {
-        return target switch
-        {
-            EndPointType.InboundClient => EndPointDirection.Inbound,
-            EndPointType.InboundServer => EndPointDirection.Inbound,
-            EndPointType.OutboundClient => EndPointDirection.Outbound,
-            EndPointType.OutboundServer => EndPointDirection.Outbound,
-            EndPointType.Server => EndPointDirection.Inbound,
-            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+            ConnectionEndType.Client => contractType switch
+            {
+                RpcContractType.ClientToServer => EndPointDirection.Outbound,
+                RpcContractType.ServerToClient => EndPointDirection.Inbound,
+                _ => throw new ArgumentOutOfRangeException(nameof(contractType), contractType, null)
+            },
+            ConnectionEndType.Server => contractType switch
+            {
+                RpcContractType.ClientToServer => EndPointDirection.Inbound,
+                RpcContractType.ServerToClient => EndPointDirection.Outbound,
+                _ => throw new ArgumentOutOfRangeException(nameof(contractType), contractType, null)
+            },
+            _ => throw new ArgumentOutOfRangeException(nameof(connectionEndType), connectionEndType, null)
         };
     }
 }

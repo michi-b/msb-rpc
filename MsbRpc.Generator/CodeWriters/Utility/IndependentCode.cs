@@ -40,22 +40,20 @@ internal static class IndependentCode
         $"{Types.BufferWriter} {Variables.RequestWriter} = {Variables.Request}.{Methods.GetWriter}();";
 
     public const string IPAddressParameter = $"{Types.IPAddress} {Parameters.IPAddress}";
+    public const string IPEndPointParameter = $"{Types.IPEndPoint} {Parameters.IPEndPoint}";
 
     public const string PortParameter = $"int {Parameters.Port}";
 
-    /// <remarks>NO trailing comma</remarks>
-    /// >
-    public const string InitialBufferSizeParameterLine = $"int {Parameters.InitialBufferSize} = {Constants.EndPointDefaultInitialBufferSize}";
+    public const string LocalConfigurationParameter = $"{Types.LocalConfiguration} {Parameters.Configuration}";
+
+    public const string ConfigureLocalConfigurationActionParameter =
+        $"{Types.Action}<{Types.LocalConfiguration}>? {Parameters.ConfigureAction} = null";
 
     public static readonly string ProcedureParameterOutOfRangeSwitchExpressionCase
         = GetArgumentOutOfRangeSwitchExpressionCase(Parameters.Procedure);
 
-    public static string GetCreateLoggerArgumentLine(string category)
-        => $"{StaticMethods.CreateLoggerOptional}<{category}>({Parameters.LoggerFactory})";
-
-    public static string GetLoggerParameterLine(string category) => $"{Types.LoggerInterface}<{category}> {Parameters.Logger}";
-
-    public static string GetArgumentOutOfRangeSwitchExpressionCase(string variableName)
+    public static string GetArgumentOutOfRangeSwitchExpressionCase
+        (string variableName)
         => $"_ => throw new {Types.ArgumentOutOfRangeException}(nameof({variableName}), {variableName}, null)";
 
     public static string GetInboundProcedureMethodSignature(ProcedureNode procedure)

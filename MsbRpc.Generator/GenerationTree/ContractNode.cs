@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
@@ -36,30 +35,17 @@ internal class ContractNode
 
         IsValid = IsValid && Procedures.IsValid;
 
-        Client = new EndPointNode
-        (
-            this,
-            info.ContractType switch
-            {
-                RpcContractType.ClientToServerRoot => EndPointType.OutboundClient,
-                RpcContractType.ClientToServer => EndPointType.OutboundClient,
-                RpcContractType.ServerToClient => EndPointType.InboundClient,
-                _ => throw new ArgumentOutOfRangeException()
-            }
-        );
-
-        Server = new EndPointNode
-        (
-            this,
-            info.ContractType switch
-            {
-                RpcContractType.ClientToServerRoot => EndPointType.Server,
-                RpcContractType.ClientToServer => EndPointType.InboundServer,
-                RpcContractType.ServerToClient => EndPointType.OutboundServer,
-                _ => throw new ArgumentOutOfRangeException()
-            }
-        );
+        Client = CreateEndPointNode(info, ConnectionEndType.Client);
+        Server = CreateEndPointNode(info, ConnectionEndType.Server);
     }
+
+    private EndPointNode CreateEndPointNode(ContractInfo info, ConnectionEndType endType)
+        => new
+        (
+            this,
+            endType,
+            info.ContractType.GetDirection(endType)
+        );
 
     private static string GetContractName(string contractInterfaceName)
     {

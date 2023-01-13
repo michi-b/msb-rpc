@@ -2,7 +2,6 @@
 using Incrementer;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
-using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Server;
 
@@ -44,7 +43,5 @@ public class IncrementerServer : Server<IncrementerServer, IncrementerServerEndP
         return server;
     }
 
-    protected override IncrementerServerEndPoint CreateEndPoint
-        (Messenger messenger)
-        => new(messenger, _createImplementation(), _endPointConfiguration);
+    protected override IncrementerServerEndPoint CreateEndPoint(Messenger messenger) => new(messenger, _createImplementation(), _endPointConfiguration);
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
@@ -28,7 +27,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
     public static async ValueTask<IncrementerClientEndPoint> ConnectAsync
     (
         IPEndPoint endPoint,
-        Action<Configuration>? configure
+        Action<Configuration>? configure = null
     )
     {
         var configuration = new Configuration();
@@ -37,7 +36,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         return new IncrementerClientEndPoint(messenger, configuration);
     }
 
-    public async ValueTask<int> IncrementAsync(int value, CancellationToken cancellationToken)
+    public async ValueTask<int> IncrementAsync(int value)
     {
         AssertIsOperable();
 
@@ -58,7 +57,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         return result;
     }
 
-    public async ValueTask StoreAsync(int value, CancellationToken cancellationToken)
+    public async ValueTask StoreAsync(int value)
     {
         AssertIsOperable();
 
@@ -74,7 +73,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         await SendRequestAsync(request);
     }
 
-    public async ValueTask IncrementStoredAsync(CancellationToken cancellationToken)
+    public async ValueTask IncrementStoredAsync()
     {
         AssertIsOperable();
 
@@ -83,7 +82,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         await SendRequestAsync(request);
     }
 
-    public async ValueTask<int> GetStoredAsync(CancellationToken cancellationToken)
+    public async ValueTask<int> GetStoredAsync()
     {
         AssertIsOperable();
 
@@ -97,7 +96,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         return result;
     }
 
-    public async ValueTask FinishAsync(CancellationToken cancellationToken)
+    public async ValueTask FinishAsync()
     {
         AssertIsOperable();
 

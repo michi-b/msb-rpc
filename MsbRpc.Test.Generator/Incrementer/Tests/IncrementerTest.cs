@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
 using MsbRpc.Test.Generator.Incrementer.ToGenerate;
 using Serilog;
@@ -98,7 +97,7 @@ public class IncrementerTest : Test
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
 
-        int result = await client.IncrementAsync(testValue, CancellationToken);
+        int result = await client.IncrementAsync(testValue);
 
         Assert.AreEqual(expectedResult, result);
     }
@@ -112,7 +111,7 @@ public class IncrementerTest : Test
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
 
-        int result = await client.IncrementAsync(testValue, CancellationToken);
+        int result = await client.IncrementAsync(testValue);
 
         Assert.AreEqual(expectedResult, result);
     }
@@ -126,7 +125,7 @@ public class IncrementerTest : Test
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
 
-        int result = await client.IncrementAsync(testValue, CancellationToken);
+        int result = await client.IncrementAsync(testValue);
 
         Assert.AreEqual(expectedResult, result);
     }
@@ -143,7 +142,7 @@ public class IncrementerTest : Test
         int lastResult = testValue;
         for (int i = 0; i < expectedResult - testValue; i++)
         {
-            lastResult = await client.IncrementAsync(lastResult, CancellationToken);
+            lastResult = await client.IncrementAsync(lastResult);
         }
 
         Assert.AreEqual(expectedResult, lastResult);
@@ -158,13 +157,13 @@ public class IncrementerTest : Test
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
 
-        await client.StoreAsync(testValue, CancellationToken);
+        await client.StoreAsync(testValue);
         for (int i = 0; i < 10; i++)
         {
-            await client.IncrementStoredAsync(CancellationToken);
+            await client.IncrementStoredAsync();
         }
 
-        int result = await client.GetStoredAsync(CancellationToken);
+        int result = await client.GetStoredAsync();
 
         Assert.AreEqual(expectedResult, result);
     }
@@ -175,7 +174,7 @@ public class IncrementerTest : Test
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
         Assert.IsFalse(client.RanToCompletion);
-        await client.FinishAsync(CancellationToken);
+        await client.FinishAsync();
         Assert.IsTrue(client.RanToCompletion);
     }
 
@@ -185,10 +184,10 @@ public class IncrementerTest : Test
     {
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-        await client.FinishAsync(CancellationToken);
+        await client.FinishAsync();
         try
         {
-            await client.IncrementAsync(0, CancellationToken);
+            await client.IncrementAsync(0);
         }
         catch (EndPointRanToCompletionException exception)
         {

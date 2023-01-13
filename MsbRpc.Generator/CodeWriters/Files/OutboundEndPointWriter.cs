@@ -26,16 +26,14 @@ internal class OutboundEndPointWriter : EndPointWriter
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{MessengerParameter},");
-            writer.WriteLine($"{GetLoggerParameterLine(Name)},");
-            writer.WriteLine($"{InitialBufferSizeParameterLine}");
+            writer.WriteLine(LocalConfigurationParameter);
         }
 
         writer.WriteLine(" : base");
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{Parameters.Messenger},");
-            writer.WriteLine($"{Parameters.Logger},");
-            writer.WriteLine(Parameters.InitialBufferSize);
+            writer.WriteLine($"{Parameters.Configuration}");
         }
 
         writer.WriteLine(" { }");
@@ -45,21 +43,23 @@ internal class OutboundEndPointWriter : EndPointWriter
         writer.WriteLine($"public static async {Types.VaLueTask}<{Name}> {Methods.ConnectAsync}");
         using (writer.GetParenthesesBlock())
         {
-            writer.WriteLine($"{IPAddressParameter},");
-            writer.WriteLine($"{PortParameter},");
-            writer.WriteLine($"{LoggerFactoryNullableParameter},");
-            writer.WriteLine($"{InitialBufferSizeParameterLine}");
+            writer.WriteLine($"{IPEndPointParameter},");
+            writer.WriteLine(ConfigureLocalConfigurationActionParameter);
         }
 
         using (writer.GetBlock())
         {
-            writer.WriteLine($"{Types.LoggerInterface}<{Name}> {Variables.Logger} = {GetCreateLoggerArgumentLine(Name)};");
+            writer.WriteDeclareAndConfigureLocalConfigurationVariable();
 
-            writer.Write($"{Types.Messenger} {Variables.Messenger} = await {Types.MessengerFactory}.{Methods.ConnectAsync}");
-            writer.WriteLine($"(new {Types.IPEndPoint}({Parameters.IPAddress}, {Parameters.Port}), {Variables.Logger});");
+            writer.WriteLine($"{Types.Messenger} {Variables.Messenger} = await {Types.MessengerFactory}.{Methods.ConnectAsync}({Parameters.IPEndPoint});");
 
-            writer.WriteLine($"return new {Name}({Variables.Messenger}, {Variables.Logger}, {Parameters.InitialBufferSize});");
+            writer.WriteLine($"return new {Name}({Variables.Messenger}, {Variables.Configuration});");
         }
+    }
+
+    protected override void WriteConfiguration(IndentedTextWriter writer)
+    {
+        writer.WriteLine($"public class {Types.LocalConfiguration} : {Types.OutboundEndPointConfiguration} {{}}");
     }
 
     protected override void WriteProcedures(IndentedTextWriter writer)

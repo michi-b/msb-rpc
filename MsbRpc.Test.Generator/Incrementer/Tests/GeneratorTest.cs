@@ -20,7 +20,7 @@ namespace MsbRpc.Test.Generator.Incrementer.Tests;
 [TestClass]
 public class GeneratorTest : Test
 {
-    private const string Code = @"[RpcContract(RpcContractType.ClientToServerRoot)]
+    private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
@@ -135,9 +135,7 @@ public interface IIncrementer : IRpcContract
 
     private async Task TestGenerates(string shortFileName)
     {
-        bool IsTargetDiagnostic
-            (Diagnostic diagnostic)
-            => diagnostic.Location.SourceTree == null || diagnostic.Location.SourceTree.GetShortFilename() == shortFileName;
+        bool IsTargetDiagnostic(Diagnostic diagnostic) => diagnostic.Location.SourceTree == null || diagnostic.Location.SourceTree.GetShortFilename() == shortFileName;
 
         GeneratorDriverRunResult result = await RunGenerator(IsTargetDiagnostic);
         SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);

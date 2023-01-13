@@ -29,31 +29,7 @@ internal class InboundEndPointWriter : EndPointWriter
         {
             writer.WriteLine($"{MessengerParameter},");
             writer.WriteLine($"{contractImplementationParameterLine},");
-            writer.WriteLine($"{LoggerFactoryNullableParameter},");
-            writer.WriteLine($"{InitialBufferSizeParameterLine}");
-        }
-
-        writer.WriteLine(" : this");
-        using (writer.GetParenthesesBlock(Appendix.None))
-        {
-            writer.WriteLine($"{Parameters.Messenger},");
-            writer.WriteLine($"{contractImplementationArgumentLine},");
-            writer.WriteLine($"{GetCreateLoggerArgumentLine(Name)},");
-            writer.WriteLine(Parameters.InitialBufferSize);
-        }
-
-        writer.WriteLine(" { }");
-
-        writer.WriteLine();
-
-        // private constructor accepting a concrete logger
-        writer.WriteLine($"private {Name}");
-        using (writer.GetParenthesesBlock(Appendix.None))
-        {
-            writer.WriteLine($"{MessengerParameter},");
-            writer.WriteLine($"{contractImplementationParameterLine},");
-            writer.WriteLine($"{GetLoggerParameterLine(Name)},");
-            writer.WriteLine(InitialBufferSizeParameterLine);
+            writer.WriteLine(LocalConfigurationParameter);
         }
 
         writer.WriteLine(" : base");
@@ -61,11 +37,15 @@ internal class InboundEndPointWriter : EndPointWriter
         {
             writer.WriteLine($"{Parameters.Messenger},");
             writer.WriteLine($"{contractImplementationArgumentLine},");
-            writer.WriteLine($"{Parameters.Logger},");
-            writer.WriteLine($"{Parameters.InitialBufferSize}");
+            writer.WriteLine(Parameters.Configuration);
         }
 
         writer.WriteLine(" { }");
+    }
+
+    protected override void WriteConfiguration(IndentedTextWriter writer)
+    {
+        writer.WriteLine($"public class {Types.LocalConfiguration} : {Types.InboundEndPointConfiguration} {{}}");
     }
 
     protected override void WriteProcedures(IndentedTextWriter writer)
@@ -87,8 +67,7 @@ internal class InboundEndPointWriter : EndPointWriter
             writer.WriteLine(RequestParameter);
         }
 
-        string GetSwitchCaseExpression(ProcedureNode procedure)
-            => procedure.HasParameters ? $"{procedure.Name}({Parameters.Request})" : $"{procedure.Name}()";
+        string GetSwitchCaseExpression(ProcedureNode procedure) => procedure.HasParameters ? $"{procedure.Name}({Parameters.Request})" : $"{procedure.Name}()";
 
         using (writer.GetBlock())
         {

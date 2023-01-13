@@ -43,6 +43,10 @@ internal static class IndependentNames
         public const string IPAddress = "System.Net.IPAddress";
         public const string MessengerFactory = "MsbRpc.Messaging.MessengerFactory";
         public const string IPEndPoint = "System.Net.IPEndPoint";
+        public const string LocalConfiguration = "Configuration";
+        public const string InboundEndPointConfiguration = "MsbRpc.Configuration.InboundEndPointConfiguration";
+        public const string OutboundEndPointConfiguration = "MsbRpc.Configuration.OutboundEndPointConfiguration";
+        public const string Action = "System.Action";
     }
 
     public static class Methods
@@ -71,6 +75,7 @@ internal static class IndependentNames
         public const string GetResponse = "GetResponse";
         public const string GetRequest = "GetRequest";
         public const string SendRequestAsync = "SendRequestAsync";
+        public const string Invoke = "Invoke";
 
         #endregion
 
@@ -101,7 +106,10 @@ internal static class IndependentNames
         public const string RpcEndPoint = "endPoint";
         public const string Request = "request";
         public const string IPAddress = "address";
+        public const string IPEndPoint = "endPoint";
         public const string Port = "port";
+        public const string Configuration = "configuration";
+        public const string ConfigureAction = "configure";
     }
 
     public static class Properties
@@ -143,6 +151,7 @@ internal static class IndependentNames
         public const string Logger = "logger";
         public const string Messenger = "messenger";
         public const string ConstantArgumentSizeSum = "constantArgumentSizeSum";
+        public const string Configuration = "configuration";
 
         #endregion
     }

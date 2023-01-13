@@ -51,6 +51,10 @@ internal abstract class EndPointWriter : CodeFileWriter
 
             writer.WriteLine();
 
+            WriteConfiguration(writer);
+
+            writer.WriteLine();
+
             WriteProcedures(writer);
 
             writer.WriteLine();
@@ -58,6 +62,8 @@ internal abstract class EndPointWriter : CodeFileWriter
             WriteProcedureEnumOverrides(writer);
         }
     }
+
+    protected abstract void WriteConfiguration(IndentedTextWriter writer);
 
     protected virtual void WriteProcedureEnumOverrides(IndentedTextWriter writer)
     {

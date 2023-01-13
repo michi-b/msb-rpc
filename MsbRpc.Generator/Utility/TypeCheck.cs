@@ -11,10 +11,7 @@ internal static class TypeCheck
             ContainingNamespace:
             {
                 Name: "Attributes",
-                ContainingNamespace:
-                {
-                    Name: "Generator", ContainingNamespace: { Name: "MsbRpc", ContainingNamespace: { IsGlobalNamespace: true } }
-                }
+                ContainingNamespace: { Name: "Generator", ContainingNamespace: { Name: "MsbRpc", ContainingNamespace: { IsGlobalNamespace: true } } }
             }
         };
 

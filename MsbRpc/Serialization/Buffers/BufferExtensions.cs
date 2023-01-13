@@ -12,9 +12,7 @@ public static class BufferExtensions
     public static ArraySegment<byte> GetSubSegment(this ArraySegment<byte> target, int count) => new(target.Array!, target.Offset, count);
 
     [PublicAPI]
-    public static ArraySegment<byte> GetOffsetSubSegment
-        (this ArraySegment<byte> target, int offset)
-        => target.GetOffsetSubSegment(offset, target.Count - offset);
+    public static ArraySegment<byte> GetOffsetSubSegment(this ArraySegment<byte> target, int offset) => target.GetOffsetSubSegment(offset, target.Count - offset);
 
     [PublicAPI]
     public static ArraySegment<byte> GetOffsetSubSegment(this ArraySegment<byte> target, int offset, int count)
