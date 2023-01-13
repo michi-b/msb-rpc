@@ -15,7 +15,7 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
     where TEndPoint : OutboundEndPoint<TEndPoint, TProcedure>
     where TProcedure : Enum
 {
-    private OutboundEndPointConfiguration _configuration;
+    private readonly OutboundEndPointConfiguration _configuration;
 
     protected OutboundEndPoint
     (

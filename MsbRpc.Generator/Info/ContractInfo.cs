@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Attributes;
-using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 
@@ -15,87 +10,34 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
     public readonly string Namespace;
     public readonly ImmutableArray<ProcedureInfo> Procedures;
     public readonly RpcContractType ContractType;
+    public readonly bool GenerateServer;
+    public readonly int DefaultPort;
 
-    private ContractInfo
+    internal ContractInfo
     (
         string interfaceName,
         string namespaceName,
         ImmutableArray<ProcedureInfo> procedures,
-        RpcContractType contractType
+        RpcContractType contractType,
+        bool generateServer,
+        int defaultPort
     )
     {
         InterfaceName = interfaceName;
         Namespace = namespaceName;
         Procedures = procedures;
         ContractType = contractType;
-    }
-
-    // ReSharper disable once SuggestBaseTypeForParameterInConstructor
-    public static ContractInfo? Parse(INamedTypeSymbol contract)
-    {
-        AttributeData? contractAttribute = null;
-        AttributeData? generateServerAttribute = null;
-        
-        foreach (AttributeData attribute in contract.GetAttributes())
-        {
-            INamedTypeSymbol? attributeClass = attribute.AttributeClass;
-            if (attributeClass != null)
-            {
-                if (TypeCheck.IsRpcContractAttribute(attributeClass))
-                {
-                    contractAttribute = attribute;
-                }
-                else if(TypeCheck.IsGenerateServerAttribute(attributeClass))
-                {
-                    generateServerAttribute = attribute;
-                }
-            }
-        }
-
-        if (contractAttribute == null)
-        {
-            return null;
-        }
-
-        RpcContractType? contractType = null;
-
-        foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
-        {
-            // ReSharper disable once ConvertSwitchStatementToSwitchExpression
-            switch (argument.Key)
-            {
-                case "contractType":
-                    contractType = (RpcContractType)argument.Value.Value!;
-                    break;
-            }
-        }
-
-        if (contractType == null)
-        {
-            return null;
-        }
-
-        string interfaceName = contract.Name;
-        string namespaceName = contract.ContainingNamespace.ToDisplayString();
-        ImmutableArray<ProcedureInfo> procedures = contract.GetMembers()
-            .Select(m => m as IMethodSymbol)
-            .Where(m => m != null)
-            .Select(m => new ProcedureInfo(m!))
-            .ToImmutableArray();
-
-        if (procedures.Length == 0)
-        {
-            return null;
-        }
-
-        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value);
+        GenerateServer = generateServer;
+        DefaultPort = defaultPort;
     }
 
     public bool Equals(ContractInfo other)
         => InterfaceName == other.InterfaceName
            && Namespace == other.Namespace
            && Procedures.Equals(other.Procedures)
-           && ContractType == other.ContractType;
+           && ContractType == other.ContractType
+           && GenerateServer == other.GenerateServer
+           && DefaultPort == other.DefaultPort;
 
     public override bool Equals(object? obj) => obj is ContractInfo other && Equals(other);
 
@@ -107,6 +49,8 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
             hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
             hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)ContractType;
+            hashCode = (hashCode * 397) ^ GenerateServer.GetHashCode();
+            hashCode = (hashCode * 397) ^ DefaultPort;
             return hashCode;
         }
     }

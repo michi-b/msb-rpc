@@ -26,27 +26,21 @@ public struct BufferReader
     public byte ReadByte() => _buffer.ReadByte(PostIncrementPosition(ByteSize));
 
     [MayBeUsedByGenerator]
-
     public sbyte ReadSbyte() => _buffer.ReadSbyte(PostIncrementPosition(SbyteSize));
 
     [MayBeUsedByGenerator]
-
     public bool ReadBool() => _buffer.ReadBool(PostIncrementPosition(BoolSize));
 
     [MayBeUsedByGenerator]
-
     public char ReadChar() => _buffer.ReadChar(PostIncrementPosition(CharSize));
 
     [MayBeUsedByGenerator]
-
     public int ReadInt() => _buffer.ReadInt(PostIncrementPosition(IntSize));
 
     [MayBeUsedByGenerator]
-
     public long ReadLong() => _buffer.ReadLong(PostIncrementPosition(LongSize));
 
     [MayBeUsedByGenerator]
-
     public short ReadShort() => _buffer.ReadShort(PostIncrementPosition(ShortSize));
 
     [MayBeUsedByGenerator]

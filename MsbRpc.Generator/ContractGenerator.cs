@@ -55,7 +55,7 @@ public class ContractGenerator : IIncrementalGenerator
             return null;
         }
 
-        return ContractInfo.Parse(contractInterface);
+        return ContractInfoParser.Parse(contractInterface);
     }
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)

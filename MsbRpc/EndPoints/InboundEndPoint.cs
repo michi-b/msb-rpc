@@ -17,7 +17,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
 {
     public readonly TImplementation Implementation;
 
-    private InboundEndPointConfiguration _configuration;
+    private readonly InboundEndPointConfiguration _configuration;
 
     protected InboundEndPoint
     (
