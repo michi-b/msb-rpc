@@ -33,19 +33,33 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
     public static ContractInfo? Parse(INamedTypeSymbol contract)
     {
-        AttributeData? attributes = (from attributeData in contract.GetAttributes()
-            let attributeClass = attributeData.AttributeClass
-            where TypeCheck.IsRpcContractAttribute(attributeClass)
-            select attributeData).FirstOrDefault();
+        AttributeData? contractAttribute = null;
+        AttributeData? generateServerAttribute = null;
+        
+        foreach (AttributeData attribute in contract.GetAttributes())
+        {
+            INamedTypeSymbol? attributeClass = attribute.AttributeClass;
+            if (attributeClass != null)
+            {
+                if (TypeCheck.IsRpcContractAttribute(attributeClass))
+                {
+                    contractAttribute = attribute;
+                }
+                else if(TypeCheck.IsGenerateServerAttribute(attributeClass))
+                {
+                    generateServerAttribute = attribute;
+                }
+            }
+        }
 
-        if (attributes == null)
+        if (contractAttribute == null)
         {
             return null;
         }
 
         RpcContractType? contractType = null;
 
-        foreach (KeyValuePair<string, TypedConstant> argument in attributes.GetArguments())
+        foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
         {
             // ReSharper disable once ConvertSwitchStatementToSwitchExpression
             switch (argument.Key)
