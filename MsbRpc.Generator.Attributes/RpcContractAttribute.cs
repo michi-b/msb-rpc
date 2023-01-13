@@ -3,10 +3,11 @@ using JetBrains.Annotations;
 
 namespace MsbRpc.Generator.Attributes;
 
-[MeansImplicitUse(ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.WithMembers)]
+[GeneratorTarget]
 public class RpcContractAttribute : Attribute
 {
-    [GeneratorTarget] public readonly RpcContractType ContractType;
+    [GeneratorTarget]
+    public readonly RpcContractType ContractType;
 
     public RpcContractAttribute(RpcContractType contractType) => ContractType = contractType;
 }
