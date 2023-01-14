@@ -15,9 +15,8 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     where TImplementation : IRpcContract
     where TProcedure : Enum
 {
-    public readonly TImplementation Implementation;
-
     private readonly InboundEndPointConfiguration _configuration;
+    public readonly TImplementation Implementation;
 
     protected InboundEndPoint
     (

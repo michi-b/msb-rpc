@@ -10,19 +10,22 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ContractNode
 {
     public readonly string CamelCaseName;
-    public readonly EndPointNode Client;
 
     public readonly string InterfaceName;
+    public readonly string InterfaceType;
 
     public readonly bool IsValid = true;
     public readonly string Namespace;
     public readonly string PascalCaseName;
     public readonly ProcedureCollectionNode Procedures;
-    public readonly EndPointNode Server;
+    public readonly EndPointNode ClientEndPoint;
+    public readonly EndPointNode ServerEndPoint;
+    public readonly ServerNode? Server;
 
     public ContractNode(ref ContractInfo info, SourceProductionContext context)
     {
         InterfaceName = info.InterfaceName;
+        InterfaceType = $"{info.Namespace}.{info.InterfaceName}";
         PascalCaseName = GetContractName(InterfaceName);
         CamelCaseName = PascalCaseName.ToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
@@ -35,8 +38,9 @@ internal class ContractNode
 
         IsValid = IsValid && Procedures.IsValid;
 
-        Client = CreateEndPointNode(info, ConnectionEndType.Client);
-        Server = CreateEndPointNode(info, ConnectionEndType.Server);
+        ClientEndPoint = CreateEndPointNode(info, ConnectionEndType.Client);
+        ServerEndPoint = CreateEndPointNode(info, ConnectionEndType.Server);
+        Server = ServerNode.Create(info, ServerEndPoint);
     }
 
     private EndPointNode CreateEndPointNode(ContractInfo info, ConnectionEndType endType)

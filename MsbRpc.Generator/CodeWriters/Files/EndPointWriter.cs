@@ -27,8 +27,8 @@ internal abstract class EndPointWriter : CodeFileWriter
         EndPoint = endPoint;
         Contract = EndPoint.Contract;
         Procedures = Contract.Procedures;
-        Name = EndPoint.EndPointName;
-        FileName = $"{EndPoint.EndPointName}{GeneratedFilePostfix}";
+        Name = EndPoint.Name;
+        FileName = $"{EndPoint.Name}{GeneratedFilePostfix}";
     }
 
     public static EndPointWriter Get(EndPointNode endPoint)
@@ -76,13 +76,13 @@ internal abstract class EndPointWriter : CodeFileWriter
 
     private void WriteGetProcedureNameOverride(IndentedTextWriter writer)
     {
-        writer.Write($"protected override {Procedures.ProcedureEnumName} {Methods.GetProcedure}(int {Parameters.ProcedureId}) => ");
+        writer.Write($"protected override {Procedures.ProcedureEnumType} {Methods.GetProcedure}(int {Parameters.ProcedureId}) => ");
         writer.WriteLine($"{Procedures.ProcedureEnumExtensionsName}.{Methods.FromIdProcedureExtension}({Parameters.ProcedureId});");
     }
 
     private void WriteGetProcedureOverride(IndentedTextWriter writer)
     {
-        writer.Write($"protected override string {Methods.GetProcedureName}({Procedures.ProcedureEnumName} {Parameters.Procedure}) => ");
+        writer.Write($"protected override string {Methods.GetProcedureName}({Procedures.ProcedureEnumType} {Parameters.Procedure}) => ");
         writer.WriteLine($"{Procedures.ProcedureEnumExtensionsName}.{Methods.GetNameProcedureExtension}({Parameters.Procedure});");
     }
 

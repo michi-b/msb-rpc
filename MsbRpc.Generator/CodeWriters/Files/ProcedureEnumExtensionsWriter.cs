@@ -36,7 +36,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
             writer.WriteLine();
 
             //FromId method
-            writer.WriteLine($"public static {_procedures.ProcedureEnumName} {Methods.FromIdProcedureExtension}(int {Parameters.ProcedureId})");
+            writer.WriteLine($"public static {_procedures.ProcedureEnumType} {Methods.FromIdProcedureExtension}(int {Parameters.ProcedureId})");
             using (writer.GetBlock())
             {
                 writer.WriteLine($"return {Parameters.ProcedureId} switch");
@@ -65,7 +65,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 
     private void WriteExtension(IndentedTextWriter writer, string returnType, string methodName, Func<ProcedureNode, string> getCase)
     {
-        writer.WriteLine($"public static {returnType} {methodName}(this {_procedures.ProcedureEnumName} {Parameters.Procedure})");
+        writer.WriteLine($"public static {returnType} {methodName}(this {_procedures.ProcedureEnumType} {Parameters.Procedure})");
         using (writer.GetBlock())
         {
             writer.WriteProcedureReturnSwitch(_procedures, getCase);

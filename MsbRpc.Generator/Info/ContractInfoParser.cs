@@ -97,6 +97,11 @@ internal static class ContractInfoParser
 
         #endregion
 
+        if (generateServer && contractType != RpcContractType.ClientToServer)
+        {
+            return null;
+        }
+
         string interfaceName = contract.Name;
         string namespaceName = contract.ContainingNamespace.ToDisplayString();
         ImmutableArray<ProcedureInfo> procedures = contract.GetMembers()

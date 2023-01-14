@@ -15,14 +15,14 @@ internal class OutboundEndPointWriter : EndPointWriter
     {
         writer.WriteLine($"public class {Name}");
         writer.Indent++;
-        writer.WriteLine($": {Types.OutboundEndPoint}<{Name}, {Procedures.ProcedureEnumName}>");
+        writer.WriteLine($": {Types.OutboundEndPoint}<{Name}, {Procedures.ProcedureEnumType}>");
         writer.Indent--;
     }
 
     protected override void WriteConstructorsAndFactoryMethods(IndentedTextWriter writer)
     {
         // private constructor accepting a concrete logger
-        writer.WriteLine($"private {Name}");
+        writer.WriteLine($"public {Name}");
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{MessengerParameter},");
@@ -178,7 +178,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         writer.WriteLine();
 
-        writer.Write($"protected override int {Methods.GetProcedureId}({Procedures.ProcedureEnumName} {Parameters.Procedure}) => ");
+        writer.Write($"protected override int {Methods.GetProcedureId}({Procedures.ProcedureEnumType} {Parameters.Procedure}) => ");
         writer.WriteLine($"{Procedures.ProcedureEnumExtensionsName}.{Methods.GetProcedureId}({Parameters.Procedure});");
     }
 }

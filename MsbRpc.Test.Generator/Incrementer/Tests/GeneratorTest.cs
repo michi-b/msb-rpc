@@ -132,7 +132,11 @@ public interface IIncrementer : IRpcContract
         await TestGenerates("IncrementerClientEndPoint.g.cs");
     }
 
-    //todo: test generation of server (server endpoint factory)
+    [TestMethod]
+    public async Task GeneratesServer()
+    {
+        await TestGenerates("IncrementerServer.g.cs");
+    }
 
     private async Task TestGenerates(string shortFileName)
     {

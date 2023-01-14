@@ -14,13 +14,13 @@ internal class InboundEndPointWriter : EndPointWriter
     {
         writer.WriteLine($"public class {Name}");
         writer.Indent++;
-        writer.WriteLine($": {Types.InboundEndPoint}<{Name}, {Procedures.ProcedureEnumName}, {Contract.InterfaceName}>");
+        writer.WriteLine($": {Types.InboundEndPoint}<{Name}, {Procedures.ProcedureEnumType}, {Contract.InterfaceType}>");
         writer.Indent--;
     }
 
     protected override void WriteConstructorsAndFactoryMethods(IndentedTextWriter writer)
     {
-        string contractImplementationParameterLine = $"{Contract.InterfaceName} {Parameters.ContractImplementation}";
+        string contractImplementationParameterLine = $"{Contract.InterfaceType} {Parameters.ContractImplementation}";
         string contractImplementationArgumentLine = $"{Parameters.ContractImplementation}";
 
         // public constructor accepting a logger factory
