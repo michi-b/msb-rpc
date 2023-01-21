@@ -16,6 +16,7 @@ internal static class IndependentNames
     {
         // system types
         public const string Action = "System.Action";
+        public const string Func = "System.Func";
         public const string VaLueTask = "System.Threading.Tasks.ValueTask";
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
         public const string IPAddress = "System.Net.IPAddress";
@@ -34,14 +35,17 @@ internal static class IndependentNames
         public const string Response = "MsbRpc.Serialization.Buffers.Response";
         public const string Request = "MsbRpc.Serialization.Buffers.Request";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
-        
+
         // endpoint types
         public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";
         public const string OutboundEndPoint = "MsbRpc.EndPoints.OutboundEndPoint";
         public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
+        public const string Server = "MsbRpc.Server.Server";
+
+        // configuration
         public const string InboundEndPointConfiguration = "MsbRpc.Configuration.InboundEndPointConfiguration";
         public const string OutboundEndPointConfiguration = "MsbRpc.Configuration.OutboundEndPointConfiguration";
-        public const string Server = "MsbRpc.Server.Server";
+        public const string ServerConfiguration = "MsbRpc.Configuration.ServerConfiguration";
 
         // local types
         public const string LocalConfiguration = "Configuration";
@@ -60,7 +64,7 @@ internal static class IndependentNames
         public const string GetProcedureId = "GetId";
         public const string ConnectAsync = "ConnectAsync";
         public const string AssertIsOperable = "AssertIsOperable";
-        
+
         // buffer methods
         public const string BufferWrite = "Write";
         public const string GetReader = "GetReader";
@@ -83,7 +87,10 @@ internal static class IndependentNames
         public const string IPEndPoint = "endPoint";
         public const string Port = "port";
         public const string Configuration = "configuration";
+        public const string EndPointConfiguration = "endPointConfiguration";
         public const string ConfigureAction = "configure";
+        public const string ConfigureEndPointAction = "configureEndPoint";
+        public const string ContractImplementationFactory = "createImplementation";
     }
 
     public static class Properties
@@ -95,6 +102,9 @@ internal static class IndependentNames
     {
         public const string EndPointBuffer = "Buffer";
         public const string InboundEndpointImplementation = "Implementation";
+        public const string ImplementationFactory = "_createImplementation";
+        public const string EndPointConfiguration = "_endPointConfiguration";
+        public const string Configuration = "_configuration";
     }
 
     public static class EnumValues

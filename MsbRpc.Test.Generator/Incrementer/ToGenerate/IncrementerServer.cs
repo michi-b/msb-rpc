@@ -9,6 +9,8 @@ namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
 public class IncrementerServer : Server<IncrementerServer, IncrementerServerEndPoint, IncrementerProcedure, IIncrementer>
 {
+    // ReSharper disable once NotAccessedField.Local
+    private readonly Configuration _configuration;
     private readonly Func<IIncrementer> _createImplementation;
     private readonly IncrementerServerEndPoint.Configuration _endPointConfiguration;
 
@@ -20,6 +22,7 @@ public class IncrementerServer : Server<IncrementerServer, IncrementerServerEndP
     ) : base(configuration)
     {
         _createImplementation = createImplementation;
+        _configuration = configuration;
         _endPointConfiguration = endPointConfiguration;
     }
 

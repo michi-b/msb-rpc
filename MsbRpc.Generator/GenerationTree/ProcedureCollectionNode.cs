@@ -15,8 +15,8 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
     public readonly int LastIndex;
     public readonly string ProcedureEnumExtensionsName;
     public readonly string ProcedureEnumName;
-    public readonly string ProcedureEnumType;
     public readonly string ProcedureEnumParameter;
+    public readonly string ProcedureEnumType;
 
     public ProcedureNode this[int index] => _procedures[index];
 

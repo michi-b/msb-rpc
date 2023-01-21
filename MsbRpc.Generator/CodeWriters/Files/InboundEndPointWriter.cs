@@ -1,8 +1,9 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
@@ -14,7 +15,7 @@ internal class InboundEndPointWriter : EndPointWriter
     {
         writer.WriteLine($"public class {Name}");
         writer.Indent++;
-        writer.WriteLine($": {Types.InboundEndPoint}<{Name}, {Procedures.ProcedureEnumType}, {Contract.InterfaceType}>");
+        writer.WriteLine($": {InboundEndPoint}<{Name}, {Procedures.ProcedureEnumType}, {Contract.InterfaceType}>");
         writer.Indent--;
     }
 
@@ -45,7 +46,7 @@ internal class InboundEndPointWriter : EndPointWriter
 
     protected override void WriteConfiguration(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public class {Types.LocalConfiguration} : {Types.InboundEndPointConfiguration} {{}}");
+        writer.WriteLine($"public class {LocalConfiguration} : {InboundEndPointConfiguration} {{}}");
     }
 
     protected override void WriteProcedures(IndentedTextWriter writer)
@@ -60,7 +61,7 @@ internal class InboundEndPointWriter : EndPointWriter
 
     private void WriteExecuteMethod(IndentedTextWriter writer)
     {
-        writer.WriteLine($"protected override {Types.Response} {Methods.InboundEndPointExecute}");
+        writer.WriteLine($"protected override {Response} {Methods.InboundEndPointExecute}");
         using (writer.GetParenthesesBlock())
         {
             writer.WriteLine($"{Procedures.ProcedureEnumParameter},");
@@ -85,7 +86,7 @@ internal class InboundEndPointWriter : EndPointWriter
             //read arguments into local variables
             if (parameters != null)
             {
-                writer.WriteLine($"{Types.BufferReader} {Variables.RequestReader} = {Parameters.Request}.{Methods.GetReader}();");
+                writer.WriteLine($"{BufferReader} {Variables.RequestReader} = {Parameters.Request}.{Methods.GetReader}();");
                 writer.WriteLine();
                 foreach (ParameterNode parameter in parameters)
                 {

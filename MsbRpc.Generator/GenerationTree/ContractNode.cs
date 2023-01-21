@@ -10,6 +10,7 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ContractNode
 {
     public readonly string CamelCaseName;
+    public readonly EndPointNode ClientEndPoint;
 
     public readonly string InterfaceName;
     public readonly string InterfaceType;
@@ -18,9 +19,8 @@ internal class ContractNode
     public readonly string Namespace;
     public readonly string PascalCaseName;
     public readonly ProcedureCollectionNode Procedures;
-    public readonly EndPointNode ClientEndPoint;
-    public readonly EndPointNode ServerEndPoint;
     public readonly ServerNode? Server;
+    public readonly EndPointNode ServerEndPoint;
 
     public ContractNode(ref ContractInfo info, SourceProductionContext context)
     {
