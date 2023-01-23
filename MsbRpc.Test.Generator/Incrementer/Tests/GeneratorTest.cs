@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,8 @@ public interface IIncrementer : IRpcContract
                     MetadataReferenceUtility.FromType<IRpcContract>(), //MsbRpc
                     MetadataReferenceUtility.FromType<ILoggerFactory>(), //Microsoft.Extensions.Logging
                     MetadataReferenceUtility.FromType<IPAddress>(), //System.Net.Primitives
-                    MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Tasks.Extensions")
+                    MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Tasks.Extensions"),
+                    MetadataReferenceUtility.TransitivelyReferenced(typeof(GeneratorTest), "System.Threading.Thread")
                 )
             ).WithAdditionalGenerators(new ContractGenerator())
         )

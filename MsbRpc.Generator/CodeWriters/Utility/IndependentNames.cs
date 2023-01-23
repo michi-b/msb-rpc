@@ -49,6 +49,7 @@ internal static class IndependentNames
 
         // local types
         public const string LocalConfiguration = "Configuration";
+        public const string LocalConfigurationConfigureAction = $"{Types.Action}<{Types.LocalConfiguration}>";
     }
 
     public static class Methods
@@ -73,6 +74,7 @@ internal static class IndependentNames
         public const string GetRequest = "GetRequest";
         public const string SendRequestAsync = "SendRequestAsync";
         public const string Invoke = "Invoke";
+        public const string Start = "Start";
     }
 
     public static class Parameters
@@ -89,7 +91,7 @@ internal static class IndependentNames
         public const string Configuration = "configuration";
         public const string EndPointConfiguration = "endPointConfiguration";
         public const string ConfigureAction = "configure";
-        public const string ConfigureEndPointAction = "configureEndPoint";
+        public const string EndPointConfigureAction = "configureEndPoint";
         public const string ContractImplementationFactory = "createImplementation";
     }
 
@@ -129,6 +131,8 @@ internal static class IndependentNames
         public const string Messenger = "messenger";
         public const string ConstantArgumentSizeSum = "constantArgumentSizeSum";
         public const string Configuration = "configuration";
+        public const string EndPointConfiguration = "endPointConfiguration";
+        public const string Server = "server";
 
         #endregion
     }
