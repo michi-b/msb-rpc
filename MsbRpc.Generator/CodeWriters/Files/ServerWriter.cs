@@ -50,7 +50,7 @@ internal class ServerWriter : CodeFileWriter
 
             writer.WriteLine();
 
-            // WriteCreateEndPointOverride(writer);
+            WriteCreateEndPointOverride(writer);
         }
     }
 
@@ -87,7 +87,8 @@ internal class ServerWriter : CodeFileWriter
         }
     }
 
-    private void WriteConfiguration(IndentedTextWriter writer)
+    // ReSharper disable once SuggestBaseTypeForParameter
+    private static void WriteConfiguration(IndentedTextWriter writer)
     {
         writer.WriteLine($"public class {Types.LocalConfiguration} : {Types.ServerConfiguration} {{}}");
     }
@@ -101,6 +102,9 @@ internal class ServerWriter : CodeFileWriter
 
     private void WriteCreateEndPointOverride(IndentedTextWriter writer)
     {
-        throw new NotImplementedException();
+        writer.WriteLine($"protected override {_endPoint.Name} CreateEndPoint({Types.Messenger} {Parameters.Messenger})");
+        writer.Indent++;
+        writer.WriteLine($"=> new {_endPoint.Name}({Parameters.Messenger}, {Fields.ImplementationFactory}(), {Fields.EndPointConfiguration});");
+        writer.Indent--;
     }
 }
