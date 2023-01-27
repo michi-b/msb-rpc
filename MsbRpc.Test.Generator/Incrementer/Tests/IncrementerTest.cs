@@ -196,6 +196,20 @@ public class IncrementerTest : Test
         }
     }
 
+    [TestMethod]
+    public async Task IncrementsString()
+    {
+        string testValue = "0";
+        string expectedResult = "1";
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
+
+        //todo: implement test
+        // int result = await client.IncrementAsync(testValue);
+        //
+        // Assert.AreEqual(expectedResult, result);
+    }
+
     private static void ConfigureServer(IncrementerServer.Configuration configuration)
     {
         configuration.LoggerFactory = LoggerFactory;

@@ -49,7 +49,7 @@ internal static class IndependentNames
 
         // local types
         public const string LocalConfiguration = "Configuration";
-        public const string LocalConfigurationConfigureAction = $"{Types.Action}<{Types.LocalConfiguration}>";
+        public const string LocalConfigurationConfigureAction = $"{Action}<{LocalConfiguration}>";
     }
 
     public static class Methods

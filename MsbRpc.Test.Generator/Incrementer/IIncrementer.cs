@@ -13,4 +13,5 @@ public interface IIncrementer : IRpcContract
     public void IncrementStored();
     public int GetStored();
     public void Finish();
+    public string Increment(string value);
 }

@@ -60,4 +60,13 @@ public struct BufferReader
 
     [MayBeUsedByGenerator]
     public decimal ReadDecimal() => _buffer.ReadDecimal(PostIncrementPosition(DecimalSize));
+
+    [MayBeUsedByGenerator]
+    public string ReadString()
+    {
+        int count = _buffer.ReadInt(PostIncrementPosition(IntSize));
+        string value = _buffer.GetOffsetSubSegment(_position + IntSize, count).DeserializeString();
+        _position += IntSize + count;
+        return value;
+    }
 }

@@ -99,4 +99,13 @@ public struct BufferWriter
     {
         _buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
     }
+
+    [MayBeUsedByGenerator]
+    public void Write(string value)
+    {
+        int valueSize = value.GetSize();
+        _buffer.WriteInt(valueSize, _position);
+        _buffer.GetOffsetSubSegment(_position + IntSize, valueSize).Serialize(value);
+        _position += IntSize + valueSize;
+    }
 }
