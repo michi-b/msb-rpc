@@ -25,10 +25,4 @@
         <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="System.Threading.Tasks.Extensions">
-        <HintPath>..\..\..\Program Files\dotnet\shared\Microsoft.NETCore.App\6.0.12\System.Threading.Tasks.Extensions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
 </Project>
