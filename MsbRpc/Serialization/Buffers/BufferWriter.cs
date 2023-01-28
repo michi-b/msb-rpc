@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
@@ -101,11 +102,12 @@ public struct BufferWriter
     }
 
     [MayBeUsedByGenerator]
-    public void Write(string value)
+    public void Write(string value, int serializedSize)
     {
-        int valueSize = value.GetSize();
-        _buffer.WriteInt(valueSize, _position);
-        _buffer.GetOffsetSubSegment(_position + IntSize, valueSize).Serialize(value);
-        _position += IntSize + valueSize;
+        Debug.Assert(StringSerializer.GetSize(value) == serializedSize);
+        _buffer.WriteInt(serializedSize, _position);
+        ArraySegment<byte> valueBuffer = _buffer.GetOffsetSubSegment(_position + IntSize, serializedSize);
+        StringSerializer.Serialize(value, valueBuffer);
+        _position += IntSize + serializedSize;
     }
 }

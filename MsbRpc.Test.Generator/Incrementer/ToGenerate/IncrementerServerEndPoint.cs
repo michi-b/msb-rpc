@@ -4,6 +4,7 @@ using Incrementer.Generated;
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
+using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
@@ -31,26 +32,13 @@ public class IncrementerServerEndPoint
         return procedure switch
         {
             IncrementerProcedure.Increment => Increment(request),
+            IncrementerProcedure.IncrementString => IncrementString(request),
             IncrementerProcedure.Store => Store(request),
             IncrementerProcedure.IncrementStored => IncrementStored(),
             IncrementerProcedure.GetStored => GetStored(),
             IncrementerProcedure.Finish => Finish(),
             _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
-    }
-
-    private Response GetStored()
-    {
-        int result = Implementation.GetStored();
-
-        const int resultSize = PrimitiveSerializer.IntSize;
-
-        Response response = Buffer.GetResponse(Implementation.RanToCompletion, resultSize);
-        BufferWriter responseWriter = response.GetWriter();
-
-        responseWriter.Write(result);
-
-        return response;
     }
 
     private Response Increment(Request request)
@@ -70,6 +58,26 @@ public class IncrementerServerEndPoint
         BufferWriter responseWriter = response.GetWriter();
 
         responseWriter.Write(result);
+
+        return response;
+    }
+
+    private Response IncrementString(Request request)
+    {
+        BufferReader requestReader = request.GetReader();
+
+        string valueArgument = requestReader.ReadString();
+
+        string result = Implementation.IncrementString(valueArgument);
+
+        int resultSize = StringSerializer.GetSize(result);
+
+        int responseSize = resultSize + PrimitiveSerializer.IntSize;
+
+        Response response = Buffer.GetResponse(Implementation.RanToCompletion, responseSize);
+        BufferWriter responseWriter = response.GetWriter();
+
+        responseWriter.Write(result, resultSize);
 
         return response;
     }
@@ -95,6 +103,20 @@ public class IncrementerServerEndPoint
     {
         Implementation.Finish();
         return Buffer.GetResponse(Implementation.RanToCompletion);
+    }
+
+    private Response GetStored()
+    {
+        int result = Implementation.GetStored();
+
+        const int resultSize = PrimitiveSerializer.IntSize;
+
+        Response response = Buffer.GetResponse(Implementation.RanToCompletion, resultSize);
+        BufferWriter responseWriter = response.GetWriter();
+
+        responseWriter.Write(result);
+
+        return response;
     }
 
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);

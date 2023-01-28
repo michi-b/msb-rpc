@@ -7,9 +7,9 @@ namespace MsbRpc.Serialization;
 
 public static class StringSerializer
 {
-    public static int GetSize(this string target) => target.Length * PrimitiveSerializer.CharSize;
+    public static int GetSize(string target) => target.Length * PrimitiveSerializer.CharSize;
 
-    public static void Serialize(this ArraySegment<byte> buffer, string value)
+    public static void Serialize(string value, ArraySegment<byte> buffer)
     {
         Debug.Assert(buffer.Count == value.Length * PrimitiveSerializer.CharSize);
 
@@ -19,7 +19,7 @@ public static class StringSerializer
         }
     }
 
-    public static string DeserializeString(this ArraySegment<byte> buffer)
+    public static string DeserializeString(ArraySegment<byte> buffer)
     {
         int count = buffer.Count / PrimitiveSerializer.CharSize;
         char[] characters = new char[count];

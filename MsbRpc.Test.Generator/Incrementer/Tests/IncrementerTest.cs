@@ -199,15 +199,12 @@ public class IncrementerTest : Test
     [TestMethod]
     public async Task IncrementsString()
     {
-        string testValue = "0";
-        string expectedResult = "1";
+        const string value = "0";
+        const string expected = "1";
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-
-        //todo: implement test
-        // int result = await client.IncrementAsync(testValue);
-        //
-        // Assert.AreEqual(expectedResult, result);
+        string result = await client.IncrementStringAsync(value);
+        Assert.AreEqual(expected, result);
     }
 
     private static void ConfigureServer(IncrementerServer.Configuration configuration)

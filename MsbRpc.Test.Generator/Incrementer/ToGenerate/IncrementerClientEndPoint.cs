@@ -5,6 +5,7 @@ using Incrementer.Generated;
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
+using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
@@ -41,6 +42,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         AssertIsOperable();
 
         const int valueArgumentSize = PrimitiveSerializer.IntSize;
+        // ReSharper disable once InlineTemporaryVariable
         const int constantArgumentSizeSum = valueArgumentSize;
 
         Request request = Buffer.GetRequest(GetId(IncrementerProcedure.Increment), constantArgumentSizeSum);
@@ -57,11 +59,34 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         return result;
     }
 
+    public async ValueTask<string> IncrementStringAsync(string value)
+    {
+        AssertIsOperable();
+
+        int valueArgumentSize = StringSerializer.GetSize(value);
+        // ReSharper disable once InlineTemporaryVariable
+        int dynamicArgumentSizeSum = valueArgumentSize + PrimitiveSerializer.IntSize;
+
+        Request request = Buffer.GetRequest(GetId(IncrementerProcedure.IncrementString), dynamicArgumentSizeSum);
+
+        BufferWriter requestWriter = request.GetWriter();
+
+        requestWriter.Write(value, valueArgumentSize);
+
+        Response responseMessage = await SendRequestAsync(request);
+        BufferReader responseReader = responseMessage.GetReader();
+
+        string result = responseReader.ReadString();
+
+        return result;
+    }
+
     public async ValueTask StoreAsync(int value)
     {
         AssertIsOperable();
 
         const int valueArgumentSize = PrimitiveSerializer.IntSize;
+        // ReSharper disable once InlineTemporaryVariable
         const int constantArgumentSizeSum = valueArgumentSize;
 
         Request request = Buffer.GetRequest(GetId(IncrementerProcedure.Store), constantArgumentSizeSum);

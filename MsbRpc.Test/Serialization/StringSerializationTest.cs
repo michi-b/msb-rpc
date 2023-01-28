@@ -13,8 +13,8 @@ public class StringSerializationTest
     {
         const string value = "Hello World!";
         var buffer = new ArraySegment<byte>(new byte[value.Length * PrimitiveSerializer.CharSize]);
-        buffer.Serialize(value);
-        string result = buffer.DeserializeString();
+        StringSerializer.Serialize(value, buffer);
+        string result = StringSerializer.DeserializeString(buffer);
         Assert.AreEqual(value, result);
     }
 
@@ -22,9 +22,10 @@ public class StringSerializationTest
     public void PreservesHelloWorldInBufferReaderAndWriter()
     {
         const string value = "Hello World!";
+        int size = StringSerializer.GetSize(value);
         var buffer = new ArraySegment<byte>(new byte[value.Length * PrimitiveSerializer.CharSize + PrimitiveSerializer.IntSize]);
         var bufferWriter = new BufferWriter(buffer);
-        bufferWriter.Write(value);
+        bufferWriter.Write(value, size);
         var bufferReader = new BufferReader(buffer);
         string result = bufferReader.ReadString();
         Assert.AreEqual(value, result);

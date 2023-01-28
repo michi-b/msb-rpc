@@ -26,7 +26,7 @@ internal class Incrementer : IIncrementer
         RanToCompletion = true;
     }
 
-    public string Increment(string value) => (int.Parse(value) + 1).ToString();
+    public string IncrementString(string value) => (int.Parse(value) + 1).ToString();
 
     public static Incrementer Create() => new();
 

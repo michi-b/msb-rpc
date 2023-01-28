@@ -5,8 +5,9 @@ namespace Incrementer.Generated;
 public enum IncrementerProcedure
 {
     Increment = 0,
-    Store = 1,
-    IncrementStored = 2,
-    GetStored = 3,
-    Finish = 4
+    IncrementString = 1,
+    Store = 2,
+    IncrementStored = 3,
+    GetStored = 4,
+    Finish = 5
 }

@@ -65,7 +65,7 @@ public struct BufferReader
     public string ReadString()
     {
         int count = _buffer.ReadInt(_position);
-        string value = _buffer.GetOffsetSubSegment(_position + IntSize, count).DeserializeString();
+        string value = StringSerializer.DeserializeString(_buffer.GetOffsetSubSegment(_position + IntSize, count));
         _position += IntSize + count;
         return value;
     }
