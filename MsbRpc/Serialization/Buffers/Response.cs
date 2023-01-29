@@ -7,27 +7,27 @@ namespace MsbRpc.Serialization.Buffers;
 
 public readonly struct Response
 {
-    public const int Offset = Message.Offset + PrimitiveSerializer.BoolSize;
+    public const int Offset = Message.Offset + PrimitiveSerializer.ByteSize;
 
     public readonly ArraySegment<byte> Buffer;
 
-    public readonly bool RanToCompletion;
+    public readonly ResponseFlags Flags;
 
     public Response(Message message)
     {
         Debug.Assert(message.Length >= Offset - Message.Offset);
         byte[] allBytes = message.Buffer.Array!;
         Buffer = new ArraySegment<byte>(allBytes, Offset, message.Length + Message.Offset - Offset);
-        RanToCompletion = allBytes.ReadBool(Message.Offset);
+        Flags = (ResponseFlags)allBytes.ReadByte(Message.Offset);
     }
 
-    public Response(byte[] bytes, int count, bool ranToCompletion)
+    public Response(byte[] bytes, int count, ResponseFlags flags)
     {
         Debug.Assert(bytes.Length >= count + Offset);
         Buffer = new ArraySegment<byte>(bytes, Offset, count);
         bytes.WriteInt(count + PrimitiveSerializer.BoolSize);
-        bytes.WriteBool(ranToCompletion, Message.Offset);
-        RanToCompletion = ranToCompletion;
+        bytes.WriteByte((byte)flags, Message.Offset);
+        Flags = flags;
     }
 
     public int Length => Buffer.Count;

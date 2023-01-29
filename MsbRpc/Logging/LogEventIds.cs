@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using MsbRpc.Attributes;
 
 namespace MsbRpc.Logging;
 
 public static class LogEventIds
 {
+    [MayBeUsedByGenerator] public const int FirstAvailable = 17;
+
     public static readonly EventId InboundEndPointStartedListening = new((int)Ids.InboundEndPointStartedListening, nameof(Ids.InboundEndPointStartedListening));
 
     public static readonly EventId InboundEndPointReceivedCall = new((int)Ids.InboundEndPointReceivedCall, nameof(Ids.InboundEndPointReceivedCall));
@@ -48,22 +51,22 @@ public static class LogEventIds
 
     private enum Ids
     {
-        InboundEndPointStartedListening,
-        InboundEndPointReceivedCall,
-        InboundEndPointStoppedListeningWithoutRunningToCompletion,
-        InboundEndPointRanToCompletion,
-        OutboundEndPointSentRequest,
-        ServerWasCreatedWithSpecifiedPort,
-        ServerWasCreatedWithEphemeralPort,
-        ServerStartedListening,
-        ServerAcceptedNewConnection,
-        ServerImmediatelyDisposedNewConnection,
-        ServerStoppedListeningDueToDisposal,
-        ServerStoppedListeningDueToException,
-        ServerEndPointRegistered,
-        ServerEndPointDeregistered,
-        ServerEndPointDeregisteredOnRegistryDisposal,
-        ServerEndPointThrewException,
-        MessengerConnectionFailed
+        InboundEndPointStartedListening = 0,
+        InboundEndPointReceivedCall = 1,
+        InboundEndPointStoppedListeningWithoutRunningToCompletion = 2,
+        InboundEndPointRanToCompletion = 3,
+        OutboundEndPointSentRequest = 4,
+        ServerWasCreatedWithSpecifiedPort = 5,
+        ServerWasCreatedWithEphemeralPort = 6,
+        ServerStartedListening = 7,
+        ServerAcceptedNewConnection = 8,
+        ServerImmediatelyDisposedNewConnection = 9,
+        ServerStoppedListeningDueToDisposal = 10,
+        ServerStoppedListeningDueToException = 11,
+        ServerEndPointRegistered = 12,
+        ServerEndPointDeregistered = 13,
+        ServerEndPointDeregisteredOnRegistryDisposal = 14,
+        ServerEndPointThrewException = 15,
+        MessengerConnectionFailed = 16
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
 using MsbRpc.Contracts;
+using MsbRpc.Exceptions;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -65,10 +66,29 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         Request request = new(message);
         TProcedure procedure = GetProcedure(request.ProcedureId);
         LogReceivedCall(procedure, request.Length);
-        Response response = Execute(procedure, request);
-        RanToCompletion = response.RanToCompletion;
+        
+        try
+        {
+            Response response = Execute(procedure, request);
+            RanToCompletion = response.Flags.HasFlag(ResponseFlags.RanToCompletion);
+            Messenger.Send(new Message(response));
+            return RanToCompletion;
+        }
+        catch (RpcExecutionException<TProcedure> rpcExecutionException)
+        {
+            Exception originalException = rpcExecutionException.OriginalException;
+            RpcExceptionHandlingInstructions exceptionHandlingInstructions = Implementation.HandleException(ref originalException, request.ProcedureId, rpcExecutionException.Stage);
+            return HandleException(originalException, exceptionHandlingInstructions);
+        }
+    }
+
+    /// <returns>whether listening should stop</returns>
+    private bool HandleException(Exception originalException, RpcExceptionHandlingInstructions exceptionHandlingInstructions)
+    {
+        Response response = Buffer.GetFaultedResponse(exceptionHandlingInstructions.Continuation == RpcExceptionContinuation.RanToCompletion);
         Messenger.Send(new Message(response));
-        return RanToCompletion;
+        //todo: implement exception logging and transmission
+        return exceptionHandlingInstructions.Continuation != RpcExceptionContinuation.Continue;
     }
 
     protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);

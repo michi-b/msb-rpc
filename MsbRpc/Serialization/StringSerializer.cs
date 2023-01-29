@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
@@ -7,25 +6,31 @@ namespace MsbRpc.Serialization;
 
 public static class StringSerializer
 {
-    public static int GetSize(string target) => target.Length * PrimitiveSerializer.CharSize;
-
-    public static void Serialize(string value, ArraySegment<byte> buffer)
+    public static int GetSize(string value)
     {
-        Debug.Assert(buffer.Count == value.Length * PrimitiveSerializer.CharSize);
+        int count = value.Length;
+        return PrimitiveSerializer.IntSize + count * PrimitiveSerializer.CharSize;
+    }
 
-        for (int i = 0; i < value.Length; i++)
+    public static void Serialize(string value, BufferWriter writer)
+    {
+        int count = value.Length;
+        writer.Write(count);
+        ArraySegment<byte> segment = writer.GetWriteSegment(count * PrimitiveSerializer.CharSize);
+        for (int i = 0; i < count; i++)
         {
-            buffer.WriteChar(value[i], i * PrimitiveSerializer.CharSize);
+            segment.WriteChar(value[i], i * PrimitiveSerializer.CharSize);
         }
     }
 
-    public static string DeserializeString(ArraySegment<byte> buffer)
+    public static string Deserialize(BufferReader reader)
     {
-        int count = buffer.Count / PrimitiveSerializer.CharSize;
+        int count = reader.ReadInt();
+        ArraySegment<byte> segment = reader.ReadSegment(count * PrimitiveSerializer.CharSize);
         char[] characters = new char[count];
         for (int i = 0; i < count; i++)
         {
-            characters[i] = buffer.ReadChar(i * PrimitiveSerializer.CharSize);
+            characters[i] = segment.ReadChar(i * PrimitiveSerializer.CharSize);
         }
 
         return new string(characters);

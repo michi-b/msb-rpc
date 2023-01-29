@@ -45,7 +45,7 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
         {
             case ReceiveReturnCode.Success:
                 Response response = new(result.Message);
-                if (response.RanToCompletion)
+                if ((response.Flags & ResponseFlags.RanToCompletion) != 0)
                 {
                     RanToCompletion = true;
                     Dispose();

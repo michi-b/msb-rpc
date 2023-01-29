@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using JetBrains.Annotations;
 using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
@@ -101,13 +101,6 @@ public struct BufferWriter
         _buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
     }
 
-    [MayBeUsedByGenerator]
-    public void Write(string value, int serializedSize)
-    {
-        Debug.Assert(StringSerializer.GetSize(value) == serializedSize);
-        _buffer.WriteInt(serializedSize, _position);
-        ArraySegment<byte> valueBuffer = _buffer.GetOffsetSubSegment(_position + IntSize, serializedSize);
-        StringSerializer.Serialize(value, valueBuffer);
-        _position += IntSize + serializedSize;
-    }
+    [PublicAPI]
+    public ArraySegment<byte> GetWriteSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);
 }

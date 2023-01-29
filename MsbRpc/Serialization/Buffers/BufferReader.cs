@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
@@ -61,12 +62,6 @@ public struct BufferReader
     [MayBeUsedByGenerator]
     public decimal ReadDecimal() => _buffer.ReadDecimal(PostIncrementPosition(DecimalSize));
 
-    [MayBeUsedByGenerator]
-    public string ReadString()
-    {
-        int count = _buffer.ReadInt(_position);
-        string value = StringSerializer.DeserializeString(_buffer.GetOffsetSubSegment(_position + IntSize, count));
-        _position += IntSize + count;
-        return value;
-    }
+    [PublicAPI]
+    public ArraySegment<byte> ReadSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);
 }

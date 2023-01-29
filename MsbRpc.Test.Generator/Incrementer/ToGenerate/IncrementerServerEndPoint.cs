@@ -2,11 +2,15 @@
 using Incrementer;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
+using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
+using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+
+// ReSharper disable RedundantBaseQualifier
 
 namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
@@ -17,6 +21,7 @@ public class IncrementerServerEndPoint
     (
         Messenger messenger,
         IIncrementer implementation,
+        // ReSharper disable once SuggestBaseTypeForParameterInConstructor
         Configuration configuration
     ) : base
     (
@@ -66,18 +71,42 @@ public class IncrementerServerEndPoint
     {
         BufferReader requestReader = request.GetReader();
 
-        string valueArgument = requestReader.ReadString();
+        string valueArgument;
+        try
+        {
+            valueArgument = StringSerializer.Deserialize(requestReader);
+        }
+        catch (Exception e)
+        {
+            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ArgumentDeserialization);
+        }
 
-        string result = Implementation.IncrementString(valueArgument);
+        string result;
+        try
+        {
+            result = Implementation.IncrementString(valueArgument);
+        }
+        catch (Exception e)
+        {
+            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ImplementationCall);
+        }
 
-        int resultSize = StringSerializer.GetSize(result);
+        Response response;
+        try
+        {
+            int resultSize = StringSerializer.GetSize(result);
 
-        int responseSize = resultSize + PrimitiveSerializer.IntSize;
+            int responseSize = resultSize + PrimitiveSerializer.IntSize;
 
-        Response response = Buffer.GetResponse(Implementation.RanToCompletion, responseSize);
-        BufferWriter responseWriter = response.GetWriter();
+            response = Buffer.GetResponse(Implementation.RanToCompletion, responseSize);
+            BufferWriter responseWriter = response.GetWriter();
 
-        responseWriter.Write(result, resultSize);
+            StringSerializer.Serialize(result, responseWriter);
+        }
+        catch (Exception e)
+        {
+            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ResultSerialization);
+        }
 
         return response;
     }
