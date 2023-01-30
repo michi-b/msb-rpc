@@ -12,7 +12,7 @@ public static class StringSerializer
         return PrimitiveSerializer.IntSize + count * PrimitiveSerializer.CharSize;
     }
 
-    public static void Serialize(string value, BufferWriter writer)
+    public static void Write(string value, BufferWriter writer)
     {
         int count = value.Length;
         writer.Write(count);
@@ -23,7 +23,7 @@ public static class StringSerializer
         }
     }
 
-    public static string Deserialize(BufferReader reader)
+    public static string Read(BufferReader reader)
     {
         int count = reader.ReadInt();
         ArraySegment<byte> segment = reader.ReadSegment(count * PrimitiveSerializer.CharSize);

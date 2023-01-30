@@ -66,7 +66,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         Request request = new(message);
         TProcedure procedure = GetProcedure(request.ProcedureId);
         LogReceivedCall(procedure, request.Length);
-        
+
         try
         {
             Response response = Execute(procedure, request);
@@ -77,17 +77,19 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         catch (RpcExecutionException<TProcedure> rpcExecutionException)
         {
             Exception originalException = rpcExecutionException.OriginalException;
-            RpcExceptionHandlingInstructions exceptionHandlingInstructions = Implementation.HandleException(ref originalException, request.ProcedureId, rpcExecutionException.Stage);
-            return HandleException(originalException, exceptionHandlingInstructions);
+            RpcExceptionHandlingInstructions exceptionHandlingInstructions = Implementation.HandleException
+                (ref originalException, request.ProcedureId, rpcExecutionException.Stage);
+            return HandleException(originalException, exceptionHandlingInstructions, rpcExecutionException.Stage);
         }
     }
 
     /// <returns>whether listening should stop</returns>
-    private bool HandleException(Exception originalException, RpcExceptionHandlingInstructions exceptionHandlingInstructions)
+    private bool HandleException(Exception originalException, RpcExceptionHandlingInstructions exceptionHandlingInstructions, RpcExecutionStage rpcExecutionStage)
     {
         Response response = Buffer.GetFaultedResponse(exceptionHandlingInstructions.Continuation == RpcExceptionContinuation.RanToCompletion);
         Messenger.Send(new Message(response));
-        //todo: implement exception logging and transmission
+        RpcExceptionTransmission exceptionTransmission = new(originalException, rpcExecutionStage, exceptionHandlingInstructions.TransmissionOptions);
+        Messenger.Send(exceptionTransmission.GetMessage(Buffer));
         return exceptionHandlingInstructions.Continuation != RpcExceptionContinuation.Continue;
     }
 

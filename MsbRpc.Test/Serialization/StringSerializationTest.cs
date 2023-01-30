@@ -14,9 +14,9 @@ public class StringSerializationTest
         int size = StringSerializer.GetSize(value);
         var buffer = new ArraySegment<byte>(new byte[size]);
         var writer = new BufferWriter(buffer);
-        StringSerializer.Serialize(value, writer);
+        StringSerializer.Write(value, writer);
         var reader = new BufferReader(buffer);
-        string result = StringSerializer.Deserialize(reader);
+        string result = StringSerializer.Read(reader);
         Assert.AreEqual(value, result);
     }
 }

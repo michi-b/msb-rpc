@@ -20,14 +20,15 @@ public class RpcBuffer
         return new Request(_bytes, count, id);
     }
 
-    public Response GetFaultedResponse(bool ranToCompletion) => new Response
-    (
-        _bytes,
-        0,
-        ranToCompletion
-            ? ResponseFlags.RanToCompletion | ResponseFlags.Faulted
-            : ResponseFlags.Faulted
-    );
+    public Response GetFaultedResponse(bool ranToCompletion)
+        => new
+        (
+            _bytes,
+            0,
+            ranToCompletion
+                ? ResponseFlags.RanToCompletion | ResponseFlags.Faulted
+                : ResponseFlags.Faulted
+        );
 
     public Response GetResponse(bool ranToCompletion, int count = 0)
     {

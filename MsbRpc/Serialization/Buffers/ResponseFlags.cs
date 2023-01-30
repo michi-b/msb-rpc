@@ -7,5 +7,5 @@ public enum ResponseFlags : byte
 {
     None = 0,
     RanToCompletion = 1 << 0,
-    Faulted = 1 << 1,
+    Faulted = 1 << 1
 }

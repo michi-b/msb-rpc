@@ -3,7 +3,7 @@
 namespace MsbRpc.Contracts;
 
 [Flags]
-public enum RpcExceptionTransmissionOptions
+public enum RpcExceptionTransmissionOptions : byte
 {
     None = 0,
     TypeName = 1 << 0,

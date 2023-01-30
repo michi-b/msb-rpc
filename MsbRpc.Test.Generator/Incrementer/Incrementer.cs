@@ -8,7 +8,10 @@ internal class Incrementer : IIncrementer
 {
     private int _value;
     public bool RanToCompletion { get; private set; }
-    public RpcExceptionHandlingInstructions HandleException(ref Exception exception, int procedureId, RpcExecutionStage executionStage) => RpcExceptionHandlingInstructions.Default;
+
+    public RpcExceptionHandlingInstructions HandleException
+        (ref Exception exception, int procedureId, RpcExecutionStage executionStage)
+        => RpcExceptionHandlingInstructions.Default;
 
     public int Increment(int value) => value + 1;
 

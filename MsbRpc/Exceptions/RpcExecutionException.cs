@@ -3,7 +3,7 @@ using MsbRpc.Contracts;
 
 namespace MsbRpc.Exceptions;
 
-public class RpcExecutionException<TProcedure> : System.Exception where TProcedure : Enum
+public class RpcExecutionException<TProcedure> : Exception where TProcedure : Enum
 {
     public Exception OriginalException { get; }
     public TProcedure Procedure { get; }
