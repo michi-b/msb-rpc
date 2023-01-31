@@ -206,6 +206,15 @@ public class IncrementerTest : Test
         string result = await client.IncrementStringAsync(value);
         Assert.AreEqual(expected, result);
     }
+    
+    [TestMethod]
+    public async Task IncrementInvalidStringThrows()
+    {
+        const string value = "a";
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        await Assert.ThrowsExceptionAsync<RpcRemoteException>(async () => await client.IncrementStringAsync(value));
+    }
 
     private static void ConfigureServer(IncrementerServer.Configuration configuration)
     {
@@ -228,9 +237,9 @@ public class IncrementerTest : Test
         return IncrementerClientEndPoint.ConnectAsync(endPoint, ConfigureClientEndPoint);
     }
 
-    private IncrementerServer StartServer()
+    private IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmission = RpcExceptionTransmissionOptions.None)
     {
-        return IncrementerServer.Start(() => new Incrementer(), ConfigureServer, ConfigureServerEndPoint);
+        return IncrementerServer.Start(() => new Incrementer(exceptionTransmission), ConfigureServer, ConfigureServerEndPoint);
     }
 
     private static void WaitForThreads()

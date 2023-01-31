@@ -109,7 +109,7 @@ internal class OutboundEndPointWriter : EndPointWriter
         }
     }
 
-    private static void WriteProcedureBody(TextWriter writer, ProcedureNode procedure)
+    private void WriteProcedureBody(TextWriter writer, ProcedureNode procedure)
     {
         writer.WriteLine($"base.{Methods.AssertIsOperable}();");
 
@@ -117,7 +117,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         ParameterCollectionNode? parameters = procedure.Parameters;
 
-        string getProcedureIdExpression = $"this.{Methods.GetProcedureId}({procedure.ProcedureEnumValue})";
+        string getProcedureIdExpression = $"{Name}.{Methods.GetProcedureId}({procedure.ProcedureEnumValue})";
 
         if (parameters != null)
         {
@@ -178,7 +178,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         writer.WriteLine();
 
-        writer.Write($"protected override int {Methods.GetProcedureId}({Procedures.ProcedureEnumType} {Parameters.Procedure}) => ");
+        writer.Write($"private static int {Methods.GetProcedureId}({Procedures.ProcedureEnumType} {Parameters.Procedure}) => ");
         writer.WriteLine($"{Procedures.ProcedureEnumExtensionsName}.{Methods.GetProcedureId}({Parameters.Procedure});");
     }
 }

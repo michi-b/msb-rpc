@@ -1,17 +1,22 @@
 ﻿using System;
 using Incrementer;
 using MsbRpc.Contracts;
+using MsbRpc.Exceptions;
 
 namespace MsbRpc.Test.Generator.Incrementer;
 
 internal class Incrementer : IIncrementer
 {
+    private readonly RpcExceptionTransmissionOptions _exceptionTransmission;
     private int _value;
+
     public bool RanToCompletion { get; private set; }
+
+    public Incrementer(RpcExceptionTransmissionOptions exceptionTransmission) => _exceptionTransmission = exceptionTransmission;
 
     public RpcExceptionHandlingInstructions HandleException
         (ref Exception exception, int procedureId, RpcExecutionStage executionStage)
-        => RpcExceptionHandlingInstructions.Default;
+        => RpcExceptionHandlingInstructions.Default.WithTransmissionOptions(_exceptionTransmission);
 
     public int Increment(int value) => value + 1;
 
@@ -33,8 +38,6 @@ internal class Incrementer : IIncrementer
     }
 
     public string IncrementString(string value) => (int.Parse(value) + 1).ToString();
-
-    public static Incrementer Create() => new();
 
     public void Dispose() { }
 }

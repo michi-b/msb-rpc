@@ -131,5 +131,5 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
     protected override string GetName(IncrementerProcedure procedure) => procedure.GetName();
     protected override IncrementerProcedure GetProcedure(int procedureId) => IncrementerProcedureExtensions.FromId(procedureId);
-    protected override int GetId(IncrementerProcedure procedure) => procedure.GetId();
+    private static int GetId(IncrementerProcedure procedure) => procedure.GetId();
 }

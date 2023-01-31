@@ -19,6 +19,8 @@ public class Messenger : IDisposable
     public readonly int Port;
     private bool _isDisposed;
 
+    public bool IsConnected => _socket.IsConnected;
+
     public Messenger(RpcSocket socket)
     {
         _socket = socket;

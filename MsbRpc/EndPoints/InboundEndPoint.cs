@@ -86,11 +86,12 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     /// <returns>whether listening should stop</returns>
     private bool HandleException(Exception originalException, RpcExceptionHandlingInstructions exceptionHandlingInstructions, RpcExecutionStage rpcExecutionStage)
     {
-        Response response = Buffer.GetFaultedResponse(exceptionHandlingInstructions.Continuation == RpcExceptionContinuation.RanToCompletion);
+        RpcExceptionContinuation continuation = exceptionHandlingInstructions.Continuation;
+        Response response = Buffer.GetFaultedResponse(continuation == RpcExceptionContinuation.MarkRanToCompletion);
         Messenger.Send(new Message(response));
-        RpcExceptionTransmission exceptionTransmission = new(originalException, rpcExecutionStage, exceptionHandlingInstructions.TransmissionOptions);
+        RpcExceptionTransmission exceptionTransmission = new(originalException, rpcExecutionStage, continuation, exceptionHandlingInstructions.TransmissionOptions);
         Messenger.Send(exceptionTransmission.GetMessage(Buffer));
-        return exceptionHandlingInstructions.Continuation != RpcExceptionContinuation.Continue;
+        return continuation != RpcExceptionContinuation.Continue;
     }
 
     protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);

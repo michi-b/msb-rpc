@@ -15,6 +15,8 @@ public class RpcSocket : IDisposable
 
     private bool _isDisposed;
 
+    public bool IsConnected => _socket.Connected;
+
     public RpcSocket(Socket socket)
     {
         if (socket.ProtocolType != ProtocolType.Tcp
