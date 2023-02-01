@@ -107,9 +107,9 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
             return true;
         }
     }
-    
+
     protected abstract Response Execute(TProcedure procedure, Request request);
-    
+
     #region Logging
 
     private void LogRpcException
@@ -296,5 +296,4 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     }
 
     #endregion
-
 }

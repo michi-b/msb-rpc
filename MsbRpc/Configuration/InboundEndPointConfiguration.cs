@@ -5,14 +5,14 @@ namespace MsbRpc.Configuration;
 
 public abstract class InboundEndPointConfiguration : EndPointConfiguration
 {
+    public LogConfiguration LogArgumentDeserializationException;
+    public LogConfiguration LogExceptionTransmissionException;
+    public LogConfiguration LogProcedureExecutionException;
     public LogConfiguration LogRanToCompletion;
     public LogConfiguration LogReceivedCall;
+    public LogConfiguration LogResponseSerializationException;
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningWithoutRunningToCompletion;
-    public LogConfiguration LogArgumentDeserializationException;
-    public LogConfiguration LogProcedureExecutionException;
-    public LogConfiguration LogResponseSerializationException;
-    public LogConfiguration LogExceptionTransmissionException;
 
     protected InboundEndPointConfiguration()
     {

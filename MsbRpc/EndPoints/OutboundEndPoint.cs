@@ -102,14 +102,20 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
                     throw new ArgumentOutOfRangeException();
             }
         }
-        catch (RpcRemoteException<TProcedure> remoteException)
+        catch (RpcRemoteException<TProcedure>)
         {
             throw;
         }
         catch (Exception exception)
         {
-            Dispose();
-            throw new RpcExceptionTransmissionException(exception);
+            try
+            {
+                throw new RpcExceptionTransmissionException(exception);
+            }
+            finally
+            {
+                Dispose();
+            }
         }
     }
 
