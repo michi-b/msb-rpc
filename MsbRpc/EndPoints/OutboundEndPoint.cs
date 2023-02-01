@@ -108,14 +108,8 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
         }
         catch (Exception exception)
         {
-            try
-            {
-                throw new RpcExceptionTransmissionException(exception);
-            }
-            finally
-            {
-                Dispose();
-            }
+            Dispose();
+            throw new RpcExceptionTransmissionException(exception);
         }
     }
 
