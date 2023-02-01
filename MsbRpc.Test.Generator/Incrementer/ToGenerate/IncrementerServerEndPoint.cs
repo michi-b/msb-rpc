@@ -88,7 +88,7 @@ public class IncrementerServerEndPoint
         }
         catch (Exception e)
         {
-            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ImplementationCall);
+            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ImplementationExecution);
         }
 
         Response response;
@@ -105,7 +105,7 @@ public class IncrementerServerEndPoint
         }
         catch (Exception e)
         {
-            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ResultSerialization);
+            throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ResponseSerialization);
         }
 
         return response;

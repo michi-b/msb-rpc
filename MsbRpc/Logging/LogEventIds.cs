@@ -42,12 +42,24 @@ public static class LogEventIds
 
     public static readonly EventId ServerEndPointDeregistered = new((int)Ids.ServerEndPointDeregistered, nameof(Ids.ServerEndPointDeregistered));
 
-    public static readonly EventId ServerEndPointDeregisteredOnRegistryDisposal
-        = new((int)Ids.ServerEndPointDeregisteredOnRegistryDisposal, nameof(Ids.ServerEndPointDeregisteredOnRegistryDisposal));
+    public static readonly EventId ServerEndPointDeregisteredOnRegistryDisposal = new
+        ((int)Ids.ServerEndPointDeregisteredOnRegistryDisposal, nameof(Ids.ServerEndPointDeregisteredOnRegistryDisposal));
 
     public static readonly EventId ServerEndPointThrewException = new((int)Ids.ServerEndPointThrewException, nameof(Ids.ServerEndPointThrewException));
 
     public static readonly EventId MessengerConnectionFailed = new((int)Ids.MessengerConnectionFailed, nameof(Ids.MessengerConnectionFailed));
+
+    public static EventId InboundEndPointArgumentDeserializationException = new
+        ((int)Ids.InboundEndPointArgumentDeserializationException, nameof(Ids.InboundEndPointArgumentDeserializationException));
+
+    public static EventId InboundEndPointProcedureExecutionException =
+        new((int)Ids.InboundEndPointProcedureExecutionException, nameof(Ids.InboundEndPointProcedureExecutionException));
+
+    public static EventId InboundEndPointResponseSerializationException =
+        new((int)Ids.InboundEndPointResponseSerializationException, nameof(Ids.InboundEndPointResponseSerializationException));
+
+    public static EventId InboundEndPointExceptionTransmissionException =
+        new((int)Ids.InboundEndPointExceptionTransmissionException, nameof(Ids.InboundEndPointExceptionTransmissionException));
 
     private enum Ids
     {
@@ -55,18 +67,22 @@ public static class LogEventIds
         InboundEndPointReceivedCall = 1,
         InboundEndPointStoppedListeningWithoutRunningToCompletion = 2,
         InboundEndPointRanToCompletion = 3,
-        OutboundEndPointSentRequest = 4,
-        ServerWasCreatedWithSpecifiedPort = 5,
-        ServerWasCreatedWithEphemeralPort = 6,
-        ServerStartedListening = 7,
-        ServerAcceptedNewConnection = 8,
-        ServerImmediatelyDisposedNewConnection = 9,
-        ServerStoppedListeningDueToDisposal = 10,
-        ServerStoppedListeningDueToException = 11,
-        ServerEndPointRegistered = 12,
-        ServerEndPointDeregistered = 13,
-        ServerEndPointDeregisteredOnRegistryDisposal = 14,
-        ServerEndPointThrewException = 15,
-        MessengerConnectionFailed = 16
+        InboundEndPointArgumentDeserializationException = 4,
+        InboundEndPointProcedureExecutionException = 5,
+        InboundEndPointResponseSerializationException = 6,
+        InboundEndPointExceptionTransmissionException = 7,
+        OutboundEndPointSentRequest = 8,
+        ServerWasCreatedWithSpecifiedPort = 9,
+        ServerWasCreatedWithEphemeralPort = 10,
+        ServerStartedListening = 11,
+        ServerAcceptedNewConnection = 12,
+        ServerImmediatelyDisposedNewConnection = 13,
+        ServerStoppedListeningDueToDisposal = 14,
+        ServerStoppedListeningDueToException = 15,
+        ServerEndPointRegistered = 16,
+        ServerEndPointDeregistered = 17,
+        ServerEndPointDeregisteredOnRegistryDisposal = 18,
+        ServerEndPointThrewException = 19,
+        MessengerConnectionFailed = 20
     }
 }

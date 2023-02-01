@@ -1,9 +1,11 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Incrementer.Generated;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Exceptions;
+using MsbRpc.Exceptions.Generic;
 using MsbRpc.Test.Generator.Incrementer.ToGenerate;
 using Serilog;
 using Serilog.Core;
@@ -206,14 +208,14 @@ public class IncrementerTest : Test
         string result = await client.IncrementStringAsync(value);
         Assert.AreEqual(expected, result);
     }
-    
+
     [TestMethod]
     public async Task IncrementInvalidStringThrows()
     {
         const string value = "a";
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-        await Assert.ThrowsExceptionAsync<RpcRemoteException>(async () => await client.IncrementStringAsync(value));
+        await Assert.ThrowsExceptionAsync<RpcRemoteException<IncrementerProcedure>>(async () => await client.IncrementStringAsync(value));
     }
 
     private static void ConfigureServer(IncrementerServer.Configuration configuration)

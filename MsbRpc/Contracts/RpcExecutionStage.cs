@@ -4,6 +4,6 @@ public enum RpcExecutionStage : byte
 {
     None,
     ArgumentDeserialization,
-    ImplementationCall,
-    ResultSerialization
+    ImplementationExecution,
+    ResponseSerialization
 }

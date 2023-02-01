@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
@@ -17,7 +18,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     where TProcedure : Enum
 {
     private readonly InboundEndPointConfiguration _configuration;
-    public readonly TImplementation Implementation;
+    [PublicAPI] public readonly TImplementation Implementation;
 
     protected InboundEndPoint
     (
@@ -79,22 +80,148 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
             Exception originalException = rpcExecutionException.OriginalException;
             RpcExceptionHandlingInstructions exceptionHandlingInstructions = Implementation.HandleException
                 (ref originalException, request.ProcedureId, rpcExecutionException.Stage);
-            return HandleException(originalException, exceptionHandlingInstructions, rpcExecutionException.Stage);
+            return HandleException(originalException, rpcExecutionException.Stage, exceptionHandlingInstructions);
         }
     }
 
     /// <returns>whether listening should stop</returns>
-    private bool HandleException(Exception originalException, RpcExceptionHandlingInstructions exceptionHandlingInstructions, RpcExecutionStage rpcExecutionStage)
+    private bool HandleException(Exception originalException, RpcExecutionStage sourceStage, RpcExceptionHandlingInstructions handlingInstructions)
     {
-        RpcExceptionContinuation continuation = exceptionHandlingInstructions.Continuation;
-        Response response = Buffer.GetFaultedResponse(continuation == RpcExceptionContinuation.MarkRanToCompletion);
-        Messenger.Send(new Message(response));
-        RpcExceptionTransmission exceptionTransmission = new(originalException, rpcExecutionStage, continuation, exceptionHandlingInstructions.TransmissionOptions);
-        Messenger.Send(exceptionTransmission.GetMessage(Buffer));
-        return continuation != RpcExceptionContinuation.Continue;
+        try
+        {
+            if (handlingInstructions.Log && Logger != null)
+            {
+                LogRpcException(Logger, originalException, sourceStage, handlingInstructions);
+            }
+
+            RpcExceptionContinuation continuation = handlingInstructions.Continuation;
+            Response response = Buffer.GetFaultedResponse(continuation == RpcExceptionContinuation.MarkRanToCompletion);
+            Messenger.Send(new Message(response));
+            RpcExceptionTransmission exceptionTransmission = new(originalException, sourceStage, continuation, handlingInstructions.TransmissionOptions);
+            Messenger.Send(exceptionTransmission.GetMessage(Buffer));
+            return continuation != RpcExceptionContinuation.Continue;
+        }
+        catch (Exception exception)
+        {
+            LogExceptionTransmissionException(exception, originalException, handlingInstructions, sourceStage, handlingInstructions.Continuation);
+            return true;
+        }
+    }
+    
+    protected abstract Response Execute(TProcedure procedure, Request request);
+    
+    #region Logging
+
+    private void LogRpcException
+    (
+        ILogger<TEndPoint> logger,
+        Exception originalException,
+        RpcExecutionStage sourceStage,
+        RpcExceptionHandlingInstructions handlingInstructions
+    )
+    {
+        string handlingInstructionsString = handlingInstructions.ToString();
+        switch (sourceStage)
+        {
+            case RpcExecutionStage.None:
+                throw new ArgumentException
+                (
+                    "Cannot log exception with source stage 'None'. This value is reserved for transmitted exceptions.",
+                    nameof(sourceStage)
+                );
+            case RpcExecutionStage.ArgumentDeserialization:
+                LogArgumentDeserializationException(logger, originalException, handlingInstructionsString);
+                break;
+            case RpcExecutionStage.ImplementationExecution:
+                LogImplementationExecutionException(logger, originalException, handlingInstructionsString);
+                break;
+            case RpcExecutionStage.ResponseSerialization:
+                LogResponseSerializationException(logger, originalException, handlingInstructionsString);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(sourceStage), sourceStage, null);
+        }
     }
 
-    protected Message GetResultMessageBuffer(int count) => Buffer.GetMessage(count);
+    private void LogExceptionTransmissionException
+    (
+        Exception exception,
+        Exception originalException,
+        RpcExceptionHandlingInstructions handlingInstructions,
+        RpcExecutionStage rpcExecutionStage,
+        RpcExceptionContinuation continuation
+    )
+    {
+        if (Logger != null)
+        {
+            LogConfiguration configuration = _configuration.LogExceptionTransmissionException;
+            if (Logger.GetIsEnabled(configuration))
+            {
+                Logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    exception,
+                    "Transmission of exception ({ExceptionType}) with message '{ExceptionMessage}' and handling instructions '{HandlingInstructions}'"
+                    + " thrown in execution stage {ExecutionStage} and with continuation {RpcExceptionContinuation} failed"
+                    + ", and as a result the endpoint is being disposed",
+                    originalException.GetType().FullName,
+                    originalException.Message,
+                    handlingInstructions.ToString(),
+                    rpcExecutionStage.GetName(),
+                    continuation.GetName()
+                );
+            }
+        }
+    }
+
+    private void LogArgumentDeserializationException(ILogger logger, Exception originalException, string handlingInstructionsString)
+    {
+        LogConfiguration configuration = _configuration.LogArgumentDeserializationException;
+        if (logger.GetIsEnabled(configuration))
+        {
+            logger.Log
+            (
+                configuration.Level,
+                configuration.Id,
+                originalException,
+                "RPC argument deserialization failed, and the exception is handled with instructions '{HandlingInstructions}'",
+                handlingInstructionsString
+            );
+        }
+    }
+
+    private void LogImplementationExecutionException(ILogger<TEndPoint> logger, Exception originalException, string handlingInstructionsString)
+    {
+        LogConfiguration configuration = _configuration.LogProcedureExecutionException;
+        if (logger.GetIsEnabled(configuration))
+        {
+            logger.Log
+            (
+                configuration.Level,
+                configuration.Id,
+                originalException,
+                "RPC implementation execution failed, and the exception is handled with instructions '{HandlingInstructions}'",
+                handlingInstructionsString
+            );
+        }
+    }
+
+    private void LogResponseSerializationException(ILogger<TEndPoint> logger, Exception originalException, string handlingInstructionsString)
+    {
+        LogConfiguration configuration = _configuration.LogResponseSerializationException;
+        if (logger.GetIsEnabled(configuration))
+        {
+            logger.Log
+            (
+                configuration.Level,
+                configuration.Id,
+                originalException,
+                "RPC result serialization failed, and the exception is handled with instructions '{HandlingInstructions}'",
+                handlingInstructionsString
+            );
+        }
+    }
 
     private void LogStoppedListeningWithoutRunningToCompletion(ListenReturnCode listenReturnCode)
     {
@@ -168,5 +295,6 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         }
     }
 
-    protected abstract Response Execute(TProcedure procedure, Request request);
+    #endregion
+
 }

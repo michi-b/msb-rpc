@@ -32,7 +32,8 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
     private static RpcRequestException<TProcedure> GetConnectionDisposedException(TProcedure procedure)
         => new(procedure, "Connection disposed while waiting for the response.");
 
-    [MayBeUsedByGenerator] protected async ValueTask<Response> SendRequestAsync(Request request)
+    [MayBeUsedByGenerator]
+    protected async ValueTask<Response> SendRequestAsync(Request request)
     {
         TProcedure procedure = GetProcedure(request.ProcedureId);
 
@@ -56,6 +57,7 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
                 {
                     await HandleFaultedRpcInvocation(procedure);
                 }
+
                 return response;
             case ReceiveReturnCode.ConnectionClosed:
                 throw GetConnectionClosedException(procedure);
@@ -90,6 +92,7 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+
                     throw new RpcRemoteException<TProcedure>(exceptionTransmission, procedure);
                 case ReceiveReturnCode.ConnectionClosed:
                     throw GetConnectionClosedException(procedure);
@@ -99,6 +102,10 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
                     throw new ArgumentOutOfRangeException();
             }
         }
+        catch (RpcRemoteException<TProcedure> remoteException)
+        {
+            throw;
+        }
         catch (Exception exception)
         {
             Dispose();
@@ -106,7 +113,8 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
         }
     }
 
-    [MayBeUsedByGenerator] protected Message SendRequest(Request request)
+    [MayBeUsedByGenerator]
+    protected Message SendRequest(Request request)
     {
         Messenger.Send(new Message(request));
 

@@ -22,10 +22,10 @@ public class RpcExceptionTransmission
     {
         _options = options;
 
-        HasTypeName = (options & RpcExceptionTransmissionOptions.TypeName) != 0;
-        HasExecutionStage = (options & RpcExceptionTransmissionOptions.ExecutionStage) != 0;
-        HasMessage = (options & RpcExceptionTransmissionOptions.Message) != 0;
-        HasContinuation = (options & RpcExceptionTransmissionOptions.Continuation) != 0;
+        HasTypeName = options.HasTypeName();
+        HasExecutionStage = options.HasExecutionStage();
+        HasMessage = options.HasMessage();
+        HasContinuation = options.HasContinuation();
 
         TypeName = string.Empty;
         ExecutionStage = RpcExecutionStage.None;
