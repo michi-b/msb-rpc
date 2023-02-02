@@ -104,6 +104,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         catch (Exception exception)
         {
             LogExceptionTransmissionException(exception, originalException, handlingInstructions, sourceStage, handlingInstructions.Continuation);
+            Dispose();
             return true;
         }
     }

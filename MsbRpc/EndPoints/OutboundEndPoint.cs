@@ -160,7 +160,8 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "An exception occurred while receiving an exception transmission for procedure '{ProcedureName}'",
+                    "An exception occurred while receiving an exception transmission for procedure '{ProcedureName}'"
+                    + " and as a result this endpoint is being disposed",
                     GetName(procedure)
                 );
             }
