@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using JetBrains.Annotations;
 using MsbRpc.Contracts;
 using MsbRpc.Serialization;
@@ -9,58 +10,58 @@ namespace MsbRpc.Exceptions;
 public class RpcExceptionTransmission
 {
     private readonly RpcExceptionTransmissionOptions _options;
-    [PublicAPI] public readonly bool HasContinuation;
-    [PublicAPI] public readonly bool HasExecutionStage;
-    [PublicAPI] public readonly bool HasMessage;
-    [PublicAPI] public readonly bool HasTypeName;
-    [PublicAPI] public string TypeName { get; private set; }
-    [PublicAPI] public RpcExecutionStage ExecutionStage { get; private set; }
-    [PublicAPI] public string Message { get; private set; }
-    [PublicAPI] public RemoteContinuation Continuation { get; private set; }
+    [PublicAPI] public readonly bool HasRemoteContinuation;
+    [PublicAPI] public readonly bool HasSourceExecutionStage;
+    [PublicAPI] public readonly bool HasExceptionMessage;
+    [PublicAPI] public readonly bool HasExceptionTypeName;
+    [PublicAPI] public string ExceptionTypeName { get; private set; }
+    [PublicAPI] public RpcExecutionStage SourceExecutionStage { get; private set; }
+    [PublicAPI] public string ExceptionMessage { get; private set; }
+    [PublicAPI] public RemoteContinuation RemoteContinuation { get; private set; }
 
     private RpcExceptionTransmission(RpcExceptionTransmissionOptions options)
     {
         _options = options;
 
-        HasTypeName = options.HasTypeName();
-        HasExecutionStage = options.HasExecutionStage();
-        HasMessage = options.HasMessage();
-        HasContinuation = options.HasContinuation();
+        HasExceptionTypeName = options.HasTypeName();
+        HasSourceExecutionStage = options.HasExecutionStage();
+        HasExceptionMessage = options.HasMessage();
+        HasRemoteContinuation = options.HasContinuation();
 
-        TypeName = string.Empty;
-        ExecutionStage = RpcExecutionStage.None;
-        Message = string.Empty;
-        Continuation = RemoteContinuation.Undefined;
+        ExceptionTypeName = string.Empty;
+        SourceExecutionStage = RpcExecutionStage.None;
+        ExceptionMessage = string.Empty;
+        RemoteContinuation = RemoteContinuation.Undefined;
     }
 
-    public RpcExceptionTransmission(Exception exception, RpcExecutionStage executionStage, RpcExceptionContinuation continuation, RpcExceptionTransmissionOptions options)
+    public RpcExceptionTransmission(Exception exception, RpcExecutionStage sourceExecutionStage, RpcExceptionContinuation continuation, RpcExceptionTransmissionOptions options)
         : this(options)
     {
-        if (HasTypeName)
+        if (HasExceptionTypeName)
         {
-            TypeName = exception.GetType().FullName;
+            ExceptionTypeName = exception.GetType().FullName;
         }
 
-        if (HasMessage)
+        if (HasExceptionMessage)
         {
-            Message = exception.Message;
+            ExceptionMessage = exception.Message;
         }
 
-        if (HasExecutionStage)
+        if (HasSourceExecutionStage)
         {
-            ExecutionStage = executionStage;
+            SourceExecutionStage = sourceExecutionStage;
         }
 
-        Continuation = HasContinuation ? GetRemoteContinuation(continuation) : RemoteContinuation.Undefined;
+        RemoteContinuation = HasRemoteContinuation ? GetRemoteContinuation(continuation) : RemoteContinuation.Undefined;
     }
 
     public Message GetMessage(RpcBuffer buffer)
     {
         const int optionsSize = 1;
-        int typeNameSize = HasTypeName ? StringSerializer.GetSize(TypeName) : 0;
-        int executionStageSize = HasExecutionStage ? 1 : 0;
-        int messageSize = HasMessage ? StringSerializer.GetSize(Message) : 0;
-        int continuationSize = HasContinuation ? 1 : 0;
+        int typeNameSize = HasExceptionTypeName ? StringSerializer.GetSize(ExceptionTypeName) : 0;
+        int executionStageSize = HasSourceExecutionStage ? 1 : 0;
+        int messageSize = HasExceptionMessage ? StringSerializer.GetSize(ExceptionMessage) : 0;
+        int continuationSize = HasRemoteContinuation ? 1 : 0;
 
         int size = optionsSize + typeNameSize + messageSize + executionStageSize + continuationSize;
 
@@ -69,24 +70,24 @@ public class RpcExceptionTransmission
         BufferWriter writer = message.GetWriter();
 
         writer.Write((byte)_options);
-        if (HasTypeName)
+        if (HasExceptionTypeName)
         {
-            StringSerializer.Write(TypeName, writer);
+            StringSerializer.Write(ExceptionTypeName, writer);
         }
 
-        if (HasExecutionStage)
+        if (HasSourceExecutionStage)
         {
-            writer.Write((byte)ExecutionStage);
+            writer.Write((byte)SourceExecutionStage);
         }
 
-        if (HasMessage)
+        if (HasExceptionMessage)
         {
-            StringSerializer.Write(Message, writer);
+            StringSerializer.Write(ExceptionMessage, writer);
         }
 
-        if (HasContinuation)
+        if (HasRemoteContinuation)
         {
-            writer.Write((byte)Continuation);
+            writer.Write((byte)RemoteContinuation);
         }
 
         return message;
@@ -100,27 +101,47 @@ public class RpcExceptionTransmission
 
         RpcExceptionTransmission transmission = new(options);
 
-        if (transmission.HasTypeName)
+        if (transmission.HasExceptionTypeName)
         {
-            transmission.TypeName = StringSerializer.Read(reader);
+            transmission.ExceptionTypeName = StringSerializer.Read(reader);
         }
 
-        if (transmission.HasExecutionStage)
+        if (transmission.HasSourceExecutionStage)
         {
-            transmission.ExecutionStage = (RpcExecutionStage)reader.ReadByte();
+            transmission.SourceExecutionStage = (RpcExecutionStage)reader.ReadByte();
         }
 
-        if (transmission.HasMessage)
+        if (transmission.HasExceptionMessage)
         {
-            transmission.Message = StringSerializer.Read(reader);
+            transmission.ExceptionMessage = StringSerializer.Read(reader);
         }
 
-        if (transmission.HasContinuation)
+        if (transmission.HasRemoteContinuation)
         {
-            transmission.Continuation = (RemoteContinuation)reader.ReadByte();
+            transmission.RemoteContinuation = (RemoteContinuation)reader.ReadByte();
         }
 
         return transmission;
+    }
+
+    public string GetReport()
+    {
+        StringBuilder stringBuilder = new(200);
+        const string notTransmitted = "not transmitted";
+        
+        stringBuilder.Append("exception type: ");
+        stringBuilder.Append(HasExceptionTypeName ? ExceptionTypeName : notTransmitted);
+        
+        stringBuilder.Append(", exception message: ");
+        stringBuilder.Append(HasExceptionMessage ? ExceptionMessage : notTransmitted);
+        
+        stringBuilder.Append(", source execution stage: ");
+        stringBuilder.Append(HasSourceExecutionStage ? SourceExecutionStage.GetName() : notTransmitted);
+        
+        stringBuilder.Append(", remote endpoint continuation: ");
+        stringBuilder.Append(HasRemoteContinuation ? RemoteContinuation.GetName() : notTransmitted);
+
+        return stringBuilder.ToString();
     }
 
     private static RemoteContinuation GetRemoteContinuation(RpcExceptionContinuation continuation)

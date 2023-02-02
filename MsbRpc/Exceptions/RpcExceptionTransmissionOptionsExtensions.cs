@@ -28,34 +28,34 @@ public static class RpcExceptionTransmissionOptionsExtensions
         }
     }
 
-    public static bool HasTypeName(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.TypeName) != 0;
+    public static bool HasTypeName(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.ExceptionTypeName) != 0;
 
-    public static bool HasExecutionStage(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.ExecutionStage) != 0;
+    public static bool HasExecutionStage(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.SourceExecutionStage) != 0;
 
-    public static bool HasMessage(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.Message) != 0;
+    public static bool HasMessage(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.ExceptionMessage) != 0;
 
-    public static bool HasContinuation(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.Continuation) != 0;
+    public static bool HasContinuation(this RpcExceptionTransmissionOptions target) => (target & RpcExceptionTransmissionOptions.RemoteContinuation) != 0;
 
     private static IEnumerable<string> GetOptionNames(this RpcExceptionTransmissionOptions target)
     {
         if (target.HasTypeName())
         {
-            yield return nameof(RpcExceptionTransmissionOptions.TypeName);
+            yield return nameof(RpcExceptionTransmissionOptions.ExceptionTypeName);
         }
 
         if (target.HasExecutionStage())
         {
-            yield return nameof(RpcExceptionTransmissionOptions.ExecutionStage);
+            yield return nameof(RpcExceptionTransmissionOptions.SourceExecutionStage);
         }
 
         if (target.HasMessage())
         {
-            yield return nameof(RpcExceptionTransmissionOptions.Message);
+            yield return nameof(RpcExceptionTransmissionOptions.ExceptionMessage);
         }
 
         if (target.HasContinuation())
         {
-            yield return nameof(RpcExceptionTransmissionOptions.Continuation);
+            yield return nameof(RpcExceptionTransmissionOptions.RemoteContinuation);
         }
     }
 }

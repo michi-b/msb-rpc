@@ -9,7 +9,7 @@ public abstract class InboundEndPointConfiguration : EndPointConfiguration
     public LogConfiguration LogExceptionTransmissionException;
     public LogConfiguration LogProcedureExecutionException;
     public LogConfiguration LogRanToCompletion;
-    public LogConfiguration LogReceivedCall;
+    public LogConfiguration LogReceivedAnyRequest;
     public LogConfiguration LogResponseSerializationException;
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningWithoutRunningToCompletion;
@@ -20,7 +20,7 @@ public abstract class InboundEndPointConfiguration : EndPointConfiguration
             = new LogConfiguration(LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion, LogLevel.Error);
         LogStartedListening = new LogConfiguration(LogEventIds.InboundEndPointStartedListening, LogLevel.Information);
         LogRanToCompletion = new LogConfiguration(LogEventIds.InboundEndPointRanToCompletion, LogLevel.Information);
-        LogReceivedCall = new LogConfiguration(LogEventIds.InboundEndPointReceivedCall, LogLevel.Trace);
+        LogReceivedAnyRequest = new LogConfiguration(LogEventIds.InboundEndPointReceivedAnyRequest, LogLevel.Trace);
         LogArgumentDeserializationException = new LogConfiguration(LogEventIds.InboundEndPointArgumentDeserializationException, LogLevel.Error);
         LogProcedureExecutionException = new LogConfiguration(LogEventIds.InboundEndPointProcedureExecutionException, LogLevel.Error);
         LogResponseSerializationException = new LogConfiguration(LogEventIds.InboundEndPointResponseSerializationException, LogLevel.Error);

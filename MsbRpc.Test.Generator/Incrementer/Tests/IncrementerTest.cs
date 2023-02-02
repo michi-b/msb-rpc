@@ -210,12 +210,149 @@ public class IncrementerTest : Test
     }
 
     [TestMethod]
-    public async Task IncrementInvalidStringThrows()
+    [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
+    public async Task IncrementInvalidStringThrowsWithNoExceptionDetails()
     {
         const string value = "a";
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-        await Assert.ThrowsExceptionAsync<RpcRemoteException<IncrementerProcedure>>(async () => await client.IncrementStringAsync(value));
+        await client.IncrementStringAsync(value);
+        try
+        {
+            await client.IncrementStringAsync(value);
+        }
+        catch (RpcRemoteException<IncrementerProcedure> exception)
+        {
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+            Assert.IsFalse(transmission.HasExceptionTypeName);
+            Assert.IsFalse(transmission.HasExceptionMessage);
+            Assert.IsFalse(transmission.HasRemoteContinuation);
+            Assert.IsFalse(transmission.HasSourceExecutionStage);
+            throw;
+        }
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
+    public async Task IncrementInvalidStringThrowsWithTransmittedExceptionTypeName()
+    {
+        const string value = "a";
+        using IncrementerServer server = StartServer(RpcExceptionTransmissionOptions.ExceptionTypeName);
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        try
+        {
+            await client.IncrementStringAsync(value);
+        }
+        catch (RpcRemoteException<IncrementerProcedure> exception)
+        {
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+            Assert.IsTrue(transmission.HasExceptionTypeName);
+            LogTransmittedExceptionTypeName(transmission);
+            Assert.IsFalse(transmission.HasExceptionMessage);
+            Assert.IsFalse(transmission.HasSourceExecutionStage);
+            Assert.IsFalse(transmission.HasRemoteContinuation);
+            throw;
+        }
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
+    public async Task IncrementInvalidStringThrowsWithTransmittedExceptionMessage()
+    {
+        const string value = "a";
+        using IncrementerServer server = StartServer(RpcExceptionTransmissionOptions.ExceptionMessage);
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        try
+        {
+            await client.IncrementStringAsync(value);
+        }
+        catch (RpcRemoteException<IncrementerProcedure> exception)
+        {
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+            Assert.IsTrue(transmission.HasExceptionMessage);
+            LogTransmittedExceptionMessage(transmission);
+            Assert.IsFalse(transmission.HasExceptionTypeName);
+            Assert.IsFalse(transmission.HasSourceExecutionStage);
+            Assert.IsFalse(transmission.HasRemoteContinuation);
+            throw;
+        }
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
+    public async Task IncrementInvalidStringThrowsWithTransmittedSourceExecutionStage()
+    {
+        const string value = "a";
+        using IncrementerServer server = StartServer(RpcExceptionTransmissionOptions.SourceExecutionStage);
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        try
+        {
+            await client.IncrementStringAsync(value);
+        }
+        catch (RpcRemoteException<IncrementerProcedure> exception)
+        {
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+            Assert.IsTrue(transmission.HasSourceExecutionStage);
+            LogTransmittedSourceExecutionStage(transmission);
+            Assert.IsFalse(transmission.HasExceptionTypeName);
+            Assert.IsFalse(transmission.HasExceptionMessage);
+            Assert.IsFalse(transmission.HasRemoteContinuation);
+            throw;
+        }
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
+    public async Task IncrementInvalidStringThrowsWithTransmittedRemoteContinuation()
+    {
+        const string value = "a";
+        using IncrementerServer server = StartServer(RpcExceptionTransmissionOptions.RemoteContinuation);
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        try
+        {
+            await client.IncrementStringAsync(value);
+        }
+        catch (RpcRemoteException<IncrementerProcedure> exception)
+        {
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+            Assert.IsTrue(transmission.HasRemoteContinuation);
+            LogTransmittedRemoteContinuation(transmission);
+            Assert.IsFalse(transmission.HasExceptionTypeName);
+            Assert.IsFalse(transmission.HasExceptionMessage);
+            Assert.IsFalse(transmission.HasSourceExecutionStage);
+            throw;
+        }
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
+    public async Task IncrementInvalidStringThrowsWithAllTransmittedInformation()
+    {
+        const string value = "a";
+        using IncrementerServer server = StartServer(RpcExceptionTransmissionOptions.All);
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        try
+        {
+            await client.IncrementStringAsync(value);
+        }
+        catch (RpcRemoteException<IncrementerProcedure> exception)
+        {
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+
+            Assert.IsTrue(transmission.HasExceptionTypeName);
+            LogTransmittedExceptionTypeName(transmission);
+
+            Assert.IsTrue(transmission.HasExceptionMessage);
+            LogTransmittedExceptionMessage(transmission);
+
+            Assert.IsTrue(transmission.HasSourceExecutionStage);
+            LogTransmittedSourceExecutionStage(transmission);
+
+            Assert.IsTrue(transmission.HasRemoteContinuation);
+            LogTransmittedRemoteContinuation(transmission);
+
+            throw;
+        }
     }
 
     private static void ConfigureServer(IncrementerServer.Configuration configuration)
@@ -247,5 +384,25 @@ public class IncrementerTest : Test
     private static void WaitForThreads()
     {
         Thread.Sleep(100);
+    }
+
+    private static void LogTransmittedExceptionTypeName(RpcExceptionTransmission transmission)
+    {
+        Logger.LogInformation("exception type name is '{ExceptionTypeName}'", transmission.ExceptionTypeName);
+    }
+
+    private static void LogTransmittedExceptionMessage(RpcExceptionTransmission transmission)
+    {
+        Logger.LogInformation("exception message is '{ExceptionMessage}'", transmission.ExceptionMessage);
+    }
+
+    private static void LogTransmittedSourceExecutionStage(RpcExceptionTransmission transmission)
+    {
+        Logger.LogInformation("source execution stage is '{SourceExecutionStage}'", transmission.SourceExecutionStage);
+    }
+
+    private static void LogTransmittedRemoteContinuation(RpcExceptionTransmission transmission)
+    {
+        Logger.LogInformation("remote continuation is '{RemoteContinuation}'", transmission.RemoteContinuation);
     }
 }

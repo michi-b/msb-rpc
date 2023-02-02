@@ -66,7 +66,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
     {
         Request request = new(message);
         TProcedure procedure = GetProcedure(request.ProcedureId);
-        LogReceivedCall(procedure, request.Length);
+        LogReceivedAnyRequest(procedure, request.Length);
 
         try
         {
@@ -191,7 +191,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         }
     }
 
-    private void LogImplementationExecutionException(ILogger<TEndPoint> logger, Exception originalException, string handlingInstructionsString)
+    private void LogImplementationExecutionException(ILogger logger, Exception originalException, string handlingInstructionsString)
     {
         LogConfiguration configuration = _configuration.LogProcedureExecutionException;
         if (logger.GetIsEnabled(configuration))
@@ -207,7 +207,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         }
     }
 
-    private void LogResponseSerializationException(ILogger<TEndPoint> logger, Exception originalException, string handlingInstructionsString)
+    private void LogResponseSerializationException(ILogger logger, Exception originalException, string handlingInstructionsString)
     {
         LogConfiguration configuration = _configuration.LogResponseSerializationException;
         if (logger.GetIsEnabled(configuration))
@@ -276,11 +276,11 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         }
     }
 
-    private void LogReceivedCall(TProcedure procedure, int argumentByteCount)
+    private void LogReceivedAnyRequest(TProcedure procedure, int argumentByteCount)
     {
         if (Logger != null)
         {
-            LogConfiguration configuration = _configuration.LogReceivedCall;
+            LogConfiguration configuration = _configuration.LogReceivedAnyRequest;
             if (Logger.GetIsEnabled(configuration))
             {
                 Logger.Log

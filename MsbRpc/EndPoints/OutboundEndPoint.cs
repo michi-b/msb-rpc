@@ -39,7 +39,7 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
 
         await Messenger.SendAsync(new Message(request));
 
-        LogSentCall(procedure, request.Buffer.Count);
+        LogSentAnyRequest(procedure, request.Buffer.Count);
 
         ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer);
 
@@ -72,34 +72,47 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
     {
         try
         {
-            ReceiveResult exceptionTransmissionResult = await Messenger.ReceiveMessageAsync(Buffer);
-            switch (exceptionTransmissionResult.ReturnCode)
+            try
             {
-                case ReceiveReturnCode.Success:
-                    RpcExceptionTransmission exceptionTransmission = RpcExceptionTransmission.Read(exceptionTransmissionResult.Message);
-                    switch (exceptionTransmission.Continuation)
-                    {
-                        case RemoteContinuation.Disposed:
-                            Dispose();
-                            break;
-                        case RemoteContinuation.RanToCompletion:
-                            RanToCompletion = true;
-                            Dispose();
-                            break;
-                        case RemoteContinuation.Undefined:
-                        case RemoteContinuation.Continues:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                ReceiveResult exceptionTransmissionResult = await Messenger.ReceiveMessageAsync(Buffer);
+                switch (exceptionTransmissionResult.ReturnCode)
+                {
+                    case ReceiveReturnCode.Success:
+                        RpcExceptionTransmission exceptionTransmission = RpcExceptionTransmission.Read(exceptionTransmissionResult.Message);
+                        switch (exceptionTransmission.RemoteContinuation)
+                        {
+                            case RemoteContinuation.Disposed:
+                                Dispose();
+                                break;
+                            case RemoteContinuation.RanToCompletion:
+                                RanToCompletion = true;
+                                Dispose();
+                                break;
+                            case RemoteContinuation.Undefined:
+                            case RemoteContinuation.Continues:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
 
-                    throw new RpcRemoteException<TProcedure>(exceptionTransmission, procedure);
-                case ReceiveReturnCode.ConnectionClosed:
-                    throw GetConnectionClosedException(procedure);
-                case ReceiveReturnCode.ConnectionDisposed:
-                    throw GetConnectionDisposedException(procedure);
-                default:
-                    throw new ArgumentOutOfRangeException();
+                        throw new RpcRemoteException<TProcedure>(exceptionTransmission, procedure);
+                    case ReceiveReturnCode.ConnectionClosed:
+                        throw GetConnectionClosedException(procedure);
+                    case ReceiveReturnCode.ConnectionDisposed:
+                        throw GetConnectionDisposedException(procedure);
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (RpcRemoteException<TProcedure> exception)
+            {
+                LogRemoteRpcException(exception);
+                throw;
+            }
+            catch (Exception e)
+            {
+                LogExceptionTransmissionException(procedure, e);
+                throw;
             }
         }
         catch (RpcRemoteException<TProcedure>)
@@ -120,7 +133,7 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
 
         TProcedure procedure = GetProcedure(request.ProcedureId);
 
-        LogSentCall(procedure, request.Buffer.Count);
+        LogSentAnyRequest(procedure, request.Buffer.Count);
 
         ReceiveResult result = Messenger.ReceiveMessage(Buffer);
 
@@ -133,11 +146,54 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
         };
     }
 
-    private void LogSentCall(TProcedure procedure, int argumentByteCount)
+    #region Logging
+
+    private void LogExceptionTransmissionException(TProcedure procedure, Exception exception)
     {
         if (Logger != null)
         {
-            LogConfiguration configuration = _configuration.LogSentCall;
+            LogConfiguration configuration = _configuration.LogExceptionTransmissionException;
+            if (Logger.GetIsEnabled(configuration))
+            {
+                Logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    exception,
+                    "An exception occurred while receiving an exception transmission for procedure '{ProcedureName}'",
+                    GetName(procedure)
+                );
+            }
+        }
+    }
+
+    private void LogRemoteRpcException(RpcRemoteException<TProcedure> exception)
+    {
+        if (Logger != null)
+        {
+            LogConfiguration configuration = _configuration.LogRemoteRpcException;
+            RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
+            if (Logger.GetIsEnabled(configuration))
+            {
+                Logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    exception,
+                    "Remote endpoint reported an exception while handling a request for procedure '{ProcedureName}'"
+                    + " with transmitted report '{ExceptionReport}'",
+                    GetName(exception.Procedure),
+                    transmission.GetReport()
+                );
+            }
+        }
+    }
+
+    private void LogSentAnyRequest(TProcedure procedure, int argumentByteCount)
+    {
+        if (Logger != null)
+        {
+            LogConfiguration configuration = _configuration.LogSentAnyRequest;
             if (Logger.GetIsEnabled(configuration))
             {
                 Logger.Log
@@ -151,4 +207,6 @@ public abstract class OutboundEndPoint<TEndPoint, TProcedure> : EndPoint<TEndPoi
             }
         }
     }
+
+    #endregion
 }

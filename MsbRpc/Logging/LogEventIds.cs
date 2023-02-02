@@ -5,11 +5,11 @@ namespace MsbRpc.Logging;
 
 public static class LogEventIds
 {
-    [MayBeUsedByGenerator] public const int FirstAvailable = 17;
+    [MayBeUsedByGenerator] public const int FirstAvailable = (int)Ids.MessengerConnectionFailed + 1;
 
     public static readonly EventId InboundEndPointStartedListening = new((int)Ids.InboundEndPointStartedListening, nameof(Ids.InboundEndPointStartedListening));
 
-    public static readonly EventId InboundEndPointReceivedCall = new((int)Ids.InboundEndPointReceivedCall, nameof(Ids.InboundEndPointReceivedCall));
+    public static readonly EventId InboundEndPointReceivedAnyRequest = new((int)Ids.InboundEndPointReceivedCall, nameof(Ids.InboundEndPointReceivedCall));
 
     public static readonly EventId InboundEndPointStoppedListeningWithoutRunningToCompletion = new
     (
@@ -19,7 +19,24 @@ public static class LogEventIds
 
     public static readonly EventId InboundEndPointRanToCompletion = new((int)Ids.InboundEndPointRanToCompletion, nameof(Ids.InboundEndPointRanToCompletion));
 
-    public static readonly EventId OutboundEndPointSentRequest = new((int)Ids.OutboundEndPointSentRequest, nameof(Ids.OutboundEndPointSentRequest));
+    public static EventId InboundEndPointArgumentDeserializationException = new
+        ((int)Ids.InboundEndPointArgumentDeserializationException, nameof(Ids.InboundEndPointArgumentDeserializationException));
+
+    public static EventId InboundEndPointProcedureExecutionException =
+        new((int)Ids.InboundEndPointProcedureExecutionException, nameof(Ids.InboundEndPointProcedureExecutionException));
+
+    public static EventId InboundEndPointResponseSerializationException =
+        new((int)Ids.InboundEndPointResponseSerializationException, nameof(Ids.InboundEndPointResponseSerializationException));
+
+    public static EventId InboundEndPointExceptionTransmissionException =
+        new((int)Ids.InboundEndPointExceptionTransmissionException, nameof(Ids.InboundEndPointExceptionTransmissionException));
+
+    public static readonly EventId OutboundEndPointSentAnyRequest = new((int)Ids.OutboundEndPointSentRequest, nameof(Ids.OutboundEndPointSentRequest));
+
+    public static EventId OutboundEndPointRemoteRpcException = new((int)Ids.OutboundEndPointRemoteRpcException, nameof(Ids.OutboundEndPointRemoteRpcException));
+
+    public static EventId OutboundEndPointExceptionTransmissionException = new
+        ((int)Ids.OutboundEndPointExceptionTransmissionException, nameof(Ids.OutboundEndPointExceptionTransmissionException));
 
     public static readonly EventId ServerWasCreatedWithSpecifiedPort = new((int)Ids.ServerWasCreatedWithSpecifiedPort, nameof(Ids.ServerWasCreatedWithSpecifiedPort));
 
@@ -49,40 +66,30 @@ public static class LogEventIds
 
     public static readonly EventId MessengerConnectionFailed = new((int)Ids.MessengerConnectionFailed, nameof(Ids.MessengerConnectionFailed));
 
-    public static EventId InboundEndPointArgumentDeserializationException = new
-        ((int)Ids.InboundEndPointArgumentDeserializationException, nameof(Ids.InboundEndPointArgumentDeserializationException));
-
-    public static EventId InboundEndPointProcedureExecutionException =
-        new((int)Ids.InboundEndPointProcedureExecutionException, nameof(Ids.InboundEndPointProcedureExecutionException));
-
-    public static EventId InboundEndPointResponseSerializationException =
-        new((int)Ids.InboundEndPointResponseSerializationException, nameof(Ids.InboundEndPointResponseSerializationException));
-
-    public static EventId InboundEndPointExceptionTransmissionException =
-        new((int)Ids.InboundEndPointExceptionTransmissionException, nameof(Ids.InboundEndPointExceptionTransmissionException));
-
     private enum Ids
     {
-        InboundEndPointStartedListening = 0,
-        InboundEndPointReceivedCall = 1,
-        InboundEndPointStoppedListeningWithoutRunningToCompletion = 2,
-        InboundEndPointRanToCompletion = 3,
-        InboundEndPointArgumentDeserializationException = 4,
-        InboundEndPointProcedureExecutionException = 5,
-        InboundEndPointResponseSerializationException = 6,
-        InboundEndPointExceptionTransmissionException = 7,
-        OutboundEndPointSentRequest = 8,
-        ServerWasCreatedWithSpecifiedPort = 9,
-        ServerWasCreatedWithEphemeralPort = 10,
-        ServerStartedListening = 11,
-        ServerAcceptedNewConnection = 12,
-        ServerImmediatelyDisposedNewConnection = 13,
-        ServerStoppedListeningDueToDisposal = 14,
-        ServerStoppedListeningDueToException = 15,
-        ServerEndPointRegistered = 16,
-        ServerEndPointDeregistered = 17,
-        ServerEndPointDeregisteredOnRegistryDisposal = 18,
-        ServerEndPointThrewException = 19,
-        MessengerConnectionFailed = 20
+        InboundEndPointStartedListening,
+        InboundEndPointReceivedCall,
+        InboundEndPointStoppedListeningWithoutRunningToCompletion,
+        InboundEndPointRanToCompletion,
+        InboundEndPointArgumentDeserializationException,
+        InboundEndPointProcedureExecutionException,
+        InboundEndPointResponseSerializationException,
+        InboundEndPointExceptionTransmissionException,
+        OutboundEndPointSentRequest,
+        OutboundEndPointRemoteRpcException,
+        OutboundEndPointExceptionTransmissionException,
+        ServerWasCreatedWithSpecifiedPort,
+        ServerWasCreatedWithEphemeralPort,
+        ServerStartedListening,
+        ServerAcceptedNewConnection,
+        ServerImmediatelyDisposedNewConnection,
+        ServerStoppedListeningDueToDisposal,
+        ServerStoppedListeningDueToException,
+        ServerEndPointRegistered,
+        ServerEndPointDeregistered,
+        ServerEndPointDeregisteredOnRegistryDisposal,
+        ServerEndPointThrewException,
+        MessengerConnectionFailed
     }
 }

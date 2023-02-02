@@ -6,8 +6,10 @@ namespace MsbRpc.Exceptions;
 public enum RpcExceptionTransmissionOptions : byte
 {
     None = 0,
-    TypeName = 1 << 0,
-    ExecutionStage = 1 << 1,
-    Message = 1 << 2,
-    Continuation = 1 << 3
+    ExceptionTypeName = 1 << 0,
+    SourceExecutionStage = 1 << 1,
+    ExceptionMessage = 1 << 2,
+    RemoteContinuation = 1 << 3,
+    AllExceptionDetails = ExceptionTypeName |  ExceptionMessage,
+    All = AllExceptionDetails | SourceExecutionStage | RemoteContinuation
 }
