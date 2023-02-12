@@ -71,12 +71,12 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
 
         BufferWriter requestWriter = request.GetWriter();
 
-        StringSerializer.Write(value, requestWriter);
+        StringSerializer.Write(ref requestWriter, value);
 
         Response responseMessage = await SendRequestAsync(request);
         BufferReader responseReader = responseMessage.GetReader();
 
-        string result = StringSerializer.Read(responseReader);
+        string result = StringSerializer.ReadString(ref responseReader);
 
         return result;
     }

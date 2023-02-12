@@ -85,6 +85,7 @@ public class IncrementerTest : Test
         using (IncrementerServer server = StartServer())
         {
             client = await ConnectClient(server);
+            // WaitForThreads();
         }
 
         client.Dispose();
