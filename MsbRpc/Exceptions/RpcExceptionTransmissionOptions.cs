@@ -10,6 +10,6 @@ public enum RpcExceptionTransmissionOptions : byte
     SourceExecutionStage = 1 << 1,
     ExceptionMessage = 1 << 2,
     RemoteContinuation = 1 << 3,
-    AllExceptionDetails = ExceptionTypeName |  ExceptionMessage,
+    AllExceptionDetails = ExceptionTypeName | ExceptionMessage,
     All = AllExceptionDetails | SourceExecutionStage | RemoteContinuation
 }

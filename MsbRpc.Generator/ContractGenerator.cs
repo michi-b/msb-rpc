@@ -62,27 +62,46 @@ public class ContractGenerator : IIncrementalGenerator
     {
         try
         {
-            ContractNode contract = new(ref contractInfo, context);
-            if (contract.IsValid)
+            ContractNode contract = new(ref contractInfo);
+            ReportDiagnostics(context, contract);
+            ProcedureCollectionNode procedures = contract.Procedures;
+            context.GenerateFile(new ProcedureEnumFileWriter(procedures));
+            context.GenerateFile(new ProcedureEnumExtensionsWriter(procedures));
+            context.GenerateFile(EndPointWriter.Get(contract.ServerEndPoint));
+            context.GenerateFile(EndPointWriter.Get(contract.ClientEndPoint));
+            if (contract.Server != null)
             {
-                ProcedureCollectionNode procedures = contract.Procedures;
-                context.GenerateFile(new ProcedureEnumFileWriter(procedures));
-                context.GenerateFile(new ProcedureEnumExtensionsWriter(procedures));
-                context.GenerateFile(EndPointWriter.Get(contract.ServerEndPoint));
-                context.GenerateFile(EndPointWriter.Get(contract.ClientEndPoint));
-                if (contract.Server != null)
-                {
-                    context.GenerateFile(new ServerWriter(contract.Server));
-                }
-            }
-            else
-            {
-                context.ReportInvalidContract(contract);
+                context.GenerateFile(new ServerWriter(contract.Server));
             }
         }
         catch (Exception exception)
         {
             context.ReportContractGenerationException(ref contractInfo, exception);
+        }
+    }
+
+    private static void ReportDiagnostics(SourceProductionContext context, ContractNode contract)
+    {
+        foreach (ProcedureNode procedure in contract.Procedures)
+        {
+            ParameterCollectionNode? parameters = procedure.Parameters;
+            if (parameters != null)
+            {
+                foreach (ParameterNode parameter in parameters)
+                {
+                    TypeNode parameterType = parameter.Type;
+                    if (!parameterType.IsValidParameter)
+                    {
+                        context.ReportTypeIsNotAValidRpcParameter(contract, procedure, parameter);
+                    }
+                }
+            }
+
+            TypeNode returnType = procedure.ReturnType;
+            if (!returnType.IsValidReturnType)
+            {
+                context.ReportTypeIsNotAValidRpcReturnType(contract, procedure);
+            }
         }
     }
 }

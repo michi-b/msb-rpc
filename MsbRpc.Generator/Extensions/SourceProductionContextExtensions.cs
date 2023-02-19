@@ -9,7 +9,13 @@ namespace MsbRpc.Generator.Extensions;
 
 internal static class SourceProductionContextExtensions
 {
-    public static void ReportTypeIsNotAValidRpcParameter(this SourceProductionContext context, TypeNode typeNode)
+    public static void ReportTypeIsNotAValidRpcParameter
+    (
+        this SourceProductionContext context,
+        ContractNode contract,
+        ProcedureNode procedure,
+        ParameterNode parameter
+    )
     {
         context.ReportDiagnostic
         (
@@ -17,13 +23,22 @@ internal static class SourceProductionContextExtensions
             (
                 TypeIsNotAValidRpcParameter,
                 Location.None,
-                typeNode.FullName,
-                typeNode.SerializationKind.GetName()
+                contract.InterfaceName,
+                procedure.Name,
+                parameter.Name,
+                parameter.Index.ToString(),
+                parameter.Type.FullName,
+                parameter.Type.SerializationKind.GetName()
             )
         );
     }
 
-    public static void ReportTypeIsNotAValidRpcReturnType(this SourceProductionContext context, TypeNode typeNode)
+    public static void ReportTypeIsNotAValidRpcReturnType
+    (
+        this SourceProductionContext context,
+        ContractNode contract,
+        ProcedureNode procedure
+    )
     {
         context.ReportDiagnostic
         (
@@ -31,15 +46,12 @@ internal static class SourceProductionContextExtensions
             (
                 TypeIsNotAValidRpcReturnType,
                 Location.None,
-                typeNode.FullName,
-                typeNode.SerializationKind.GetName()
+                contract.InterfaceName,
+                procedure.Name,
+                procedure.ReturnType.FullName,
+                procedure.ReturnType.SerializationKind.GetName()
             )
         );
-    }
-
-    public static void ReportInvalidContract(this SourceProductionContext context, ContractNode contract)
-    {
-        context.ReportDiagnostic(Diagnostic.Create(InvalidGeneratorContract, Location.None, contract.PascalCaseName));
     }
 
     public static void ReportContractGenerationException(this SourceProductionContext context, ref ContractInfo contractInfo, Exception exception)

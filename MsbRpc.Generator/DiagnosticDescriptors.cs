@@ -9,19 +9,9 @@ public static class DiagnosticDescriptors
 {
     public static readonly DiagnosticDescriptor ContractGeneratorException = new DiagnosticDescriptor
     (
-        "MR0999",
+        "MR1000",
         "Contract Generator Exception",
         "generator for contract '{0}' is skipped due to an exception ({1}) while generating code: '{2}'",
-        "Generator",
-        DiagnosticSeverity.Error,
-        true
-    );
-
-    public static readonly DiagnosticDescriptor InvalidGeneratorContract = new DiagnosticDescriptor
-    (
-        "MR1000",
-        "Contract Generator Error",
-        "contract generator skipped code generation for contract '{0}' because the contract is invalid",
         "Generator",
         DiagnosticSeverity.Error,
         true
@@ -31,9 +21,10 @@ public static class DiagnosticDescriptors
     (
         "MR1001",
         "Invalid RPC Parameter Type",
-        "the type {0} with serialization kind {1} is not a valid RPC parameter type",
+        "parameter '{2}' at position {3} has type '{4}' with serialization kind '{5}', which is not a valid RPC parameter type"
+        + ", and will therefore be replaced with the default value in calls to {0}.{1}",
         "Generator",
-        DiagnosticSeverity.Error,
+        DiagnosticSeverity.Warning,
         true
     );
 
@@ -41,9 +32,10 @@ public static class DiagnosticDescriptors
     (
         "MR1002",
         "Invalid RPC Return Type",
-        "The type {0} with serialization kind {1} is not a valid return type for an RPC method",
+        "RPC return type '{2}' with serialization kind '{3}' is not a valid RPC return type"
+        + ", and will therefore not be transmitted back from {0}.{1}",
         "Generator",
-        DiagnosticSeverity.Error,
+        DiagnosticSeverity.Warning,
         true
     );
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -25,6 +26,7 @@ public class GeneratorTest : Test
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
+    string IncrementString(string value);
     public void Store(int value);
     public void IncrementStored();
     public int GetStored();
@@ -84,7 +86,7 @@ public interface IIncrementer : IRpcContract
     [TestMethod]
     public async Task GeneratorThrowsNoException()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(loggingOptions: CodeTest.LoggingOptions.None);
+        GeneratorDriverRunResult rpcGeneratorResults = (await RunCodeTest()).GeneratorResults[typeof(ContractGenerator)].GetRunResult();
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         Assert.AreEqual(null, rpcGeneratorResult.Exception);
     }
@@ -92,9 +94,11 @@ public interface IIncrementer : IRpcContract
     [TestMethod]
     public async Task GeneratorReportsNoDiagnostics()
     {
-        GeneratorDriverRunResult rpcGeneratorResults = await RunGenerator(loggingOptions: CodeTest.LoggingOptions.GeneratorDiagnostics);
+        CodeTestResult codeTestResult = await RunCodeTest(null, CodeTest.LoggingOptions.GeneratorDiagnostics);
+        GeneratorDriverRunResult rpcGeneratorResults = codeTestResult.GetGeneratorDriverRunResult<ContractGenerator>();
         GeneratorRunResult rpcGeneratorResult = rpcGeneratorResults.Results[0];
         ImmutableArray<Diagnostic> diagnostics = rpcGeneratorResult.Diagnostics;
+
         Assert.AreEqual(0, diagnostics.Length);
     }
 
@@ -103,11 +107,15 @@ public interface IIncrementer : IRpcContract
     {
         CodeTestResult result = await RunCodeTest(loggingOptions: CodeTest.LoggingOptions.FinalDiagnostics);
         ImmutableArray<Diagnostic> diagnostics = result.Compilation.GetDiagnostics();
+
+        await LogDiagnosticSourceTrees(result, diagnostics);
+
         Assert.AreEqual(0, diagnostics.Length);
     }
 
     [TestMethod]
-    public async Task GeneratesOneOrMoreTrees() => Assert.That.HasGeneratedAnyTree(await RunGenerator(loggingOptions: CodeTest.LoggingOptions.Code));
+    public async Task GeneratesOneOrMoreTrees()
+        => Assert.That.HasGeneratedAnyTree((await RunCodeTest(null, CodeTest.LoggingOptions.All)).GeneratorResults[typeof(ContractGenerator)].GetRunResult());
 
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
@@ -139,23 +147,37 @@ public interface IIncrementer : IRpcContract
         await TestGenerates("IncrementerServer.g.cs");
     }
 
+    private async Task LogDiagnosticSourceTrees(CodeTestResult result, ImmutableArray<Diagnostic> diagnostics)
+    {
+        IEnumerable<string> diagnosticTargetFilePaths = from diagnostic in diagnostics
+            where diagnostic.Location.SourceTree != null
+            select diagnostic.Location.SourceTree.FilePath;
+        foreach (string filePath in diagnosticTargetFilePaths.Distinct())
+        {
+            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+            foreach (KeyValuePair<Type, GeneratorDriver> generatorResult in result.GeneratorResults)
+            {
+                ImmutableArray<SyntaxTree> syntaxTrees = generatorResult.Value.GetRunResult().GeneratedTrees;
+                foreach (SyntaxTree tree in syntaxTrees.Where(tree => tree.FilePath == filePath))
+                {
+                    await Logger.LogTreeAsync(tree, filePath, CancellationToken);
+                }
+            }
+        }
+    }
+
     private async Task TestGenerates(string shortFileName)
     {
         bool IsTargetDiagnostic(Diagnostic diagnostic) => diagnostic.Location.SourceTree == null || diagnostic.Location.SourceTree.GetShortFilename() == shortFileName;
 
-        GeneratorDriverRunResult result = await RunGenerator(IsTargetDiagnostic);
+        Predicate<Diagnostic>? diagnosticFilter = IsTargetDiagnostic;
+        GeneratorDriverRunResult result = (await RunCodeTest(diagnosticFilter, CodeTest.LoggingOptions.Diagnostics)).GeneratorResults[typeof(ContractGenerator)]
+            .GetRunResult();
         SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);
         Assert.IsNotNull(tree);
         await Logger.LogTreeAsync(tree, nameof(GeneratesServerProcedureEnum), CancellationToken);
         Logger.LogInformation("Full file path is '{TreeFilePath}'", tree.FilePath);
     }
-
-    private async Task<GeneratorDriverRunResult> RunGenerator
-    (
-        Predicate<Diagnostic>? diagnosticFilter = null,
-        CodeTest.LoggingOptions loggingOptions = CodeTest.LoggingOptions.Diagnostics
-    )
-        => (await RunCodeTest(diagnosticFilter, loggingOptions)).GeneratorResults[typeof(ContractGenerator)].GetRunResult();
 
     private async Task<CodeTestResult> RunCodeTest
     (

@@ -5,9 +5,9 @@ namespace MsbRpc.Configuration;
 
 public abstract class OutboundEndPointConfiguration : EndPointConfiguration
 {
-    public LogConfiguration LogSentAnyRequest;
-    public LogConfiguration LogRemoteRpcException;
     public LogConfiguration LogExceptionTransmissionException;
+    public LogConfiguration LogRemoteRpcException;
+    public LogConfiguration LogSentAnyRequest;
 
     protected OutboundEndPointConfiguration()
     {

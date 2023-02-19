@@ -101,7 +101,7 @@ public class IncrementerServerEndPoint
             response = Buffer.GetResponse(Implementation.RanToCompletion, responseSize);
             BufferWriter responseWriter = response.GetWriter();
 
-            StringSerializer.Write(ref responseWriter, result);
+            responseWriter.Write(result);
         }
         catch (Exception e)
         {
