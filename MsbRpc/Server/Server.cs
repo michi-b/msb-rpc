@@ -23,6 +23,7 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
     private const int DefaultListenBacklogSize = 100;
     private readonly ServerConfiguration _configuration;
     private readonly ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> _connections;
+    private readonly object _disposeLock = new();
     private readonly Socket _listenSocket;
 
     private readonly ILogger<TServer>? _logger;
@@ -60,7 +61,12 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
     [PublicAPI]
     public Thread Start()
     {
-        lock (this)
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(_threadName);
+        }
+
+        lock (_disposeLock)
         {
             if (_isDisposed)
             {
@@ -80,7 +86,12 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
 
     public KeyValuePair<int, ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>.Entry>[] CreateConnectionDump()
     {
-        lock (this)
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(_threadName);
+        }
+
+        lock (_disposeLock)
         {
             if (_isDisposed)
             {
@@ -93,15 +104,21 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
 
     public void Dispose()
     {
-        if (!_isDisposed)
+        if (_isDisposed)
         {
-            lock (this)
+            return;
+        }
+
+        lock (_disposeLock)
+        {
+            if (_isDisposed)
             {
-                _isDisposed = true;
-                _listenSocket.Dispose();
-                _connections.Dispose();
+                return;
             }
 
+            _isDisposed = true;
+            _listenSocket.Dispose();
+            _connections.Dispose();
             _listenThread?.Join();
         }
     }
@@ -130,26 +147,29 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
                 }
             }
         }
-        catch (SocketException socketException)
-        {
-            if (_isDisposed && socketException.SocketErrorCode == SocketError.Interrupted)
-            {
-                LogStoppedListeningDueToDisposal();
-            }
-            else
-            {
-                LogStoppedListeningDueToException(socketException);
-                throw;
-            }
-        }
         catch (Exception exception)
         {
-            LogStoppedListeningDueToException(exception);
-            throw;
-        }
-        finally
-        {
-            Dispose();
+            switch (exception)
+            {
+                case SocketException { SocketErrorCode: SocketError.Interrupted }:
+                case ObjectDisposedException:
+                    if (_isDisposed)
+                    {
+                        LogStoppedListeningDueToDisposal(exception);
+                    }
+                    else
+                    {
+                        LogStoppedListeningDueToException(exception);
+                        Dispose();
+                        throw;
+                    }
+
+                    return;
+                default:
+                    LogStoppedListeningDueToException(exception);
+                    Dispose();
+                    throw;
+            }
         }
     }
 
@@ -190,7 +210,7 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
         }
     }
 
-    private void LogStoppedListeningDueToDisposal()
+    private void LogStoppedListeningDueToDisposal(Exception exception)
     {
         if (_logger != null)
         {
@@ -201,6 +221,7 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
                 (
                     configuration.Level,
                     configuration.Id,
+                    exception,
                     "Stopped listening due to disposal"
                 );
             }

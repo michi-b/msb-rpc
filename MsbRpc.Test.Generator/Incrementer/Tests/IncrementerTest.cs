@@ -377,7 +377,7 @@ public class IncrementerTest : Test
         return IncrementerClientEndPoint.ConnectAsync(endPoint, ConfigureClientEndPoint);
     }
 
-    private IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmission = RpcExceptionTransmissionOptions.None)
+    private static IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmission = RpcExceptionTransmissionOptions.None)
     {
         return IncrementerServer.Start(() => new Incrementer(exceptionTransmission), ConfigureServer, ConfigureServerEndPoint);
     }
