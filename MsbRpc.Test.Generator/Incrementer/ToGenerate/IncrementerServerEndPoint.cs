@@ -71,7 +71,7 @@ public class IncrementerServerEndPoint
     {
         BufferReader requestReader = request.GetReader();
 
-        string valueArgument;
+        string? valueArgument;
         try
         {
             valueArgument = requestReader.ReadString();
@@ -81,7 +81,7 @@ public class IncrementerServerEndPoint
             throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ArgumentDeserialization);
         }
 
-        string result;
+        string? result;
         try
         {
             result = Implementation.IncrementString(valueArgument);

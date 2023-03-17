@@ -211,6 +211,16 @@ public class IncrementerTest : Test
     }
 
     [TestMethod]
+    public async Task IncrementsNullString()
+    {
+        const string? value = null;
+        using IncrementerServer server = StartServer();
+        IncrementerClientEndPoint client = await ConnectClient(server);
+        string? result = await client.IncrementStringAsync(value);
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
     [ExpectedException(typeof(RpcRemoteException<IncrementerProcedure>))]
     public async Task IncrementInvalidStringThrowsWithNoExceptionDetails()
     {
