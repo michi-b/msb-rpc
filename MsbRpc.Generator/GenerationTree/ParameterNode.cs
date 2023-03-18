@@ -21,7 +21,7 @@ internal class ParameterNode
         WriteToRequestWriterStatement = $"{Variables.RequestWriter}.{Methods.BufferWrite}({Name});";
     }
 
-    public string GetRequestReadStatement() => $"{Type.Name} {ArgumentVariableName} = {Type.GetBufferReadExpression(Variables.RequestReader)};";
+    public string GetRequestReadStatement() => $"{Type.DeclarationSyntax} {ArgumentVariableName} = {Type.GetBufferReadExpression(Variables.RequestReader)};";
 
     public override string ToString() => $"{Name} ({Type})";
 }

@@ -86,7 +86,7 @@ internal class OutboundEndPointWriter : EndPointWriter
         writer.Write
         (
             procedure.HasReturnValue
-                ? $"{Types.VaLueTask}<{procedure.ReturnType.Name}>"
+                ? $"{Types.VaLueTask}<{procedure.ReturnType.DeclarationSyntax}>"
                 : $"{Types.VaLueTask}"
         );
         writer.WriteLine($" {procedure.Name}{AsyncPostFix}");
@@ -101,8 +101,8 @@ internal class OutboundEndPointWriter : EndPointWriter
                     writer.WriteLine
                     (
                         i < parameters.Count - 1
-                            ? $"{parameter.Type.Name} {parameter.Name},"
-                            : $"{parameter.Type.Name} {parameter.Name}"
+                            ? $"{parameter.Type.DeclarationSyntax} {parameter.Name},"
+                            : $"{parameter.Type.DeclarationSyntax} {parameter.Name}"
                     );
                 }
             }

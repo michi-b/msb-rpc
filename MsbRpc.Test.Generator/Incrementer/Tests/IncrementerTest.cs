@@ -216,7 +216,7 @@ public class IncrementerTest : Test
         const string? value = null;
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-        string? result = await client.IncrementStringAsync(value);
+        string result = await client.IncrementStringAsync(value);
         Assert.IsNull(result);
     }
 

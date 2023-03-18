@@ -74,7 +74,7 @@ public class IncrementerServerEndPoint
         string? valueArgument;
         try
         {
-            valueArgument = requestReader.ReadString();
+            valueArgument = requestReader.ReadStringNullable();
         }
         catch (Exception e)
         {
@@ -94,14 +94,14 @@ public class IncrementerServerEndPoint
         Response response;
         try
         {
-            int resultSize = StringSerializer.GetSize(result);
+            int resultSize = NullableStringSerializer.GetSize(result);
 
             int responseSize = resultSize + PrimitiveSerializer.IntSize;
 
             response = Buffer.GetResponse(Implementation.RanToCompletion, responseSize);
             BufferWriter responseWriter = response.GetWriter();
 
-            responseWriter.Write(result);
+            responseWriter.WriteNullable(result);
         }
         catch (Exception e)
         {

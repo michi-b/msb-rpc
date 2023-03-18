@@ -23,6 +23,7 @@ internal static class SerializationKindExtensions
             SerializationKind.Double => "double",
             SerializationKind.Decimal => "decimal",
             SerializationKind.Void => "void",
+            SerializationKind.String => "string",
             _ => null
         };
     }
@@ -44,6 +45,7 @@ internal static class SerializationKindExtensions
             SerializationKind.Float => true,
             SerializationKind.Double => true,
             SerializationKind.Decimal => true,
+            SerializationKind.String => true,
             SerializationKind.Void => false,
             _ => false
         };
@@ -66,6 +68,7 @@ internal static class SerializationKindExtensions
             SerializationKind.Float => true,
             SerializationKind.Double => true,
             SerializationKind.Decimal => true,
+            SerializationKind.String => true,
             SerializationKind.Void => true,
             _ => false
         };
@@ -92,7 +95,7 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static string? GetBufferReadMethodName(this SerializationKind target)
+    public static string? GetBufferReadMethodName(this SerializationKind target, bool isNullable)
     {
         return target switch
         {
@@ -109,6 +112,7 @@ internal static class SerializationKindExtensions
             SerializationKind.Float => "ReadFloat",
             SerializationKind.Double => "ReadDouble",
             SerializationKind.Decimal => "ReadDecimal",
+            SerializationKind.String => isNullable ? "ReadStringNullable" : "ReadString",
             _ => null
         };
     }
@@ -132,6 +136,7 @@ internal static class SerializationKindExtensions
             SerializationKind.Double => nameof(SerializationKind.Double),
             SerializationKind.Decimal => nameof(SerializationKind.Decimal),
             SerializationKind.Void => nameof(SerializationKind.Void),
+            SerializationKind.String => nameof(SerializationKind.String),
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }

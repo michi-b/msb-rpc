@@ -102,7 +102,7 @@ internal class InboundEndPointWriter : EndPointWriter
             //call the contract implementation
             if (!returnType.IsVoid)
             {
-                writer.Write($"{returnType.Name} {Variables.Result} = ");
+                writer.Write($"{returnType.DeclarationSyntax} {Variables.Result} = ");
             }
 
             writer.Write($"{implementationField}.{procedure.Name}");

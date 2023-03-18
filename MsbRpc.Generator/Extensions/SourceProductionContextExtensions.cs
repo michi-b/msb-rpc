@@ -27,7 +27,7 @@ internal static class SourceProductionContextExtensions
                 procedure.Name,
                 parameter.Name,
                 parameter.Index.ToString(),
-                parameter.Type.FullName,
+                parameter.Type.DeclarationSyntax,
                 parameter.Type.SerializationKind.GetName()
             )
         );
@@ -48,7 +48,7 @@ internal static class SourceProductionContextExtensions
                 Location.None,
                 contract.InterfaceName,
                 procedure.Name,
-                procedure.ReturnType.FullName,
+                procedure.ReturnType.DeclarationSyntax,
                 procedure.ReturnType.SerializationKind.GetName()
             )
         );

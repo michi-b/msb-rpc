@@ -59,9 +59,9 @@ public class RpcExceptionTransmission
     public Message GetMessage(RpcBuffer buffer)
     {
         const int optionsSize = 1;
-        int typeNameSize = HasExceptionTypeName ? StringSerializer.GetSize(ExceptionTypeName) : 0;
+        int typeNameSize = HasExceptionTypeName ? NullableStringSerializer.GetSize(ExceptionTypeName) : 0;
         int executionStageSize = HasSourceExecutionStage ? 1 : 0;
-        int messageSize = HasExceptionMessage ? StringSerializer.GetSize(ExceptionMessage) : 0;
+        int messageSize = HasExceptionMessage ? NullableStringSerializer.GetSize(ExceptionMessage) : 0;
         int continuationSize = HasRemoteContinuation ? 1 : 0;
 
         int size = optionsSize + typeNameSize + messageSize + executionStageSize + continuationSize;

@@ -170,7 +170,7 @@ public interface IIncrementer : IRpcContract
     {
         bool IsTargetDiagnostic(Diagnostic diagnostic) => diagnostic.Location.SourceTree == null || diagnostic.Location.SourceTree.GetShortFilename() == shortFileName;
 
-        Predicate<Diagnostic>? diagnosticFilter = IsTargetDiagnostic;
+        Predicate<Diagnostic> diagnosticFilter = IsTargetDiagnostic;
         GeneratorDriverRunResult result = (await RunCodeTest(diagnosticFilter, CodeTest.LoggingOptions.Diagnostics)).GeneratorResults[typeof(ContractGenerator)]
             .GetRunResult();
         SyntaxTree? tree = result.GeneratedTrees.FirstOrDefault(tree => tree.GetShortFilename() == shortFileName);

@@ -27,7 +27,8 @@ internal readonly struct TypeNodeCache
     {
         string fullName = typeInfo.Namespace + "." + typeInfo.LocalName;
         SerializationKind serializationKind = GetIndependentSerializationKind(fullName);
-        return new TypeNode(fullName, serializationKind);
+        bool isNullable = typeInfo.IsNullable;
+        return new TypeNode(fullName, serializationKind, isNullable);
     }
 
     private static SerializationKind GetIndependentSerializationKind(string typeName)
@@ -47,6 +48,7 @@ internal readonly struct TypeNodeCache
             FloatTypeName => SerializationKind.Float,
             DoubleTypeName => SerializationKind.Double,
             DecimalTypeName => SerializationKind.Decimal,
+            StringTypeName => SerializationKind.String,
             VoidTypeName => SerializationKind.Void,
             _ => SerializationKind.Unresolved
         };
@@ -65,5 +67,6 @@ internal readonly struct TypeNodeCache
     private const string UshortTypeName = "System.UInt16";
     private const string DoubleTypeName = "System.Double";
     private const string DecimalTypeName = "System.Decimal";
+    private const string StringTypeName = "System.String";
     private const string VoidTypeName = "System.Void";
 }

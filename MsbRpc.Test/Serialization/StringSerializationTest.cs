@@ -11,7 +11,7 @@ public class StringSerializationTest
     public void PreservesHelloWorldInBufferReaderAndWriter()
     {
         const string value = "Hello World!";
-        int size = StringSerializer.GetSize(value);
+        int size = NullableStringSerializer.GetSize(value);
         var buffer = new ArraySegment<byte>(new byte[size]);
         var writer = new BufferWriter(buffer);
         writer.Write(value);

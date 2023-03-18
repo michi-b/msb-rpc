@@ -5,24 +5,30 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class TypeNode
 {
+    private readonly string _fullName;
+    private readonly string _name;
+
     public readonly string? ConstantSizeExpression;
-    public readonly string FullName;
+    public readonly string DeclarationSyntax;
     public readonly bool IsConstantSize;
+    public readonly bool IsNullable;
     public readonly bool IsValidParameter;
     public readonly bool IsValidReturnType;
     public readonly bool IsVoid;
-    public readonly string Name;
 
     public readonly SerializationKind SerializationKind;
 
-    public TypeNode(string fullName, SerializationKind serializationKind)
+    public TypeNode(string fullName, SerializationKind serializationKind, bool isNullable)
     {
         SerializationKind = serializationKind;
 
+        IsNullable = isNullable;
+        _fullName = fullName;
+
         if (serializationKind == SerializationKind.Unresolved)
         {
-            FullName = fullName;
-            Name = fullName;
+            DeclarationSyntax = isNullable ? fullName + '?' : fullName;
+            _name = _fullName;
             ConstantSizeExpression = null;
             IsConstantSize = false;
             IsValidParameter = false;
@@ -31,9 +37,15 @@ internal class TypeNode
         }
         else
         {
-            FullName = fullName;
             string? keyword = serializationKind.GetKeyword();
-            Name = keyword ?? FullName;
+            _name = keyword ?? _fullName;
+            DeclarationSyntax = keyword != null
+                ? isNullable
+                    ? keyword + '?'
+                    : keyword
+                : isNullable
+                    ? fullName + '?'
+                    : fullName;
             ConstantSizeExpression = SerializationKind.GetConstantSizeExpression();
             IsConstantSize = ConstantSizeExpression != null;
             IsValidParameter = serializationKind.GetIsValidParameterType();
@@ -42,13 +54,13 @@ internal class TypeNode
         }
     }
 
-    public string GetResponseReadStatement() => $"{Name} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
+    public string GetResponseReadStatement() => $"{_name} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
 
     public string GetBufferReadExpression(string bufferReaderExpression)
     {
-        string bufferReadMethodName = SerializationKind.GetBufferReadMethodName() ?? string.Empty;
+        string bufferReadMethodName = SerializationKind.GetBufferReadMethodName(IsNullable) ?? string.Empty;
         return $"{bufferReaderExpression}.{bufferReadMethodName}()";
     }
 
-    public override string ToString() => $"{FullName} ({SerializationKind.GetName()})";
+    public override string ToString() => $"{_fullName} ({SerializationKind.GetName()})";
 }

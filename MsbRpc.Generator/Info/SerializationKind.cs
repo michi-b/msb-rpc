@@ -16,5 +16,6 @@ internal enum SerializationKind
     Float = 11,
     Double = 12,
     Decimal = 13,
-    Void = 14
+    String = 14,
+    Void = 15
 }
