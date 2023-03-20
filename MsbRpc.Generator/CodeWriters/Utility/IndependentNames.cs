@@ -12,6 +12,11 @@ internal static class IndependentNames
     public const string SizePostfix = "Size";
     public const string AsyncPostFix = "Async";
 
+    public static class Namespaces
+    {
+        public const string MsbRpcSerialization = "MsbRpc.Serialization";
+    }
+    
     public static class Types
     {
         // system types
@@ -35,6 +40,9 @@ internal static class IndependentNames
         public const string Response = "MsbRpc.Serialization.Buffers.Response";
         public const string Request = "MsbRpc.Serialization.Buffers.Request";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
+        public const string StringSerializer = "MsbRpc.Serialization.StringSerializer";
+        public const string NullableStringSerializer = "MsbRpc.Serialization.NullableStringSerializer";
+        
 
         // endpoint types
         public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";

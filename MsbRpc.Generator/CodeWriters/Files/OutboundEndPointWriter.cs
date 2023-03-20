@@ -123,9 +123,10 @@ internal class OutboundEndPointWriter : EndPointWriter
         {
             foreach (ParameterNode parameter in parameters.ConstantSizeParameters)
             {
-                writer.WriteLine($"const int {parameter.SizeVariableName} = {parameter.Type.ConstantSizeExpression};");
+                parameter.WriteSizeVariableInitialization(writer);
             }
 
+            //todo: remove this constant/non-constant split since it creates more complexity than it brings performance benefits
             writer.Write($"const int {Variables.ConstantArgumentSizeSum} = ");
 
             for (int i = 0; i < parameters.ConstantSizeParameters.Count; i++)

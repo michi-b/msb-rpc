@@ -97,7 +97,6 @@ internal class InboundEndPointWriter : EndPointWriter
             }
 
             TypeNode returnType = procedure.ReturnType;
-            string implementationField = Fields.InboundEndpointImplementation;
 
             //call the contract implementation
             if (!returnType.IsVoid)
@@ -105,24 +104,20 @@ internal class InboundEndPointWriter : EndPointWriter
                 writer.Write($"{returnType.DeclarationSyntax} {Variables.Result} = ");
             }
 
-            writer.Write($"{implementationField}.{procedure.Name}");
+            writer.Write($"{Fields.InboundEndpointImplementation}.{procedure.Name}");
             writer.WriteLine(parameters != null ? $"({parameters.GetValueArgumentsString()});" : "();");
 
             writer.WriteLine();
 
             //return the result
-            if (returnType.IsVoid)
+            if (returnType.WriteSizeVariableInitialization(writer, Variables.ResultSize, Variables.Result))
             {
-                writer.WriteLine(ReturnEmptyResponseStatement);
+                writer.WriteLine();
+                writer.WriteReturnResultResponse();
             }
             else
             {
-                if (returnType.IsConstantSize)
-                {
-                    writer.WriteLine($"const int {Variables.ResultSize} = {returnType.ConstantSizeExpression};");
-                    writer.WriteLine();
-                    writer.WriteReturnResultResponse();
-                }
+                writer.WriteLine(ReturnEmptyResponseStatement);
             }
         }
     }

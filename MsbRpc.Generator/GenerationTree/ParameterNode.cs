@@ -1,4 +1,5 @@
-﻿using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+﻿using System.IO;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -24,4 +25,9 @@ internal class ParameterNode
     public string GetRequestReadStatement() => $"{Type.DeclarationSyntax} {ArgumentVariableName} = {Type.GetBufferReadExpression(Variables.RequestReader)};";
 
     public override string ToString() => $"{Name} ({Type})";
+
+    public void WriteSizeVariableInitialization(TextWriter writer)
+    {
+        Type.WriteSizeVariableInitialization(writer, SizeVariableName, Name);
+    }
 }

@@ -1,4 +1,6 @@
-﻿using System.CodeDom.Compiler;
+﻿using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
@@ -16,6 +18,8 @@ internal abstract class CodeFileWriter
     protected CodeFileWriter(ContractNode contract) : this(contract.Namespace) { }
 
     private CodeFileWriter(string generatedNamespace) => _generatedNamespace = generatedNamespace;
+
+    protected virtual IEnumerable<string> UsedNamespaces => Array.Empty<string>();
 
     public Result Generate()
     {
@@ -41,7 +45,16 @@ internal abstract class CodeFileWriter
     private IndentedTextWriter CreateCodeWriter()
     {
         IndentedTextWriter writer = new(new StringWriter());
+
+        foreach (string usedNamespace in UsedNamespaces)
+        {
+            writer.WriteLine($"using {usedNamespace};");
+        }
+        
+        writer.WriteLine();
+
         writer.WriteFileHeader(_generatedNamespace);
+        
         return writer;
     }
 }

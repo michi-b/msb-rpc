@@ -59,7 +59,7 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPo
         return result;
     }
 
-    public async ValueTask<string?> IncrementStringAsync(string? value)
+    public async ValueTask<string?> IncrementNullableStringAsync(string? value)
     {
         AssertIsOperable();
 
