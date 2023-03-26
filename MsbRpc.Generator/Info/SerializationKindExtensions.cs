@@ -28,7 +28,7 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static bool GetIsValidParameterType(this SerializationKind serializationKind)
+    public static bool GetIsBufferReadAndWritable(this SerializationKind serializationKind)
     {
         return serializationKind switch
         {
@@ -95,7 +95,7 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static string? GetBufferReadMethodName(this SerializationKind target, bool isNullable)
+    public static string? GetBufferReaderReadMethodName(this SerializationKind target, bool isNullable)
     {
         return target switch
         {
@@ -116,6 +116,13 @@ internal static class SerializationKindExtensions
             _ => null
         };
     }
+
+    public static string? GetBufferWriterWriteMethodName(this SerializationKind target, bool isNullable)
+        => target.GetIsBufferReadAndWritable()
+            ? isNullable
+                ? "WriteNullable"
+                : "Write"
+            : null;
 
     public static string GetName(this SerializationKind target)
     {

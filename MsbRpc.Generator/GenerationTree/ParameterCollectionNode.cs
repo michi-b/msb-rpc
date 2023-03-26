@@ -9,7 +9,6 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
 {
     private readonly ParameterNode[] _parameters;
-    public readonly IReadOnlyList<ParameterNode> ConstantSizeParameters;
 
     public int Count { get; }
 
@@ -19,7 +18,6 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
     {
         Count = parameterInfos.Length;
         _parameters = new ParameterNode[Count];
-        List<ParameterNode> constantSizeParameters = new(Count);
         for (int i = 0; i < Count; i++)
         {
             ParameterInfo parameterInfo = parameterInfos[i];
@@ -27,18 +25,8 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
 
             var parameter = new ParameterNode(parameterInfo.Name, i, type);
 
-            bool isConstantSize = parameter.Type.IsConstantSize;
-
             _parameters[i] = parameter;
-
-            if (isConstantSize)
-            {
-                constantSizeParameters.Add(parameter);
-            }
-            //todo: add dynamic size parameters
         }
-
-        ConstantSizeParameters = constantSizeParameters;
     }
 
     public IEnumerator<ParameterNode> GetEnumerator() => ((IEnumerable<ParameterNode>)_parameters).GetEnumerator();

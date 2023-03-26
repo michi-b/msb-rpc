@@ -47,7 +47,7 @@ internal class TypeNode
                     ? fullName + '?'
                     : fullName;
             _constantSizeExpression = SerializationKind.GetConstantSizeExpression();
-            IsValidParameter = serializationKind.GetIsValidParameterType();
+            IsValidParameter = serializationKind.GetIsBufferReadAndWritable();
             IsValidReturnType = serializationKind.GetIsValidReturnType();
             IsVoid = serializationKind == SerializationKind.Void;
         }
@@ -56,29 +56,36 @@ internal class TypeNode
     public bool WriteSizeVariableInitialization(TextWriter writer, string sizeVariableName, string targetExpression)
     {
         string? sizeExpression = GetSizeExpression(targetExpression);
-        
+
         if (sizeExpression == null)
         {
             return false;
         }
-        
+
         if (_constantSizeExpression != null)
         {
             writer.Write("const ");
         }
+
         writer.WriteLine($"int {sizeVariableName} = {sizeExpression};");
         return true;
     }
 
-    public string GetResponseReadStatement() => $"{_name} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
+    public string GetResponseReadStatement() => $"{DeclarationSyntax} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
 
     public string GetBufferReadExpression(string bufferReaderExpression)
     {
-        string bufferReadMethodName = SerializationKind.GetBufferReadMethodName(IsNullable) ?? string.Empty;
-        return $"{bufferReaderExpression}.{bufferReadMethodName}()";
+        string bufferReaderReadMethod = SerializationKind.GetBufferReaderReadMethodName(IsNullable) ?? string.Empty;
+        return $"{bufferReaderExpression}.{bufferReaderReadMethod}()";
     }
 
     public override string ToString() => $"{_fullName} ({SerializationKind.GetName()})";
+
+    public string GetBufferWriterWriteStatement(string bufferWriterExpression, string variableName)
+    {
+        string bufferWriterWriteMethod = SerializationKind.GetBufferWriterWriteMethodName(IsNullable) ?? string.Empty;
+        return $"{bufferWriterExpression}.{bufferWriterWriteMethod}({variableName});";
+    }
 
     private string? GetSizeExpression(string targetExpression)
     {

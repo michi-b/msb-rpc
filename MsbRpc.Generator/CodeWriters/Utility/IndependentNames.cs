@@ -16,7 +16,7 @@ internal static class IndependentNames
     {
         public const string MsbRpcSerialization = "MsbRpc.Serialization";
     }
-    
+
     public static class Types
     {
         // system types
@@ -42,7 +42,6 @@ internal static class IndependentNames
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
         public const string StringSerializer = "MsbRpc.Serialization.StringSerializer";
         public const string NullableStringSerializer = "MsbRpc.Serialization.NullableStringSerializer";
-        
 
         // endpoint types
         public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";
@@ -137,7 +136,7 @@ internal static class IndependentNames
         public const string ResultSize = "resultSize";
         public const string ResponseWriter = "responseWriter";
         public const string Messenger = "messenger";
-        public const string ConstantArgumentSizeSum = "constantArgumentSizeSum";
+        public const string ArgumentSizeSum = "argumentSizeSum";
         public const string Configuration = "configuration";
         public const string EndPointConfiguration = "endPointConfiguration";
         public const string Server = "server";

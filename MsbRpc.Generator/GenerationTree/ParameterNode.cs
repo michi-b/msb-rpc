@@ -19,7 +19,7 @@ internal class ParameterNode
         SizeVariableName = ArgumentVariableName + SizePostfix;
         Index = index;
         Type = type;
-        WriteToRequestWriterStatement = $"{Variables.RequestWriter}.{Methods.BufferWrite}({Name});";
+        WriteToRequestWriterStatement = type.GetBufferWriterWriteStatement(Variables.RequestWriter, Name);
     }
 
     public string GetRequestReadStatement() => $"{Type.DeclarationSyntax} {ArgumentVariableName} = {Type.GetBufferReadExpression(Variables.RequestReader)};";

@@ -15,11 +15,11 @@ internal abstract class CodeFileWriter
 
     protected abstract string FileName { get; }
 
+    protected virtual IEnumerable<string> UsedNamespaces => Array.Empty<string>();
+
     protected CodeFileWriter(ContractNode contract) : this(contract.Namespace) { }
 
     private CodeFileWriter(string generatedNamespace) => _generatedNamespace = generatedNamespace;
-
-    protected virtual IEnumerable<string> UsedNamespaces => Array.Empty<string>();
 
     public Result Generate()
     {
@@ -50,11 +50,11 @@ internal abstract class CodeFileWriter
         {
             writer.WriteLine($"using {usedNamespace};");
         }
-        
+
         writer.WriteLine();
 
         writer.WriteFileHeader(_generatedNamespace);
-        
+
         return writer;
     }
 }

@@ -121,29 +121,28 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         if (parameters != null)
         {
-            foreach (ParameterNode parameter in parameters.ConstantSizeParameters)
+            foreach (ParameterNode parameter in parameters)
             {
                 parameter.WriteSizeVariableInitialization(writer);
             }
 
-            //todo: remove this constant/non-constant split since it creates more complexity than it brings performance benefits
-            writer.Write($"const int {Variables.ConstantArgumentSizeSum} = ");
+            writer.Write($"int {Variables.ArgumentSizeSum} = ");
 
-            for (int i = 0; i < parameters.ConstantSizeParameters.Count; i++)
+            for (int i = 0; i < parameters.Count; i++)
             {
-                ParameterNode parameter = parameters.ConstantSizeParameters[i];
+                ParameterNode parameter = parameters[i];
                 if (i > 0)
                 {
                     writer.Write("+ ");
                 }
 
                 writer.Write(parameter.SizeVariableName);
-                writer.WriteLine(i == parameters.ConstantSizeParameters.Count - 1 ? ";" : string.Empty);
+                writer.WriteLine(i == parameters.Count - 1 ? ";" : string.Empty);
             }
 
             writer.WriteLine();
 
-            writer.WriteLine($"{RequestInitializationWithoutParameters}({getProcedureIdExpression}, {Variables.ConstantArgumentSizeSum});");
+            writer.WriteLine($"{RequestInitializationWithoutParameters}({getProcedureIdExpression}, {Variables.ArgumentSizeSum});");
             writer.WriteLine($"{RequestWriterInitializationStatement}");
 
             writer.WriteLine();
