@@ -197,7 +197,7 @@ public static class BufferExtensions
 
     #endregion
 
-    #region UInt64
+    #region ULong
 
     public static ulong ReadUlong(this ArraySegment<byte> target, int offset = 0)
     {
@@ -273,6 +273,214 @@ public static class BufferExtensions
     {
         target.AssertContains(PrimitiveSerializer.DecimalSize, offset);
         target.Array!.WriteDecimal(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableByte
+
+    public static byte? ReadByteNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableByteSize, offset);
+        return target.Array!.ReadByteNullable(target.Offset(offset));
+    }
+
+    public static void WriteByteNullable(this ArraySegment<byte> target, byte? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableByteSize, offset);
+        target.Array!.WriteByteNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableSByte
+
+    public static sbyte? ReadSbyteNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableSbyteSize, offset);
+        return target.Array!.ReadSbyteNullable(target.Offset(offset));
+    }
+
+    public static void WriteSbyteNullable(this ArraySegment<byte> target, sbyte? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableSbyteSize, offset);
+        target.Array!.WriteSbyteNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableBool
+
+    public static bool? ReadBoolNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableBoolSize, offset);
+        return target.Array!.ReadBoolNullable(target.Offset(offset));
+    }
+
+    public static void WriteBoolNullable(this ArraySegment<byte> target, bool? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableBoolSize, offset);
+        target.Array!.WriteBoolNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableChar
+
+    public static char? ReadCharNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableCharSize, offset);
+        return target.Array!.ReadCharNullable(target.Offset(offset));
+    }
+
+    public static void WriteCharNullable(this ArraySegment<byte> target, char? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableCharSize, offset);
+        target.Array!.WriteCharNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableInt
+
+    public static int? ReadIntNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableIntSize, offset);
+        return target.Array!.ReadIntNullable(target.Offset(offset));
+    }
+
+    public static void WriteIntNullable(this ArraySegment<byte> target, int? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableIntSize, offset);
+        target.Array!.WriteIntNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableLong
+
+    public static long? ReadLongNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableLongSize, offset);
+        return target.Array!.ReadLongNullable(target.Offset(offset));
+    }
+
+    public static void WriteLongNullable(this ArraySegment<byte> target, long? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableLongSize, offset);
+        target.Array!.WriteLongNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableShort
+
+    public static short? ReadShortNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableShortSize, offset);
+        return target.Array!.ReadShortNullable(target.Offset(offset));
+    }
+
+    public static void WriteShortNullable(this ArraySegment<byte> target, short? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableShortSize, offset);
+        target.Array!.WriteShortNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableUInt
+
+    public static uint? ReadUintNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableUintSize, offset);
+        return target.Array!.ReadUintNullable(target.Offset(offset));
+    }
+
+    public static void WriteUintNullable(this ArraySegment<byte> target, uint? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableUintSize, offset);
+        target.Array!.WriteUintNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableULong
+
+    public static ulong? ReadUlongNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableUlongSize, offset);
+        return target.Array!.ReadUlongNullable(target.Offset(offset));
+    }
+
+    public static void WriteUlongNullable(this ArraySegment<byte> target, ulong? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableUlongSize, offset);
+        target.Array!.WriteUlongNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableUShort
+
+    public static ushort? ReadUshortNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableUshortSize, offset);
+        return target.Array!.ReadUshortNullable(target.Offset(offset));
+    }
+
+    public static void WriteUshortNullable(this ArraySegment<byte> target, ushort? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableUshortSize, offset);
+        target.Array!.WriteUshortNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableFloat
+
+    public static float? ReadFloatNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableFloatSize, offset);
+        return target.Array!.ReadFloatNullable(target.Offset(offset));
+    }
+
+    public static void WriteFloatNullable(this ArraySegment<byte> target, float? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableFloatSize, offset);
+        target.Array!.WriteFloatNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableDouble
+
+    public static double? ReadDoubleNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableDoubleSize, offset);
+        return target.Array!.ReadDoubleNullable(target.Offset(offset));
+    }
+
+    public static void WriteDoubleNullable(this ArraySegment<byte> target, double? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableDoubleSize, offset);
+        target.Array!.WriteDoubleNullable(value, target.Offset(offset));
+    }
+
+    #endregion
+
+    #region NullableDecimal
+
+    public static decimal? ReadDecimalNullable(this ArraySegment<byte> target, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableDecimalSize, offset);
+        return target.Array!.ReadDecimalNullable(target.Offset(offset));
+    }
+
+    public static void WriteDecimalNullable(this ArraySegment<byte> target, decimal? value, int offset = 0)
+    {
+        target.AssertContains(PrimitiveSerializer.NullableDecimalSize, offset);
+        target.Array!.WriteDecimalNullable(value, target.Offset(offset));
     }
 
     #endregion

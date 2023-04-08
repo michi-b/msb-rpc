@@ -101,6 +101,84 @@ public struct BufferWriter
         _buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
     }
 
+    [MayBeUsedByGenerator]
+    public void WriteNullable(byte? value)
+    {
+        _buffer.WriteByteNullable(value, PostIncrementPosition(NullableByteSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(sbyte? value)
+    {
+        _buffer.WriteSbyteNullable(value, PostIncrementPosition(NullableSbyteSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(bool? value)
+    {
+        _buffer.WriteBoolNullable(value, PostIncrementPosition(NullableBoolSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(char? value)
+    {
+        _buffer.WriteCharNullable(value, PostIncrementPosition(NullableCharSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(int? value)
+    {
+        _buffer.WriteIntNullable(value, PostIncrementPosition(NullableIntSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(long? value)
+    {
+        _buffer.WriteLongNullable(value, PostIncrementPosition(NullableLongSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(short? value)
+    {
+        _buffer.WriteShortNullable(value, PostIncrementPosition(NullableShortSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(uint? value)
+    {
+        _buffer.WriteUintNullable(value, PostIncrementPosition(NullableUintSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(ulong? value)
+    {
+        _buffer.WriteUlongNullable(value, PostIncrementPosition(NullableUlongSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(ushort? value)
+    {
+        _buffer.WriteUshortNullable(value, PostIncrementPosition(NullableUshortSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(float? value)
+    {
+        _buffer.WriteFloatNullable(value, PostIncrementPosition(NullableFloatSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(double? value)
+    {
+        _buffer.WriteDoubleNullable(value, PostIncrementPosition(NullableDoubleSize));
+    }
+
+    [MayBeUsedByGenerator]
+    public void WriteNullable(decimal? value)
+    {
+        _buffer.WriteDecimalNullable(value, PostIncrementPosition(NullableDecimalSize));
+    }
+
     [PublicAPI]
     public ArraySegment<byte> GetWriteSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);
 }
