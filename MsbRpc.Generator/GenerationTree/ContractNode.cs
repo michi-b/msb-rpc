@@ -24,7 +24,7 @@ internal class ContractNode
         InterfaceName = info.InterfaceName;
         InterfaceType = $"{info.Namespace}.{info.InterfaceName}";
         PascalCaseName = GetContractName(InterfaceName);
-        PascalCaseName.ToCamelCase();
+        PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
         var typeCache = new TypeNodeCache();
@@ -52,6 +52,6 @@ internal class ContractNode
                            && char.IsUpper(contractInterfaceName[1])
             ? contractInterfaceName.Substring(1)
             : contractInterfaceName;
-        return iStripped.ToPascalCase();
+        return iStripped.CamelToPascalCase();
     }
 }

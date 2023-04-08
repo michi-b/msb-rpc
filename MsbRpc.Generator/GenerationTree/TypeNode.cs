@@ -46,7 +46,7 @@ internal class TypeNode
                 : isNullable
                     ? fullName + '?'
                     : fullName;
-            _constantSizeExpression = SerializationKind.GetConstantSizeExpression();
+            _constantSizeExpression = SerializationKind.GetConstantSizeExpression(isNullable);
             IsValidParameter = serializationKind.GetIsBufferReadAndWritable();
             IsValidReturnType = serializationKind.GetIsValidReturnType();
             IsVoid = serializationKind == SerializationKind.Void;

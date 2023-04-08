@@ -11,7 +11,7 @@ internal readonly struct ParameterInfo : IEquatable<ParameterInfo>
 
     public ParameterInfo(IParameterSymbol parameter)
     {
-        Name = parameter.Name.ToCamelCase();
+        Name = parameter.Name.PascalToCamelCase();
         Type = new TypeInfo((INamedTypeSymbol)parameter.Type);
     }
 

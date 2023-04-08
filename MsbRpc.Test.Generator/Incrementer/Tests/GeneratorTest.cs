@@ -26,6 +26,7 @@ public class GeneratorTest : Test
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
+    int? IncrementNullable(int? value);
     string IncrementString(string value);
     public void Store(int value);
     public void IncrementStored();

@@ -15,7 +15,7 @@ internal readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
 
     public ProcedureInfo(IMethodSymbol method)
     {
-        Name = method.Name.ToPascalCase();
+        Name = method.Name.CamelToPascalCase();
         ImmutableArray<IParameterSymbol> parameters = method.Parameters;
         Parameters = parameters.Select(parameter => new ParameterInfo(parameter)).ToImmutableArray();
         ReturnType = new TypeInfo((INamedTypeSymbol)method.ReturnType);

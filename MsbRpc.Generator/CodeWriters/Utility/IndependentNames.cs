@@ -144,7 +144,7 @@ internal static class IndependentNames
         #endregion
     }
 
-    public static string ToCamelCase(this string target)
+    public static string PascalToCamelCase(this string target)
     {
         char firstChar = target[0];
 
@@ -157,7 +157,7 @@ internal static class IndependentNames
         return target;
     }
 
-    public static string ToPascalCase(this string target)
+    public static string CamelToPascalCase(this string target)
     {
         char firstChar = target[0];
 

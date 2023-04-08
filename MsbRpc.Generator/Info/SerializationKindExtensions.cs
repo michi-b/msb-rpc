@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Info;
 
 internal static class SerializationKindExtensions
 {
+    private const string PascalCaseNullable = "Nullable";
+
     public static string? GetKeyword(this SerializationKind serializationKind)
     {
         return serializationKind switch
@@ -74,23 +77,23 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static string? GetConstantSizeExpression(this SerializationKind target)
+    public static string? GetConstantSizeExpression(this SerializationKind target, bool isNullable)
     {
         return target switch
         {
-            SerializationKind.Byte => $"{Types.PrimitiveSerializer}.ByteSize",
-            SerializationKind.Sbyte => $"{Types.PrimitiveSerializer}.SbyteSize",
-            SerializationKind.Bool => $"{Types.PrimitiveSerializer}.BoolSize",
-            SerializationKind.Char => $"{Types.PrimitiveSerializer}.CharSize",
-            SerializationKind.Int => $"{Types.PrimitiveSerializer}.IntSize",
-            SerializationKind.Long => $"{Types.PrimitiveSerializer}.LongSize",
-            SerializationKind.Short => $"{Types.PrimitiveSerializer}.ShortSize",
-            SerializationKind.Uint => $"{Types.PrimitiveSerializer}.UintSize",
-            SerializationKind.Ulong => $"{Types.PrimitiveSerializer}.UlongSize",
-            SerializationKind.Ushort => $"{Types.PrimitiveSerializer}.UshortSize",
-            SerializationKind.Float => $"{Types.PrimitiveSerializer}.FloatSize",
-            SerializationKind.Double => $"{Types.PrimitiveSerializer}.DoubleSize",
-            SerializationKind.Decimal => $"{Types.PrimitiveSerializer}.DecimalSize",
+            SerializationKind.Byte => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Sbyte => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Bool => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Char => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Int => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Long => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Short => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Uint => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Ulong => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Ushort => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Float => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Double => target.GetPrimitiveSizeExpression(isNullable),
+            SerializationKind.Decimal => target.GetPrimitiveSizeExpression(isNullable),
             _ => null
         };
     }
@@ -99,19 +102,19 @@ internal static class SerializationKindExtensions
     {
         return target switch
         {
-            SerializationKind.Byte => "ReadByte",
-            SerializationKind.Sbyte => "ReadSbyte",
-            SerializationKind.Bool => "ReadBool",
-            SerializationKind.Char => "ReadChar",
-            SerializationKind.Int => "ReadInt",
-            SerializationKind.Long => "ReadLong",
-            SerializationKind.Short => "ReadShort",
-            SerializationKind.Uint => "ReadUint",
-            SerializationKind.Ulong => "ReadUlong",
-            SerializationKind.Ushort => "ReadUshort",
-            SerializationKind.Float => "ReadFloat",
-            SerializationKind.Double => "ReadDouble",
-            SerializationKind.Decimal => "ReadDecimal",
+            SerializationKind.Byte => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Sbyte => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Bool => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Char => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Int => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Long => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Short => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Uint => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Ulong => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Ushort => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Float => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Double => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
+            SerializationKind.Decimal => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
             SerializationKind.String => isNullable ? "ReadStringNullable" : "ReadString",
             _ => null
         };
@@ -147,4 +150,25 @@ internal static class SerializationKindExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
+
+    private static string GetBufferReaderReadPrimitiveMethodName(this SerializationKind target, bool isNullable)
+    {
+        string? pascalCaseKeyword = target.GetPascalCaseKeyword();
+        Debug.Assert(pascalCaseKeyword != null);
+        string readNonNullable = "Read" + pascalCaseKeyword;
+        return isNullable ? readNonNullable + PascalCaseNullable : readNonNullable;
+    }
+
+    private static string GetPrimitiveSizeExpression(this SerializationKind target, bool isNullable)
+    {
+        string? pascalCaseKeyword = target.GetPascalCaseKeyword();
+        Debug.Assert(pascalCaseKeyword != null);
+        return Types.PrimitiveSerializer + '.' +
+               (isNullable
+                   ? PascalCaseNullable + pascalCaseKeyword
+                   : pascalCaseKeyword)
+               + "Size";
+    }
+
+    private static string? GetPascalCaseKeyword(this SerializationKind target) => target.GetKeyword()?.CamelToPascalCase();
 }
