@@ -12,10 +12,12 @@ public class IncrementerServer : Server
     private readonly InboundEndPointRegistry _endPointRegistry;
     private readonly RpcExceptionTransmissionOptions _exceptionTransmissionOptions;
 
+    public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
+
     public IncrementerServer(ServerConfiguration configuration, RpcExceptionTransmissionOptions exceptionTransmissionOptions) : base(configuration)
     {
         _exceptionTransmissionOptions = exceptionTransmissionOptions;
-        
+
         var endPointRegistryConfiguration = new InboundEndpointRegistryConfiguration { LoggerFactory = configuration.LoggerFactory };
 
         _endPointConfiguration = new InboundEndPointConfiguration();
@@ -23,9 +25,7 @@ public class IncrementerServer : Server
 
         _endPointRegistry = new InboundEndPointRegistry(endPointRegistryConfiguration);
     }
-    
-    public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
-    
+
     protected override void Accept(Messenger messenger)
     {
         _endPointRegistry.Run(new IncrementerServerEndPoint(messenger, new Incrementer(_exceptionTransmissionOptions), _endPointConfiguration));

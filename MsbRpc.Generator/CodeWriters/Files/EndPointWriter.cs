@@ -10,7 +10,6 @@ namespace MsbRpc.Generator.CodeWriters.Files;
 
 internal abstract class EndPointWriter : CodeFileWriter
 {
-    private readonly EndPointNode _endPoint;
     protected readonly ContractNode Contract;
 
     /// <summary>
@@ -29,11 +28,10 @@ internal abstract class EndPointWriter : CodeFileWriter
 
     protected EndPointWriter(EndPointNode endPoint) : base(endPoint.Contract)
     {
-        _endPoint = endPoint;
-        Contract = _endPoint.Contract;
+        Contract = endPoint.Contract;
         Procedures = Contract.Procedures;
-        Name = _endPoint.Name;
-        FileName = $"{_endPoint.Name}{GeneratedFilePostfix}";
+        Name = endPoint.Name;
+        FileName = $"{endPoint.Name}{GeneratedFilePostfix}";
     }
 
     public static EndPointWriter Get(EndPointNode endPoint)
@@ -56,10 +54,6 @@ internal abstract class EndPointWriter : CodeFileWriter
 
             writer.WriteLine();
 
-            WriteConfiguration(writer);
-
-            writer.WriteLine();
-
             WriteProcedures(writer);
 
             writer.WriteLine();
@@ -67,8 +61,6 @@ internal abstract class EndPointWriter : CodeFileWriter
             WriteProcedureEnumOverrides(writer);
         }
     }
-
-    protected abstract void WriteConfiguration(IndentedTextWriter writer);
 
     protected virtual void WriteProcedureEnumOverrides(IndentedTextWriter writer)
     {

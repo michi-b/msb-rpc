@@ -96,11 +96,11 @@ public abstract class Server : IDisposable
     {
         //need to set this before disposing the socket, as the socket's dispose method will dispose the server in return otherwise, causing a deadlock
         _isDisposed = true;
-        
+
         if (disposing)
         {
             _listenSocket.Dispose();
-            
+
             if (_listenThread != null)
             {
                 _listenThread.Join();

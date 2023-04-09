@@ -21,7 +21,6 @@ public class IncrementerServerEndPoint
     (
         Messenger messenger,
         IIncrementer implementation,
-        // ReSharper disable once SuggestBaseTypeForParameterInConstructor
         InboundEndPointConfiguration configuration
     ) : base
     (

@@ -53,10 +53,6 @@ internal static class IndependentNames
         public const string InboundEndPointConfiguration = "MsbRpc.Configuration.InboundEndPointConfiguration";
         public const string OutboundEndPointConfiguration = "MsbRpc.Configuration.OutboundEndPointConfiguration";
         public const string ServerConfiguration = "MsbRpc.Configuration.ServerConfiguration";
-
-        // local types
-        public const string LocalConfiguration = "Configuration";
-        public const string LocalConfigurationConfigureAction = $"{Action}<{LocalConfiguration}>";
     }
 
     public static class Methods

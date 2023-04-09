@@ -15,7 +15,7 @@ internal class OutboundEndPointWriter : EndPointWriter
     {
         writer.WriteLine($"public class {Name}");
         writer.Indent++;
-        writer.WriteLine($": {Types.OutboundEndPoint}<{Name}, {Procedures.ProcedureEnumType}>");
+        writer.WriteLine($": {Types.OutboundEndPoint}<{Procedures.ProcedureEnumType}>");
         writer.Indent--;
     }
 
@@ -26,7 +26,7 @@ internal class OutboundEndPointWriter : EndPointWriter
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{MessengerParameter},");
-            writer.WriteLine(LocalConfigurationParameter);
+            writer.WriteLine(OutboundEndPointConfigurationParameter);
         }
 
         writer.WriteLine(" : base");
@@ -44,22 +44,15 @@ internal class OutboundEndPointWriter : EndPointWriter
         using (writer.GetParenthesesBlock())
         {
             writer.WriteLine($"{IPEndPointParameter},");
-            writer.WriteLine(ConfigureLocalConfigurationActionParameter);
+            writer.WriteLine(OutboundEndPointConfigurationParameter);
         }
 
         using (writer.GetBlock())
         {
-            writer.WriteDeclareAndConfigureLocalConfigurationVariable();
-
             writer.WriteLine($"{Types.Messenger} {Variables.Messenger} = await {Types.MessengerFactory}.{Methods.ConnectAsync}({Parameters.IPEndPoint});");
 
-            writer.WriteLine($"return new {Name}({Variables.Messenger}, {Variables.Configuration});");
+            writer.WriteLine($"return new {Name}({Variables.Messenger}, {Parameters.Configuration});");
         }
-    }
-
-    protected override void WriteConfiguration(IndentedTextWriter writer)
-    {
-        writer.WriteLine($"public class {Types.LocalConfiguration} : {Types.OutboundEndPointConfiguration} {{}}");
     }
 
     protected override void WriteProcedures(IndentedTextWriter writer)

@@ -7,9 +7,6 @@ internal static class TypeCheck
     public static bool IsRpcContractAttribute(this ISymbol attributeClass)
         => attributeClass is { Name: "RpcContractAttribute" } && IsAttributesNamespace(attributeClass.ContainingNamespace);
 
-    public static bool IsGenerateServerAttribute(this INamedTypeSymbol attributeClass)
-        => attributeClass is { Name: "GenerateServerAttribute" } && IsAttributesNamespace(attributeClass.ContainingNamespace);
-
     public static bool IsRpcContractInterface(this INamedTypeSymbol interfaceSymbol)
         => interfaceSymbol is
         {

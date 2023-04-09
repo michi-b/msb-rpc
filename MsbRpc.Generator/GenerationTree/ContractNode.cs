@@ -16,7 +16,6 @@ internal class ContractNode
     public readonly string Namespace;
     public readonly string PascalCaseName;
     public readonly ProcedureCollectionNode Procedures;
-    public readonly ServerNode? Server;
     public readonly EndPointNode ServerEndPoint;
 
     public ContractNode(ref ContractInfo info)
@@ -35,7 +34,6 @@ internal class ContractNode
 
         ClientEndPoint = CreateEndPointNode(info, ConnectionEndType.Client);
         ServerEndPoint = CreateEndPointNode(info, ConnectionEndType.Server);
-        Server = ServerNode.Create(info, ServerEndPoint);
     }
 
     private EndPointNode CreateEndPointNode(ContractInfo info, ConnectionEndType endType)

@@ -15,7 +15,7 @@ internal class InboundEndPointWriter : EndPointWriter
     {
         writer.WriteLine($"public class {Name}");
         writer.Indent++;
-        writer.WriteLine($": {InboundEndPoint}<{Name}, {Procedures.ProcedureEnumType}, {Contract.InterfaceType}>");
+        writer.WriteLine($": {InboundEndPoint}<{Procedures.ProcedureEnumType}, {Contract.InterfaceType}>");
         writer.Indent--;
     }
 
@@ -30,7 +30,7 @@ internal class InboundEndPointWriter : EndPointWriter
         {
             writer.WriteLine($"{MessengerParameter},");
             writer.WriteLine($"{contractImplementationParameterLine},");
-            writer.WriteLine(LocalConfigurationParameter);
+            writer.WriteLine($"{InboundEndPointConfigurationParameter}");
         }
 
         writer.WriteLine(" : base");
@@ -42,11 +42,6 @@ internal class InboundEndPointWriter : EndPointWriter
         }
 
         writer.WriteLine(" { }");
-    }
-
-    protected override void WriteConfiguration(IndentedTextWriter writer)
-    {
-        writer.WriteLine($"public class {LocalConfiguration} : {InboundEndPointConfiguration} {{}}");
     }
 
     protected override void WriteProcedures(IndentedTextWriter writer)

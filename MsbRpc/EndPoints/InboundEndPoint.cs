@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
@@ -90,7 +89,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
         {
             if (handlingInstructions.Log && Logger != null)
             {
-                LogRpcException(originalException, sourceStage, handlingInstructions);
+                LogRpcException(Logger, originalException, sourceStage, handlingInstructions);
             }
 
             RpcExceptionContinuation continuation = handlingInstructions.Continuation;
@@ -114,6 +113,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogRpcException
     (
+        ILogger<EndPoint<TProcedure>> logger,
         Exception originalException,
         RpcExecutionStage sourceStage,
         RpcExceptionHandlingInstructions handlingInstructions
@@ -129,13 +129,13 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                     nameof(sourceStage)
                 );
             case RpcExecutionStage.ArgumentDeserialization:
-                LogArgumentDeserializationException(Logger, originalException, handlingInstructionsString);
+                LogArgumentDeserializationException(logger, originalException, handlingInstructionsString);
                 break;
             case RpcExecutionStage.ImplementationExecution:
-                LogImplementationExecutionException(Logger, originalException, handlingInstructionsString);
+                LogImplementationExecutionException(logger, originalException, handlingInstructionsString);
                 break;
             case RpcExecutionStage.ResponseSerialization:
-                LogResponseSerializationException(Logger, originalException, handlingInstructionsString);
+                LogResponseSerializationException(logger, originalException, handlingInstructionsString);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(sourceStage), sourceStage, null);
@@ -224,12 +224,13 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogStoppedListeningWithoutRunningToCompletion(ListenReturnCode listenReturnCode)
     {
-        if (Logger != null)
+        ILogger<EndPoint<TProcedure>>? logger = Logger;
+        if (logger != null)
         {
             LogConfiguration configuration = _configuration.LogStoppedListeningWithoutRunningToCompletion;
-            if (Logger.GetIsEnabled(configuration))
+            if (logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                logger.Log
                 (
                     configuration.Level,
                     configuration.Id,

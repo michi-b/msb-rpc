@@ -2,7 +2,6 @@
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Utility;
 
@@ -45,15 +44,5 @@ internal static class IndentedTextWriterExtensions
         writer.WriteLine(GetResponseWriterStatement);
         writer.WriteLine(writeResultToResponseStatement);
         writer.WriteLine(ReturnResponseStatement);
-    }
-
-    /// <summary>
-    ///     Configuration configuration = new Configuration();
-    ///     configure?.Invoke(configuration);
-    /// </summary>
-    public static void WriteDeclareAndConfigureLocalConfigurationVariable(this IndentedTextWriter writer)
-    {
-        writer.WriteLine($"{Types.LocalConfiguration} {Variables.Configuration} = new {Types.LocalConfiguration}();");
-        writer.WriteLine($"{Parameters.ConfigureAction}?.{Methods.Invoke}({Variables.Configuration});");
     }
 }

@@ -8,8 +8,8 @@ internal class TypeNode
 {
     private readonly string? _constantSizeExpression;
     private readonly string _fullName;
-    public readonly string DeclarationSyntax;
     private readonly bool _isNullable;
+    public readonly string DeclarationSyntax;
     public readonly bool IsValidParameter;
     public readonly bool IsValidReturnType;
     public readonly bool IsVoid;

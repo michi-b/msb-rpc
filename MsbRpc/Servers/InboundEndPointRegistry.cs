@@ -80,7 +80,7 @@ public class InboundEndPointRegistry : IDisposable
             {
                 // _isDisposed must be set early here, to avoid deadlock when disposing the endpoints
                 _isDisposed = true;
-                
+
                 if (disposing)
                 {
                     foreach (KeyValuePair<int, InboundEndPointRegistryEntry> connection in _endPoints)

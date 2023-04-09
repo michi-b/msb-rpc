@@ -39,10 +39,9 @@ internal static class IndependentCode
 
     public const string IPEndPointParameter = $"{Types.IPEndPoint} {Parameters.IPEndPoint}";
 
-    public const string LocalConfigurationParameter = $"{Types.LocalConfiguration} {Parameters.Configuration}";
+    public const string InboundEndPointConfigurationParameter = $"{Types.InboundEndPointConfiguration} {Parameters.Configuration}";
 
-    public const string ConfigureLocalConfigurationActionParameter =
-        $"{Types.Action}<{Types.LocalConfiguration}>? {Parameters.ConfigureAction} = null";
+    public const string OutboundEndPointConfigurationParameter = $"{Types.OutboundEndPointConfiguration} {Parameters.Configuration}";
 
     public static readonly string ProcedureParameterOutOfRangeSwitchExpressionCase
         = GetArgumentOutOfRangeSwitchExpressionCase(Parameters.Procedure);

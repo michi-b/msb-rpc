@@ -21,8 +21,7 @@ namespace MsbRpc.Test.Generator.Incrementer.Tests;
 [TestClass]
 public class GeneratorTest : Test
 {
-    private const string Code = @"[GenerateServer]
-[RpcContract(RpcContractType.ClientToServer)]
+    private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
@@ -140,12 +139,6 @@ public interface IIncrementer : IRpcContract
     public async Task GeneratesClientEndPoint()
     {
         await TestGenerates("IncrementerClientEndPoint.g.cs");
-    }
-
-    [TestMethod]
-    public async Task GeneratesServer()
-    {
-        await TestGenerates("IncrementerServer.g.cs");
     }
 
     private async Task LogDiagnosticSourceTrees(CodeTestResult result, ImmutableArray<Diagnostic> diagnostics)

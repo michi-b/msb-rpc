@@ -17,20 +17,15 @@ internal static class ContractInfoParser
         #region get attributes
 
         AttributeData? contractAttribute = null;
-        AttributeData? generateServerAttribute = null;
+
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        // foreach is more readable to me here
         foreach (AttributeData attribute in contract.GetAttributes())
         {
             INamedTypeSymbol? attributeClass = attribute.AttributeClass;
-            if (attributeClass != null)
+            if (attributeClass != null && attributeClass.IsRpcContractAttribute())
             {
-                if (TypeCheck.IsRpcContractAttribute(attributeClass))
-                {
-                    contractAttribute = attribute;
-                }
-                else if (TypeCheck.IsGenerateServerAttribute(attributeClass))
-                {
-                    generateServerAttribute = attribute;
-                }
+                contractAttribute = attribute;
             }
         }
 
@@ -63,45 +58,6 @@ internal static class ContractInfoParser
 
         #endregion
 
-        #region parse generate server attribute
-
-        bool generateServer;
-        int defaultPort = 0;
-
-        if (generateServerAttribute != null)
-        {
-            foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
-            {
-                // ReSharper disable once ConvertSwitchStatementToSwitchExpression
-                // there will probably be more arguments in the future
-                switch (argument.Key)
-                {
-                    case "defaultPort":
-                        object? defaultPortValue = argument.Value.Value;
-                        if (defaultPortValue != null)
-                        {
-                            defaultPort = (int)defaultPortValue;
-                        }
-
-                        break;
-                }
-            }
-
-            generateServer = true;
-        }
-        else
-        {
-            generateServer = false;
-            defaultPort = 0;
-        }
-
-        #endregion
-
-        if (generateServer && contractType != RpcContractType.ClientToServer)
-        {
-            return null;
-        }
-
         string interfaceName = contract.Name;
         string namespaceName = contract.ContainingNamespace.ToDisplayString();
         ImmutableArray<ProcedureInfo> procedures = contract.GetMembers()
@@ -115,6 +71,6 @@ internal static class ContractInfoParser
             return null;
         }
 
-        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value, generateServer, defaultPort);
+        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value);
     }
 }

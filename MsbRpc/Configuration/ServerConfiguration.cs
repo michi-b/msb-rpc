@@ -9,14 +9,14 @@ public class ServerConfiguration : Configuration
     public int ListenBacklogSize = DefaultListenBacklogSize;
     public LogConfiguration LogAcceptedNewConnection;
     public LogConfiguration LogDisposedNewConnectionAfterDisposal;
-    
-    public int Port = 0;
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningDueToDisposal;
     public LogConfiguration LogStoppedListeningDueToException;
     public LogConfiguration LogWasCreatedWithEphemeralPort;
     public LogConfiguration LogWasCreatedWithSpecifiedPort;
-    
+
+    public int Port = 0;
+
     public ServerConfiguration()
     {
         LogStoppedListeningDueToException = new LogConfiguration(LogEventIds.ServerStoppedListeningDueToException, LogLevel.Error);
