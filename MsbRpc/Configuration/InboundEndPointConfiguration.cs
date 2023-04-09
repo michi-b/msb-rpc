@@ -3,7 +3,7 @@ using MsbRpc.Logging;
 
 namespace MsbRpc.Configuration;
 
-public abstract class InboundEndPointConfiguration : EndPointConfiguration
+public class InboundEndPointConfiguration : EndPointConfiguration
 {
     public LogConfiguration LogArgumentDeserializationException;
     public LogConfiguration LogExceptionTransmissionException;
@@ -14,7 +14,7 @@ public abstract class InboundEndPointConfiguration : EndPointConfiguration
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningWithoutRunningToCompletion;
 
-    protected InboundEndPointConfiguration()
+    public InboundEndPointConfiguration()
     {
         LogStoppedListeningWithoutRunningToCompletion
             = new LogConfiguration(LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion, LogLevel.Error);

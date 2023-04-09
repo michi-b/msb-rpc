@@ -11,30 +11,26 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
-public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerClientEndPoint, IncrementerProcedure>
+public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerProcedure>
 {
     private IncrementerClientEndPoint
     (
         Messenger messenger,
-        Configuration configuration
+        OutboundEndPointConfiguration configuration
     ) : base
     (
         messenger,
         configuration
     ) { }
 
-    public class Configuration : OutboundEndPointConfiguration { }
-
     public static async ValueTask<IncrementerClientEndPoint> ConnectAsync
     (
         IPEndPoint endPoint,
-        Action<Configuration>? configure = null
+        OutboundEndPointConfiguration outboundEndPointConfiguration
     )
     {
-        var configuration = new Configuration();
-        configure?.Invoke(configuration);
-        Messenger messenger = await MessengerFactory.ConnectAsync(endPoint, configuration.LoggerFactory);
-        return new IncrementerClientEndPoint(messenger, configuration);
+        Messenger messenger = await MessengerFactory.ConnectAsync(endPoint, outboundEndPointConfiguration.LoggerFactory);
+        return new IncrementerClientEndPoint(messenger, outboundEndPointConfiguration);
     }
 
     public async ValueTask<int> IncrementAsync(int value)

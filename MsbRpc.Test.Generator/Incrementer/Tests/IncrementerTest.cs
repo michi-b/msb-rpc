@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Incrementer.Generated;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Configuration;
 using MsbRpc.Exceptions;
 using MsbRpc.Exceptions.Generic;
 using MsbRpc.Test.Generator.Incrementer.ToGenerate;
@@ -20,6 +21,10 @@ public class IncrementerTest : Test
     private static readonly ILogger<IncrementerTest> Logger;
 
     private static readonly ILoggerFactory LoggerFactory;
+
+    private static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new() { LoggerFactory = LoggerFactory };
+
+    private static readonly ServerConfiguration ServerConfiguration = new() { LoggerFactory = LoggerFactory };
 
     static IncrementerTest()
     {
@@ -48,12 +53,12 @@ public class IncrementerTest : Test
         IncrementerClientEndPoint client = await ConnectClient(server);
 
         WaitForThreads();
-        Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        Assert.AreEqual(1, server.EndPoints.Length);
 
         client.Dispose();
 
         WaitForThreads();
-        Assert.AreEqual(0, server.CreateConnectionDump().Length);
+        Assert.AreEqual(0, server.EndPoints.Length);
     }
 
     [TestMethod]
@@ -63,19 +68,19 @@ public class IncrementerTest : Test
 
         IncrementerClientEndPoint client1 = await ConnectClient(server);
         WaitForThreads();
-        Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        Assert.AreEqual(1, server.EndPoints.Length);
 
         IncrementerClientEndPoint client2 = await ConnectClient(server);
         WaitForThreads();
-        Assert.AreEqual(2, server.CreateConnectionDump().Length);
+        Assert.AreEqual(2, server.EndPoints.Length);
 
         client1.Dispose();
         WaitForThreads();
-        Assert.AreEqual(1, server.CreateConnectionDump().Length);
+        Assert.AreEqual(1, server.EndPoints.Length);
 
         client2.Dispose();
         WaitForThreads();
-        Assert.AreEqual(0, server.CreateConnectionDump().Length);
+        Assert.AreEqual(0, server.EndPoints.Length);
     }
 
     [TestMethod]
@@ -366,30 +371,17 @@ public class IncrementerTest : Test
         }
     }
 
-    private static void ConfigureServer(IncrementerServer.Configuration configuration)
-    {
-        configuration.LoggerFactory = LoggerFactory;
-    }
-
-    private static void ConfigureServerEndPoint(IncrementerServerEndPoint.Configuration configuration)
-    {
-        configuration.LoggerFactory = LoggerFactory;
-    }
-
-    private static void ConfigureClientEndPoint(IncrementerClientEndPoint.Configuration configuration)
-    {
-        configuration.LoggerFactory = LoggerFactory;
-    }
-
     private static ValueTask<IncrementerClientEndPoint> ConnectClient(IncrementerServer server)
     {
         IPEndPoint endPoint = new(LocalHost, server.Port);
-        return IncrementerClientEndPoint.ConnectAsync(endPoint, ConfigureClientEndPoint);
+        return IncrementerClientEndPoint.ConnectAsync(endPoint, ClientEndPointConfiguration);
     }
 
-    private static IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmission = RpcExceptionTransmissionOptions.None)
+    private static IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {
-        return IncrementerServer.Start(() => new Incrementer(exceptionTransmission), ConfigureServer, ConfigureServerEndPoint);
+        var server = new IncrementerServer(ServerConfiguration, exceptionTransmissionOptions);
+        server.Start();
+        return server;
     }
 
     private static void WaitForThreads()

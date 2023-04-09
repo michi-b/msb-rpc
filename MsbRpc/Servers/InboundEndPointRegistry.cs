@@ -6,42 +6,59 @@ using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
-using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
 
-namespace MsbRpc.Server;
+namespace MsbRpc.Servers;
 
-public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : IDisposable
-    where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
-    where TImplementation : IRpcContract
-    where TProcedure : Enum
+[PublicAPI]
+public class InboundEndPointRegistry : IDisposable
 {
-    private static readonly string EndPointTypename = typeof(TEndPoint).Name;
-    private readonly ServerConfiguration _configuration;
-    private readonly Dictionary<int, Entry> _connections = new(); // key is managed thread id
-    private readonly ILogger<ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>>? _logger;
+    private readonly InboundEndpointRegistryConfiguration _configuration;
+    private readonly Dictionary<int, InboundEndPointRegistryEntry> _endPoints = new(); // key is managed thread id
+    private readonly ILogger<InboundEndPointRegistry>? _logger;
     private int _connectionCount;
     private bool _isDisposed;
 
-    public ServerEndPointRegistry(ServerConfiguration configuration)
+    [PublicAPI]
+    public InboundEndPointRegistryEntry[] EndPoints
     {
-        _configuration = configuration;
-        _logger = _configuration.LoggerFactory?.CreateLogger<ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>>();
+        get
+        {
+            lock (this)
+            {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException(Name);
+                }
+
+                return _endPoints.Values.ToArray();
+            }
+        }
     }
 
-    public void AddAndStart(TEndPoint endPoint)
+    protected virtual string Name => nameof(InboundEndPointRegistry);
+
+    [PublicAPI]
+    public InboundEndPointRegistry(InboundEndpointRegistryConfiguration configuration)
+    {
+        _configuration = configuration;
+        _logger = _configuration.LoggerFactory?.CreateLogger<InboundEndPointRegistry>();
+    }
+
+    [PublicAPI]
+    public void Run(IInboundEndPoint endPoint)
     {
         lock (this)
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException(EndPointTypename);
+                throw new ObjectDisposedException(nameof(InboundEndPointRegistry));
             }
 
-            var thread = new Thread(() => RunEndPoint(endPoint)) { Name = EndPointTypename };
+            var thread = new Thread(() => RunEndPoint(endPoint)) { Name = endPoint.GetType().Name };
             int threadId = thread.ManagedThreadId;
-            _connections.Add(threadId, new Entry(endPoint, thread));
+            _endPoints.Add(threadId, new InboundEndPointRegistryEntry(endPoint, thread));
 
             LogRegisteredEndpoint(threadId, ++_connectionCount);
             thread.Start();
@@ -49,53 +66,38 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
     }
 
     [PublicAPI]
-    public KeyValuePair<int, Entry>[] CreateDump()
+    public void Dispose()
     {
-        lock (this)
-        {
-            if (_isDisposed)
-            {
-                throw new ObjectDisposedException(EndPointTypename);
-            }
-
-            return _connections.ToArray();
-        }
+        GC.SuppressFinalize(this);
+        Dispose(true);
     }
 
-    public void Dispose()
+    private void Dispose(bool disposing)
     {
         if (!_isDisposed)
         {
             lock (this)
             {
+                // _isDisposed must be set early here, to avoid deadlock when disposing the endpoints
                 _isDisposed = true;
-
-                foreach (KeyValuePair<int, Entry> connection in _connections)
+                
+                if (disposing)
                 {
-                    Entry connectionValue = connection.Value;
-                    connectionValue.EndPoint.Dispose();
-                    connectionValue.Thread.Join();
-                    LogDeregisteredEndPointOnDisposal(connection.Key, --_connectionCount);
-                }
+                    foreach (KeyValuePair<int, InboundEndPointRegistryEntry> connection in _endPoints)
+                    {
+                        InboundEndPointRegistryEntry entry = connection.Value;
+                        entry.EndPoint.Dispose();
+                        entry.Thread.Join();
+                        LogDeregisteredEndPointOnDisposal(connection.Key, --_connectionCount);
+                    }
 
-                _connections.Clear();
+                    _endPoints.Clear();
+                }
             }
         }
     }
 
-    public readonly struct Entry
-    {
-        public readonly Thread Thread;
-        public readonly TEndPoint EndPoint;
-
-        public Entry(TEndPoint endPoint, Thread thread)
-        {
-            EndPoint = endPoint;
-            Thread = thread;
-        }
-    }
-
-    private void RunEndPoint(TEndPoint endPoint)
+    private void RunEndPoint(IInboundEndPoint endPoint)
     {
         try
         {
@@ -121,7 +123,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                     if (!_isDisposed)
                     {
                         endPoint.Dispose();
-                        _connections.Remove(Thread.CurrentThread.ManagedThreadId);
+                        _endPoints.Remove(Thread.CurrentThread.ManagedThreadId);
                         LogDeregisteredEndPoint(--_connectionCount);
                     }
                 }
@@ -158,8 +160,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Registered new endpoint ({EndPointTypeName}) with thread id {TargetThreadId}. Connection count is {ConnectionCount}",
-                    EndPointTypename,
+                    "Registered new endpoint with thread id {TargetThreadId}. Connection count is {ConnectionCount}",
                     threadId,
                     connectionCount
                 );
@@ -178,8 +179,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Deregistered endpoint ({EndpointTypeName}). Connection count is {ConnectionCount}",
-                    EndPointTypename,
+                    "Deregistered endpoint. Connection count is {ConnectionCount}",
                     connectionCount
                 );
             }
@@ -197,8 +197,7 @@ public class ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> : ID
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Deregistered endpoint ({EndpointTypeName}) with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
-                    EndPointTypename,
+                    "Deregistered endpoint with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
                     threadId,
                     connectionCount
                 );

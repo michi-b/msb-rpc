@@ -15,22 +15,20 @@ using MsbRpc.Serialization.Primitives;
 namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
 
 public class IncrementerServerEndPoint
-    : InboundEndPoint<IncrementerServerEndPoint, IncrementerProcedure, IIncrementer>
+    : InboundEndPoint<IncrementerProcedure, IIncrementer>
 {
     public IncrementerServerEndPoint
     (
         Messenger messenger,
         IIncrementer implementation,
         // ReSharper disable once SuggestBaseTypeForParameterInConstructor
-        Configuration configuration
+        InboundEndPointConfiguration configuration
     ) : base
     (
         messenger,
         implementation,
         configuration
     ) { }
-
-    public class Configuration : InboundEndPointConfiguration { }
 
     protected override Response Execute(IncrementerProcedure procedure, Request request)
     {

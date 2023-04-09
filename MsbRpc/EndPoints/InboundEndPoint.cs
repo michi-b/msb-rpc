@@ -13,9 +13,7 @@ using MsbRpc.Serialization.Buffers;
 namespace MsbRpc.EndPoints;
 
 [MayBeUsedByGenerator]
-public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TProcedure>
-    where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
-    where TImplementation : IRpcContract
+public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TProcedure>, IInboundEndPoint where TImplementation : IRpcContract
     where TProcedure : Enum
 {
     private readonly InboundEndPointConfiguration _configuration;

@@ -1,33 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
-using MsbRpc.Contracts;
-using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Sockets;
 
-namespace MsbRpc.Server;
+namespace MsbRpc.Servers;
 
-public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : IDisposable
-    where TServer : Server<TServer, TEndPoint, TProcedure, TImplementation>
-    where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
-    where TImplementation : IRpcContract
-    where TProcedure : Enum
+public abstract class Server : IDisposable
 {
-    private const int DefaultListenBacklogSize = 100;
     private readonly ServerConfiguration _configuration;
-    private readonly ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation> _connections;
     private readonly object _disposeLock = new();
     private readonly Socket _listenSocket;
 
-    private readonly ILogger<TServer>? _logger;
+    private readonly ILogger<Server>? _logger;
     private readonly string _threadName;
+    private readonly string _typeName;
 
     public readonly int Port;
 
@@ -37,15 +29,17 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
     protected Server(ServerConfiguration configuration)
     {
         _configuration = configuration;
-        _logger = configuration.LoggerFactory?.CreateLogger<TServer>();
+        _logger = configuration.LoggerFactory?.CreateLogger<Server>();
 
         IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
         _listenSocket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         _listenSocket.Bind(new IPEndPoint(localHost, configuration.Port));
 
+        _typeName = GetType().Name;
+
         var listenEndPoint = _listenSocket.LocalEndPoint as IPEndPoint;
         Port = configuration.Port == 0 ? listenEndPoint!.Port : configuration.Port;
-        _threadName = $"{GetType().Name}:{Port}";
+        _threadName = $"{_typeName}:{Port}";
         if (Port == 0)
         {
             LogWasCreatedWithEphemeralPort();
@@ -54,13 +48,16 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
         {
             LogWasCreatedWithSpecificPort();
         }
-
-        _connections = new ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>(configuration);
     }
 
     [PublicAPI]
     public Thread Start()
     {
+        if (_listenThread != null)
+        {
+            throw new InvalidOperationException($"{_threadName} is already started.");
+        }
+
         if (_isDisposed)
         {
             throw new ObjectDisposedException(_threadName);
@@ -71,11 +68,6 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
             if (_isDisposed)
             {
                 throw new ObjectDisposedException(_threadName);
-            }
-
-            if (_listenThread != null)
-            {
-                throw new InvalidOperationException($"{_threadName} is already started.");
             }
 
             _listenThread = new Thread(() => Run(_configuration.ListenBacklogSize)) { Name = _threadName };
@@ -84,46 +76,42 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
         }
     }
 
-    public KeyValuePair<int, ServerEndPointRegistry<TEndPoint, TProcedure, TImplementation>.Entry>[] CreateConnectionDump()
-    {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(_threadName);
-        }
-
-        lock (_disposeLock)
-        {
-            if (_isDisposed)
-            {
-                throw new ObjectDisposedException(_threadName);
-            }
-
-            return _connections.CreateDump();
-        }
-    }
-
     public void Dispose()
     {
-        if (_isDisposed)
+        if (!_isDisposed)
         {
-            return;
+            lock (_disposeLock)
+            {
+                if (!_isDisposed)
+                {
+                    Dispose(true);
+                }
+            }
         }
 
-        lock (_disposeLock)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
+        GC.SuppressFinalize(this);
+    }
 
-            _isDisposed = true;
+    protected virtual void Dispose(bool disposing)
+    {
+        //need to set this before disposing the socket, as the socket's dispose method will dispose the server in return otherwise, causing a deadlock
+        _isDisposed = true;
+        
+        if (disposing)
+        {
             _listenSocket.Dispose();
-            _connections.Dispose();
-            _listenThread?.Join();
+            
+            if (_listenThread != null)
+            {
+                _listenThread.Join();
+                _listenThread = null;
+            }
         }
     }
 
-    private void Run(int backlog = DefaultListenBacklogSize)
+    protected abstract void Accept(Messenger messenger);
+
+    private void Run(int backlog)
     {
         try
         {
@@ -142,8 +130,7 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
                         break;
                     }
 
-                    TEndPoint endPoint = CreateEndPoint(new Messenger(new RpcSocket(newConnectionSocket)));
-                    _connections.AddAndStart(endPoint);
+                    Accept(new Messenger(new RpcSocket(newConnectionSocket)));
                 }
             }
         }
@@ -172,8 +159,6 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
             }
         }
     }
-
-    protected abstract TEndPoint CreateEndPoint(Messenger messenger);
 
     private void LogStoppedListeningDueToException(Exception exception)
     {
@@ -240,7 +225,7 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
                     configuration.Level,
                     configuration.Id,
                     "{ServerType} was created with ephemeral port",
-                    nameof(TServer)
+                    _typeName
                 );
             }
         }
@@ -258,7 +243,7 @@ public abstract class Server<TServer, TEndPoint, TProcedure, TImplementation> : 
                     configuration.Level,
                     configuration.Id,
                     "{ServerType} was created with specified port",
-                    nameof(TServer)
+                    _typeName
                 );
             }
         }
