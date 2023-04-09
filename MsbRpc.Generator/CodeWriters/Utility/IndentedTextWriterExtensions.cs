@@ -39,12 +39,11 @@ internal static class IndentedTextWriterExtensions
     ///     responseWriter.Write(result);
     ///     return response;
     /// </summary>
-    /// <param name="writer"></param>
-    public static void WriteReturnResultResponse(this IndentedTextWriter writer)
+    public static void WriteReturnResultResponse(this IndentedTextWriter writer, string writeResultToResponseStatement)
     {
         writer.WriteLine(GetResultSizeResponseStatement);
         writer.WriteLine(GetResponseWriterStatement);
-        writer.WriteLine(WriteResultToResponseStatement);
+        writer.WriteLine(writeResultToResponseStatement);
         writer.WriteLine(ReturnResponseStatement);
     }
 

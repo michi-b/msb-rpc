@@ -8,28 +8,24 @@ internal class TypeNode
 {
     private readonly string? _constantSizeExpression;
     private readonly string _fullName;
-    private readonly string _name;
     public readonly string DeclarationSyntax;
-    public readonly bool IsNullable;
+    private readonly bool _isNullable;
     public readonly bool IsValidParameter;
     public readonly bool IsValidReturnType;
     public readonly bool IsVoid;
 
     public readonly SerializationKind SerializationKind;
 
-    public bool IsConstantSize => _constantSizeExpression != null;
-
     public TypeNode(string fullName, SerializationKind serializationKind, bool isNullable)
     {
         SerializationKind = serializationKind;
 
-        IsNullable = isNullable;
+        _isNullable = isNullable;
         _fullName = fullName;
 
         if (serializationKind == SerializationKind.Unresolved)
         {
             DeclarationSyntax = isNullable ? fullName + '?' : fullName;
-            _name = _fullName;
             _constantSizeExpression = null;
             IsValidParameter = false;
             IsValidReturnType = false;
@@ -38,7 +34,6 @@ internal class TypeNode
         else
         {
             string? keyword = serializationKind.GetKeyword();
-            _name = keyword ?? _fullName;
             DeclarationSyntax = keyword != null
                 ? isNullable
                     ? keyword + '?'
@@ -75,7 +70,7 @@ internal class TypeNode
 
     public string GetBufferReadExpression(string bufferReaderExpression)
     {
-        string bufferReaderReadMethod = SerializationKind.GetBufferReaderReadMethodName(IsNullable) ?? string.Empty;
+        string bufferReaderReadMethod = SerializationKind.GetBufferReaderReadMethodName(_isNullable) ?? string.Empty;
         return $"{bufferReaderExpression}.{bufferReaderReadMethod}()";
     }
 
@@ -83,7 +78,7 @@ internal class TypeNode
 
     public string GetBufferWriterWriteStatement(string bufferWriterExpression, string variableName)
     {
-        string bufferWriterWriteMethod = SerializationKind.GetBufferWriterWriteMethodName(IsNullable) ?? string.Empty;
+        string bufferWriterWriteMethod = SerializationKind.GetBufferWriterWriteMethodName(_isNullable) ?? string.Empty;
         return $"{bufferWriterExpression}.{bufferWriterWriteMethod}({variableName});";
     }
 
@@ -96,7 +91,7 @@ internal class TypeNode
 
         if (SerializationKind == SerializationKind.String)
         {
-            string serializer = IsNullable ? Types.NullableStringSerializer : Types.StringSerializer;
+            string serializer = _isNullable ? Types.NullableStringSerializer : Types.StringSerializer;
             return $"{serializer}.GetSize({targetExpression})";
         }
 

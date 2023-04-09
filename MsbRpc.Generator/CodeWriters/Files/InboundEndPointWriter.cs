@@ -113,7 +113,8 @@ internal class InboundEndPointWriter : EndPointWriter
             if (returnType.WriteSizeVariableInitialization(writer, Variables.ResultSize, Variables.Result))
             {
                 writer.WriteLine();
-                writer.WriteReturnResultResponse();
+                string responseWriteStatement = procedure.ReturnType.GetBufferWriterWriteStatement(Variables.ResponseWriter, Variables.Result);
+                writer.WriteReturnResultResponse(responseWriteStatement);
             }
             else
             {

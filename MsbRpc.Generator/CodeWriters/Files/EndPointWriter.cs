@@ -10,9 +10,8 @@ namespace MsbRpc.Generator.CodeWriters.Files;
 
 internal abstract class EndPointWriter : CodeFileWriter
 {
+    private readonly EndPointNode _endPoint;
     protected readonly ContractNode Contract;
-
-    protected readonly EndPointNode EndPoint;
 
     /// <summary>
     ///     the concrete endpoint class name
@@ -30,11 +29,11 @@ internal abstract class EndPointWriter : CodeFileWriter
 
     protected EndPointWriter(EndPointNode endPoint) : base(endPoint.Contract)
     {
-        EndPoint = endPoint;
-        Contract = EndPoint.Contract;
+        _endPoint = endPoint;
+        Contract = _endPoint.Contract;
         Procedures = Contract.Procedures;
-        Name = EndPoint.Name;
-        FileName = $"{EndPoint.Name}{GeneratedFilePostfix}";
+        Name = _endPoint.Name;
+        FileName = $"{_endPoint.Name}{GeneratedFilePostfix}";
     }
 
     public static EndPointWriter Get(EndPointNode endPoint)

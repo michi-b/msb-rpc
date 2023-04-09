@@ -22,8 +22,6 @@ internal static class IndependentCode
 
     public const string GetResponseWriterStatement = $"{Types.BufferWriter} {Variables.ResponseWriter} = {Variables.Response}.{Methods.GetWriter}();";
 
-    public const string WriteResultToResponseStatement = $"{Variables.ResponseWriter}.{Methods.BufferWrite}({Variables.Result});";
-
     public const string ReturnResponseStatement = $"return {Variables.Response};";
 
     public const string SendRequestStatement = $"await base.{Methods.SendRequestAsync}({Variables.Request});";
@@ -39,10 +37,7 @@ internal static class IndependentCode
     public const string RequestWriterInitializationStatement =
         $"{Types.BufferWriter} {Variables.RequestWriter} = {Variables.Request}.{Methods.GetWriter}();";
 
-    public const string IPAddressParameter = $"{Types.IPAddress} {Parameters.IPAddress}";
     public const string IPEndPointParameter = $"{Types.IPEndPoint} {Parameters.IPEndPoint}";
-
-    public const string PortParameter = $"int {Parameters.Port}";
 
     public const string LocalConfigurationParameter = $"{Types.LocalConfiguration} {Parameters.Configuration}";
 
