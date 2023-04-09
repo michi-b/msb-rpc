@@ -5,8 +5,6 @@ namespace MsbRpc.Logging;
 
 public static class LogEventIds
 {
-    [MayBeUsedByGenerator] public const int FirstAvailable = (int)Ids.MessengerConnectionFailed + 1;
-
     public static readonly EventId InboundEndPointStartedListening = new((int)Ids.InboundEndPointStartedListening, nameof(Ids.InboundEndPointStartedListening));
 
     public static readonly EventId InboundEndPointReceivedAnyRequest = new((int)Ids.InboundEndPointReceivedCall, nameof(Ids.InboundEndPointReceivedCall));

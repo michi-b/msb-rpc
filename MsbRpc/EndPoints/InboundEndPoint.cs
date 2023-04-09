@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
@@ -12,7 +13,7 @@ using MsbRpc.Serialization.Buffers;
 namespace MsbRpc.EndPoints;
 
 [MayBeUsedByGenerator]
-public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TEndPoint, TProcedure>
+public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : EndPoint<TProcedure>
     where TEndPoint : InboundEndPoint<TEndPoint, TProcedure, TImplementation>
     where TImplementation : IRpcContract
     where TProcedure : Enum
@@ -91,7 +92,7 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
         {
             if (handlingInstructions.Log && Logger != null)
             {
-                LogRpcException(Logger, originalException, sourceStage, handlingInstructions);
+                LogRpcException(originalException, sourceStage, handlingInstructions);
             }
 
             RpcExceptionContinuation continuation = handlingInstructions.Continuation;
@@ -115,7 +116,6 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
 
     private void LogRpcException
     (
-        ILogger<TEndPoint> logger,
         Exception originalException,
         RpcExecutionStage sourceStage,
         RpcExceptionHandlingInstructions handlingInstructions
@@ -131,13 +131,13 @@ public abstract class InboundEndPoint<TEndPoint, TProcedure, TImplementation> : 
                     nameof(sourceStage)
                 );
             case RpcExecutionStage.ArgumentDeserialization:
-                LogArgumentDeserializationException(logger, originalException, handlingInstructionsString);
+                LogArgumentDeserializationException(Logger, originalException, handlingInstructionsString);
                 break;
             case RpcExecutionStage.ImplementationExecution:
-                LogImplementationExecutionException(logger, originalException, handlingInstructionsString);
+                LogImplementationExecutionException(Logger, originalException, handlingInstructionsString);
                 break;
             case RpcExecutionStage.ResponseSerialization:
-                LogResponseSerializationException(logger, originalException, handlingInstructionsString);
+                LogResponseSerializationException(Logger, originalException, handlingInstructionsString);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(sourceStage), sourceStage, null);

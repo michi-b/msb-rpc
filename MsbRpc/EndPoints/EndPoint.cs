@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
@@ -9,13 +10,11 @@ using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
-    where TEndPoint : EndPoint<TEndPoint, TProcedure>
-    where TProcedure : Enum
+public abstract class EndPoint<TProcedure> : IDisposable where TProcedure : Enum
 {
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
-    protected ILogger<TEndPoint>? Logger { get; }
+    protected ILogger<EndPoint<TProcedure>>? Logger { get; }
 
     [PublicAPI] public bool IsDisposed { get; private set; }
 
@@ -28,7 +27,7 @@ public abstract class EndPoint<TEndPoint, TProcedure> : IDisposable
     )
     {
         Messenger = messenger;
-        Logger = configuration.LoggerFactory?.CreateLogger<TEndPoint>();
+        Logger = configuration.LoggerFactory?.CreateLogger<EndPoint<TProcedure>>();
         Buffer = new RpcBuffer(configuration.InitialBufferSize);
     }
 
