@@ -7,6 +7,12 @@ public class InboundEndPointConfiguration : EndPointConfiguration
 {
     public LogConfiguration LogArgumentDeserializationException;
     public LogConfiguration LogExceptionTransmissionException;
+
+    /// <summary>
+    ///     Prefix for log messages for easier identification
+    /// </summary>
+    public string LoggingName = "InboundEndPoint";
+
     public LogConfiguration LogProcedureExecutionException;
     public LogConfiguration LogRanToCompletion;
     public LogConfiguration LogReceivedAnyRequest;

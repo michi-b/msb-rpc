@@ -24,7 +24,7 @@ public class IncrementerTest : Test
 
     private static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new() { LoggerFactory = LoggerFactory };
 
-    private static readonly ServerConfiguration ServerConfiguration = new() { LoggerFactory = LoggerFactory };
+    private static readonly IncrementerServerConfiguration ServerConfiguration;
 
     static IncrementerTest()
     {
@@ -36,6 +36,12 @@ public class IncrementerTest : Test
             .CreateLogger()!;
         LoggerFactory = new LoggerFactory().AddSerilog(logger);
         Logger = LoggerFactory.CreateLogger<IncrementerTest>();
+        ServerConfiguration = new IncrementerServerConfiguration
+        (
+            new ServerConfiguration { LoggerFactory = LoggerFactory, LoggingName = "IncrementerServer", ThreadName = "IncrementerServer"},
+            new InboundEndpointRegistryConfiguration { LoggerFactory = LoggerFactory , LoggingName = "IncrementerEndpointRegistry" },
+            new InboundEndPointConfiguration { LoggerFactory = LoggerFactory, LoggingName = "IncrementerServerEndpoint" }
+        );
     }
 
     [TestMethod]

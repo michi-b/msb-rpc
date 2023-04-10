@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MsbRpc.Logging;
+using MsbRpc.Servers;
 
 namespace MsbRpc.Configuration;
 
@@ -9,6 +10,11 @@ public class InboundEndpointRegistryConfiguration : Configuration
     public LogConfiguration LogDeregisteredEndpointOnDisposal;
     public LogConfiguration LogEndpointThrewException;
     public LogConfiguration LogRegisteredEndpoint;
+    
+    /// <summary>
+    /// prefix for log messages for easier identification
+    /// </summary>
+    public string LoggingName = nameof(InboundEndPointRegistry); 
 
     public InboundEndpointRegistryConfiguration()
     {

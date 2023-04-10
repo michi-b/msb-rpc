@@ -143,7 +143,8 @@ public class InboundEndPointRegistry : IDisposable
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "An exception occured"
+                    "{LoggingName} caught an endpoint exception",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -160,7 +161,8 @@ public class InboundEndPointRegistry : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Registered new endpoint with thread id {TargetThreadId}. Connection count is {ConnectionCount}",
+                    "{LoggingName} registered new endpoint with thread id {TargetThreadId}. Connection count is {ConnectionCount}",
+                    _configuration.LoggingName,
                     threadId,
                     connectionCount
                 );
@@ -179,7 +181,8 @@ public class InboundEndPointRegistry : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Deregistered endpoint. Connection count is {ConnectionCount}",
+                    "{LoggingName} deregistered endpoint. Connection count is {ConnectionCount}",
+                    _configuration.LoggingName,
                     connectionCount
                 );
             }
@@ -194,10 +197,10 @@ public class InboundEndPointRegistry : IDisposable
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
-                (
-                    configuration.Level,
+                (configuration.Level,
                     configuration.Id,
-                    "Deregistered endpoint with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
+                    "{LoggingName} deregistered endpoint with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
+                    _configuration.LoggingName,
                     threadId,
                     connectionCount
                 );

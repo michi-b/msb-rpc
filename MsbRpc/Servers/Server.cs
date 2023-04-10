@@ -19,7 +19,6 @@ public abstract class Server : IDisposable
 
     private readonly ILogger<Server>? _logger;
     private readonly string _threadName;
-    private readonly string _typeName;
 
     public readonly int Port;
 
@@ -35,11 +34,10 @@ public abstract class Server : IDisposable
         _listenSocket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         _listenSocket.Bind(new IPEndPoint(localHost, configuration.Port));
 
-        _typeName = GetType().Name;
 
         var listenEndPoint = _listenSocket.LocalEndPoint as IPEndPoint;
         Port = configuration.Port == 0 ? listenEndPoint!.Port : configuration.Port;
-        _threadName = $"{_typeName}:{Port}";
+        _threadName = $"{_configuration.ThreadName}:{Port}";
         if (Port == 0)
         {
             LogWasCreatedWithEphemeralPort();
@@ -172,7 +170,8 @@ public abstract class Server : IDisposable
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "Stopped listening due to an exception"
+                    "{LoggingName} stopped listening due to an exception",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -189,7 +188,8 @@ public abstract class Server : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Started listening"
+                    "{LoggingName} started listening",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -207,7 +207,8 @@ public abstract class Server : IDisposable
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "Stopped listening due to disposal"
+                    "{LoggingName} stopped listening due to disposal",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -224,8 +225,8 @@ public abstract class Server : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{ServerType} was created with ephemeral port",
-                    _typeName
+                    "{LoggingName} was created with ephemeral port",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -242,8 +243,8 @@ public abstract class Server : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{ServerType} was created with specified port",
-                    _typeName
+                    "{LoggingName} was created with specified port",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -260,7 +261,8 @@ public abstract class Server : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Accepted new connection"
+                    "{LoggingName} accepted new connection",
+                    _configuration.LoggingName
                 );
             }
         }
@@ -277,7 +279,8 @@ public abstract class Server : IDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Immediately disposed new connection because this server is disposed"
+                    "{LoggingName} immediately disposed new connection because this server is disposed",
+                    _configuration.LoggingName
                 );
             }
         }

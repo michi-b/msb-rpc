@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MsbRpc.Logging;
+using MsbRpc.Servers;
 
 namespace MsbRpc.Configuration;
 
@@ -15,8 +16,21 @@ public class ServerConfiguration : Configuration
     public LogConfiguration LogWasCreatedWithEphemeralPort;
     public LogConfiguration LogWasCreatedWithSpecifiedPort;
 
+    /// <summary>
+    ///     The port to listen on for new connections. If 0, the OS will assign an ephemeral port.
+    /// </summary>
     public int Port = 0;
 
+    /// <summary>
+    ///     Prefix for log messages for easier identification
+    /// </summary>
+    public string LoggingName = nameof(Server);
+
+    /// <summary>
+    ///     Thread name for easier identification, will have the port number appended to it
+    /// </summary>
+    public string ThreadName = nameof(Server);
+    
     public ServerConfiguration()
     {
         LogStoppedListeningDueToException = new LogConfiguration(LogEventIds.ServerStoppedListeningDueToException, LogLevel.Error);
