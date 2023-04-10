@@ -10,6 +10,12 @@ public class ServerConfiguration : Configuration
     public int ListenBacklogSize = DefaultListenBacklogSize;
     public LogConfiguration LogAcceptedNewConnection;
     public LogConfiguration LogDisposedNewConnectionAfterDisposal;
+
+    /// <summary>
+    ///     Prefix for log messages for easier identification
+    /// </summary>
+    public string LoggingName = nameof(Server);
+
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningDueToDisposal;
     public LogConfiguration LogStoppedListeningDueToException;
@@ -22,15 +28,10 @@ public class ServerConfiguration : Configuration
     public int Port = 0;
 
     /// <summary>
-    ///     Prefix for log messages for easier identification
-    /// </summary>
-    public string LoggingName = nameof(Server);
-
-    /// <summary>
     ///     Thread name for easier identification, will have the port number appended to it
     /// </summary>
     public string ThreadName = nameof(Server);
-    
+
     public ServerConfiguration()
     {
         LogStoppedListeningDueToException = new LogConfiguration(LogEventIds.ServerStoppedListeningDueToException, LogLevel.Error);

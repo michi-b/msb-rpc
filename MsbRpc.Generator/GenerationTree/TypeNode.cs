@@ -13,7 +13,6 @@ internal class TypeNode
     public readonly bool IsValidParameter;
     public readonly bool IsValidReturnType;
     public readonly bool IsVoid;
-
     public readonly SerializationKind SerializationKind;
 
     public TypeNode(string fullName, SerializationKind serializationKind, bool isNullable)
@@ -41,6 +40,7 @@ internal class TypeNode
                 : isNullable
                     ? fullName + '?'
                     : fullName;
+
             _constantSizeExpression = SerializationKind.GetConstantSizeExpression(isNullable);
             IsValidParameter = serializationKind.GetIsBufferReadAndWritable();
             IsValidReturnType = serializationKind.GetIsValidReturnType();
@@ -48,22 +48,14 @@ internal class TypeNode
         }
     }
 
-    public bool WriteSizeVariableInitialization(TextWriter writer, string sizeVariableName, string targetExpression)
+    public void WriteSizeVariableInitialization(TextWriter writer, string sizeVariableName, string sizeExpression)
     {
-        string? sizeExpression = GetSizeExpression(targetExpression);
-
-        if (sizeExpression == null)
-        {
-            return false;
-        }
-
         if (_constantSizeExpression != null)
         {
             writer.Write("const ");
         }
 
         writer.WriteLine($"int {sizeVariableName} = {sizeExpression};");
-        return true;
     }
 
     public string GetResponseReadStatement() => $"{DeclarationSyntax} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
@@ -82,7 +74,7 @@ internal class TypeNode
         return $"{bufferWriterExpression}.{bufferWriterWriteMethod}({variableName});";
     }
 
-    private string? GetSizeExpression(string targetExpression)
+    public string? GetSizeExpression(string targetExpression)
     {
         if (_constantSizeExpression != null)
         {

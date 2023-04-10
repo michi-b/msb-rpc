@@ -9,12 +9,13 @@ public class InboundEndpointRegistryConfiguration : Configuration
     public LogConfiguration LogDeregisteredEndpoint;
     public LogConfiguration LogDeregisteredEndpointOnDisposal;
     public LogConfiguration LogEndpointThrewException;
-    public LogConfiguration LogRegisteredEndpoint;
-    
+
     /// <summary>
-    /// prefix for log messages for easier identification
+    ///     prefix for log messages for easier identification
     /// </summary>
-    public string LoggingName = nameof(InboundEndPointRegistry); 
+    public string LoggingName = nameof(InboundEndPointRegistry);
+
+    public LogConfiguration LogRegisteredEndpoint;
 
     public InboundEndpointRegistryConfiguration()
     {

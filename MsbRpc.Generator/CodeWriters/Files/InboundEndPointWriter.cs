@@ -22,7 +22,6 @@ internal class InboundEndPointWriter : EndPointWriter
     protected override void WriteConstructorsAndFactoryMethods(IndentedTextWriter writer)
     {
         string contractImplementationParameterLine = $"{Contract.InterfaceType} {Parameters.ContractImplementation}";
-        string contractImplementationArgumentLine = $"{Parameters.ContractImplementation}";
 
         // public constructor accepting a logger factory
         writer.WriteLine($"public {Name}");
@@ -37,7 +36,7 @@ internal class InboundEndPointWriter : EndPointWriter
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{Parameters.Messenger},");
-            writer.WriteLine($"{contractImplementationArgumentLine},");
+            writer.WriteLine($"{Parameters.ContractImplementation},");
             writer.WriteLine(Parameters.Configuration);
         }
 
@@ -71,7 +70,7 @@ internal class InboundEndPointWriter : EndPointWriter
         }
     }
 
-    private static void WriteProcedure(IndentedTextWriter writer, ProcedureNode procedure)
+    private void WriteProcedure(IndentedTextWriter writer, ProcedureNode procedure)
     {
         ParameterCollectionNode? parameters = procedure.Parameters;
 
@@ -81,35 +80,79 @@ internal class InboundEndPointWriter : EndPointWriter
             //read arguments into local variables
             if (parameters != null)
             {
-                writer.WriteLine($"{BufferReader} {Variables.RequestReader} = {Parameters.Request}.{Methods.GetReader}();");
-                writer.WriteLine();
                 foreach (ParameterNode parameter in parameters)
                 {
-                    writer.WriteLine(parameter.GetRequestReadStatement());
+                    writer.WriteLine(parameter.GetDeclarationStatement());
                 }
+
+                writer.WriteLine();
+
+                using (writer.GetTryBlock())
+                {
+                    writer.WriteLine($"{BufferReader} {Variables.RequestReader} = {Parameters.Request}.{Methods.GetReader}();");
+                    writer.WriteLine();
+                    foreach (ParameterNode parameter in parameters)
+                    {
+                        writer.WriteLine(parameter.GetRequestReadStatement());
+                    }
+                }
+
+                writer.WriteRpcExecutionExceptionCatchBlock(Procedures, procedure, RpcExecutionStageArgumentDeserialization);
 
                 writer.WriteLine();
             }
 
             TypeNode returnType = procedure.ReturnType;
 
+            string allValueArgumentsString = parameters != null ? parameters.GetAllValueArgumentsString() : string.Empty;
+            string implementationCallStatement = $"{Fields.InboundEndpointImplementation}.{procedure.Name}({allValueArgumentsString});";
+
             //call the contract implementation
             if (!returnType.IsVoid)
             {
-                writer.Write($"{returnType.DeclarationSyntax} {Variables.Result} = ");
+                writer.WriteLine($"{returnType.DeclarationSyntax} {Variables.Result};");
+                writer.WriteLine();
             }
 
-            writer.Write($"{Fields.InboundEndpointImplementation}.{procedure.Name}");
-            writer.WriteLine(parameters != null ? $"({parameters.GetValueArgumentsString()});" : "();");
+            using (writer.GetTryBlock())
+            {
+                if (!returnType.IsVoid)
+                {
+                    writer.Write($"{Variables.Result} = ");
+                }
+
+                writer.WriteLine(implementationCallStatement);
+            }
+
+            writer.WriteRpcExecutionExceptionCatchBlock(Procedures, procedure, RpcExecutionStageImplementationExecution);
 
             writer.WriteLine();
 
             //return the result
-            if (returnType.WriteSizeVariableInitialization(writer, Variables.ResultSize, Variables.Result))
+            string? sizeExpression = returnType.GetSizeExpression(Variables.Result);
+
+            if (sizeExpression != null)
             {
+                writer.WriteLine($"{Response} {Variables.Response};");
+
                 writer.WriteLine();
-                string responseWriteStatement = procedure.ReturnType.GetBufferWriterWriteStatement(Variables.ResponseWriter, Variables.Result);
-                writer.WriteReturnResultResponse(responseWriteStatement);
+
+                using (writer.GetTryBlock())
+                {
+                    returnType.WriteSizeVariableInitialization(writer, Variables.ResultSize, sizeExpression);
+                    writer.WriteLine
+                    (
+                        $"{Variables.Response} = {Fields.EndPointBuffer}.{Methods.GetResponse}("
+                        + $"{Fields.InboundEndpointImplementation}.{Properties.RanToCompletion}, "
+                        + $"{Variables.ResultSize});"
+                    );
+                    writer.WriteLine(GetResponseWriterStatement);
+                    string responseWriteStatement = procedure.ReturnType.GetBufferWriterWriteStatement(Variables.ResponseWriter, Variables.Result);
+                    writer.WriteLine(responseWriteStatement);
+                    writer.WriteLine(ReturnResponseStatement);
+                }
+
+                writer.WriteRpcExecutionExceptionCatchBlock(Procedures, procedure, RpcExecutionStageResponseSerialization);
             }
             else
             {

@@ -34,7 +34,6 @@ public abstract class Server : IDisposable
         _listenSocket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         _listenSocket.Bind(new IPEndPoint(localHost, configuration.Port));
 
-
         var listenEndPoint = _listenSocket.LocalEndPoint as IPEndPoint;
         Port = configuration.Port == 0 ? listenEndPoint!.Port : configuration.Port;
         _threadName = $"{_configuration.ThreadName}:{Port}";

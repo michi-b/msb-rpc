@@ -9,16 +9,12 @@ internal static class IndependentCode
 
     public const string MessengerParameter = $"{Types.Messenger} {Parameters.Messenger}";
 
-    public const string LoggerFactoryNullableParameter = $"{Types.LoggerFactoryInterface}? {Parameters.LoggerFactory} = null";
+    public const string ExceptionCatchStatement = $"catch ({Types.Exception} {Variables.Exception})";
 
     public const string RequestParameter = $"{Types.Request} {Parameters.Request}";
 
     public const string ReturnEmptyResponseStatement = $"return {Fields.EndPointBuffer}.{Methods.GetResponse}"
                                                        + $"({Fields.InboundEndpointImplementation}.{Properties.RanToCompletion});";
-
-    public const string GetResultSizeResponseStatement = $"{Types.Response} {Variables.Response} = {Fields.EndPointBuffer}.{Methods.GetResponse}("
-                                                         + $"{Fields.InboundEndpointImplementation}.{Properties.RanToCompletion}, "
-                                                         + $"{Variables.ResultSize});";
 
     public const string GetResponseWriterStatement = $"{Types.BufferWriter} {Variables.ResponseWriter} = {Variables.Response}.{Methods.GetWriter}();";
 

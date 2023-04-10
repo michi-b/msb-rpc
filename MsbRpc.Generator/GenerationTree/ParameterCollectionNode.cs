@@ -31,7 +31,7 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
 
     public IEnumerator<ParameterNode> GetEnumerator() => ((IEnumerable<ParameterNode>)_parameters).GetEnumerator();
 
-    public string GetValueArgumentsString() => string.Join(", ", this.Select(parameter => parameter.ArgumentVariableName));
+    public string GetAllValueArgumentsString() => string.Join(", ", this.Select(parameter => parameter.ArgumentVariableName));
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

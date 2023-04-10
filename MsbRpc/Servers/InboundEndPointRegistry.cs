@@ -197,7 +197,8 @@ public class InboundEndPointRegistry : IDisposable
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
-                (configuration.Level,
+                (
+                    configuration.Level,
                     configuration.Id,
                     "{LoggingName} deregistered endpoint with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
                     _configuration.LoggingName,

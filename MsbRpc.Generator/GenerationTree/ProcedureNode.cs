@@ -6,6 +6,8 @@ namespace MsbRpc.Generator.GenerationTree;
 internal class ProcedureNode
 {
     public readonly ProcedureCollectionNode CollectionNode;
+
+    public readonly string FullName;
     public readonly bool HasParameters;
     public readonly bool HasReturnValue;
 
@@ -27,6 +29,7 @@ internal class ProcedureNode
         CollectionNode = collectionNode;
 
         Name = info.Name;
+        FullName = $"{collectionNode.ProcedureEnumType}.{Name}";
         ProcedureEnumValue = $"{collectionNode.ProcedureEnumName}.{Name}";
         ProcedureEnumIntValue = definitionIndex.ToString();
 

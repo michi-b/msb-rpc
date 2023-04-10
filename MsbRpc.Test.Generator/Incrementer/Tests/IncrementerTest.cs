@@ -38,9 +38,22 @@ public class IncrementerTest : Test
         Logger = LoggerFactory.CreateLogger<IncrementerTest>();
         ServerConfiguration = new IncrementerServerConfiguration
         (
-            new ServerConfiguration { LoggerFactory = LoggerFactory, LoggingName = "IncrementerServer", ThreadName = "IncrementerServer"},
-            new InboundEndpointRegistryConfiguration { LoggerFactory = LoggerFactory , LoggingName = "IncrementerEndpointRegistry" },
-            new InboundEndPointConfiguration { LoggerFactory = LoggerFactory, LoggingName = "IncrementerServerEndpoint" }
+            new ServerConfiguration
+            {
+                LoggerFactory = LoggerFactory,
+                LoggingName = "IncrementerServer",
+                ThreadName = "IncrementerServer"
+            },
+            new InboundEndpointRegistryConfiguration
+            {
+                LoggerFactory = LoggerFactory,
+                LoggingName = "IncrementerEndpointRegistry"
+            },
+            new InboundEndPointConfiguration
+            {
+                LoggerFactory = LoggerFactory,
+                LoggingName = "IncrementerServerEndpoint"
+            }
         );
     }
 
