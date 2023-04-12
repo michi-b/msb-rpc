@@ -30,6 +30,6 @@ internal class ParameterNode
 
     public void WriteSizeVariableInitialization(TextWriter writer)
     {
-        Type.WriteSizeVariableInitialization(writer, SizeVariableName, Name);
+        Type.WriteTargetSizeVariableInitialization(writer, SizeVariableName, Name);
     }
 }
