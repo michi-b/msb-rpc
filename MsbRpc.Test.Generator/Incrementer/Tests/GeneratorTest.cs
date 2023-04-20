@@ -5,10 +5,9 @@ using MsbRpc.Generator;
 namespace MsbRpc.Test.Generator.Incrementer.Tests;
 
 [TestClass]
-public class GeneratorTest : SingleSourceGeneratorTest<GeneratorTest, ContractGenerator>
+public class GeneratorTest : ContractGenerationTest<GeneratorTest, ContractGenerator>
 {
-    protected override string Code
-        => @"[RpcContract(RpcContractType.ClientToServer)]
+    private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
@@ -20,7 +19,10 @@ public interface IIncrementer : IRpcContract
     public void Finish();
 }";
 
-    protected override string Namespace => "MsbRpc.Test.Serialization.ManualRpcTest.Incrementer.Input";
+    private const string Namespace = "MsbRpc.Test.Serialization.ManualRpcTest.Incrementer.Input";
+
+    public GeneratorTest()
+        : base(Code, Namespace) { }
 
     [TestMethod]
     public async Task GeneratorRuns()

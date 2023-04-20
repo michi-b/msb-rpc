@@ -1,23 +1,21 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Contracts;
 using MsbRpc.Generator;
-using MsbRpc.Generator.Attributes;
 
 namespace MsbRpc.Test.Generator.Echo.Tests;
 
 [TestClass]
-public class GeneratorTest : SingleSourceGeneratorTest<GeneratorTest, ContractGenerator>
+public class GeneratorTest : ContractGenerationTest<GeneratorTest, ContractGenerator>
 {
-    protected override string Code
-        => @"[RpcContract(RpcContractType.ClientToServer)]
+    private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IEcho : IRpcContract
 {
     System.DateTime GetDateTime();
 }";
 
-    protected override string Namespace => "MsbRpc.Test.Generator.Echo.Tests";
+    private const string Namespace = "MsbRpc.Test.Generator.Echo.Tests";
+
+    public GeneratorTest() : base(Code, Namespace) { }
 
     [TestMethod]
     public async Task GeneratorRuns()

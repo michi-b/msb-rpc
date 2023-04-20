@@ -1,0 +1,30 @@
+﻿using System;
+using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using Misbat.CodeAnalysis.Test.TestBases;
+using MsbRpc.Contracts;
+using MsbRpc.Generator.Attributes;
+using Serilog;
+using Serilog.Core;
+
+namespace MsbRpc.Test.Generator;
+
+public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerationTest<TTest, TGenerator>
+    where TTest : ContractGenerationTest<TTest, TGenerator>
+    where TGenerator : IIncrementalGenerator, new()
+{
+    // ReSharper disable once StaticMemberInGenericType
+    // yeah let's ignore this
+    private static readonly Type[] StaticReferencedTypes = { typeof(RpcContractAttribute), typeof(IRpcContract) };
+
+    protected ContractGenerationTest(string code, string nameSpace) : base(code, nameSpace, CreateLoggerFactory(), StaticReferencedTypes) { }
+
+    private static ILoggerFactory CreateLoggerFactory()
+    {
+        Logger logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .CreateLogger()!;
+        return new LoggerFactory().AddSerilog(logger);
+    }
+}
