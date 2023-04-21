@@ -4,9 +4,19 @@ namespace MsbRpc.Generator.CodeWriters.Utility;
 
 public static class TextWriterExtensions
 {
-    public static void WriteFileHeader(this TextWriter writer, string fileScopedNamespace)
+    public static void WriteFileHeader(this TextWriter writer, string fileScopedNamespace, params string[] usedNamespaces)
     {
         writer.WriteFileHeader();
+
+        if (usedNamespaces.Length > 0)
+        {
+            foreach (string usedNamespace in usedNamespaces)
+            {
+                writer.WriteLine($"using {usedNamespace};");
+            }
+            writer.WriteLine();
+        }
+        
         writer.WriteFileScopedNamespace(fileScopedNamespace);
     }
 

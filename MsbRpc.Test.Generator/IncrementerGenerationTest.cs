@@ -1,5 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Misbat.CodeAnalysis.Test.CodeTest;
 using MsbRpc.Generator;
 
 namespace MsbRpc.Test.Generator;
@@ -31,9 +38,22 @@ public interface IIncrementer : IRpcContract
     }
 
     [TestMethod]
-    public async Task GeneratorHasOneResult()
+    public async Task GeneratorHasResult()
     {
-        await TestGeneratorHasOneResult();
+        CodeTestResult result = await TestGeneratorHasResult(LoggingOptions.None);
+        var stringBuilder = new StringBuilder(10000);
+        
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        // LINQ would be less readable here
+        foreach (SyntaxTree tree in result.GetGeneratorDriverRunResult<ContractGenerator>().GeneratedTrees)
+        {
+            foreach (TextLine line in (await tree.GetTextAsync()).Lines)
+            {
+                stringBuilder.AppendLine(line.ToString());
+            }            
+        }
+        
+        Logger.LogInformation("Generated trees:\n{Trees}", stringBuilder.ToString());
     }
 
     [TestMethod]

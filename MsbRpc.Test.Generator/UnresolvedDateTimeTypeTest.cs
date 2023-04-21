@@ -1,6 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Misbat.CodeAnalysis.Test.CodeTest;
 using MsbRpc.Generator;
 
 namespace MsbRpc.Test.Generator;
@@ -9,7 +13,7 @@ namespace MsbRpc.Test.Generator;
 public class UnresolvedDateTimeTypeTest : ContractGenerationTest<UnresolvedDateTimeTypeTest, ContractGenerator>
 {
     private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
-public interface IEcho : IRpcContract
+public interface IDateTimeEcho : IRpcContract
 {
     System.DateTime GetDateTime(System.DateTime myDateTime);
 }";
@@ -25,9 +29,22 @@ public interface IEcho : IRpcContract
     }
 
     [TestMethod]
-    public async Task GeneratorHasOneResult()
+    public async Task GeneratorHasResult()
     {
-        await TestGeneratorHasOneResult();
+        CodeTestResult result = await TestGeneratorHasResult(LoggingOptions.None);
+        var stringBuilder = new StringBuilder(10000);
+
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        // LINQ would be less readable here
+        foreach (SyntaxTree tree in result.GetGeneratorDriverRunResult<ContractGenerator>().GeneratedTrees)
+        {
+            foreach (TextLine line in (await tree.GetTextAsync()).Lines)
+            {
+                stringBuilder.AppendLine(line.ToString());
+            }
+        }
+
+        Logger.LogInformation("Generated trees:\n{Trees}", stringBuilder.ToString());
     }
 
     [TestMethod]
