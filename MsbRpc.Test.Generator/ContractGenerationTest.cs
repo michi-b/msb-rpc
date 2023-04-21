@@ -17,12 +17,13 @@ public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerati
     // yeah let's ignore this
     private static readonly Type[] StaticReferencedTypes = { typeof(RpcContractAttribute), typeof(IRpcContract) };
 
-    protected ContractGenerationTest(string code, string nameSpace) : base(code, nameSpace, CreateLoggerFactory(), StaticReferencedTypes) { }
+    protected ContractGenerationTest(string code, string nameSpace) : base
+        (code, nameSpace, CreateLoggerFactory(), d => d.Severity != DiagnosticSeverity.Hidden, StaticReferencedTypes) { }
 
     private static ILoggerFactory CreateLoggerFactory()
     {
         Logger logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+            .MinimumLevel.Verbose()
             .WriteTo.Console()
             .CreateLogger()!;
         return new LoggerFactory().AddSerilog(logger);

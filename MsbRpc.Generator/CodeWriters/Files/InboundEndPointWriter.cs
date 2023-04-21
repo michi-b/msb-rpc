@@ -1,4 +1,5 @@
 ﻿using System.CodeDom.Compiler;
+using System.Linq;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
@@ -81,6 +82,8 @@ internal class InboundEndPointWriter : EndPointWriter
             //read arguments into local variables
             if (parameters != null)
             {
+                bool hasAnySerializableParameters = parameters.Any(p => p.Type.SerializationKind != SerializationKind.Unresolved);
+
                 foreach (ParameterNode parameter in parameters)
                 {
                     writer.WriteLine(parameter.GetDeclarationStatement());
@@ -88,17 +91,24 @@ internal class InboundEndPointWriter : EndPointWriter
 
                 writer.WriteLine();
 
-                using (writer.GetTryBlock())
+                if (hasAnySerializableParameters)
                 {
-                    writer.WriteLine($"{BufferReader} {Variables.RequestReader} = {Parameters.Request}.{Methods.GetReader}();");
-                    writer.WriteLine();
-                    foreach (ParameterNode parameter in parameters)
+                    using (writer.GetTryBlock())
                     {
-                        writer.WriteLine(parameter.GetRequestReadStatement());
+                        writer.WriteLine($"{BufferReader} {Variables.RequestReader} = {Parameters.Request}.{Methods.GetReader}();");
+                        writer.WriteLine();
+                        WriteReadParametersFromRequestReaderLines(writer, parameters);
                     }
                 }
+                else
+                {
+                    WriteReadParametersFromRequestReaderLines(writer, parameters);
+                }
 
-                writer.WriteRpcExecutionExceptionCatchBlock(Procedures, procedure, RpcExecutionStageArgumentDeserialization);
+                if (hasAnySerializableParameters)
+                {
+                    writer.WriteRpcExecutionExceptionCatchBlock(Procedures, procedure, RpcExecutionStageArgumentDeserialization);
+                }
 
                 writer.WriteLine();
             }
@@ -109,7 +119,7 @@ internal class InboundEndPointWriter : EndPointWriter
             string implementationCallStatement = $"{Fields.InboundEndpointImplementation}.{procedure.Name}({allValueArgumentsString});";
 
             //call the contract implementation
-            bool hasReturnValue = returnType.SerializationKind != SerializationKind.Void;
+            bool hasReturnValue = returnType.SerializationKind != SerializationKind.Void && returnType.SerializationKind != SerializationKind.Unresolved;
             if (hasReturnValue)
             {
                 writer.WriteLine($"{returnType.DeclarationSyntax} {Variables.Result};");
@@ -131,7 +141,7 @@ internal class InboundEndPointWriter : EndPointWriter
             writer.WriteLine();
 
             //return the result
-            string? sizeExpression = returnType.GetSizeExpression(Variables.Result);
+            string sizeExpression = returnType.GetSizeExpression(Variables.Result);
 
             if (hasReturnValue)
             {
@@ -160,6 +170,14 @@ internal class InboundEndPointWriter : EndPointWriter
             {
                 writer.WriteLine(ReturnEmptyResponseStatement);
             }
+        }
+    }
+
+    private static void WriteReadParametersFromRequestReaderLines(IndentedTextWriter writer, ParameterCollectionNode parameters)
+    {
+        foreach (ParameterNode parameter in parameters)
+        {
+            writer.WriteLine(parameter.GetRequestReadStatement(Variables.RequestReader));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator;
 

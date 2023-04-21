@@ -24,7 +24,7 @@ internal class ParameterNode
 
     public string GetDeclarationStatement() => $"{Type.DeclarationSyntax} {ArgumentVariableName};";
 
-    public string GetRequestReadStatement() => $"{ArgumentVariableName} = {Type.GetBufferReadExpression(Variables.RequestReader)};";
+    public string GetRequestReadStatement(string requestReaderVariableName) => $"{ArgumentVariableName} = {Type.GetBufferReadExpression(requestReaderVariableName)};";
 
     public override string ToString() => $"{Name} ({Type})";
 

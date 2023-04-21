@@ -7,12 +7,13 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class TypeNode
 {
+    private const string ZeroSizeExpression = "0";
     private readonly string _fullName;
     private readonly bool _isNullable;
     public readonly string DeclarationSyntax;
+    public readonly bool IsConstantSize;
     public readonly bool IsValidParameter;
     public readonly bool IsValidReturnType;
-    public readonly bool IsConstantSize;
     public readonly SerializationKind SerializationKind;
 
     public TypeNode(string fullName, SerializationKind serializationKind, bool isNullable)
@@ -52,17 +53,22 @@ internal class TypeNode
 
     public void WriteSizeVariableInitialization(TextWriter writer, string sizeVariableName, string sizeExpression)
     {
-        writer.WriteLine(IsConstantSize
-            ? $"const int {sizeVariableName} = {sizeExpression};"
-            : $"int {sizeVariableName} = {sizeExpression};");
+        writer.WriteLine
+        (
+            IsConstantSize
+                ? $"const int {sizeVariableName} = {sizeExpression};"
+                : $"int {sizeVariableName} = {sizeExpression};"
+        );
     }
 
     public string GetResponseReadStatement() => $"{DeclarationSyntax} {Variables.Result} = {GetBufferReadExpression(Variables.ResponseReader)};";
 
     public string GetBufferReadExpression(string bufferReaderExpression)
     {
-        string bufferReaderReadMethod = SerializationKind.GetBufferReaderReadMethodName(_isNullable) ?? string.Empty;
-        return $"{bufferReaderExpression}.{bufferReaderReadMethod}()";
+        string? bufferReaderReadMethod = SerializationKind.GetBufferReaderReadMethodName(_isNullable);
+        return bufferReaderReadMethod != null
+            ? $"{bufferReaderExpression}.{bufferReaderReadMethod}()"
+            : "default!";
     }
 
     public override string ToString() => $"{_fullName} ({SerializationKind.GetName()})";
@@ -96,6 +102,4 @@ internal class TypeNode
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
-    private const string ZeroSizeExpression = "0";
 }
