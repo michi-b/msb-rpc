@@ -36,9 +36,9 @@ public interface IEcho : IRpcContract
     }
 
     [TestMethod]
-    public async Task GeneratorReportsNoDiagnostics()
+    public async Task GeneratorReportsUnresolvedReturnTypeDiagnostic()
     {
-        await TestGeneratorReportsNoDiagnostics();
+        await TestGeneratorReportsDiagnostics(DiagnosticDescriptors.TypeIsNotAValidRpcReturnType.Id);
     }
 
     [TestMethod]

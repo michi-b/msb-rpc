@@ -52,7 +52,7 @@ internal class TypeNode
     {
         WriteSizeVariableInitialization(writer, sizeVariableName, GetSizeExpression(target));
     }
-    
+
     public void WriteSizeVariableInitialization(TextWriter writer, string sizeVariableName, string? sizeExpression)
     {
         if (_constantSizeExpression != null)
