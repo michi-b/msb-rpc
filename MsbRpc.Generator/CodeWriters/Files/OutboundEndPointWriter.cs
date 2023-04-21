@@ -1,5 +1,6 @@
 ﻿using System.CodeDom.Compiler;
 using System.IO;
+using System.Linq;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
@@ -77,9 +78,12 @@ internal class OutboundEndPointWriter : EndPointWriter
     private static void WriteProcedureHeader(IndentedTextWriter writer, ProcedureNode procedure)
     {
         writer.Write("public async ");
+
+        SerializationKind returnTypeSerializationKind = procedure.ReturnType.SerializationKind;
+        bool hasSerializableReturnType = returnTypeSerializationKind != SerializationKind.Void;
         writer.Write
         (
-            procedure.ReturnType.SerializationKind != SerializationKind.Void
+            hasSerializableReturnType
                 ? $"{Types.VaLueTask}<{procedure.ReturnType.DeclarationSyntax}>"
                 : $"{Types.VaLueTask}"
         );
@@ -113,7 +117,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         string getProcedureIdExpression = $"{Name}.{Methods.GetProcedureId}({procedure.ProcedureEnumValue})";
 
-        if (parameters != null)
+        if (parameters != null && parameters.Any(p => p.Type.SerializationKind != SerializationKind.Unresolved))
         {
             foreach (ParameterNode parameter in parameters)
             {
@@ -143,7 +147,10 @@ internal class OutboundEndPointWriter : EndPointWriter
 
             foreach (ParameterNode parameter in parameters)
             {
-                writer.WriteLine(parameter.WriteToRequestWriterStatement);
+                if (parameter.Type.SerializationKind != SerializationKind.Unresolved)
+                {
+                    writer.WriteLine(parameter.WriteToRequestWriterStatement);
+                }
             }
         }
         else
@@ -153,12 +160,22 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         writer.WriteLine();
 
-        if (procedure.ReturnType.SerializationKind != SerializationKind.Void)
+        SerializationKind returnTypeSerializationKind = procedure.ReturnType.SerializationKind;
+        if (returnTypeSerializationKind != SerializationKind.Void)
         {
-            writer.WriteLine(SendRequestStatementWithResponse);
-            writer.WriteLine(ResponseReaderInitializationStatement);
-            writer.WriteLine(procedure.ReturnType.GetResponseReadStatement());
-            writer.WriteLine($"return {Variables.Result};");
+            if (returnTypeSerializationKind == SerializationKind.Unresolved)
+            {
+                writer.WriteLine(SendRequestStatement);
+                writer.WriteLine();
+                writer.WriteLine("return default!;");
+            }
+            else
+            {
+                writer.WriteLine(SendRequestStatementWithResponse);
+                writer.WriteLine(ResponseReaderInitializationStatement);
+                writer.WriteLine(procedure.ReturnType.GetResponseReadStatement());
+                writer.WriteLine($"return {Variables.Result};");
+            }
         }
         else
         {

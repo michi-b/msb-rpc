@@ -10,7 +10,7 @@ public class UnresolvedDateTimeTypeTest : ContractGenerationTest<UnresolvedDateT
     private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IEcho : IRpcContract
 {
-    System.DateTime GetDateTime(System.DateTime myDateTime)
+    System.DateTime GetDateTime(System.DateTime myDateTime);
 }";
 
     private const string Namespace = "MsbRpc.Test.Generator.Echo.Tests";
