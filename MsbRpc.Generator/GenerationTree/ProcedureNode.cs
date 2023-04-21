@@ -9,7 +9,6 @@ internal class ProcedureNode
 
     public readonly string FullName;
     public readonly bool HasParameters;
-    public readonly bool HasReturnValue;
 
     public readonly string Name;
     public readonly ParameterCollectionNode? Parameters;
@@ -34,8 +33,6 @@ internal class ProcedureNode
         ProcedureEnumIntValue = definitionIndex.ToString();
 
         ReturnType = typeNodeCache.GetOrAdd(info.ReturnType);
-
-        HasReturnValue = !ReturnType.IsVoid;
 
         ImmutableArray<ParameterInfo> parameterInfos = info.Parameters;
         HasParameters = parameterInfos.Length > 0;

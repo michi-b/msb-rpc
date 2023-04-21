@@ -2,6 +2,7 @@
 using System.IO;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
+using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
@@ -78,7 +79,7 @@ internal class OutboundEndPointWriter : EndPointWriter
         writer.Write("public async ");
         writer.Write
         (
-            procedure.HasReturnValue
+            procedure.ReturnType.SerializationKind != SerializationKind.Void
                 ? $"{Types.VaLueTask}<{procedure.ReturnType.DeclarationSyntax}>"
                 : $"{Types.VaLueTask}"
         );
@@ -152,7 +153,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         writer.WriteLine();
 
-        if (procedure.HasReturnValue)
+        if (procedure.ReturnType.SerializationKind != SerializationKind.Void)
         {
             writer.WriteLine(SendRequestStatementWithResponse);
             writer.WriteLine(ResponseReaderInitializationStatement);

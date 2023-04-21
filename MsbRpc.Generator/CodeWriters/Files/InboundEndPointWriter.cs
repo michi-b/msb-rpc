@@ -1,6 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
+using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
@@ -108,7 +109,8 @@ internal class InboundEndPointWriter : EndPointWriter
             string implementationCallStatement = $"{Fields.InboundEndpointImplementation}.{procedure.Name}({allValueArgumentsString});";
 
             //call the contract implementation
-            if (!returnType.IsVoid)
+            bool hasReturnValue = returnType.SerializationKind != SerializationKind.Void;
+            if (hasReturnValue)
             {
                 writer.WriteLine($"{returnType.DeclarationSyntax} {Variables.Result};");
                 writer.WriteLine();
@@ -116,7 +118,7 @@ internal class InboundEndPointWriter : EndPointWriter
 
             using (writer.GetTryBlock())
             {
-                if (!returnType.IsVoid)
+                if (hasReturnValue)
                 {
                     writer.Write($"{Variables.Result} = ");
                 }
@@ -131,7 +133,7 @@ internal class InboundEndPointWriter : EndPointWriter
             //return the result
             string? sizeExpression = returnType.GetSizeExpression(Variables.Result);
 
-            if (sizeExpression != null)
+            if (hasReturnValue)
             {
                 writer.WriteLine($"{Response} {Variables.Response};");
 

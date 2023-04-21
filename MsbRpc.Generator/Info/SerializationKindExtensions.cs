@@ -54,9 +54,9 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static bool GetIsValidReturnType(this SerializationKind serializationKind)
+    public static bool GetIsValidReturnType(this SerializationKind target)
     {
-        return serializationKind switch
+        return target switch
         {
             SerializationKind.Byte => true,
             SerializationKind.Sbyte => true,
@@ -77,24 +77,26 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static string? GetConstantSizeExpression(this SerializationKind target, bool isNullable)
+    public static bool GetIsConstantSize(this SerializationKind target)
     {
         return target switch
         {
-            SerializationKind.Byte => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Sbyte => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Bool => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Char => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Int => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Long => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Short => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Uint => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Ulong => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Ushort => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Float => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Double => target.GetPrimitiveSizeExpression(isNullable),
-            SerializationKind.Decimal => target.GetPrimitiveSizeExpression(isNullable),
-            _ => null
+            SerializationKind.Byte => true,
+            SerializationKind.Sbyte => true,
+            SerializationKind.Bool => true,
+            SerializationKind.Char => true,
+            SerializationKind.Int => true,
+            SerializationKind.Long => true,
+            SerializationKind.Short => true,
+            SerializationKind.Uint => true,
+            SerializationKind.Ulong => true,
+            SerializationKind.Ushort => true,
+            SerializationKind.Float => true,
+            SerializationKind.Double => true,
+            SerializationKind.Decimal => true,
+            SerializationKind.String => false,
+            SerializationKind.Void => true,
+            _ => false
         };
     }
 
@@ -159,7 +161,7 @@ internal static class SerializationKindExtensions
         return isNullable ? readNonNullable + PascalCaseNullable : readNonNullable;
     }
 
-    private static string GetPrimitiveSizeExpression(this SerializationKind target, bool isNullable)
+    public static string GetPrimitiveSizeExpression(this SerializationKind target, bool isNullable)
     {
         string? pascalCaseKeyword = target.GetPascalCaseKeyword();
         Debug.Assert(pascalCaseKeyword != null);
