@@ -1,9 +1,8 @@
-﻿using System;
-using Incrementer;
+﻿using Incrementer;
 using MsbRpc.Contracts;
 using MsbRpc.Exceptions;
 
-namespace MsbRpc.Test.Generator.Incrementer;
+namespace MsbRpc.Test.Implementations.Incrementer;
 
 internal class Incrementer : IIncrementer
 {

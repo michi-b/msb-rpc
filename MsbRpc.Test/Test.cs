@@ -21,8 +21,10 @@ public class Test
     static Test()
     {
         Logger logger = new LoggerConfiguration()
+            .Enrich.WithThreadId()
+            .Enrich.WithThreadName()
             .MinimumLevel.Verbose()
-            .WriteTo.Console()
+            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{ThreadId}:{ThreadName}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger()!;
         Debug.Assert(logger != null);
         LoggerFactory = new LoggerFactory().AddSerilog(logger);

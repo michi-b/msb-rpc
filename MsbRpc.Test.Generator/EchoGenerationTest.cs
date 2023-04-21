@@ -2,10 +2,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator;
 
-namespace MsbRpc.Test.Generator.Echo.Tests;
+namespace MsbRpc.Test.Generator;
 
 [TestClass]
-public class GeneratorTest : ContractGenerationTest<GeneratorTest, ContractGenerator>
+public class EchoGenerationTest : ContractGenerationTest<EchoGenerationTest, ContractGenerator>
 {
     private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IEcho : IRpcContract
@@ -15,7 +15,7 @@ public interface IEcho : IRpcContract
 
     private const string Namespace = "MsbRpc.Test.Generator.Echo.Tests";
 
-    public GeneratorTest() : base(Code, Namespace) { }
+    public EchoGenerationTest() : base(Code, Namespace) { }
 
     [TestMethod]
     public async Task GeneratorRuns()

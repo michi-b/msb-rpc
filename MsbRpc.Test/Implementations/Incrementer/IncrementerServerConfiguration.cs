@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Configuration;
 
-namespace MsbRpc.Test.Generator.Incrementer;
+namespace MsbRpc.Test.Implementations.Incrementer;
 
 public struct IncrementerServerConfiguration
 {

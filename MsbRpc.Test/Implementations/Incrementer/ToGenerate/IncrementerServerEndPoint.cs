@@ -1,5 +1,4 @@
-﻿using System;
-using Incrementer;
+﻿using Incrementer;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
 using MsbRpc.Contracts;
@@ -12,7 +11,7 @@ using MsbRpc.Serialization.Primitives;
 
 // ReSharper disable RedundantBaseQualifier
 
-namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
+namespace MsbRpc.Test.Implementations.Incrementer.ToGenerate;
 
 public class IncrementerServerEndPoint
     : InboundEndPoint<IncrementerProcedure, IIncrementer>

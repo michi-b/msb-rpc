@@ -1,17 +1,13 @@
 ﻿using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Incrementer.Generated;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
 using MsbRpc.Exceptions;
 using MsbRpc.Exceptions.Generic;
-using MsbRpc.Test.Generator.Incrementer.ToGenerate;
-using Serilog;
-using Serilog.Core;
+using MsbRpc.Test.Implementations.Incrementer.ToGenerate;
 
-namespace MsbRpc.Test.Generator.Incrementer.Tests;
+namespace MsbRpc.Test.Implementations.Incrementer.Tests;
 
 [TestClass]
 public class IncrementerTest : Test
@@ -20,21 +16,12 @@ public class IncrementerTest : Test
 
     private static readonly ILogger<IncrementerTest> Logger;
 
-    private static readonly ILoggerFactory LoggerFactory;
-
     private static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new() { LoggerFactory = LoggerFactory };
 
     private static readonly IncrementerServerConfiguration ServerConfiguration;
 
     static IncrementerTest()
     {
-        Logger logger = new LoggerConfiguration()
-            .Enrich.WithThreadId()
-            .Enrich.WithThreadName()
-            .MinimumLevel.Debug()
-            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{ThreadId}:{ThreadName}] {Message:lj}{NewLine}{Exception}")
-            .CreateLogger()!;
-        LoggerFactory = new LoggerFactory().AddSerilog(logger);
         Logger = LoggerFactory.CreateLogger<IncrementerTest>();
         ServerConfiguration = new IncrementerServerConfiguration
         (

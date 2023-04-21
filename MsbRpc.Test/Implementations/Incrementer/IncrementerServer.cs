@@ -1,9 +1,9 @@
 ﻿using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Servers;
-using MsbRpc.Test.Generator.Incrementer.ToGenerate;
+using MsbRpc.Test.Implementations.Incrementer.ToGenerate;
 
-namespace MsbRpc.Test.Generator.Incrementer;
+namespace MsbRpc.Test.Implementations.Incrementer;
 
 public class IncrementerServer : Server
 {

@@ -1,10 +1,8 @@
 ﻿using MsbRpc.Contracts;
-using MsbRpc.Generator.Attributes;
 
 // ReSharper disable CheckNamespace
 namespace Incrementer;
 
-[RpcContract(RpcContractType.ClientToServer)]
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);

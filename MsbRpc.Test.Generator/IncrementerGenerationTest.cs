@@ -2,10 +2,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator;
 
-namespace MsbRpc.Test.Generator.Incrementer.Tests;
+namespace MsbRpc.Test.Generator;
 
 [TestClass]
-public class GeneratorTest : ContractGenerationTest<GeneratorTest, ContractGenerator>
+public class IncrementerGenerationTest : ContractGenerationTest<IncrementerGenerationTest, ContractGenerator>
 {
     private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IIncrementer : IRpcContract
@@ -21,7 +21,7 @@ public interface IIncrementer : IRpcContract
 
     private const string Namespace = "MsbRpc.Test.Serialization.ManualRpcTest.Incrementer.Input";
 
-    public GeneratorTest()
+    public IncrementerGenerationTest()
         : base(Code, Namespace) { }
 
     [TestMethod]

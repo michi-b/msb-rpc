@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Threading.Tasks;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
@@ -8,7 +7,7 @@ using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
-namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
+namespace MsbRpc.Test.Implementations.Incrementer.ToGenerate;
 
 public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerProcedure>
 {

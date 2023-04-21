@@ -1,7 +1,6 @@
-﻿using System;
-using Incrementer.Generated;
+﻿using Incrementer.Generated;
 
-namespace MsbRpc.Test.Generator.Incrementer.ToGenerate;
+namespace MsbRpc.Test.Implementations.Incrementer.ToGenerate;
 
 public static class IncrementerProcedureExtensions
 {
