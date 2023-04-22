@@ -9,7 +9,7 @@ public class ServerConfiguration : Configuration
     public const int DefaultListenBacklogSize = 100;
     public int ListenBacklogSize = DefaultListenBacklogSize;
     public LogConfiguration LogAcceptedNewConnection;
-    public LogConfiguration LogDisposedNewConnectionAfterDisposal;
+    public LogConfiguration LogDeclinedNewConnectionDuringDisposal;
 
     /// <summary>
     ///     Prefix for log messages for easier identification
@@ -40,6 +40,6 @@ public class ServerConfiguration : Configuration
         LogWasCreatedWithEphemeralPort = new LogConfiguration(LogEventIds.ServerWasCreatedWithEphemeralPort, LogLevel.Information);
         LogWasCreatedWithSpecifiedPort = new LogConfiguration(LogEventIds.ServerWasCreatedWithSpecifiedPort, LogLevel.Information);
         LogAcceptedNewConnection = new LogConfiguration(LogEventIds.ServerAcceptedNewConnection, LogLevel.Trace);
-        LogDisposedNewConnectionAfterDisposal = new LogConfiguration(LogEventIds.ServerDisposedNewConnectionAfterDisposal, LogLevel.Warning);
+        LogDeclinedNewConnectionDuringDisposal = new LogConfiguration(LogEventIds.ServerDeclinedNewConnectionDuringDisposal, LogLevel.Warning);
     }
 }

@@ -20,16 +20,22 @@ public abstract class SelfLockingDisposable : IDisposable
         Dispose(false);
     }
 
-    protected void ExecuteIfNotDisposed(Action action, bool throwObjectDisposedExceptionOtherwise = true)
+    protected void ExecuteIfNotDisposed(Action action, bool throwObjectDisposedExceptionOtherwise = true, Action? alternativeAction = null)
     {
+        void OnDisposed()
+        {
+            alternativeAction?.Invoke();
+
+            if (throwObjectDisposedExceptionOtherwise)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+
         if (IsDisposed)
         {
-            if (!throwObjectDisposedExceptionOtherwise)
-            {
-                return;
-            }
-
-            throw new ObjectDisposedException(GetType().Name);
+            OnDisposed();
+            return;
         }
 
         if (Monitor.TryEnter(this, _lockTimeOutMilliseconds))
@@ -38,12 +44,8 @@ public abstract class SelfLockingDisposable : IDisposable
             {
                 if (IsDisposed)
                 {
-                    if (!throwObjectDisposedExceptionOtherwise)
-                    {
-                        return;
-                    }
-
-                    throw new ObjectDisposedException(GetType().Name);
+                    OnDisposed();
+                    return;
                 }
 
                 action();
@@ -120,11 +122,17 @@ public abstract class SelfLockingDisposable : IDisposable
             {
                 throw GetTimeoutException();
             }
+
+            DisposeManagedResourcesAfterUnlocking();
         }
     }
 
     [PublicAPI]
     protected virtual void DisposeUnmanagedResources() { }
 
+    [PublicAPI]
+    protected virtual void DisposeManagedResourcesAfterUnlocking() { }
+
+    [PublicAPI]
     protected virtual void DisposeManagedResources() { }
 }

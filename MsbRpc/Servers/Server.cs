@@ -88,40 +88,20 @@ public abstract class Server : SelfLockingDisposable
             while (!IsDisposed)
             {
                 Socket newConnectionSocket = _listenSocket.Accept();
-                LogAcceptedNewConnection();
 
-                //imagine this object is disposed while we are waiting for the lock
-                //since disposal also locks this object and since disposal waits for this thread to finish, it will never release the lock
-                bool earlyExitDueToDisposal = false;
-                while (!Monitor.TryEnter(this, 1))
+                void AcceptUnsafe()
                 {
-                    if (IsDisposed)
-                    {
-                        try
-                        {
-                            newConnectionSocket.Dispose();
-                            LogDisposedNewConnectionAfterDisposal();
-                            break;
-                        }
-                        finally
-                        {
-                            earlyExitDueToDisposal = true;
-                        }
-                    }
+                    Accept(new Messenger(new RpcSocket(newConnectionSocket)));
+                    LogAcceptedNewConnection();
                 }
 
-                //if we get here, we either have the lock or IsDisposed is true
-                if (!earlyExitDueToDisposal)
+                void Decline()
                 {
-                    try
-                    {
-                        Accept(new Messenger(new RpcSocket(newConnectionSocket)));
-                    }
-                    finally
-                    {
-                        Monitor.Exit(this);
-                    }
+                    newConnectionSocket.Dispose();
+                    LogDeclinedNewConnectionDuringDisposal();
                 }
+
+                ExecuteIfNotDisposed(AcceptUnsafe, alternativeAction: Decline, throwObjectDisposedExceptionOtherwise: false);
             }
         }
         catch (Exception exception)
@@ -260,11 +240,11 @@ public abstract class Server : SelfLockingDisposable
         }
     }
 
-    private void LogDisposedNewConnectionAfterDisposal()
+    private void LogDeclinedNewConnectionDuringDisposal()
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogDisposedNewConnectionAfterDisposal;
+            LogConfiguration configuration = _configuration.LogDeclinedNewConnectionDuringDisposal;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
