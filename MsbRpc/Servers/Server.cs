@@ -54,32 +54,26 @@ public abstract class Server : SelfLockingDisposable
             throw new InvalidOperationException($"{_threadName} is already started.");
         }
 
-        if (IsDisposed)
+        Thread StartUnsafe()
         {
-            throw new ObjectDisposedException(_threadName);
-        }
-
-        lock (this)
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(_threadName);
-            }
-
             _listenThread = new Thread(() => Run(_configuration.ListenBacklogSize)) { Name = _threadName };
             _listenThread.Start();
             return _listenThread;
         }
+
+        return ExecuteIfNotDisposed(StartUnsafe);
     }
 
     protected override void DisposeManagedResources()
     {
         _listenSocket.Dispose();
+
         if (_listenThread != null)
         {
             _listenThread.Join();
             _listenThread = null;
         }
+
         base.DisposeManagedResources();
     }
 
@@ -91,20 +85,42 @@ public abstract class Server : SelfLockingDisposable
         {
             _listenSocket.Listen(backlog);
             LogStartedListening();
-            while (true)
+            while (!IsDisposed)
             {
                 Socket newConnectionSocket = _listenSocket.Accept();
                 LogAcceptedNewConnection();
-                lock (this)
+
+                //imagine this object is disposed while we are waiting for the lock
+                //since disposal also locks this object and since disposal waits for this thread to finish, it will never release the lock
+                bool earlyExitDueToDisposal = false;
+                while (!Monitor.TryEnter(this, 1))
                 {
                     if (IsDisposed)
                     {
-                        newConnectionSocket.Dispose();
-                        LogDisposedNewConnectionAfterDisposal();
-                        break;
+                        try
+                        {
+                            newConnectionSocket.Dispose();
+                            LogDisposedNewConnectionAfterDisposal();
+                            break;
+                        }
+                        finally
+                        {
+                            earlyExitDueToDisposal = true;
+                        }
                     }
+                }
 
-                    Accept(new Messenger(new RpcSocket(newConnectionSocket)));
+                //if we get here, we either have the lock or IsDisposed is true
+                if (!earlyExitDueToDisposal)
+                {
+                    try
+                    {
+                        Accept(new Messenger(new RpcSocket(newConnectionSocket)));
+                    }
+                    finally
+                    {
+                        Monitor.Exit(this);
+                    }
                 }
             }
         }

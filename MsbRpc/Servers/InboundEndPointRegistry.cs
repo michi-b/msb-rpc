@@ -25,15 +25,8 @@ public class InboundEndPointRegistry : SelfLockingDisposable
     {
         get
         {
-            lock (this)
-            {
-                if (IsDisposed)
-                {
-                    throw new ObjectDisposedException(Name);
-                }
-
-                return _endPoints.Values.ToArray();
-            }
+            InboundEndPointRegistryEntry[] GetEndpointsUnsafe() => _endPoints.Values.ToArray();
+            return ExecuteIfNotDisposed(GetEndpointsUnsafe);
         }
     }
 
@@ -47,15 +40,10 @@ public class InboundEndPointRegistry : SelfLockingDisposable
     }
 
     [PublicAPI]
-    public void Run(IInboundEndPoint endPoint)
+    public void Start(IInboundEndPoint endPoint)
     {
-        lock (this)
+        void RunUnsafe()
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(InboundEndPointRegistry));
-            }
-
             var thread = new Thread(() => RunEndPoint(endPoint)) { Name = endPoint.GetType().Name };
             int threadId = thread.ManagedThreadId;
             _endPoints.Add(threadId, new InboundEndPointRegistryEntry(endPoint, thread));
@@ -63,11 +51,12 @@ public class InboundEndPointRegistry : SelfLockingDisposable
             LogRegisteredEndpoint(threadId, ++_connectionCount);
             thread.Start();
         }
+
+        ExecuteIfNotDisposed(RunUnsafe);
     }
 
     protected override void DisposeManagedResources()
     {
-        // _isDisposed must be set early here, to avoid deadlock when disposing the endpoints
         foreach (KeyValuePair<int, InboundEndPointRegistryEntry> connection in _endPoints)
         {
             InboundEndPointRegistryEntry entry = connection.Value;
@@ -100,18 +89,14 @@ public class InboundEndPointRegistry : SelfLockingDisposable
         }
         finally
         {
-            if (!IsDisposed)
+            void DisposeEndPoint()
             {
-                lock (this)
-                {
-                    if (!IsDisposed)
-                    {
-                        endPoint.Dispose();
-                        _endPoints.Remove(Thread.CurrentThread.ManagedThreadId);
-                        LogDeregisteredEndPoint(--_connectionCount);
-                    }
-                }
+                endPoint.Dispose();
+                _endPoints.Remove(Thread.CurrentThread.ManagedThreadId);
+                LogDeregisteredEndPoint(--_connectionCount);
             }
+
+            ExecuteIfNotDisposed(DisposeEndPoint, false);
         }
     }
 

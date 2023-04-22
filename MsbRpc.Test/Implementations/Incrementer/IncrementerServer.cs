@@ -26,10 +26,9 @@ public class IncrementerServer : Server
 
     protected override void Accept(Messenger messenger)
     {
-        _endPointRegistry.Run(new IncrementerServerEndPoint(messenger, new Incrementer(_exceptionTransmissionOptions), _configuration.EndPointConfiguration));
+        _endPointRegistry.Start(new IncrementerServerEndPoint(messenger, new Incrementer(_exceptionTransmissionOptions), _configuration.EndPointConfiguration));
     }
 
-    
     protected override void DisposeManagedResources()
     {
         _endPointRegistry.Dispose();

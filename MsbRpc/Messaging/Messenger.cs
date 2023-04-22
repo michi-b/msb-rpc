@@ -27,12 +27,6 @@ public class Messenger : Disposable.Disposable
         Port = socket.Port;
     }
 
-    protected override void DisposeManagedResources()
-    {
-        _socket.Dispose();
-        base.DisposeManagedResources();
-    }
-
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
     {
         while (true)
@@ -160,6 +154,12 @@ public class Messenger : Disposable.Disposable
     public void Send(Message message)
     {
         _socket.Send(message.GetFullMessageBuffer());
+    }
+
+    protected override void DisposeManagedResources()
+    {
+        _socket.Dispose();
+        base.DisposeManagedResources();
     }
 
     private ReceiveResult Receive(Message message)
