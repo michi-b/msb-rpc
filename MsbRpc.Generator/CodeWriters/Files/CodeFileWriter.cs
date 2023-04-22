@@ -1,8 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.CodeWriters.Utility;
@@ -46,7 +44,7 @@ internal abstract class CodeFileWriter
     private IndentedTextWriter CreateCodeWriter()
     {
         IndentedTextWriter writer = new(new StringWriter());
-        
+
         writer.WriteFileHeader(_generatedNamespace, UsedNamespaces);
 
         return writer;

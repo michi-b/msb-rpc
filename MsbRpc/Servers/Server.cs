@@ -5,16 +5,16 @@ using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
+using MsbRpc.Disposable;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Sockets;
 
 namespace MsbRpc.Servers;
 
-public abstract class Server : IDisposable
+public abstract class Server : SelfLockingDisposable
 {
     private readonly ServerConfiguration _configuration;
-    private readonly object _disposeLock = new();
     private readonly Socket _listenSocket;
 
     private readonly ILogger<Server>? _logger;
@@ -22,7 +22,6 @@ public abstract class Server : IDisposable
 
     public readonly int Port;
 
-    private bool _isDisposed;
     private Thread? _listenThread;
 
     protected Server(ServerConfiguration configuration)
@@ -55,14 +54,14 @@ public abstract class Server : IDisposable
             throw new InvalidOperationException($"{_threadName} is already started.");
         }
 
-        if (_isDisposed)
+        if (IsDisposed)
         {
             throw new ObjectDisposedException(_threadName);
         }
 
-        lock (_disposeLock)
+        lock (this)
         {
-            if (_isDisposed)
+            if (IsDisposed)
             {
                 throw new ObjectDisposedException(_threadName);
             }
@@ -73,37 +72,15 @@ public abstract class Server : IDisposable
         }
     }
 
-    public void Dispose()
+    protected override void DisposeManagedResources()
     {
-        if (!_isDisposed)
+        _listenSocket.Dispose();
+        if (_listenThread != null)
         {
-            lock (_disposeLock)
-            {
-                if (!_isDisposed)
-                {
-                    Dispose(true);
-                }
-            }
+            _listenThread.Join();
+            _listenThread = null;
         }
-
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        //need to set this before disposing the socket, as the socket's dispose method will dispose the server in return otherwise, causing a deadlock
-        _isDisposed = true;
-
-        if (disposing)
-        {
-            _listenSocket.Dispose();
-
-            if (_listenThread != null)
-            {
-                _listenThread.Join();
-                _listenThread = null;
-            }
-        }
+        base.DisposeManagedResources();
     }
 
     protected abstract void Accept(Messenger messenger);
@@ -120,7 +97,7 @@ public abstract class Server : IDisposable
                 LogAcceptedNewConnection();
                 lock (this)
                 {
-                    if (_isDisposed)
+                    if (IsDisposed)
                     {
                         newConnectionSocket.Dispose();
                         LogDisposedNewConnectionAfterDisposal();
@@ -137,7 +114,7 @@ public abstract class Server : IDisposable
             {
                 case SocketException { SocketErrorCode: SocketError.Interrupted }:
                 case ObjectDisposedException:
-                    if (_isDisposed)
+                    if (IsDisposed)
                     {
                         LogStoppedListeningDueToDisposal(exception);
                     }

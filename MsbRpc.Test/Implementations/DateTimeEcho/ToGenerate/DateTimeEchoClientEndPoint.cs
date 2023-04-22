@@ -1,45 +1,48 @@
-﻿namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
+﻿using System.Net;
+using MsbRpc.Configuration;
+using MsbRpc.EndPoints;
+using MsbRpc.Messaging;
+using MsbRpc.Serialization.Buffers;
+
+namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
 public class DateTimeEchoClientEndPoint
-    : MsbRpc.EndPoints.OutboundEndPoint<DateTimeEchoProcedure>
+    : OutboundEndPoint<DateTimeEchoProcedure>
 {
     public DateTimeEchoClientEndPoint
     (
-        MsbRpc.Messaging.Messenger messenger,
-        MsbRpc.Configuration.OutboundEndPointConfiguration configuration
+        Messenger messenger,
+        OutboundEndPointConfiguration configuration
     ) : base
     (
         messenger,
         configuration
     ) { }
-    
-    public static async System.Threading.Tasks.ValueTask<DateTimeEchoClientEndPoint> ConnectAsync
+
+    public static async ValueTask<DateTimeEchoClientEndPoint> ConnectAsync
     (
-        System.Net.IPEndPoint endPoint,
-        MsbRpc.Configuration.OutboundEndPointConfiguration configuration
+        IPEndPoint endPoint,
+        OutboundEndPointConfiguration configuration
     )
     {
-        MsbRpc.Messaging.Messenger messenger = await MsbRpc.Messaging.MessengerFactory.ConnectAsync(endPoint);
+        Messenger messenger = await MessengerFactory.ConnectAsync(endPoint);
         return new DateTimeEchoClientEndPoint(messenger, configuration);
     }
-    
-    public async System.Threading.Tasks.ValueTask<System.DateTime> GetDateTimeAsync
-    (
-        System.DateTime myDateTime
-    )
+
+    public async ValueTask<DateTime> GetDateTimeAsync(DateTime myDateTime)
     {
-        base.AssertIsOperable();
-        
-        MsbRpc.Serialization.Buffers.Request request = base.Buffer.GetRequest(DateTimeEchoClientEndPoint.GetId(DateTimeEchoProcedure.GetDateTime));
-        
-        await base.SendRequestAsync(request);
-        
+        AssertIsOperable();
+
+        Request request = Buffer.GetRequest(GetId(DateTimeEchoProcedure.GetDateTime));
+
+        await SendRequestAsync(request);
+
         return default!;
     }
-    
+
     protected override DateTimeEchoProcedure GetProcedure(int procedureId) => DateTimeEchoProcedureExtensions.FromId(procedureId);
-    
-    protected override string GetName(DateTimeEchoProcedure procedure) => DateTimeEchoProcedureExtensions.GetName(procedure);
-    
-    private static int GetId(DateTimeEchoProcedure procedure) => DateTimeEchoProcedureExtensions.GetId(procedure);
+
+    protected override string GetName(DateTimeEchoProcedure procedure) => procedure.GetName();
+
+    private static int GetId(DateTimeEchoProcedure procedure) => procedure.GetId();
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
@@ -9,13 +8,11 @@ using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class EndPoint<TProcedure> : IDisposable where TProcedure : Enum
+public abstract class EndPoint<TProcedure> : Disposable.Disposable where TProcedure : Enum
 {
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
     protected ILogger<EndPoint<TProcedure>>? Logger { get; }
-
-    [PublicAPI] public bool IsDisposed { get; private set; }
 
     public bool RanToCompletion { get; protected set; }
 
@@ -30,14 +27,10 @@ public abstract class EndPoint<TProcedure> : IDisposable where TProcedure : Enum
         Buffer = new RpcBuffer(configuration.InitialBufferSize);
     }
 
-    public virtual void Dispose()
+    protected override void DisposeManagedResources()
     {
-        if (!IsDisposed)
-        {
-            GC.SuppressFinalize(this);
-            Messenger.Dispose();
-            IsDisposed = true;
-        }
+        Messenger.Dispose();
+        base.DisposeManagedResources();
     }
 
     [MayBeUsedByGenerator]

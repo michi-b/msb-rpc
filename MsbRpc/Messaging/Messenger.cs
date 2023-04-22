@@ -9,7 +9,7 @@ using MsbRpc.Sockets;
 namespace MsbRpc.Messaging;
 
 [PublicAPI]
-public class Messenger : IDisposable
+public class Messenger : Disposable.Disposable
 {
     private const int CountSize = PrimitiveSerializer.IntSize;
     private static readonly ReceiveResult ClosedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionClosed);
@@ -27,14 +27,10 @@ public class Messenger : IDisposable
         Port = socket.Port;
     }
 
-    public void Dispose()
+    protected override void DisposeManagedResources()
     {
-        if (!_isDisposed)
-        {
-            GC.SuppressFinalize(this);
-            _isDisposed = true;
-            _socket.Dispose();
-        }
+        _socket.Dispose();
+        base.DisposeManagedResources();
     }
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)

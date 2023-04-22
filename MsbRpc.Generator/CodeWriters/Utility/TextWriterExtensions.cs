@@ -14,9 +14,10 @@ public static class TextWriterExtensions
             {
                 writer.WriteLine($"using {usedNamespace};");
             }
+
             writer.WriteLine();
         }
-        
+
         writer.WriteFileScopedNamespace(fileScopedNamespace);
     }
 

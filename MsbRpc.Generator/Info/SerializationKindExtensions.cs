@@ -153,14 +153,6 @@ internal static class SerializationKindExtensions
         };
     }
 
-    private static string GetBufferReaderReadPrimitiveMethodName(this SerializationKind target, bool isNullable)
-    {
-        string? pascalCaseKeyword = target.GetPascalCaseKeyword();
-        Debug.Assert(pascalCaseKeyword != null);
-        string readNonNullable = "Read" + pascalCaseKeyword;
-        return isNullable ? readNonNullable + PascalCaseNullable : readNonNullable;
-    }
-
     public static string GetPrimitiveSizeExpression(this SerializationKind target, bool isNullable)
     {
         string? pascalCaseKeyword = target.GetPascalCaseKeyword();
@@ -170,6 +162,14 @@ internal static class SerializationKindExtensions
                    ? PascalCaseNullable + pascalCaseKeyword
                    : pascalCaseKeyword)
                + "Size";
+    }
+
+    private static string GetBufferReaderReadPrimitiveMethodName(this SerializationKind target, bool isNullable)
+    {
+        string? pascalCaseKeyword = target.GetPascalCaseKeyword();
+        Debug.Assert(pascalCaseKeyword != null);
+        string readNonNullable = "Read" + pascalCaseKeyword;
+        return isNullable ? readNonNullable + PascalCaseNullable : readNonNullable;
     }
 
     private static string? GetPascalCaseKeyword(this SerializationKind target) => target.GetKeyword()?.CamelToPascalCase();

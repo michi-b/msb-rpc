@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho;
 
-public interface IEcho : IRpcContract
+public class DateTimeEcho : RpcContractImplementation, IDateTimeEcho
 {
-    System.DateTime GetDateTime(System.DateTime myDateTime);
+    public DateTime GetDateTime(DateTime myDateTime) => DateTime.Now;
 }

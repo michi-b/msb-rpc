@@ -4,18 +4,16 @@ using MsbRpc.Exceptions;
 
 namespace MsbRpc.Test.Implementations.Incrementer;
 
-internal class Incrementer : IIncrementer
+internal class Incrementer : RpcContractImplementation, IIncrementer
 {
     private readonly RpcExceptionTransmissionOptions _exceptionTransmission;
     private int _value;
 
-    public bool RanToCompletion { get; private set; }
-
     public Incrementer(RpcExceptionTransmissionOptions exceptionTransmission) => _exceptionTransmission = exceptionTransmission;
 
-    public RpcExceptionHandlingInstructions HandleException
+    public override RpcExceptionHandlingInstructions HandleException
         (ref Exception exception, int procedureId, RpcExecutionStage executionStage)
-        => RpcExceptionHandlingInstructions.Default.WithTransmissionOptions(_exceptionTransmission);
+        => base.HandleException(ref exception, procedureId, executionStage).WithTransmissionOptions(_exceptionTransmission);
 
     public int Increment(int value) => value + 1;
 
@@ -33,10 +31,8 @@ internal class Incrementer : IIncrementer
 
     public void Finish()
     {
-        RanToCompletion = true;
+        MarkRanToCompletion();
     }
 
     public string? IncrementString(string? value) => value == null ? null : (int.Parse(value) + 1).ToString();
-
-    public void Dispose() { }
 }

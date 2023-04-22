@@ -1,6 +1,5 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.GenerationTree;

@@ -29,13 +29,10 @@ public class IncrementerServer : Server
         _endPointRegistry.Run(new IncrementerServerEndPoint(messenger, new Incrementer(_exceptionTransmissionOptions), _configuration.EndPointConfiguration));
     }
 
-    protected override void Dispose(bool disposing)
+    
+    protected override void DisposeManagedResources()
     {
-        if (disposing)
-        {
-            _endPointRegistry.Dispose();
-        }
-
-        base.Dispose(disposing);
+        _endPointRegistry.Dispose();
+        base.DisposeManagedResources();
     }
 }

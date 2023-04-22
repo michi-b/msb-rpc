@@ -6,19 +6,19 @@ using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
+using MsbRpc.Disposable;
 using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
 
 namespace MsbRpc.Servers;
 
 [PublicAPI]
-public class InboundEndPointRegistry : IDisposable
+public class InboundEndPointRegistry : SelfLockingDisposable
 {
     private readonly InboundEndpointRegistryConfiguration _configuration;
     private readonly Dictionary<int, InboundEndPointRegistryEntry> _endPoints = new(); // key is managed thread id
     private readonly ILogger<InboundEndPointRegistry>? _logger;
     private int _connectionCount;
-    private bool _isDisposed;
 
     [PublicAPI]
     public InboundEndPointRegistryEntry[] EndPoints
@@ -27,7 +27,7 @@ public class InboundEndPointRegistry : IDisposable
         {
             lock (this)
             {
-                if (_isDisposed)
+                if (IsDisposed)
                 {
                     throw new ObjectDisposedException(Name);
                 }
@@ -51,7 +51,7 @@ public class InboundEndPointRegistry : IDisposable
     {
         lock (this)
         {
-            if (_isDisposed)
+            if (IsDisposed)
             {
                 throw new ObjectDisposedException(nameof(InboundEndPointRegistry));
             }
@@ -65,36 +65,20 @@ public class InboundEndPointRegistry : IDisposable
         }
     }
 
-    [PublicAPI]
-    public void Dispose()
+    protected override void DisposeManagedResources()
     {
-        GC.SuppressFinalize(this);
-        Dispose(true);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!_isDisposed)
+        // _isDisposed must be set early here, to avoid deadlock when disposing the endpoints
+        foreach (KeyValuePair<int, InboundEndPointRegistryEntry> connection in _endPoints)
         {
-            lock (this)
-            {
-                // _isDisposed must be set early here, to avoid deadlock when disposing the endpoints
-                _isDisposed = true;
-
-                if (disposing)
-                {
-                    foreach (KeyValuePair<int, InboundEndPointRegistryEntry> connection in _endPoints)
-                    {
-                        InboundEndPointRegistryEntry entry = connection.Value;
-                        entry.EndPoint.Dispose();
-                        entry.Thread.Join();
-                        LogDeregisteredEndPointOnDisposal(connection.Key, --_connectionCount);
-                    }
-
-                    _endPoints.Clear();
-                }
-            }
+            InboundEndPointRegistryEntry entry = connection.Value;
+            entry.EndPoint.Dispose();
+            entry.Thread.Join();
+            LogDeregisteredEndPointOnDisposal(connection.Key, --_connectionCount);
         }
+
+        _endPoints.Clear();
+
+        base.DisposeManagedResources();
     }
 
     private void RunEndPoint(IInboundEndPoint endPoint)
@@ -105,7 +89,7 @@ public class InboundEndPointRegistry : IDisposable
         }
         catch (SocketException socketException)
         {
-            if (!_isDisposed || socketException.SocketErrorCode != SocketError.Interrupted)
+            if (!IsDisposed || socketException.SocketErrorCode != SocketError.Interrupted)
             {
                 LogEndpointThrewException(socketException);
             }
@@ -116,11 +100,11 @@ public class InboundEndPointRegistry : IDisposable
         }
         finally
         {
-            if (!_isDisposed)
+            if (!IsDisposed)
             {
                 lock (this)
                 {
-                    if (!_isDisposed)
+                    if (!IsDisposed)
                     {
                         endPoint.Dispose();
                         _endPoints.Remove(Thread.CurrentThread.ManagedThreadId);

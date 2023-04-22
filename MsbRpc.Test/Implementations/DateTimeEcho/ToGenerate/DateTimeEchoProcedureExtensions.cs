@@ -7,25 +7,25 @@ public static class DateTimeEchoProcedureExtensions
         return procedure switch
         {
             DateTimeEchoProcedure.GetDateTime => nameof(DateTimeEchoProcedure.GetDateTime),
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
-    
+
     public static int GetId(this DateTimeEchoProcedure procedure)
     {
         return procedure switch
         {
             DateTimeEchoProcedure.GetDateTime => 0,
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedure), procedure, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(procedure), procedure, null)
         };
     }
-    
+
     public static DateTimeEchoProcedure FromId(int procedureId)
     {
         return procedureId switch
         {
             0 => DateTimeEchoProcedure.GetDateTime,
-            _ => throw new System.ArgumentOutOfRangeException(nameof(procedureId), procedureId, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(procedureId), procedureId, null)
         };
     }
 }

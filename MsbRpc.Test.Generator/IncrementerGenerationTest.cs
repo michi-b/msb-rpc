@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -42,7 +40,7 @@ public interface IIncrementer : IRpcContract
     {
         CodeTestResult result = await TestGeneratorHasResult(LoggingOptions.None);
         var stringBuilder = new StringBuilder(10000);
-        
+
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         // LINQ would be less readable here
         foreach (SyntaxTree tree in result.GetGeneratorDriverRunResult<ContractGenerator>().GeneratedTrees)
@@ -50,9 +48,9 @@ public interface IIncrementer : IRpcContract
             foreach (TextLine line in (await tree.GetTextAsync()).Lines)
             {
                 stringBuilder.AppendLine(line.ToString());
-            }            
+            }
         }
-        
+
         Logger.LogInformation("Generated trees:\n{Trees}", stringBuilder.ToString());
     }
 
