@@ -1,4 +1,6 @@
-﻿using Incrementer;
+﻿#nullable enable
+
+using Incrementer;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
 using MsbRpc.Contracts;

@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿#nullable enable
+
+using System.Net;
 using Incrementer.Generated;
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints;

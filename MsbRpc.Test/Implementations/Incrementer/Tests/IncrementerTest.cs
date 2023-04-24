@@ -5,49 +5,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
 using MsbRpc.Exceptions;
 using MsbRpc.Exceptions.Generic;
+using MsbRpc.Servers;
+using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Implementations.Incrementer.ToGenerate;
 
 namespace MsbRpc.Test.Implementations.Incrementer.Tests;
 
 [TestClass]
-public class IncrementerTest : Test
+public class IncrementerTest : Test<IncrementerTest>
 {
     private static readonly IPAddress LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
 
-    private static readonly ILogger<IncrementerTest> Logger;
-
     private static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new() { LoggerFactory = LoggerFactory };
-
-    private static readonly IncrementerServerConfiguration ServerConfiguration;
-
-    static IncrementerTest()
-    {
-        Logger = LoggerFactory.CreateLogger<IncrementerTest>();
-        ServerConfiguration = new IncrementerServerConfiguration
-        (
-            new ServerConfiguration
-            {
-                LoggerFactory = LoggerFactory,
-                LoggingName = "IncrementerServer",
-                ThreadName = "IncrementerServer"
-            },
-            new InboundEndpointRegistryConfiguration
-            {
-                LoggerFactory = LoggerFactory,
-                LoggingName = "IncrementerEndpointRegistry"
-            },
-            new InboundEndPointConfiguration
-            {
-                LoggerFactory = LoggerFactory,
-                LoggingName = "IncrementerServerEndpoint"
-            }
-        );
-    }
 
     [TestMethod]
     public void Listens()
     {
-        IncrementerServer server = StartServer();
+        Server server = StartServer();
         WaitForThreads();
         server.Dispose();
     }
@@ -385,7 +359,7 @@ public class IncrementerTest : Test
 
     private static IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {
-        var server = new IncrementerServer(ServerConfiguration, exceptionTransmissionOptions);
+        var server = new IncrementerServer(LoggerFactory, exceptionTransmissionOptions);
         server.Start();
         return server;
     }

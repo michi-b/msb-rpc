@@ -39,13 +39,15 @@ public class DateTimeEchoServerEndPoint
 
     private Response GetDateTime(Request request)
     {
-        DateTime myDateTimeArgument;
+        BufferReader requestReader = request.GetReader();
+        
+        DateTime myDateTimeArgument = MsbRpc.Test.Implementations.DateTimeEcho.DateTimeSerializer.Read(requestReader);
 
-        myDateTimeArgument = default!;
-
+        DateTime result;
+        
         try
         {
-            Implementation.GetDateTime(myDateTimeArgument);
+            result = Implementation.GetDateTime(myDateTimeArgument);
         }
         catch (Exception exception)
         {
@@ -57,7 +59,21 @@ public class DateTimeEchoServerEndPoint
             );
         }
 
-        return Buffer.GetResponse(Implementation.RanToCompletion);
+        Response response;
+        try
+        {
+            response = Buffer.GetResponse(Implementation.RanToCompletion, MsbRpc.Test.Implementations.DateTimeEcho.DateTimeSerializer.Size);
+            
+            BufferWriter responseWriter = response.GetWriter();
+            
+            MsbRpc.Test.Implementations.DateTimeEcho.DateTimeSerializer.Write(responseWriter, result);
+        }
+        catch (Exception e)
+        {
+            throw new RpcExecutionException<DateTimeEchoProcedure>(e, DateTimeEchoProcedure.GetDateTime, RpcExecutionStage.ResponseSerialization);
+        }
+
+        return response;
     }
 
     protected override DateTimeEchoProcedure GetProcedure(int procedureId) => DateTimeEchoProcedureExtensions.FromId(procedureId);

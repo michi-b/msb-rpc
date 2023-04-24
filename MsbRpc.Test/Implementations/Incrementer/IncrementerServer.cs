@@ -1,4 +1,6 @@
-﻿using MsbRpc.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration;
+using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Servers;
 using MsbRpc.Test.Implementations.Incrementer.ToGenerate;
@@ -7,31 +9,56 @@ namespace MsbRpc.Test.Implementations.Incrementer;
 
 public class IncrementerServer : Server
 {
-    private readonly IncrementerServerConfiguration _configuration;
     private readonly InboundEndPointRegistry _endPointRegistry;
+
     private readonly RpcExceptionTransmissionOptions _exceptionTransmissionOptions;
+
+    private readonly ILoggerFactory _loggerFactory;
 
     public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
 
     public IncrementerServer
     (
-        IncrementerServerConfiguration configuration,
-        RpcExceptionTransmissionOptions exceptionTransmissionOptions
-    ) : base(configuration.ServerConfiguration)
+        ILoggerFactory loggerFactory,
+        RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None
+    ) : base(CreateServerConfiguration(loggerFactory))
     {
-        _configuration = configuration;
+        _endPointRegistry = new InboundEndPointRegistry(CreateInboundEndpointRegistryConfiguration(loggerFactory));
+        _loggerFactory = loggerFactory;
         _exceptionTransmissionOptions = exceptionTransmissionOptions;
-        _endPointRegistry = new InboundEndPointRegistry(_configuration.EndPointRegistryConfiguration);
     }
+
+    private static ServerConfiguration CreateServerConfiguration(ILoggerFactory loggerFactory)
+        => new()
+        {
+            LoggerFactory = loggerFactory,
+            LoggingName = nameof(IncrementerServer),
+            ThreadName = nameof(IncrementerServer)
+        };
+
+    private static InboundEndPointConfiguration CreateInboundEndPointConfiguration(ILoggerFactory loggerFactory)
+        => new()
+        {
+            LoggerFactory = loggerFactory,
+            LoggingName = nameof(IncrementerServerEndPoint)
+        };
+
+    private static InboundEndpointRegistryConfiguration CreateInboundEndpointRegistryConfiguration(ILoggerFactory loggerFactory)
+        => new()
+        {
+            LoggerFactory = loggerFactory,
+            LoggingName = nameof(IncrementerServer) + "EndpointRegistry"
+        };
 
     protected override void Accept(Messenger messenger)
     {
-        _endPointRegistry.Start(new IncrementerServerEndPoint(messenger, new Incrementer(_exceptionTransmissionOptions), _configuration.EndPointConfiguration));
+        _endPointRegistry.Start
+            (new IncrementerServerEndPoint(messenger, new Incrementer(_exceptionTransmissionOptions), CreateInboundEndPointConfiguration(_loggerFactory)));
     }
 
     protected override void DisposeManagedResources()
     {
-        _endPointRegistry.Dispose();
         base.DisposeManagedResources();
+        _endPointRegistry.Dispose();
     }
 }

@@ -6,7 +6,8 @@ namespace MsbRpc.Disposable;
 
 public abstract class SelfLockingDisposable : IDisposable
 {
-    private readonly int _lockTimeOutMilliseconds = 10000;
+    private const int LockTimeOutMilliseconds = 60000; // 1 minute
+
     [PublicAPI] public bool IsDisposed { get; private set; }
 
     public void Dispose()
@@ -38,7 +39,7 @@ public abstract class SelfLockingDisposable : IDisposable
             return;
         }
 
-        if (Monitor.TryEnter(this, _lockTimeOutMilliseconds))
+        if (Monitor.TryEnter(this, LockTimeOutMilliseconds))
         {
             try
             {
@@ -68,7 +69,7 @@ public abstract class SelfLockingDisposable : IDisposable
             throw new ObjectDisposedException(GetType().Name);
         }
 
-        if (Monitor.TryEnter(this, _lockTimeOutMilliseconds))
+        if (Monitor.TryEnter(this, LockTimeOutMilliseconds))
         {
             try
             {
@@ -98,7 +99,7 @@ public abstract class SelfLockingDisposable : IDisposable
     {
         if (!IsDisposed)
         {
-            if (Monitor.TryEnter(this, _lockTimeOutMilliseconds))
+            if (Monitor.TryEnter(this, LockTimeOutMilliseconds))
             {
                 try
                 {

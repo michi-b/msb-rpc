@@ -1,12 +1,13 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 
 namespace MsbRpc.Test.Network;
 
 [TestClass]
-public class ConnectionTest : Test
+public class ConnectionTest : Test<ConnectionTest>
 {
     [TestMethod]
     public async Task ConnectsToEphemeralPort()

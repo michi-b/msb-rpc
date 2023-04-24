@@ -3,4 +3,4 @@
 namespace MsbRpc.Test.Network;
 
 [TestClass]
-public abstract class ClientServerTest : Test { }
+public abstract class ClientServerTest : Base.Test { }

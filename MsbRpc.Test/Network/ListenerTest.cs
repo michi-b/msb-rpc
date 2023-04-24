@@ -3,12 +3,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
 
 namespace MsbRpc.Test.Network;
 
-public abstract class ListenerTest : Test
+public abstract class ListenerTest : Test<ListenerTest>
 {
     protected abstract Task<List<ArraySegment<byte>>> Listen(Messenger messenger);
 

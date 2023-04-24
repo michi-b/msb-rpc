@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
+using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 using MsbRpc.Test.Network.Utility.Listeners;
 
@@ -11,7 +12,7 @@ namespace MsbRpc.Test.Network;
 [TestClass]
 [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
-public class PrimitivesSerializationTest : Test
+public class PrimitivesSerializationTest : Test<PrimitivesSerializationTest>
 {
     [TestMethod]
     public async Task PreservesInt32()

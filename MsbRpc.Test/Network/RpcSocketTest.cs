@@ -6,12 +6,13 @@ using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 using MsbRpc.Sockets.Exceptions;
+using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 
 namespace MsbRpc.Test.Network;
 
 [TestClass]
-public class RpcSocketTest : Test
+public class RpcSocketTest : Test<RpcSocketTest>
 {
     [TestMethod]
     public async Task DisconnectedSocketThrowsException()
