@@ -24,6 +24,8 @@ public abstract class Server : SelfLockingDisposable
 
     private Thread? _listenThread;
 
+    protected ServerConfiguration Configuration => _configuration;
+    
     protected Server(ServerConfiguration configuration)
     {
         _configuration = configuration;

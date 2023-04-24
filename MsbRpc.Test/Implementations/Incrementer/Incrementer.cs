@@ -4,7 +4,7 @@ using MsbRpc.Exceptions;
 
 namespace MsbRpc.Test.Implementations.Incrementer;
 
-internal class Incrementer : RpcContractImplementation, IIncrementer
+public class Incrementer : RpcContractImplementation, IIncrementer
 {
     private readonly RpcExceptionTransmissionOptions _exceptionTransmission;
     private int _value;
