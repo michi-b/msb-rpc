@@ -1,79 +1,47 @@
 ﻿using System.Net;
+using Incrementer;
 using Incrementer.Generated;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
 using MsbRpc.Exceptions;
 using MsbRpc.Exceptions.Generic;
-using MsbRpc.Servers;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Implementations.Incrementer.ToGenerate;
+using MsbRpc.Test.Utility;
 
 namespace MsbRpc.Test.Implementations.Incrementer.Tests;
 
 [TestClass]
-public class IncrementerTest : Test<IncrementerTest>
+public class IncrementerTest : ServerTest<IncrementerTest,
+    IncrementerServer,
+    IncrementerServerEndPoint,
+    IncrementerClientEndPoint,
+    IncrementerProcedure,
+    IIncrementer>
 {
-    private static readonly IPAddress LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
-
-    private static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new() { LoggerFactory = LoggerFactory };
-
     [TestMethod]
     public void Listens()
     {
-        Server server = StartServer();
-        WaitForThreads();
-        server.Dispose();
+        TestListens();
     }
 
     [TestMethod]
     public async Task ConnectsAndDisconnects()
     {
-        using IncrementerServer server = StartServer();
-        IncrementerClientEndPoint client = await ConnectClient(server);
-
-        WaitForThreads();
-        Assert.AreEqual(1, server.EndPoints.Length);
-
-        client.Dispose();
-
-        WaitForThreads();
-        Assert.AreEqual(0, server.EndPoints.Length);
+        await TestConnectsAndDisconnects();
     }
 
     [TestMethod]
     public async Task ConnectsAndDisconnectsTwoClients()
     {
-        using IncrementerServer server = StartServer();
-
-        IncrementerClientEndPoint client1 = await ConnectClient(server);
-        WaitForThreads();
-        Assert.AreEqual(1, server.EndPoints.Length);
-
-        IncrementerClientEndPoint client2 = await ConnectClient(server);
-        WaitForThreads();
-        Assert.AreEqual(2, server.EndPoints.Length);
-
-        client1.Dispose();
-        WaitForThreads();
-        Assert.AreEqual(1, server.EndPoints.Length);
-
-        client2.Dispose();
-        WaitForThreads();
-        Assert.AreEqual(0, server.EndPoints.Length);
+        await TestConnectsAndDisconnectsTwoClients();
     }
 
     [TestMethod]
     public async Task CanDisposeServerPrematurely()
     {
-        IncrementerClientEndPoint client;
-        using (IncrementerServer server = StartServer())
-        {
-            client = await ConnectClient(server);
-            // WaitForThreads();
-        }
-
-        client.Dispose();
+        await TestCanDisposeServerPrematurely();
     }
 
     [TestMethod]
@@ -351,41 +319,9 @@ public class IncrementerTest : Test<IncrementerTest>
         }
     }
 
-    private static ValueTask<IncrementerClientEndPoint> ConnectClient(IncrementerServer server)
-    {
-        IPEndPoint endPoint = new(LocalHost, server.Port);
-        return IncrementerClientEndPoint.ConnectAsync(endPoint, ClientEndPointConfiguration);
-    }
+    protected override IncrementerServer CreateServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
+        => new(TestUtility.LoggerFactory, exceptionTransmissionOptions);
 
-    private static IncrementerServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
-    {
-        var server = new IncrementerServer(LoggerFactory, exceptionTransmissionOptions);
-        server.Start();
-        return server;
-    }
-
-    private static void WaitForThreads()
-    {
-        Thread.Sleep(100);
-    }
-
-    private static void LogTransmittedExceptionTypeName(RpcExceptionTransmission transmission)
-    {
-        Logger.LogInformation("exception type name is '{ExceptionTypeName}'", transmission.ExceptionTypeName);
-    }
-
-    private static void LogTransmittedExceptionMessage(RpcExceptionTransmission transmission)
-    {
-        Logger.LogInformation("exception message is '{ExceptionMessage}'", transmission.ExceptionMessage);
-    }
-
-    private static void LogTransmittedSourceExecutionStage(RpcExceptionTransmission transmission)
-    {
-        Logger.LogInformation("source execution stage is '{SourceExecutionStage}'", transmission.SourceExecutionStage);
-    }
-
-    private static void LogTransmittedRemoteContinuation(RpcExceptionTransmission transmission)
-    {
-        Logger.LogInformation("remote continuation is '{RemoteContinuation}'", transmission.RemoteContinuation);
-    }
+    protected override async ValueTask<IncrementerClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration)
+        => await IncrementerClientEndPoint.ConnectAsync(endPoint, configuration);
 }
