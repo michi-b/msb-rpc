@@ -5,10 +5,10 @@ namespace MsbRpc.Test.Base;
 
 public class Test
 {
-    // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    // ReSharper disable once MemberCanBeProtected.Global
     // MSTest needs the public setter
-    public TestContext TestContext { private get; set; } = null!;
+    public TestContext TestContext { protected get; set; } = null!;
 
     [PublicAPI] protected CancellationToken CancellationToken => TestContext.CancellationTokenSource.Token;
 }

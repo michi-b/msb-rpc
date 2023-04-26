@@ -29,15 +29,27 @@ public class DateTimeEchoClientEndPoint
         return new DateTimeEchoClientEndPoint(messenger, configuration);
     }
 
-    public async ValueTask<DateTime> GetDateTimeAsync(DateTime myDateTime)
+    public async ValueTask<DateTime> GetDateTimeAsync(DateTime clientDateTime)
     {
         AssertIsOperable();
 
-        Request request = Buffer.GetRequest(GetId(DateTimeEchoProcedure.GetDateTime));
+        int myDateTimeArgumentSize = DateTimeSerializer.Size;
+        
+        int argumentSizeSum = myDateTimeArgumentSize;
+        
+        Request request = Buffer.GetRequest(GetId(DateTimeEchoProcedure.GetDateTime), argumentSizeSum);
+        
+        BufferWriter writer = request.GetWriter();
+        
+        DateTimeSerializer.Write(writer, clientDateTime);
 
-        await SendRequestAsync(request);
+        Response response = await SendRequestAsync(request);
 
-        return default!;
+        BufferReader responseReader = response.GetReader();
+        
+        DateTime result = DateTimeSerializer.Read(responseReader);
+
+        return result;
     }
 
     protected override DateTimeEchoProcedure GetProcedure(int procedureId) => DateTimeEchoProcedureExtensions.FromId(procedureId);

@@ -4,5 +4,19 @@ namespace MsbRpc.Test.Implementations.DateTimeEcho;
 
 public class DateTimeEcho : RpcContractImplementation, IDateTimeEcho
 {
-    public DateTime GetDateTime(DateTime myDateTime) => DateTime.Now;
+    private const int RetryMillisecondsTimeout = 10;
+
+    public DateTime GetDateTime(DateTime clientDateTime)
+    {
+        DateTime result;
+        do
+        {
+            Thread.Sleep(RetryMillisecondsTimeout);
+            result = DateTime.Now;
+        } while (result == clientDateTime);
+
+        MarkRanToCompletion();
+
+        return result;
+    }
 }

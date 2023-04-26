@@ -36,6 +36,25 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
         await TestCanDisposeServerPrematurely();
     }
 
+    [TestMethod]
+    public async Task ServerRespondsWithDifferentDateTime()
+    {
+        using DateTimeEchoServer server = StartServer();
+        using DateTimeEchoClientEndPoint client = await ConnectClient(server);
+        DateTime clientDateTime = DateTime.Now;
+        DateTime serverDateTime = await client.GetDateTimeAsync(clientDateTime);
+        Assert.AreNotEqual(default, serverDateTime);
+        TestContext.Write
+        (
+            "Client DateTime is {0} ({1}), server DateTime is {2} ({3})",
+            clientDateTime,
+            clientDateTime.Ticks,
+            serverDateTime,
+            serverDateTime.Ticks
+        );
+        Assert.AreNotEqual(clientDateTime, serverDateTime);
+    }
+
     protected override DateTimeEchoServer CreateServer(RpcExceptionTransmissionOptions _ = RpcExceptionTransmissionOptions.None) => new(TestUtility.LoggerFactory);
 
     protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration)

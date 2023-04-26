@@ -34,11 +34,11 @@ public abstract class Server<TServer, TEndPoint> : Server
             ThreadName = serverName
         };
 
-    private static InboundEndPointConfiguration CreateInboundEndPointConfiguration(ILoggerFactory loggerFactory)
+    private InboundEndPointConfiguration CreateInboundEndPointConfiguration(ILoggerFactory loggerFactory)
         => new()
         {
             LoggerFactory = loggerFactory,
-            LoggingName = nameof(_endpointName)
+            LoggingName = _endpointName
         };
 
     private InboundEndpointRegistryConfiguration CreateInboundEndpointRegistryConfiguration(ILoggerFactory loggerFactory)
