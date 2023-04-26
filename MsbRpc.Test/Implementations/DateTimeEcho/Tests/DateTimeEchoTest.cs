@@ -55,6 +55,23 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
         Assert.AreNotEqual(clientDateTime, serverDateTime);
     }
 
+    [TestMethod]
+    public async Task ServerHasNotInitiallyRunToCompletion()
+    {
+        using DateTimeEchoServer server = StartServer();
+        using DateTimeEchoClientEndPoint client = await ConnectClient(server);
+        Assert.IsFalse(client.RanToCompletion);
+    }
+
+    [TestMethod]
+    public async Task ServerRunsToCompletionUponSingleRpcInvocation()
+    {
+        using DateTimeEchoServer server = StartServer();
+        using DateTimeEchoClientEndPoint client = await ConnectClient(server);
+        await client.GetDateTimeAsync(DateTime.Now);
+        Assert.IsTrue(client.RanToCompletion);
+    }
+
     protected override DateTimeEchoServer CreateServer(RpcExceptionTransmissionOptions _ = RpcExceptionTransmissionOptions.None) => new(TestUtility.LoggerFactory);
 
     protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration)
