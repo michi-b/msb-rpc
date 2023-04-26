@@ -23,6 +23,7 @@ public abstract class Server : SelfLockingDisposable
 
     private Thread? _listenThread;
 
+    [PublicAPI]
     protected ServerConfiguration Configuration { get; }
 
     protected Server(ServerConfiguration configuration)
@@ -179,7 +180,7 @@ public abstract class Server : SelfLockingDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    exception,
+                    Configuration.LogExceptionWhenLoggingStoppedListeningDueToDisposal ? exception : null,
                     "{LoggingName} stopped listening due to disposal",
                     Configuration.LoggingName
                 );

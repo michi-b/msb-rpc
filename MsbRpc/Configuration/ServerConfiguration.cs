@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using MsbRpc.Logging;
 using MsbRpc.Servers;
 
 namespace MsbRpc.Configuration;
 
+[PublicAPI]
 public class ServerConfiguration : Configuration
 {
     public const int DefaultListenBacklogSize = 100;
@@ -18,6 +20,7 @@ public class ServerConfiguration : Configuration
 
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningDueToDisposal;
+    public bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
     public LogConfiguration LogStoppedListeningDueToException;
     public LogConfiguration LogWasCreatedWithEphemeralPort;
     public LogConfiguration LogWasCreatedWithSpecifiedPort;
@@ -37,6 +40,7 @@ public class ServerConfiguration : Configuration
         LogStoppedListeningDueToException = new LogConfiguration(LogEventIds.ServerStoppedListeningDueToException, LogLevel.Error);
         LogStartedListening = new LogConfiguration(LogEventIds.ServerStartedListening, LogLevel.Information);
         LogStoppedListeningDueToDisposal = new LogConfiguration(LogEventIds.ServerStoppedListeningDueToDisposal, LogLevel.Information);
+        LogExceptionWhenLoggingStoppedListeningDueToDisposal = false;
         LogWasCreatedWithEphemeralPort = new LogConfiguration(LogEventIds.ServerWasCreatedWithEphemeralPort, LogLevel.Information);
         LogWasCreatedWithSpecifiedPort = new LogConfiguration(LogEventIds.ServerWasCreatedWithSpecifiedPort, LogLevel.Information);
         LogAcceptedNewConnection = new LogConfiguration(LogEventIds.ServerAcceptedNewConnection, LogLevel.Trace);
