@@ -18,7 +18,12 @@ public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerati
     private static readonly Type[] StaticReferencedTypes = { typeof(RpcContractAttribute), typeof(IRpcContract) };
 
     protected ContractGenerationTest(string code, string nameSpace) : base
-        (code, nameSpace, CreateLoggerFactory(), d => d.Severity != DiagnosticSeverity.Hidden, StaticReferencedTypes) { }
+    (
+        CreateLoggerFactory(),
+        d => d.Severity != DiagnosticSeverity.Hidden,
+        codeTest => CodeTestUtility.Configure(codeTest).WithCode(code).InNamespace(nameSpace),
+        StaticReferencedTypes
+    ) { }
 
     private static ILoggerFactory CreateLoggerFactory()
     {

@@ -7,7 +7,22 @@ namespace MsbRpc.Test.Generator;
 [TestClass]
 public class DateTimeEchoGenerationTest : ContractGenerationTest<DateTimeEchoGenerationTest, ContractGenerator>
 {
-    private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
+    private const string Code = @"[ConstantSizeSerializer(typeof(DateTime))]
+public static class DateTimeSerializer
+{
+    [ConstantSerializedSize] public const int Size = PrimitiveSerializer.LongSize;
+
+    [SerializationMethod]
+    public static void Write(BufferWriter writer, DateTime value)
+    {
+        writer.Write(value.Ticks);
+    }
+
+    [DeserializationMethod]
+    public static DateTime Read(BufferReader reader) => new(reader.ReadLong());
+}
+
+[RpcContract(RpcContractType.ClientToServer)]
 public interface IDateTimeEcho : IRpcContract
 {
     System.DateTime GetDateTime(System.DateTime myDateTime);

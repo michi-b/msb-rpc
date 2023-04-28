@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Misbat.CodeAnalysis.Test.CodeTest;
 using MsbRpc.Generator;
 
 namespace MsbRpc.Test.Generator;
@@ -34,7 +33,7 @@ public interface IIncrementer : IRpcContract
     [TestMethod]
     public async Task GeneratorHasResult()
     {
-        CodeTestResult result = await TestGeneratorHasResult();
+        await TestGeneratorHasResult();
     }
 
     [TestMethod]
