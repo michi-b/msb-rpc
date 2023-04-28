@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator;
+using MsbRpc.Test.Generator.Base;
 
 namespace MsbRpc.Test.Generator;
 

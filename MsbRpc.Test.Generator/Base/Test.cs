@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MsbRpc.Test.Generator;
+namespace MsbRpc.Test.Generator.Base;
 
 public class Test
 {

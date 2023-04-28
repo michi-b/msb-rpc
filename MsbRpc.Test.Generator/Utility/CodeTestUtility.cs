@@ -1,6 +1,6 @@
 ﻿using Misbat.CodeAnalysis.Test.CodeTest;
 
-namespace MsbRpc.Test.Generator;
+namespace MsbRpc.Test.Generator.Utility;
 
 public static class CodeTestUtility
 {

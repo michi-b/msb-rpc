@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsbRpc.Generator.CodeWriters.Files;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
@@ -17,45 +15,27 @@ public class ContractGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<ContractInfo> rpcContractDeclarationSyntaxNodes = context.SyntaxProvider.CreateSyntaxProvider
+        IncrementalValuesProvider<ContractInfo> rpcContracts = context.SyntaxProvider.CreateSyntaxProvider
             (
-                GetIsAttributedInterfaceDeclarationSyntax,
-                GetContractInfo
+                GeneratorUtility.GetIsAttributedInterfaceDeclarationSyntax,
+                GeneratorUtility.GetContractInfo
             )
-            .Where(contract => contract != null)
-            .Select((contractInfo, _) => (ContractInfo)contractInfo!);
+            .Where(item => item != null)
+            .Select((item, _) => (ContractInfo)item!);
 
-        IncrementalValuesProvider<ContractInfo> rpcContracts = rpcContractDeclarationSyntaxNodes
+        rpcContracts = rpcContracts
             .Collect()
             .SelectMany((infos, _) => infos.Distinct(TargetComparer.Instance));
 
+        IncrementalValuesProvider<ConstantSizeSerializerInfo> constantSizeSerializers = context.SyntaxProvider.CreateSyntaxProvider
+            (
+                GeneratorUtility.GetIsAttributedNonInterfaceTypeDeclarationSyntax,
+                GeneratorUtility.GetConstantSizeSerializerInfo
+            )
+            .Where(item => item != null)
+            .Select((item, _) => (ConstantSizeSerializerInfo)item!);
+
         context.RegisterSourceOutput(rpcContracts, Generate);
-    }
-
-    private static bool GetIsAttributedInterfaceDeclarationSyntax(SyntaxNode syntaxNode, CancellationToken cancellationToken)
-    {
-        var interfaceDeclarationSyntax = syntaxNode as InterfaceDeclarationSyntax;
-        return interfaceDeclarationSyntax != null && interfaceDeclarationSyntax.AttributeLists.Any();
-    }
-
-    private static ContractInfo? GetContractInfo(GeneratorSyntaxContext context, CancellationToken cancellationToken)
-    {
-        SemanticModel semanticModel = context.SemanticModel;
-
-        // get interface symbol
-        if (semanticModel.GetDeclaredSymbol(context.Node, cancellationToken) is not INamedTypeSymbol contractInterface)
-        {
-            return null;
-        }
-
-        // check that interfaceSymbol is actually an interface and derives from IRpcContract
-        if (contractInterface.TypeKind != TypeKind.Interface
-            || !contractInterface.Interfaces.Any(TypeCheck.IsRpcContractInterface))
-        {
-            return null;
-        }
-
-        return ContractInfoParser.Parse(contractInterface);
     }
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)

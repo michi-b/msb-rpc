@@ -4,10 +4,11 @@ using Microsoft.Extensions.Logging;
 using Misbat.CodeAnalysis.Test.TestBases;
 using MsbRpc.Contracts;
 using MsbRpc.Generator.Attributes;
+using MsbRpc.Test.Generator.Utility;
 using Serilog;
 using Serilog.Core;
 
-namespace MsbRpc.Test.Generator;
+namespace MsbRpc.Test.Generator.Base;
 
 public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerationTest<TTest, TGenerator>
     where TTest : ContractGenerationTest<TTest, TGenerator>

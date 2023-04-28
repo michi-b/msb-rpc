@@ -12,7 +12,7 @@ internal static class ContractInfoParser
 {
     // ReSharper disable once SuggestBaseTypeForParameterInConstructor
 
-    public static ContractInfo? Parse(INamedTypeSymbol contract)
+    public static ContractInfo? Parse(INamedTypeSymbol symbol)
     {
         #region get attributes
 
@@ -20,7 +20,7 @@ internal static class ContractInfoParser
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         // foreach is more readable to me here
-        foreach (AttributeData attribute in contract.GetAttributes())
+        foreach (AttributeData attribute in symbol.GetAttributes())
         {
             INamedTypeSymbol? attributeClass = attribute.AttributeClass;
             if (attributeClass != null && attributeClass.IsRpcContractAttribute())
@@ -58,9 +58,9 @@ internal static class ContractInfoParser
 
         #endregion
 
-        string interfaceName = contract.Name;
-        string namespaceName = contract.ContainingNamespace.ToDisplayString();
-        ImmutableArray<ProcedureInfo> procedures = contract.GetMembers()
+        string interfaceName = symbol.Name;
+        string namespaceName = symbol.ContainingNamespace.ToDisplayString();
+        ImmutableArray<ProcedureInfo> procedures = symbol.GetMembers()
             .Select(m => m as IMethodSymbol)
             .Where(m => m != null)
             .Select(m => new ProcedureInfo(m!))
