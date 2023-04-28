@@ -17,7 +17,6 @@ public class Messenger : Disposable.Disposable
     private static readonly ReceiveResult EmptyReceiveResult = new(Message.Empty, ReceiveReturnCode.Success);
     private readonly RpcSocket _socket;
     public readonly int Port;
-    private bool _isDisposed;
 
     public bool IsConnected => _socket.IsConnected;
 
@@ -94,7 +93,7 @@ public class Messenger : Disposable.Disposable
         }
         catch (ObjectDisposedException)
         {
-            if (_isDisposed)
+            if (IsDisposed)
             {
                 return DisposedConnectionReceiveResult;
             }
@@ -131,7 +130,7 @@ public class Messenger : Disposable.Disposable
         }
         catch (ObjectDisposedException)
         {
-            if (_isDisposed)
+            if (IsDisposed)
             {
                 return DisposedConnectionReceiveResult;
             }

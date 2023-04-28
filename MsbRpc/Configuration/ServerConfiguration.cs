@@ -12,6 +12,7 @@ public class ServerConfiguration : Configuration
     public int ListenBacklogSize = DefaultListenBacklogSize;
     public LogConfiguration LogAcceptedNewConnection;
     public LogConfiguration LogDeclinedNewConnectionDuringDisposal;
+    public bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
 
     /// <summary>
     ///     Prefix for log messages for easier identification
@@ -20,7 +21,6 @@ public class ServerConfiguration : Configuration
 
     public LogConfiguration LogStartedListening;
     public LogConfiguration LogStoppedListeningDueToDisposal;
-    public bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
     public LogConfiguration LogStoppedListeningDueToException;
     public LogConfiguration LogWasCreatedWithEphemeralPort;
     public LogConfiguration LogWasCreatedWithSpecifiedPort;
@@ -28,7 +28,7 @@ public class ServerConfiguration : Configuration
     /// <summary>
     ///     The port to listen on for new connections. If 0, the OS will assign an ephemeral port.
     /// </summary>
-    public int Port = 0;
+    public int Port;
 
     /// <summary>
     ///     Thread name for easier identification, will have the port number appended to it

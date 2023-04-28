@@ -5,7 +5,7 @@ using MsbRpc.Generator;
 namespace MsbRpc.Test.Generator;
 
 [TestClass]
-public class UnresolvedDateTimeTypeTest : ContractGenerationTest<UnresolvedDateTimeTypeTest, ContractGenerator>
+public class DateTimeEchoGenerationTest : ContractGenerationTest<DateTimeEchoGenerationTest, ContractGenerator>
 {
     private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
 public interface IDateTimeEcho : IRpcContract
@@ -15,7 +15,7 @@ public interface IDateTimeEcho : IRpcContract
 
     private const string Namespace = "MsbRpc.Test.Generator.Echo.Tests";
 
-    public UnresolvedDateTimeTypeTest() : base(Code, Namespace) { }
+    public DateTimeEchoGenerationTest() : base(Code, Namespace) { }
 
     [TestMethod]
     public async Task GeneratorRuns()
@@ -36,15 +36,9 @@ public interface IDateTimeEcho : IRpcContract
     }
 
     [TestMethod]
-    public async Task GeneratorReportsUnresolvedReturnTypeDiagnostic()
+    public async Task GeneratorReportsNoDiagnostics()
     {
-        await TestGeneratorReportsDiagnostics(DiagnosticDescriptors.TypeIsNotAValidRpcReturnType.Id);
-    }
-
-    [TestMethod]
-    public async Task GeneratorReportsUnresolvedParameterTypeDiagnostic()
-    {
-        await TestGeneratorReportsDiagnostics(DiagnosticDescriptors.TypeIsNotAValidRpcParameter.Id);
+        await TestGeneratorReportsNoDiagnostics();
     }
 
     [TestMethod]
