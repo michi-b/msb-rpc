@@ -34,9 +34,7 @@ internal static class ConstantSizeSerializationInfoParser
         IEnumerable<KeyValuePair<string, TypedConstant>> attributeArguments = attribute.GetArguments();
         TypedConstant typeArgument = attributeArguments.First(argument => argument.Key == "type").Value;
 
-        var targetType = typeArgument.Value as INamedTypeSymbol;
-
-        if (targetType == null)
+        if (typeArgument.Value is not INamedTypeSymbol targetType)
         {
             return null;
         }

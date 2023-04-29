@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Info;
 
-internal enum SerializationKind
+internal enum DefaultSerializationKind
 {
     Unresolved = 0,
     Byte = 1,

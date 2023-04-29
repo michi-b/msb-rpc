@@ -1,35 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Extensions;
 
 internal static class NamedTypeSymbolExtensions
 {
-    private static readonly List<string> ReusableStringList = new(10);
-    private static readonly StringBuilder ReusableStringBuilder = new(100);
+    private const int DefaultStringBuilderCapacity = 100;
 
+    /// <summary>internal method for symbol referencing name computation</summary>
+    /// <returns>the fully qualified reference name of the symbol</returns>
+    /// <remarks>
+    ///     this is different from ISymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+    ///     in that it results e.g. in "System.Int32" instead of just "int" for C# type keywords
+    /// </remarks>
+    /// <seealso cref="ISymbol.ToDisplayString" />
     public static string GetFullName(this INamedTypeSymbol symbol)
     {
-        ReusableStringBuilder.Clear();
-        ReusableStringList.Clear();
+        StringBuilder stringBuilder = new(DefaultStringBuilderCapacity);
 
-        INamespaceSymbol? nameSpace = symbol.ContainingNamespace;
-        while (nameSpace is not null && !nameSpace.IsGlobalNamespace)
+        ISymbol? containingSymbol = symbol.ContainingSymbol;
+        while (containingSymbol is not null && !containingSymbol.GetIsGlobalNamespace())
         {
-            ReusableStringList.Add(nameSpace.Name);
-            nameSpace = nameSpace.ContainingNamespace;
+            stringBuilder.Insert(0, '.');
+            stringBuilder.Insert(0, containingSymbol.Name);
+            containingSymbol = containingSymbol.ContainingSymbol;
         }
 
-        for (int i = ReusableStringList.Count - 1; i >= 0; i--)
-        {
-            ReusableStringBuilder.Append(ReusableStringList[i]);
-            ReusableStringBuilder.Append('.');
-        }
+        stringBuilder.Append(symbol.Name);
 
-        ReusableStringBuilder.Append(symbol.Name);
-
-        return ReusableStringBuilder.ToString();
+        return stringBuilder.ToString();
     }
 
     public static bool GetIsRpcContractAttribute(this INamedTypeSymbol attributeClass)

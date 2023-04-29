@@ -1,8 +1,8 @@
 ﻿using System.CodeDom.Compiler;
+using System.IO;
 using System.Linq;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
-using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
@@ -82,7 +82,7 @@ internal class InboundEndPointWriter : EndPointWriter
             //read arguments into local variables
             if (parameters != null)
             {
-                bool hasAnySerializableParameters = parameters.Any(p => p.Type.SerializationKind != SerializationKind.Unresolved);
+                bool hasAnySerializableParameters = parameters.Any(p => p.Type.Serialization != null);
 
                 foreach (ParameterNode parameter in parameters)
                 {
@@ -119,8 +119,8 @@ internal class InboundEndPointWriter : EndPointWriter
             string implementationCallStatement = $"{Fields.InboundEndpointImplementation}.{procedure.Name}({allValueArgumentsString});";
 
             //call the contract implementation
-            bool hasReturnValue = returnType.SerializationKind != SerializationKind.Void && returnType.SerializationKind != SerializationKind.Unresolved;
-            if (hasReturnValue)
+            SerializationNode? resultSerialization = returnType.Serialization;
+            if (resultSerialization != null)
             {
                 writer.WriteLine($"{returnType.DeclarationSyntax} {Variables.Result};");
                 writer.WriteLine();
@@ -128,7 +128,7 @@ internal class InboundEndPointWriter : EndPointWriter
 
             using (writer.GetTryBlock())
             {
-                if (hasReturnValue)
+                if (resultSerialization != null)
                 {
                     writer.Write($"{Variables.Result} = ");
                 }
@@ -141,9 +141,8 @@ internal class InboundEndPointWriter : EndPointWriter
             writer.WriteLine();
 
             //return the result
-            string sizeExpression = returnType.GetSizeExpression(Variables.Result);
 
-            if (hasReturnValue)
+            if (resultSerialization != null)
             {
                 writer.WriteLine($"{Response} {Variables.Response};");
 
@@ -151,7 +150,8 @@ internal class InboundEndPointWriter : EndPointWriter
 
                 using (writer.GetTryBlock())
                 {
-                    returnType.WriteSizeVariableInitialization(writer, Variables.ResultSize, sizeExpression);
+                    writer.WriteLine($"int {Variables.ResultSize} = {resultSerialization.GetSizeExpression(Variables.Result)};");
+                    writer.WriteLine();
                     writer.WriteLine
                     (
                         $"{Variables.Response} = {Fields.EndPointBuffer}.{Methods.GetResponse}("
@@ -159,8 +159,7 @@ internal class InboundEndPointWriter : EndPointWriter
                         + $"{Variables.ResultSize});"
                     );
                     writer.WriteLine(GetResponseWriterStatement);
-                    string responseWriteStatement = procedure.ReturnType.GetBufferWriterWriteStatement(Variables.ResponseWriter, Variables.Result);
-                    writer.WriteLine(responseWriteStatement);
+                    writer.WriteLine(resultSerialization.GetSerializationStatement(Variables.ResponseWriter, Variables.Result));
                     writer.WriteLine(ReturnResponseStatement);
                 }
 
@@ -173,11 +172,18 @@ internal class InboundEndPointWriter : EndPointWriter
         }
     }
 
-    private static void WriteReadParametersFromRequestReaderLines(IndentedTextWriter writer, ParameterCollectionNode parameters)
+    private static void WriteReadParametersFromRequestReaderLines(TextWriter writer, ParameterCollectionNode parameters)
     {
         foreach (ParameterNode parameter in parameters)
         {
-            writer.WriteLine(parameter.GetRequestReadStatement(Variables.RequestReader));
+            if (parameter.Type.Serialization is { } serialization)
+            {
+                writer.WriteLine($"{parameter.ArgumentVariableName} = {serialization.GetDeserializationExpression(Variables.RequestReader)};");
+            }
+            else
+            {
+                writer.WriteLine($"{parameter.ArgumentVariableName} = default!;");
+            }
         }
     }
 }

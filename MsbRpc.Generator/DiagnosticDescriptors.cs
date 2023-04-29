@@ -21,7 +21,7 @@ public static class DiagnosticDescriptors
     (
         "MR1001",
         "Invalid RPC Parameter Type",
-        "parameter '{2}' at position {3} has type '{4}' with serialization kind '{5}', which is not a valid RPC parameter type"
+        "parameter '{2}' at position {3} has type '{4}', which is not a valid RPC parameter type"
         + ", and will therefore be replaced with the default value in calls to {0}.{1}",
         "Generator",
         DiagnosticSeverity.Warning,
@@ -32,7 +32,7 @@ public static class DiagnosticDescriptors
     (
         "MR1002",
         "Invalid RPC Return Type",
-        "RPC return type '{2}' with serialization kind '{3}' is not a valid RPC return type"
+        "RPC return type '{2}' is not a valid RPC return type"
         + ", and will therefore not be transmitted back from {0}.{1}",
         "Generator",
         DiagnosticSeverity.Warning,

@@ -11,6 +11,7 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
     private readonly ParameterNode[] _parameters;
 
     public int Count { get; }
+    public bool IsAnySerializable => _parameters.Any(parameter => parameter.Type.Serialization != null);
 
     public ParameterNode this[int index] => _parameters[index];
 

@@ -1,9 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using System.IO;
-using System.Linq;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
-using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
@@ -79,13 +77,11 @@ internal class OutboundEndPointWriter : EndPointWriter
     {
         writer.Write("public async ");
 
-        SerializationKind returnTypeSerializationKind = procedure.ReturnType.SerializationKind;
-        bool hasSerializableReturnType = returnTypeSerializationKind != SerializationKind.Void;
         writer.Write
         (
-            hasSerializableReturnType
-                ? $"{Types.VaLueTask}<{procedure.ReturnType.DeclarationSyntax}>"
-                : $"{Types.VaLueTask}"
+            procedure.ReturnType.IsVoid
+                ? $"{Types.VaLueTask}"
+                : $"{Types.VaLueTask}<{procedure.ReturnType.DeclarationSyntax}>"
         );
         writer.WriteLine($" {procedure.Name}{AsyncPostFix}");
         using (writer.GetParenthesesBlock())
@@ -117,11 +113,19 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         string getProcedureIdExpression = $"{Name}.{Methods.GetProcedureId}({procedure.ProcedureEnumValue})";
 
-        if (parameters != null && parameters.Any(p => p.Type.SerializationKind != SerializationKind.Unresolved))
+        if (parameters is { IsAnySerializable: true })
         {
             foreach (ParameterNode parameter in parameters)
             {
-                parameter.WriteSizeVariableInitialization(writer);
+                string sizeVariableName = parameter.SizeVariableName;
+                if (parameter.Type.Serialization is { } serialization)
+                {
+                    writer.WriteLine($"{sizeVariableName} = {serialization.GetSizeExpression(parameter.Name)};");
+                }
+                else
+                {
+                    writer.WriteLine($"{sizeVariableName} = 0;");
+                }
             }
 
             writer.Write($"int {Variables.ArgumentSizeSum} = ");
@@ -147,9 +151,9 @@ internal class OutboundEndPointWriter : EndPointWriter
 
             foreach (ParameterNode parameter in parameters)
             {
-                if (parameter.Type.SerializationKind != SerializationKind.Unresolved)
+                if (parameter.Type.Serialization is { } serialization)
                 {
-                    writer.WriteLine(parameter.WriteToRequestWriterStatement);
+                    writer.WriteLine(serialization.GetSerializationStatement(Variables.RequestWriter, parameter.Name));
                 }
             }
         }
@@ -160,26 +164,26 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         writer.WriteLine();
 
-        SerializationKind returnTypeSerializationKind = procedure.ReturnType.SerializationKind;
-        if (returnTypeSerializationKind != SerializationKind.Void)
+        TypeNode resultType = procedure.ReturnType;
+        if (resultType.IsVoid)
         {
-            if (returnTypeSerializationKind == SerializationKind.Unresolved)
+            writer.WriteLine(SendRequestStatement);
+        }
+        else
+        {
+            if (resultType.Serialization is { } serialization)
+            {
+                writer.WriteLine(SendRequestStatementWithResponse);
+                writer.WriteLine(ResponseReaderInitializationStatement);
+                writer.WriteLine(serialization.GetDeserializationExpression($"{Variables.ResponseReader}"));
+                writer.WriteLine($"return {Variables.Result};");
+            }
+            else
             {
                 writer.WriteLine(SendRequestStatement);
                 writer.WriteLine();
                 writer.WriteLine("return default!;");
             }
-            else
-            {
-                writer.WriteLine(SendRequestStatementWithResponse);
-                writer.WriteLine(ResponseReaderInitializationStatement);
-                writer.WriteLine(procedure.ReturnType.GetResponseReadStatement());
-                writer.WriteLine($"return {Variables.Result};");
-            }
-        }
-        else
-        {
-            writer.WriteLine(SendRequestStatement);
         }
     }
 

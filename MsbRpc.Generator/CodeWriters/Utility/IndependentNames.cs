@@ -76,6 +76,7 @@ internal static class IndependentNames
         public const string GetResponse = "GetResponse";
         public const string GetRequest = "GetRequest";
         public const string SendRequestAsync = "SendRequestAsync";
+        public const string BufferWriterWrite = "Write";
     }
 
     public static class Parameters

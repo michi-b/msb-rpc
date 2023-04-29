@@ -1,176 +1,114 @@
 ﻿using System;
-using System.Diagnostics;
+using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Info;
 
 internal static class SerializationKindExtensions
 {
-    private const string PascalCaseNullable = "Nullable";
+    private static readonly SerializationNode.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement = (bufferWriterExpression, valueExpression)
+        => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
 
-    public static string? GetKeyword(this SerializationKind serializationKind)
+    public static bool TryGetKeyword(this DefaultSerializationKind serializationKind, out string keyword)
     {
-        return serializationKind switch
+        if (serializationKind == DefaultSerializationKind.Unresolved)
         {
-            SerializationKind.Byte => "byte",
-            SerializationKind.Sbyte => "sbyte",
-            SerializationKind.Bool => "bool",
-            SerializationKind.Char => "char",
-            SerializationKind.Int => "int",
-            SerializationKind.Long => "long",
-            SerializationKind.Short => "short",
-            SerializationKind.Uint => "uint",
-            SerializationKind.Ulong => "ulong",
-            SerializationKind.Ushort => "ushort",
-            SerializationKind.Float => "float",
-            SerializationKind.Double => "double",
-            SerializationKind.Decimal => "decimal",
-            SerializationKind.Void => "void",
-            SerializationKind.String => "string",
-            _ => null
+            keyword = null!;
+            return false;
+        }
+
+        keyword = serializationKind switch
+        {
+            DefaultSerializationKind.Byte => "byte",
+            DefaultSerializationKind.Sbyte => "sbyte",
+            DefaultSerializationKind.Bool => "bool",
+            DefaultSerializationKind.Char => "char",
+            DefaultSerializationKind.Int => "int",
+            DefaultSerializationKind.Long => "long",
+            DefaultSerializationKind.Short => "short",
+            DefaultSerializationKind.Uint => "uint",
+            DefaultSerializationKind.Ulong => "ulong",
+            DefaultSerializationKind.Ushort => "ushort",
+            DefaultSerializationKind.Float => "float",
+            DefaultSerializationKind.Double => "double",
+            DefaultSerializationKind.Decimal => "decimal",
+            DefaultSerializationKind.Void => "void",
+            DefaultSerializationKind.String => "string",
+            DefaultSerializationKind.Unresolved => throw new ArgumentOutOfRangeException(nameof(serializationKind), serializationKind, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(serializationKind), serializationKind, null)
         };
+        return true;
     }
 
-    public static bool GetIsBufferReadAndWritable(this SerializationKind serializationKind)
-    {
-        return serializationKind switch
-        {
-            SerializationKind.Byte => true,
-            SerializationKind.Sbyte => true,
-            SerializationKind.Bool => true,
-            SerializationKind.Char => true,
-            SerializationKind.Int => true,
-            SerializationKind.Long => true,
-            SerializationKind.Short => true,
-            SerializationKind.Uint => true,
-            SerializationKind.Ulong => true,
-            SerializationKind.Ushort => true,
-            SerializationKind.Float => true,
-            SerializationKind.Double => true,
-            SerializationKind.Decimal => true,
-            SerializationKind.String => true,
-            SerializationKind.Void => false,
-            _ => false
-        };
-    }
-
-    public static bool GetIsValidReturnType(this SerializationKind target)
+    public static SerializationNode.GetSizeExpressionDelegate? GetGetSizeExpression(this DefaultSerializationKind target)
     {
         return target switch
         {
-            SerializationKind.Byte => true,
-            SerializationKind.Sbyte => true,
-            SerializationKind.Bool => true,
-            SerializationKind.Char => true,
-            SerializationKind.Int => true,
-            SerializationKind.Long => true,
-            SerializationKind.Short => true,
-            SerializationKind.Uint => true,
-            SerializationKind.Ulong => true,
-            SerializationKind.Ushort => true,
-            SerializationKind.Float => true,
-            SerializationKind.Double => true,
-            SerializationKind.Decimal => true,
-            SerializationKind.String => true,
-            SerializationKind.Void => true,
-            _ => false
-        };
-    }
-
-    public static bool GetIsConstantSize(this SerializationKind target)
-    {
-        return target switch
-        {
-            SerializationKind.Byte => true,
-            SerializationKind.Sbyte => true,
-            SerializationKind.Bool => true,
-            SerializationKind.Char => true,
-            SerializationKind.Int => true,
-            SerializationKind.Long => true,
-            SerializationKind.Short => true,
-            SerializationKind.Uint => true,
-            SerializationKind.Ulong => true,
-            SerializationKind.Ushort => true,
-            SerializationKind.Float => true,
-            SerializationKind.Double => true,
-            SerializationKind.Decimal => true,
-            SerializationKind.String => false,
-            SerializationKind.Void => true,
-            _ => false
-        };
-    }
-
-    public static string? GetBufferReaderReadMethodName(this SerializationKind target, bool isNullable)
-    {
-        return target switch
-        {
-            SerializationKind.Byte => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Sbyte => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Bool => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Char => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Int => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Long => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Short => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Uint => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Ulong => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Ushort => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Float => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Double => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.Decimal => target.GetBufferReaderReadPrimitiveMethodName(isNullable),
-            SerializationKind.String => isNullable ? "ReadStringNullable" : "ReadString",
-            _ => null
-        };
-    }
-
-    public static string? GetBufferWriterWriteMethodName(this SerializationKind target, bool isNullable)
-        => target.GetIsBufferReadAndWritable()
-            ? isNullable
-                ? "WriteNullable"
-                : "Write"
-            : null;
-
-    public static string GetName(this SerializationKind target)
-    {
-        return target switch
-        {
-            SerializationKind.Unresolved => nameof(SerializationKind.Unresolved),
-            SerializationKind.Byte => nameof(SerializationKind.Byte),
-            SerializationKind.Sbyte => nameof(SerializationKind.Sbyte),
-            SerializationKind.Bool => nameof(SerializationKind.Bool),
-            SerializationKind.Char => nameof(SerializationKind.Char),
-            SerializationKind.Int => nameof(SerializationKind.Int),
-            SerializationKind.Long => nameof(SerializationKind.Long),
-            SerializationKind.Short => nameof(SerializationKind.Short),
-            SerializationKind.Uint => nameof(SerializationKind.Uint),
-            SerializationKind.Ulong => nameof(SerializationKind.Ulong),
-            SerializationKind.Ushort => nameof(SerializationKind.Ushort),
-            SerializationKind.Float => nameof(SerializationKind.Float),
-            SerializationKind.Double => nameof(SerializationKind.Double),
-            SerializationKind.Decimal => nameof(SerializationKind.Decimal),
-            SerializationKind.Void => nameof(SerializationKind.Void),
-            SerializationKind.String => nameof(SerializationKind.String),
+            DefaultSerializationKind.Unresolved => null,
+            DefaultSerializationKind.Byte => _ => "PrimitiveSerializer.ByteSize",
+            DefaultSerializationKind.Sbyte => _ => "PrimitiveSerializer.SByteSize",
+            DefaultSerializationKind.Bool => _ => "PrimitiveSerializer.BoolSize",
+            DefaultSerializationKind.Char => _ => "PrimitiveSerializer.CharSize",
+            DefaultSerializationKind.Int => _ => "PrimitiveSerializer.IntSize",
+            DefaultSerializationKind.Long => _ => "PrimitiveSerializer.LongSize",
+            DefaultSerializationKind.Short => _ => "PrimitiveSerializer.ShortSize",
+            DefaultSerializationKind.Uint => _ => "PrimitiveSerializer.UIntSize",
+            DefaultSerializationKind.Ulong => _ => "PrimitiveSerializer.ULongSize",
+            DefaultSerializationKind.Ushort => _ => "PrimitiveSerializer.UShortSize",
+            DefaultSerializationKind.Float => _ => "PrimitiveSerializer.FloatSize",
+            DefaultSerializationKind.Double => _ => "PrimitiveSerializer.DoubleSize",
+            DefaultSerializationKind.Decimal => _ => "PrimitiveSerializer.DecimalSize",
+            DefaultSerializationKind.String => targetExpression => $"{Types.StringSerializer}.GetSize({targetExpression})",
+            DefaultSerializationKind.Void => null,
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
 
-    public static string GetPrimitiveSizeExpression(this SerializationKind target, bool isNullable)
+    public static SerializationNode.GetSerializationStatementDelegate? GetGetSerializationStatement(this DefaultSerializationKind target)
     {
-        string? pascalCaseKeyword = target.GetPascalCaseKeyword();
-        Debug.Assert(pascalCaseKeyword != null);
-        return Types.PrimitiveSerializer + '.' +
-               (isNullable
-                   ? PascalCaseNullable + pascalCaseKeyword
-                   : pascalCaseKeyword)
-               + "Size";
+        return target switch
+        {
+            DefaultSerializationKind.Unresolved => null,
+            DefaultSerializationKind.Void => null,
+            DefaultSerializationKind.Byte => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Sbyte => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Bool => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Char => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Int => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Long => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Short => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Uint => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Ulong => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Ushort => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Float => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Double => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.Decimal => DefaultSerializationTypeWriteStatement,
+            DefaultSerializationKind.String => DefaultSerializationTypeWriteStatement,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
     }
 
-    private static string GetBufferReaderReadPrimitiveMethodName(this SerializationKind target, bool isNullable)
+    public static SerializationNode.GetDeserializationExpressionDelegate? GetGetDeserializationExpression(this DefaultSerializationKind target)
     {
-        string? pascalCaseKeyword = target.GetPascalCaseKeyword();
-        Debug.Assert(pascalCaseKeyword != null);
-        string readNonNullable = "Read" + pascalCaseKeyword;
-        return isNullable ? readNonNullable + PascalCaseNullable : readNonNullable;
+        return target switch
+        {
+            DefaultSerializationKind.Unresolved => null,
+            DefaultSerializationKind.Byte => bufferReaderExpression => $"{bufferReaderExpression}.ReadByte()",
+            DefaultSerializationKind.Sbyte => bufferReaderExpression => $"{bufferReaderExpression}.ReadSByte()",
+            DefaultSerializationKind.Bool => bufferReaderExpression => $"{bufferReaderExpression}.ReadBool()",
+            DefaultSerializationKind.Char => bufferReaderExpression => $"{bufferReaderExpression}.ReadChar()",
+            DefaultSerializationKind.Int => bufferReaderExpression => $"{bufferReaderExpression}.ReadInt()",
+            DefaultSerializationKind.Long => bufferReaderExpression => $"{bufferReaderExpression}.ReadLong()",
+            DefaultSerializationKind.Short => bufferReaderExpression => $"{bufferReaderExpression}.ReadShort()",
+            DefaultSerializationKind.Uint => bufferReaderExpression => $"{bufferReaderExpression}.ReadUInt()",
+            DefaultSerializationKind.Ulong => bufferReaderExpression => $"{bufferReaderExpression}.ReadULong()",
+            DefaultSerializationKind.Ushort => bufferReaderExpression => $"{bufferReaderExpression}.ReadUShort()",
+            DefaultSerializationKind.Float => bufferReaderExpression => $"{bufferReaderExpression}.ReadFloat()",
+            DefaultSerializationKind.Double => bufferReaderExpression => $"{bufferReaderExpression}.ReadDouble()",
+            DefaultSerializationKind.Decimal => bufferReaderExpression => $"{bufferReaderExpression}.ReadDecimal()",
+            DefaultSerializationKind.String => bufferReaderExpression => $"{bufferReaderExpression}.ReadString()",
+            DefaultSerializationKind.Void => null,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        };
     }
-
-    private static string? GetPascalCaseKeyword(this SerializationKind target) => target.GetKeyword()?.CamelToPascalCase();
 }

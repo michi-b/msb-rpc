@@ -26,7 +26,7 @@ internal class ContractNode
         PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
-        var typeCache = new TypeNodeCache();
+        var typeCache = new TypeNodeCache(info.CustomSerializations);
 
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 

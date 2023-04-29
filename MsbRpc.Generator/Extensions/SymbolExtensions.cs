@@ -20,4 +20,6 @@ internal static class SymbolExtensions
 
         return false;
     }
+
+    public static bool GetIsGlobalNamespace(this ISymbol target) => target is INamespaceSymbol { IsGlobalNamespace: true };
 }

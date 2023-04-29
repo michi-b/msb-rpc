@@ -103,7 +103,8 @@ public class ContractGenerator : IIncrementalGenerator
                 foreach (ParameterNode parameter in parameters)
                 {
                     TypeNode parameterType = parameter.Type;
-                    if (!parameterType.IsValidParameter)
+
+                    if (parameterType.Serialization is null)
                     {
                         context.ReportTypeIsNotAValidRpcParameter(contract, procedure, parameter);
                     }
@@ -111,7 +112,8 @@ public class ContractGenerator : IIncrementalGenerator
             }
 
             TypeNode returnType = procedure.ReturnType;
-            if (!returnType.IsValidReturnType)
+
+            if (returnType.Serialization is null && returnType.IsVoid is false)
             {
                 context.ReportTypeIsNotAValidRpcReturnType(contract, procedure);
             }
