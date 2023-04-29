@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.CodeWriters.Files;
@@ -27,13 +28,17 @@ public class ContractGenerator : IIncrementalGenerator
             .Collect()
             .SelectMany((infos, _) => infos.Distinct(TargetComparer.Instance));
 
-        IncrementalValuesProvider<ConstantSizeSerializerInfo> constantSizeSerializers = context.SyntaxProvider.CreateSyntaxProvider
+        IncrementalValueProvider<ImmutableArray<CustomSerializerInfo>> customSerializers = context.SyntaxProvider.CreateSyntaxProvider
             (
                 GeneratorUtility.GetIsAttributedNonInterfaceTypeDeclarationSyntax,
-                GeneratorUtility.GetConstantSizeSerializerInfo
+                GeneratorUtility.GetCustomSerializerInfos
             )
-            .Where(item => item != null)
-            .Select((item, _) => (ConstantSizeSerializerInfo)item!);
+            .SelectMany((infos, _) => infos)
+            .Collect()
+            //might want to do a different filtering here, to avoid multiple custom serializers for the same type
+            .Select((infos, _) => infos.Distinct().ToImmutableArray());
+
+        rpcContracts.Combine(customSerializers);
 
         context.RegisterSourceOutput(rpcContracts, Generate);
     }

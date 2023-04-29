@@ -5,5 +5,5 @@ namespace MsbRpc.Generator.Info;
 
 internal static class ConstantSizeSerializerInfoParser
 {
-    public static ConstantSizeSerializerInfo? Parse(INamedTypeSymbol symbol) => throw new NotImplementedException();
+    public static CustomSerializerInfo? Parse(INamedTypeSymbol symbol, AttributeData attributeData) => throw new NotImplementedException();
 }

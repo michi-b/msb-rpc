@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -17,8 +19,7 @@ internal static class GeneratorUtility
 
     public static bool GetIsAttributedNonInterfaceTypeDeclarationSyntax(SyntaxNode syntaxNode, CancellationToken cancellationToken)
     {
-        var typeDeclarationSyntax = syntaxNode as TypeDeclarationSyntax;
-        if (typeDeclarationSyntax == null)
+        if (syntaxNode is not TypeDeclarationSyntax typeDeclarationSyntax)
         {
             return false;
         }
@@ -50,21 +51,40 @@ internal static class GeneratorUtility
         return ContractInfoParser.Parse(contractInterface);
     }
 
-    public static ConstantSizeSerializerInfo? GetConstantSizeSerializerInfo(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+    public static ImmutableArray<CustomSerializerInfo> GetCustomSerializerInfos(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+        => EnumerateCustomSerializerInfos(context, cancellationToken).ToImmutableArray();
+
+    private static IEnumerable<CustomSerializerInfo> EnumerateCustomSerializerInfos(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
         SemanticModel semanticModel = context.SemanticModel;
 
-        if (semanticModel.GetDeclaredSymbol(context.Node, cancellationToken) is not INamedTypeSymbol constantSizeSerializer)
+        if (semanticModel.GetDeclaredSymbol(context.Node, cancellationToken) is not INamedTypeSymbol serializerTypeSymbol)
         {
-            return null;
+            yield break;
         }
 
-        TypeKind typeKind = constantSizeSerializer.TypeKind;
+        TypeKind typeKind = serializerTypeSymbol.TypeKind;
         if (typeKind != TypeKind.Class && typeKind != TypeKind.Struct)
         {
-            return null;
+            yield break;
         }
 
-        return ConstantSizeSerializerInfoParser.Parse(constantSizeSerializer);
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        // might want to catch different types of attributes in the future
+        foreach (AttributeData customSerializerAttribute in serializerTypeSymbol.GetAttributes())
+        {
+            INamedTypeSymbol? attributeClass = customSerializerAttribute.AttributeClass;
+            if (attributeClass != null)
+            {
+                if (attributeClass.IsConstantSizeSerializerAttribute())
+                {
+                    CustomSerializerInfo? customSerializerInfo = ConstantSizeSerializerInfoParser.Parse(serializerTypeSymbol, customSerializerAttribute);
+                    if (customSerializerInfo != null)
+                    {
+                        yield return customSerializerInfo.Value;
+                    }
+                }
+            }
+        }
     }
 }

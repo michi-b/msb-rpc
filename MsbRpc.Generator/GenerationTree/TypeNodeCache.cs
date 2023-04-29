@@ -25,7 +25,7 @@ internal readonly struct TypeNodeCache
 
     private static TypeNode Create(ref TypeInfo typeInfo)
     {
-        string fullName = typeInfo.Namespace + "." + typeInfo.LocalName;
+        string fullName = typeInfo.Name;
         SerializationKind serializationKind = GetIndependentSerializationKind(fullName);
         bool isNullable = typeInfo.IsNullable;
         return new TypeNode(fullName, serializationKind, isNullable);
