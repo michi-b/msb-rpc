@@ -11,7 +11,7 @@ public class DateTimeEchoGenerationTest : ContractGenerationTest<DateTimeEchoGen
     private const string Code = @"[ConstantSizeSerializer(typeof(DateTime))]
 public static class DateTimeSerializer
 {
-    [ConstantSerializedSize] public const int Size = PrimitiveSerializer.LongSize;
+    [SerializedSize] public const int Size = PrimitiveSerializer.LongSize;
 
     [SerializationMethod]
     public static void Write(BufferWriter writer, DateTime value)
@@ -32,12 +32,6 @@ public interface IDateTimeEcho : IRpcContract
     private const string Namespace = "MsbRpc.Test.Generator.Echo.Tests";
 
     public DateTimeEchoGenerationTest() : base(Code, Namespace) { }
-
-    [TestMethod]
-    public async Task GeneratorRuns()
-    {
-        await TestGeneratorRuns();
-    }
 
     [TestMethod]
     public async Task GeneratorHasResult()

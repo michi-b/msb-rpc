@@ -3,4 +3,4 @@
 namespace MsbRpc.Generator.Attributes.Serialization;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class ConstantSerializedSizeAttribute : Attribute { }
+public class SerializedSizeAttribute : Attribute { }

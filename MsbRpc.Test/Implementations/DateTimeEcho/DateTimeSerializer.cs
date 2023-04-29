@@ -7,7 +7,7 @@ namespace MsbRpc.Test.Implementations.DateTimeEcho;
 [ConstantSizeSerializer(typeof(DateTime))]
 public static class DateTimeSerializer
 {
-    [ConstantSerializedSize] public const int Size = PrimitiveSerializer.LongSize;
+    [SerializedSize] public const int Size = PrimitiveSerializer.LongSize;
 
     [SerializationMethod]
     public static void Write(BufferWriter writer, DateTime value)

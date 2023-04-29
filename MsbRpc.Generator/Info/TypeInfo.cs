@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 
@@ -16,7 +15,7 @@ internal readonly struct TypeInfo : IEquatable<TypeInfo>
 
         if (originalDefinition.IsGenericType)
         {
-            if (typeSymbol.OriginalDefinition.IsNullable())
+            if (typeSymbol.OriginalDefinition.GetIsNullable())
             {
                 ITypeSymbol innerType = typeSymbol.TypeArguments[0];
                 if (innerType is INamedTypeSymbol targetType)

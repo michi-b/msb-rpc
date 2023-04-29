@@ -40,11 +40,11 @@ public class DateTimeEchoServerEndPoint
     private Response GetDateTime(Request request)
     {
         BufferReader requestReader = request.GetReader();
-        
-        DateTime myDateTimeArgument = MsbRpc.Test.Implementations.DateTimeEcho.DateTimeSerializer.Read(requestReader);
+
+        DateTime myDateTimeArgument = DateTimeSerializer.Read(requestReader);
 
         DateTime result;
-        
+
         try
         {
             result = Implementation.GetDateTime(myDateTimeArgument);
@@ -62,11 +62,11 @@ public class DateTimeEchoServerEndPoint
         Response response;
         try
         {
-            response = Buffer.GetResponse(Implementation.RanToCompletion, MsbRpc.Test.Implementations.DateTimeEcho.DateTimeSerializer.Size);
-            
+            response = Buffer.GetResponse(Implementation.RanToCompletion, DateTimeSerializer.Size);
+
             BufferWriter responseWriter = response.GetWriter();
-            
-            MsbRpc.Test.Implementations.DateTimeEcho.DateTimeSerializer.Write(responseWriter, result);
+
+            DateTimeSerializer.Write(responseWriter, result);
         }
         catch (Exception e)
         {

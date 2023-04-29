@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Extensions;
-using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 
@@ -23,7 +22,7 @@ internal static class ContractInfoParser
         foreach (AttributeData attribute in symbol.GetAttributes())
         {
             INamedTypeSymbol? attributeClass = attribute.AttributeClass;
-            if (attributeClass != null && attributeClass.IsRpcContractAttribute())
+            if (attributeClass != null && attributeClass.GetIsRpcContractAttribute())
             {
                 contractAttribute = attribute;
             }

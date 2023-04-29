@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.Utility;
@@ -43,7 +44,7 @@ internal static class GeneratorUtility
 
         // check that interfaceSymbol is actually an interface and derives from IRpcContract
         if (contractInterface.TypeKind != TypeKind.Interface
-            || !contractInterface.Interfaces.Any(TypeCheck.IsRpcContractInterface))
+            || !contractInterface.Interfaces.Any(NamedTypeSymbolExtensions.GetIsRpcContractInterface))
         {
             return null;
         }
@@ -71,18 +72,15 @@ internal static class GeneratorUtility
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         // might want to catch different types of attributes in the future
-        foreach (AttributeData customSerializerAttribute in serializerTypeSymbol.GetAttributes())
+        foreach (AttributeData attribute in serializerTypeSymbol.GetAttributes())
         {
-            INamedTypeSymbol? attributeClass = customSerializerAttribute.AttributeClass;
-            if (attributeClass != null)
+            INamedTypeSymbol? attributeClass = attribute.AttributeClass;
+            if (attributeClass != null && attributeClass.GetIsConstantSizeSerializerAttribute())
             {
-                if (attributeClass.IsConstantSizeSerializerAttribute())
+                CustomSerializationInfoWithTargetType? customSerializerInfo = ConstantSizeSerializationInfoParser.Parse(serializerTypeSymbol, attribute);
+                if (customSerializerInfo != null)
                 {
-                    CustomSerializationInfoWithTargetType? customSerializerInfo = ConstantSizeSerializerInfoParser.Parse(serializerTypeSymbol, customSerializerAttribute);
-                    if (customSerializerInfo != null)
-                    {
-                        yield return customSerializerInfo.Value;
-                    }
+                    yield return customSerializerInfo.Value;
                 }
             }
         }

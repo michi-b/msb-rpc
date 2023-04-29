@@ -34,19 +34,19 @@ public class DateTimeEchoClientEndPoint
         AssertIsOperable();
 
         int myDateTimeArgumentSize = DateTimeSerializer.Size;
-        
+
         int argumentSizeSum = myDateTimeArgumentSize;
-        
+
         Request request = Buffer.GetRequest(GetId(DateTimeEchoProcedure.GetDateTime), argumentSizeSum);
-        
+
         BufferWriter writer = request.GetWriter();
-        
+
         DateTimeSerializer.Write(writer, clientDateTime);
 
         Response response = await SendRequestAsync(request);
 
         BufferReader responseReader = response.GetReader();
-        
+
         DateTime result = DateTimeSerializer.Read(responseReader);
 
         return result;
