@@ -51,10 +51,10 @@ internal static class GeneratorUtility
         return ContractInfoParser.Parse(contractInterface);
     }
 
-    public static ImmutableArray<CustomSerializerInfo> GetCustomSerializerInfos(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+    public static ImmutableArray<CustomSerializationInfoWithTargetType> GetCustomSerializerInfos(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => EnumerateCustomSerializerInfos(context, cancellationToken).ToImmutableArray();
 
-    private static IEnumerable<CustomSerializerInfo> EnumerateCustomSerializerInfos(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+    private static IEnumerable<CustomSerializationInfoWithTargetType> EnumerateCustomSerializerInfos(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
         SemanticModel semanticModel = context.SemanticModel;
 
@@ -78,7 +78,7 @@ internal static class GeneratorUtility
             {
                 if (attributeClass.IsConstantSizeSerializerAttribute())
                 {
-                    CustomSerializerInfo? customSerializerInfo = ConstantSizeSerializerInfoParser.Parse(serializerTypeSymbol, customSerializerAttribute);
+                    CustomSerializationInfoWithTargetType? customSerializerInfo = ConstantSizeSerializerInfoParser.Parse(serializerTypeSymbol, customSerializerAttribute);
                     if (customSerializerInfo != null)
                     {
                         yield return customSerializerInfo.Value;

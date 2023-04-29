@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.CodeWriters.Files;
 using MsbRpc.Generator.Extensions;
@@ -28,19 +29,50 @@ public class ContractGenerator : IIncrementalGenerator
             .Collect()
             .SelectMany((infos, _) => infos.Distinct(TargetComparer.Instance));
 
-        IncrementalValueProvider<ImmutableArray<CustomSerializerInfo>> customSerializers = context.SyntaxProvider.CreateSyntaxProvider
+        IncrementalValueProvider<ImmutableDictionary<string, CustomSerializationInfo>> customSerializations = context.SyntaxProvider.CreateSyntaxProvider
             (
                 GeneratorUtility.GetIsAttributedNonInterfaceTypeDeclarationSyntax,
                 GeneratorUtility.GetCustomSerializerInfos
             )
             .SelectMany((infos, _) => infos)
             .Collect()
-            //might want to do a different filtering here, to avoid multiple custom serializers for the same type
-            .Select((infos, _) => infos.Distinct().ToImmutableArray());
+            .Select((infos, _) => CreateCustomSerializationsDictionary(infos));
 
-        rpcContracts.Combine(customSerializers);
+        rpcContracts = rpcContracts.Combine(customSerializations).Select(GetContractWithUsedCustomSerializations);
 
         context.RegisterSourceOutput(rpcContracts, Generate);
+    }
+
+    private static ImmutableDictionary<string, CustomSerializationInfo> CreateCustomSerializationsDictionary(ImmutableArray<CustomSerializationInfoWithTargetType> infos)
+    {
+        ImmutableDictionary<string, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<string, CustomSerializationInfo>();
+        foreach (CustomSerializationInfoWithTargetType info in infos)
+        {
+            builder.Add(info.TargetTypeName, new CustomSerializationInfo(info));
+        }
+
+        return builder.ToImmutable();
+    }
+
+    private static ContractInfo GetContractWithUsedCustomSerializations
+        ((ContractInfo contract, ImmutableDictionary<string, CustomSerializationInfo> customSerializations) tuple, CancellationToken _)
+    {
+        ContractInfo contract = tuple.contract;
+        ImmutableDictionary<string, CustomSerializationInfo> customSerializations = tuple.customSerializations;
+        ImmutableDictionary<string, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<string, CustomSerializationInfo>();
+        foreach (ProcedureInfo procedure in contract.Procedures)
+        {
+            foreach (ParameterInfo parameter in procedure.Parameters)
+            {
+                builder.MirrorDistinct(customSerializations, parameter.Type.Name);
+            }
+
+            builder.MirrorDistinct(customSerializations, procedure.ReturnType.Name);
+        }
+
+        ImmutableDictionary<string, CustomSerializationInfo> usedSerializations = builder.ToImmutable();
+
+        return tuple.contract.WithCustomSerializations(usedSerializations);
     }
 
     private static void Generate(SourceProductionContext context, ContractInfo contractInfo)
