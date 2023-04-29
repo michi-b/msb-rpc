@@ -42,7 +42,8 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
         => InterfaceName == other.InterfaceName
            && Namespace == other.Namespace
            && Procedures.Equals(other.Procedures)
-           && ContractType == other.ContractType;
+           && ContractType == other.ContractType
+           && CustomSerializations.Equals(other.CustomSerializations);
 
     public override bool Equals(object? obj) => obj is ContractInfo other && Equals(other);
 
@@ -54,6 +55,7 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
             hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
             hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)ContractType;
+            hashCode = (hashCode * 397) ^ CustomSerializations.GetHashCode();
             return hashCode;
         }
     }
