@@ -6,7 +6,11 @@ namespace MsbRpc.Generator.Info;
 
 internal readonly struct TypeInfo : IEquatable<TypeInfo>
 {
+    /// <summary>
+    ///     the fully qualified reference name of the type
+    /// </summary>
     public string Name { get; }
+
     public bool IsNullable { get; }
 
     public TypeInfo(INamedTypeSymbol typeSymbol)

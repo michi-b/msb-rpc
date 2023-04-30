@@ -21,7 +21,7 @@ internal static class DefaultSerializationKindUtility
     private const string StringTypeName = "System.String";
     private const string VoidTypeName = "System.Void";
 
-    private static readonly Dictionary<string, DefaultSerializationKind> DefaultSerializationKinds = new()
+    public static readonly Dictionary<string, DefaultSerializationKind> DefaultSerializationKinds = new()
     {
         { FloatTypeName, DefaultSerializationKind.Float },
         { ByteTypeName, DefaultSerializationKind.Byte },
@@ -39,10 +39,4 @@ internal static class DefaultSerializationKindUtility
         { StringTypeName, DefaultSerializationKind.String },
         { VoidTypeName, DefaultSerializationKind.Void }
     };
-
-    /// <param name="fullName">fully qualified name of the type</param>
-    public static DefaultSerializationKind GetDefaultSerializationKind(string fullName)
-        => DefaultSerializationKinds.TryGetValue(fullName, out DefaultSerializationKind serializationKind)
-            ? serializationKind
-            : DefaultSerializationKind.Unresolved;
 }

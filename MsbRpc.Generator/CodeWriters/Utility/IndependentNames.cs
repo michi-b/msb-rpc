@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace MsbRpc.Generator.CodeWriters.Utility;
+﻿namespace MsbRpc.Generator.CodeWriters.Utility;
 
 internal static class IndependentNames
 {
@@ -79,7 +77,7 @@ internal static class IndependentNames
         public const string GetRequest = "GetRequest";
         public const string SendRequestAsync = "SendRequestAsync";
         public const string BufferWriterWrite = "Write";
-        
+
         //buffer reader read methods
         public const string BufferReaderReadByte = "ReadByte";
         public const string BufferReaderReadSByte = "ReadSByte";
@@ -119,7 +117,7 @@ internal static class IndependentNames
         public const string InboundEndpointImplementation = "Implementation";
         public const string PrimitiveSerializerBoolSize = Types.PrimitiveSerializer + ".BoolSize";
     }
-    
+
     public static class GlobalConstants
     {
         public const string ByteSize = Types.PrimitiveSerializer + ".ByteSize";

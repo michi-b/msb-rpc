@@ -7,11 +7,11 @@ internal class CustomSerializationNode
 {
     private const string StatementClose = ");";
 
-    public SerializationNode.GetSizeExpressionDelegate CreateGetSerializedSizeExpression { get; }
+    public SerializationNode.GetSizeExpressionDelegate GetSizeExpression { get; }
 
-    public SerializationNode.GetSerializationStatementDelegate CreateGetSerializationStatement { get; }
+    public SerializationNode.GetSerializationStatementDelegate GetSerializationStatement { get; }
 
-    public SerializationNode.GetDeserializationExpressionDelegate CreateGetDeserializationExpression { get; }
+    public SerializationNode.GetDeserializationExpressionDelegate GetDeserializationExpression { get; }
 
     public CustomSerializationNode(CustomSerializationInfo info)
     {
@@ -21,10 +21,10 @@ internal class CustomSerializationNode
                 string sizeExpression = $"{info.Name}.{info.SizeMemberName}";
                 string serializationMethodOpen = $"{info.Name}.{info.SerializationMethodName}(";
                 string deserializationMethodOpen = $"{info.Name}.{info.DeserializationMethodName}(";
-                CreateGetSerializedSizeExpression = _ => sizeExpression;
-                CreateGetSerializationStatement = (bufferWriterExpression, valueExpression)
+                GetSizeExpression = _ => sizeExpression;
+                GetSerializationStatement = (bufferWriterExpression, valueExpression)
                     => $"{serializationMethodOpen}{bufferWriterExpression}, {valueExpression}{StatementClose}";
-                CreateGetDeserializationExpression = bufferReaderExpression
+                GetDeserializationExpression = bufferReaderExpression
                     => $"{deserializationMethodOpen}{bufferReaderExpression}{StatementClose}";
                 break;
             default:

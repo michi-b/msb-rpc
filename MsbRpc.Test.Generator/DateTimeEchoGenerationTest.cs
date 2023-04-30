@@ -62,4 +62,16 @@ public interface IDateTimeEcho : IRpcContract
     {
         await TestGeneratesAnyTrees();
     }
+
+    [TestMethod]
+    public async Task GeneratesServerEndPoint()
+    {
+        await TestGeneratesFile("DateTimeEchoServerEndPoint.g.cs");
+    }
+
+    [TestMethod]
+    public async Task GeneratesClientEndPoint()
+    {
+        await TestGeneratesFile("DateTimeEchoClientEndPoint.g.cs");
+    }
 }

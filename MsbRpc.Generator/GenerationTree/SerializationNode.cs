@@ -35,6 +35,17 @@ internal class SerializationNode
         }
     }
 
+    public SerializationNode(CustomSerializationNode customSerializationNode, bool isNullable)
+    {
+        GetSizeExpressionDelegate getSizeExpression = customSerializationNode.GetSizeExpression;
+        GetDeserializationExpressionDelegate getDeserializationExpression = customSerializationNode.GetDeserializationExpression;
+        GetSerializationStatementDelegate getSerializationStatement = customSerializationNode.GetSerializationStatement;
+
+        _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
+        _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;
+        _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
+    }
+
     public string GetSizeExpression(string targetExpression) => _getSizeExpression(targetExpression);
 
     public string GetSerializationStatement(string bufferWriterExpression, string valueExpression) => _getSerializationStatement(bufferWriterExpression, valueExpression);

@@ -2,7 +2,6 @@
 
 internal enum DefaultSerializationKind
 {
-    Unresolved = 0,
     Byte = 1,
     Sbyte = 2,
     Bool = 3,

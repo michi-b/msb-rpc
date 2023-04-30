@@ -26,12 +26,6 @@ internal static class SerializationKindExtensions
 
     public static bool TryGetKeyword(this DefaultSerializationKind serializationKind, out string keyword)
     {
-        if (serializationKind == DefaultSerializationKind.Unresolved)
-        {
-            keyword = null!;
-            return false;
-        }
-
         keyword = serializationKind switch
         {
             DefaultSerializationKind.Byte => "byte",
@@ -49,7 +43,6 @@ internal static class SerializationKindExtensions
             DefaultSerializationKind.Decimal => "decimal",
             DefaultSerializationKind.Void => "void",
             DefaultSerializationKind.String => "string",
-            DefaultSerializationKind.Unresolved => throw new ArgumentOutOfRangeException(nameof(serializationKind), serializationKind, null),
             _ => throw new ArgumentOutOfRangeException(nameof(serializationKind), serializationKind, null)
         };
         return true;
@@ -59,9 +52,8 @@ internal static class SerializationKindExtensions
     {
         return target switch
         {
-            DefaultSerializationKind.Unresolved => null,
             DefaultSerializationKind.Byte => _ => GlobalConstants.ByteSize,
-            DefaultSerializationKind.Sbyte => _ => GlobalConstants.SByteSize, 
+            DefaultSerializationKind.Sbyte => _ => GlobalConstants.SByteSize,
             DefaultSerializationKind.Bool => _ => GlobalConstants.BoolSize,
             DefaultSerializationKind.Char => _ => GlobalConstants.CharSize,
             DefaultSerializationKind.Int => _ => GlobalConstants.IntSize,
@@ -83,7 +75,6 @@ internal static class SerializationKindExtensions
     {
         return target switch
         {
-            DefaultSerializationKind.Unresolved => null,
             DefaultSerializationKind.Void => null,
             DefaultSerializationKind.Byte => DefaultSerializationTypeWriteStatement,
             DefaultSerializationKind.Sbyte => DefaultSerializationTypeWriteStatement,
@@ -107,7 +98,6 @@ internal static class SerializationKindExtensions
     {
         return target switch
         {
-            DefaultSerializationKind.Unresolved => null,
             DefaultSerializationKind.Void => null,
             DefaultSerializationKind.Byte => bufferReaderExpression => bufferReaderExpression + ReadByte,
             DefaultSerializationKind.Sbyte => bufferReaderExpression => bufferReaderExpression + ReadSByte,
