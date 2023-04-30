@@ -1,4 +1,6 @@
-﻿namespace MsbRpc.Generator.CodeWriters.Utility;
+﻿using System.Globalization;
+
+namespace MsbRpc.Generator.CodeWriters.Utility;
 
 internal static class IndependentNames
 {
@@ -77,6 +79,22 @@ internal static class IndependentNames
         public const string GetRequest = "GetRequest";
         public const string SendRequestAsync = "SendRequestAsync";
         public const string BufferWriterWrite = "Write";
+        
+        //buffer reader read methods
+        public const string BufferReaderReadByte = "ReadByte";
+        public const string BufferReaderReadSByte = "ReadSByte";
+        public const string BufferReaderReadBool = "ReadBool";
+        public const string BufferReaderReadChar = "ReadChar";
+        public const string BufferReaderReadInt = "ReadInt";
+        public const string BufferReaderReadLong = "ReadLong";
+        public const string BufferReaderReadShort = "ReadShort";
+        public const string BufferReaderReadUInt = "ReadUInt";
+        public const string BufferReaderReadULong = "ReadULong";
+        public const string BufferReaderReadUShort = "ReadUShort";
+        public const string BufferReaderReadFloat = "ReadFloat";
+        public const string BufferReaderReadDouble = "ReadDouble";
+        public const string BufferReaderReadDecimal = "ReadDecimal";
+        public const string BufferReaderReadString = "ReadString";
     }
 
     public static class Parameters
@@ -99,6 +117,24 @@ internal static class IndependentNames
     {
         public const string EndPointBuffer = "Buffer";
         public const string InboundEndpointImplementation = "Implementation";
+        public const string PrimitiveSerializerBoolSize = Types.PrimitiveSerializer + ".BoolSize";
+    }
+    
+    public static class GlobalConstants
+    {
+        public const string ByteSize = Types.PrimitiveSerializer + ".ByteSize";
+        public const string SByteSize = Types.PrimitiveSerializer + ".SByteSize";
+        public const string BoolSize = Types.PrimitiveSerializer + ".BoolSize";
+        public const string CharSize = Types.PrimitiveSerializer + ".CharSize";
+        public const string IntSize = Types.PrimitiveSerializer + ".IntSize";
+        public const string LongSize = Types.PrimitiveSerializer + ".LongSize";
+        public const string ShortSize = Types.PrimitiveSerializer + ".ShortSize";
+        public const string UIntSize = Types.PrimitiveSerializer + ".UIntSize";
+        public const string ULongSize = Types.PrimitiveSerializer + ".ULongSize";
+        public const string UShortSize = Types.PrimitiveSerializer + ".UShortSize";
+        public const string FloatSize = Types.PrimitiveSerializer + ".FloatSize";
+        public const string DoubleSize = Types.PrimitiveSerializer + ".DoubleSize";
+        public const string DecimalSize = Types.PrimitiveSerializer + ".DecimalSize";
     }
 
     public static class EnumValues

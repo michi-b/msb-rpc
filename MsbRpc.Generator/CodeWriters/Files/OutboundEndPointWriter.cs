@@ -120,11 +120,11 @@ internal class OutboundEndPointWriter : EndPointWriter
                 string sizeVariableName = parameter.SizeVariableName;
                 if (parameter.Type.Serialization is { } serialization)
                 {
-                    writer.WriteLine($"{sizeVariableName} = {serialization.GetSizeExpression(parameter.Name)};");
+                    writer.WriteLine($"int {sizeVariableName} = {serialization.GetSizeExpression(parameter.Name)};");
                 }
                 else
                 {
-                    writer.WriteLine($"{sizeVariableName} = 0;");
+                    writer.WriteLine($"int {sizeVariableName} = 0;");
                 }
             }
 
@@ -175,7 +175,10 @@ internal class OutboundEndPointWriter : EndPointWriter
             {
                 writer.WriteLine(SendRequestStatementWithResponse);
                 writer.WriteLine(ResponseReaderInitializationStatement);
-                writer.WriteLine(serialization.GetDeserializationExpression($"{Variables.ResponseReader}"));
+
+                string deserializationExpression = serialization.GetDeserializationExpression($"{Variables.ResponseReader}");
+                writer.WriteLine($"{resultType.DeclarationSyntax} {Variables.Result} = {deserializationExpression};");
+
                 writer.WriteLine($"return {Variables.Result};");
             }
             else

@@ -7,28 +7,29 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class TypeNode
 {
+    /// <summary>
+    ///     the type name for declarations, e.g. string, int etc., or the qualified reference name of the type otherwise
+    /// </summary>
     public readonly string DeclarationSyntax;
-    public readonly bool IsNullable;
+
     public readonly bool IsVoid;
     public readonly SerializationNode? Serialization;
     public bool IsResolved => IsVoid || Serialization is not null;
 
     public TypeNode(TypeInfo typeInfo, IReadOnlyDictionary<string, CustomSerializationNode> customSerializations)
     {
-        IsNullable = typeInfo.IsNullable;
-
         DefaultSerializationKind serializationKind = DefaultSerializationKindUtility.GetDefaultSerializationKind(typeInfo.Name);
 
         if (serializationKind == DefaultSerializationKind.Unresolved)
         {
-            DeclarationSyntax = IsNullable ? typeInfo.Name + '?' : typeInfo.Name;
+            DeclarationSyntax = typeInfo.IsNullable ? typeInfo.Name + '?' : typeInfo.Name;
             IsVoid = false;
         }
         else
         {
             DeclarationSyntax = serializationKind.TryGetKeyword(out string keyword)
-                ? IsNullable ? keyword + '?' : keyword
-                : IsNullable
+                ? typeInfo.IsNullable ? keyword + '?' : keyword
+                : typeInfo.IsNullable
                     ? typeInfo.Name + '?'
                     : typeInfo.Name;
             switch (serializationKind)
@@ -50,7 +51,7 @@ internal class TypeNode
                 case DefaultSerializationKind.Double:
                 case DefaultSerializationKind.Decimal:
                 case DefaultSerializationKind.String:
-                    Serialization = new SerializationNode(serializationKind);
+                    Serialization = new SerializationNode(serializationKind, typeInfo.IsNullable);
                     break;
                 case DefaultSerializationKind.Unresolved:
                 default:

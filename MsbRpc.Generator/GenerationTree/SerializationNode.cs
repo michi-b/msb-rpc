@@ -1,5 +1,6 @@
 ﻿using System;
 using MsbRpc.Generator.Info;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -16,16 +17,17 @@ internal class SerializationNode
 
     private readonly GetSizeExpressionDelegate _getSizeExpression;
 
-    public SerializationNode(DefaultSerializationKind defaultSerializationKind)
+    public SerializationNode(DefaultSerializationKind defaultSerializationKind, bool isNullable)
     {
         GetSizeExpressionDelegate? getSizeExpression = defaultSerializationKind.GetGetSizeExpression();
         GetSerializationStatementDelegate? getSerializationStatement = defaultSerializationKind.GetGetSerializationStatement();
         GetDeserializationExpressionDelegate? getDeserializationExpression = defaultSerializationKind.GetGetDeserializationExpression();
+
         if (getSizeExpression != null && getSerializationStatement != null && getDeserializationExpression != null)
         {
-            _getSizeExpression = getSizeExpression;
-            _getSerializationStatement = getSerializationStatement;
-            _getDeserializationExpression = getDeserializationExpression;
+            _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
+            _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
+            _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;
         }
         else
         {
@@ -38,4 +40,25 @@ internal class SerializationNode
     public string GetSerializationStatement(string bufferWriterExpression, string valueExpression) => _getSerializationStatement(bufferWriterExpression, valueExpression);
 
     public string GetDeserializationExpression(string bufferReaderExpression) => _getDeserializationExpression(bufferReaderExpression);
+
+    private static GetSizeExpressionDelegate GetNullableSizeExpression(GetSizeExpressionDelegate innerDelegate)
+        => targetExpression
+            => $"{targetExpression} == null"
+               + " ? " + Fields.PrimitiveSerializerBoolSize
+               + " : " + innerDelegate(targetExpression) + " + " + Fields.PrimitiveSerializerBoolSize;
+
+    private static GetDeserializationExpressionDelegate GetNullableDeserializationExpression(GetDeserializationExpressionDelegate innerDelegate)
+        => bufferReaderExpression
+            => $"{bufferReaderExpression}.{Methods.BufferReaderReadBool}()"
+               + " ? " + innerDelegate(bufferReaderExpression)
+               + " : null";
+
+    private static GetSerializationStatementDelegate GetNullableSerializationStatement(GetSerializationStatementDelegate innerDelegate)
+        => (bufferWriterExpression, valueExpression)
+            => $"if ({valueExpression} == null) {{"
+               + $"{bufferWriterExpression}.{Methods.BufferWriterWrite}(false);"
+               + "} else {"
+               + $"{bufferWriterExpression}.{Methods.BufferWriterWrite}(true); "
+               + innerDelegate(bufferWriterExpression, valueExpression + ".Value")
+               + "}";
 }

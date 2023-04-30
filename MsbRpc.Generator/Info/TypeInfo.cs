@@ -37,7 +37,7 @@ internal readonly struct TypeInfo : IEquatable<TypeInfo>
         else
         {
             Name = typeSymbol.GetFullName();
-            IsNullable = typeSymbol.NullableAnnotation != NullableAnnotation.NotAnnotated;
+            IsNullable = typeSymbol.NullableAnnotation == NullableAnnotation.Annotated;
         }
     }
 

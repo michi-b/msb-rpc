@@ -6,6 +6,21 @@ namespace MsbRpc.Generator.Info;
 
 internal static class SerializationKindExtensions
 {
+    private const string ReadByte = "." + Methods.BufferReaderReadByte + "()";
+    private const string ReadSByte = "." + Methods.BufferReaderReadSByte + "()";
+    private const string ReadBool = "." + Methods.BufferReaderReadBool + "()";
+    private const string ReadChar = "." + Methods.BufferReaderReadChar + "()";
+    private const string ReadInt = "." + Methods.BufferReaderReadInt + "()";
+    private const string ReadLong = "." + Methods.BufferReaderReadLong + "()";
+    private const string ReadShort = "." + Methods.BufferReaderReadShort + "()";
+    private const string ReadUInt = "." + Methods.BufferReaderReadUInt + "()";
+    private const string ReadULong = "." + Methods.BufferReaderReadULong + "()";
+    private const string ReadUShort = "." + Methods.BufferReaderReadUShort + "()";
+    private const string ReadFloat = "." + Methods.BufferReaderReadFloat + "()";
+    private const string ReadDouble = "." + Methods.BufferReaderReadDouble + "()";
+    private const string ReadDecimal = "." + Methods.BufferReaderReadDecimal + "()";
+    private const string ReadString = "." + Methods.BufferReaderReadString + "()";
+
     private static readonly SerializationNode.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement = (bufferWriterExpression, valueExpression)
         => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
 
@@ -45,19 +60,19 @@ internal static class SerializationKindExtensions
         return target switch
         {
             DefaultSerializationKind.Unresolved => null,
-            DefaultSerializationKind.Byte => _ => "PrimitiveSerializer.ByteSize",
-            DefaultSerializationKind.Sbyte => _ => "PrimitiveSerializer.SByteSize",
-            DefaultSerializationKind.Bool => _ => "PrimitiveSerializer.BoolSize",
-            DefaultSerializationKind.Char => _ => "PrimitiveSerializer.CharSize",
-            DefaultSerializationKind.Int => _ => "PrimitiveSerializer.IntSize",
-            DefaultSerializationKind.Long => _ => "PrimitiveSerializer.LongSize",
-            DefaultSerializationKind.Short => _ => "PrimitiveSerializer.ShortSize",
-            DefaultSerializationKind.Uint => _ => "PrimitiveSerializer.UIntSize",
-            DefaultSerializationKind.Ulong => _ => "PrimitiveSerializer.ULongSize",
-            DefaultSerializationKind.Ushort => _ => "PrimitiveSerializer.UShortSize",
-            DefaultSerializationKind.Float => _ => "PrimitiveSerializer.FloatSize",
-            DefaultSerializationKind.Double => _ => "PrimitiveSerializer.DoubleSize",
-            DefaultSerializationKind.Decimal => _ => "PrimitiveSerializer.DecimalSize",
+            DefaultSerializationKind.Byte => _ => GlobalConstants.ByteSize,
+            DefaultSerializationKind.Sbyte => _ => GlobalConstants.SByteSize, 
+            DefaultSerializationKind.Bool => _ => GlobalConstants.BoolSize,
+            DefaultSerializationKind.Char => _ => GlobalConstants.CharSize,
+            DefaultSerializationKind.Int => _ => GlobalConstants.IntSize,
+            DefaultSerializationKind.Long => _ => GlobalConstants.LongSize,
+            DefaultSerializationKind.Short => _ => GlobalConstants.ShortSize,
+            DefaultSerializationKind.Uint => _ => GlobalConstants.UIntSize,
+            DefaultSerializationKind.Ulong => _ => GlobalConstants.ULongSize,
+            DefaultSerializationKind.Ushort => _ => GlobalConstants.UShortSize,
+            DefaultSerializationKind.Float => _ => GlobalConstants.FloatSize,
+            DefaultSerializationKind.Double => _ => GlobalConstants.DoubleSize,
+            DefaultSerializationKind.Decimal => _ => GlobalConstants.DecimalSize,
             DefaultSerializationKind.String => targetExpression => $"{Types.StringSerializer}.GetSize({targetExpression})",
             DefaultSerializationKind.Void => null,
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
@@ -93,21 +108,21 @@ internal static class SerializationKindExtensions
         return target switch
         {
             DefaultSerializationKind.Unresolved => null,
-            DefaultSerializationKind.Byte => bufferReaderExpression => $"{bufferReaderExpression}.ReadByte()",
-            DefaultSerializationKind.Sbyte => bufferReaderExpression => $"{bufferReaderExpression}.ReadSByte()",
-            DefaultSerializationKind.Bool => bufferReaderExpression => $"{bufferReaderExpression}.ReadBool()",
-            DefaultSerializationKind.Char => bufferReaderExpression => $"{bufferReaderExpression}.ReadChar()",
-            DefaultSerializationKind.Int => bufferReaderExpression => $"{bufferReaderExpression}.ReadInt()",
-            DefaultSerializationKind.Long => bufferReaderExpression => $"{bufferReaderExpression}.ReadLong()",
-            DefaultSerializationKind.Short => bufferReaderExpression => $"{bufferReaderExpression}.ReadShort()",
-            DefaultSerializationKind.Uint => bufferReaderExpression => $"{bufferReaderExpression}.ReadUInt()",
-            DefaultSerializationKind.Ulong => bufferReaderExpression => $"{bufferReaderExpression}.ReadULong()",
-            DefaultSerializationKind.Ushort => bufferReaderExpression => $"{bufferReaderExpression}.ReadUShort()",
-            DefaultSerializationKind.Float => bufferReaderExpression => $"{bufferReaderExpression}.ReadFloat()",
-            DefaultSerializationKind.Double => bufferReaderExpression => $"{bufferReaderExpression}.ReadDouble()",
-            DefaultSerializationKind.Decimal => bufferReaderExpression => $"{bufferReaderExpression}.ReadDecimal()",
-            DefaultSerializationKind.String => bufferReaderExpression => $"{bufferReaderExpression}.ReadString()",
             DefaultSerializationKind.Void => null,
+            DefaultSerializationKind.Byte => bufferReaderExpression => bufferReaderExpression + ReadByte,
+            DefaultSerializationKind.Sbyte => bufferReaderExpression => bufferReaderExpression + ReadSByte,
+            DefaultSerializationKind.Bool => bufferReaderExpression => bufferReaderExpression + ReadBool,
+            DefaultSerializationKind.Char => bufferReaderExpression => bufferReaderExpression + ReadChar,
+            DefaultSerializationKind.Int => bufferReaderExpression => bufferReaderExpression + ReadInt,
+            DefaultSerializationKind.Long => bufferReaderExpression => bufferReaderExpression + ReadLong,
+            DefaultSerializationKind.Short => bufferReaderExpression => bufferReaderExpression + ReadShort,
+            DefaultSerializationKind.Uint => bufferReaderExpression => bufferReaderExpression + ReadUInt,
+            DefaultSerializationKind.Ulong => bufferReaderExpression => bufferReaderExpression + ReadULong,
+            DefaultSerializationKind.Ushort => bufferReaderExpression => bufferReaderExpression + ReadUShort,
+            DefaultSerializationKind.Float => bufferReaderExpression => bufferReaderExpression + ReadFloat,
+            DefaultSerializationKind.Double => bufferReaderExpression => bufferReaderExpression + ReadDouble,
+            DefaultSerializationKind.Decimal => bufferReaderExpression => bufferReaderExpression + ReadDecimal,
+            DefaultSerializationKind.String => bufferReaderExpression => bufferReaderExpression + ReadString,
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
