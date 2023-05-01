@@ -42,8 +42,7 @@ internal static class DefaultSerializationKindUtility
         DefaultSerializationKind.Decimal,
         DefaultSerializationKind.String
     };
-    
-    public static bool TryGetByName(string name, out DefaultSerializationKind value) => ValuesByName.TryGetValue(name, out value);
+
     static DefaultSerializationKindUtility()
     {
         Dictionary<string, DefaultSerializationKind> valuesByName = new(DictionaryCapacity);
@@ -51,6 +50,9 @@ internal static class DefaultSerializationKindUtility
         {
             valuesByName.Add(serializationKind.GetName(), serializationKind);
         }
+
         ValuesByName = new ReadOnlyDictionary<string, DefaultSerializationKind>(valuesByName);
     }
+
+    public static bool TryGetByName(string name, out DefaultSerializationKind value) => ValuesByName.TryGetValue(name, out value);
 }

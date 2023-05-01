@@ -15,5 +15,5 @@ public enum DefaultSerializationKind
     Float = 11,
     Double = 12,
     Decimal = 13,
-    String = 14,
+    String = 14
 }
