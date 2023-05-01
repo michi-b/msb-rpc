@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Info;
 
-internal enum DefaultSerializationKind
+public enum DefaultSerializationKind
 {
     Byte = 1,
     Sbyte = 2,

@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator;
 using MsbRpc.Test.Generator.Base;
 
-namespace MsbRpc.Test.Generator;
+namespace MsbRpc.Test.Generator.CodeGeneration;
 
 [TestClass]
 public class UnresolvedDateTimeTypeTest : ContractGenerationTest<UnresolvedDateTimeTypeTest, ContractGenerator>

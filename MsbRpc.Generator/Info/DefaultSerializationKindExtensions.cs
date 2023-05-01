@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Info;
 
-internal static class SerializationKindExtensions
+internal static class DefaultSerializationKindExtensions
 {
     private const string ReadByte = "." + Methods.BufferReaderReadByte + "()";
     private const string ReadSByte = "." + Methods.BufferReaderReadSByte + "()";
@@ -20,9 +23,43 @@ internal static class SerializationKindExtensions
     private const string ReadDecimal = "." + Methods.BufferReaderReadDecimal + "()";
     private const string ReadString = "." + Methods.BufferReaderReadString + "()";
 
-    private static readonly Serialization.Serialization.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement =
+    private static readonly GenerationTree.Serialization.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement =
         (bufferWriterExpression, valueExpression)
             => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
+
+    private static readonly ReadOnlyDictionary<DefaultSerializationKind, string> Names;
+
+    static DefaultSerializationKindExtensions()
+    {
+        Dictionary<DefaultSerializationKind, string> names = new(DefaultSerializationKindUtility.DictionaryCapacity);
+        foreach (DefaultSerializationKind serializationKind in DefaultSerializationKindUtility.All)
+        {
+            names.Add
+            (
+                serializationKind,
+                serializationKind switch
+                {
+                    DefaultSerializationKind.Byte => DefaultSerializationKindUtility.ByteTypeName,
+                    DefaultSerializationKind.Sbyte => DefaultSerializationKindUtility.SbyteTypeName,
+                    DefaultSerializationKind.Bool => DefaultSerializationKindUtility.BoolTypeName,
+                    DefaultSerializationKind.Char => DefaultSerializationKindUtility.CharTypeName,
+                    DefaultSerializationKind.Int => DefaultSerializationKindUtility.IntTypeName,
+                    DefaultSerializationKind.Long => DefaultSerializationKindUtility.LongTypeName,
+                    DefaultSerializationKind.Short => DefaultSerializationKindUtility.ShortTypeName,
+                    DefaultSerializationKind.Uint => DefaultSerializationKindUtility.UintTypeName,
+                    DefaultSerializationKind.Ulong => DefaultSerializationKindUtility.UlongTypeName,
+                    DefaultSerializationKind.Ushort => DefaultSerializationKindUtility.UshortTypeName,
+                    DefaultSerializationKind.Float => DefaultSerializationKindUtility.FloatTypeName,
+                    DefaultSerializationKind.Double => DefaultSerializationKindUtility.DoubleTypeName,
+                    DefaultSerializationKind.Decimal => DefaultSerializationKindUtility.DecimalTypeName,
+                    DefaultSerializationKind.String => DefaultSerializationKindUtility.StringTypeName,
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            );
+        }
+
+        Names = new ReadOnlyDictionary<DefaultSerializationKind, string>(names);
+    }
 
     public static bool TryGetKeyword(this DefaultSerializationKind serializationKind, out string keyword)
     {
@@ -47,7 +84,7 @@ internal static class SerializationKindExtensions
         return true;
     }
 
-    public static Serialization.Serialization.GetSizeExpressionDelegate? GetGetSizeExpression(this DefaultSerializationKind target)
+    public static GenerationTree.Serialization.GetSizeExpressionDelegate GetGetSizeExpression(this DefaultSerializationKind target)
     {
         return target switch
         {
@@ -69,7 +106,7 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static Serialization.Serialization.GetSerializationStatementDelegate? GetGetSerializationStatement(this DefaultSerializationKind target)
+    public static GenerationTree.Serialization.GetSerializationStatementDelegate GetGetSerializationStatement(this DefaultSerializationKind target)
     {
         return target switch
         {
@@ -91,7 +128,7 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static Serialization.Serialization.GetDeserializationExpressionDelegate? GetGetDeserializationExpression(this DefaultSerializationKind target)
+    public static GenerationTree.Serialization.GetDeserializationExpressionDelegate GetGetDeserializationExpression(this DefaultSerializationKind target)
     {
         return target switch
         {
@@ -112,4 +149,6 @@ internal static class SerializationKindExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
+
+    public static string GetName(this DefaultSerializationKind defaultSerializationKind) => Names[defaultSerializationKind];
 }

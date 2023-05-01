@@ -1,40 +1,56 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.Utility;
 
 internal static class DefaultSerializationKindUtility
 {
-    private const string FloatTypeName = "System.Single";
-    private const string ByteTypeName = "System.Byte";
-    private const string SbyteTypeName = "System.SByte";
-    private const string BoolTypeName = "System.Boolean";
-    private const string CharTypeName = "System.Char";
-    private const string IntTypeName = "System.Int32";
-    private const string LongTypeName = "System.Int64";
-    private const string ShortTypeName = "System.Int16";
-    private const string UintTypeName = "System.UInt32";
-    private const string UlongTypeName = "System.UInt64";
-    private const string UshortTypeName = "System.UInt16";
-    private const string DoubleTypeName = "System.Double";
-    private const string DecimalTypeName = "System.Decimal";
-    private const string StringTypeName = "System.String";
+    public const int DictionaryCapacity = 100;
 
-    public static readonly Dictionary<string, DefaultSerializationKind> DefaultSerializationKinds = new()
+    public const string FloatTypeName = "System.Single";
+    public const string ByteTypeName = "System.Byte";
+    public const string SbyteTypeName = "System.SByte";
+    public const string BoolTypeName = "System.Boolean";
+    public const string CharTypeName = "System.Char";
+    public const string IntTypeName = "System.Int32";
+    public const string LongTypeName = "System.Int64";
+    public const string ShortTypeName = "System.Int16";
+    public const string UintTypeName = "System.UInt32";
+    public const string UlongTypeName = "System.UInt64";
+    public const string UshortTypeName = "System.UInt16";
+    public const string DoubleTypeName = "System.Double";
+    public const string DecimalTypeName = "System.Decimal";
+    public const string StringTypeName = "System.String";
+
+    private static readonly ReadOnlyDictionary<string, DefaultSerializationKind> ValuesByName;
+
+    public static readonly DefaultSerializationKind[] All =
     {
-        { FloatTypeName, DefaultSerializationKind.Float },
-        { ByteTypeName, DefaultSerializationKind.Byte },
-        { SbyteTypeName, DefaultSerializationKind.Sbyte },
-        { BoolTypeName, DefaultSerializationKind.Bool },
-        { CharTypeName, DefaultSerializationKind.Char },
-        { IntTypeName, DefaultSerializationKind.Int },
-        { LongTypeName, DefaultSerializationKind.Long },
-        { ShortTypeName, DefaultSerializationKind.Short },
-        { UintTypeName, DefaultSerializationKind.Uint },
-        { UlongTypeName, DefaultSerializationKind.Ulong },
-        { UshortTypeName, DefaultSerializationKind.Ushort },
-        { DoubleTypeName, DefaultSerializationKind.Double },
-        { DecimalTypeName, DefaultSerializationKind.Decimal },
-        { StringTypeName, DefaultSerializationKind.String },
+        DefaultSerializationKind.Byte,
+        DefaultSerializationKind.Sbyte,
+        DefaultSerializationKind.Bool,
+        DefaultSerializationKind.Char,
+        DefaultSerializationKind.Int,
+        DefaultSerializationKind.Long,
+        DefaultSerializationKind.Short,
+        DefaultSerializationKind.Uint,
+        DefaultSerializationKind.Ulong,
+        DefaultSerializationKind.Ushort,
+        DefaultSerializationKind.Float,
+        DefaultSerializationKind.Double,
+        DefaultSerializationKind.Decimal,
+        DefaultSerializationKind.String
     };
+    
+    public static bool TryGetByName(string name, out DefaultSerializationKind value) => ValuesByName.TryGetValue(name, out value);
+    static DefaultSerializationKindUtility()
+    {
+        Dictionary<string, DefaultSerializationKind> valuesByName = new(DictionaryCapacity);
+        foreach (DefaultSerializationKind serializationKind in All)
+        {
+            valuesByName.Add(serializationKind.GetName(), serializationKind);
+        }
+        ValuesByName = new ReadOnlyDictionary<string, DefaultSerializationKind>(valuesByName);
+    }
 }

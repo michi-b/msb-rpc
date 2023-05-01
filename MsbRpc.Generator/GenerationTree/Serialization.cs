@@ -1,9 +1,7 @@
-﻿using System;
-using MsbRpc.Generator.GenerationTree;
-using MsbRpc.Generator.Info;
+﻿using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
-namespace MsbRpc.Generator.Serialization;
+namespace MsbRpc.Generator.GenerationTree;
 
 internal class Serialization
 {
@@ -20,20 +18,12 @@ internal class Serialization
 
     public Serialization(DefaultSerializationKind defaultSerializationKind, bool isNullable)
     {
-        GetSizeExpressionDelegate? getSizeExpression = defaultSerializationKind.GetGetSizeExpression();
-        GetSerializationStatementDelegate? getSerializationStatement = defaultSerializationKind.GetGetSerializationStatement();
-        GetDeserializationExpressionDelegate? getDeserializationExpression = defaultSerializationKind.GetGetDeserializationExpression();
-
-        if (getSizeExpression != null && getSerializationStatement != null && getDeserializationExpression != null)
-        {
-            _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
-            _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
-            _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;
-        }
-        else
-        {
-            throw new ArgumentOutOfRangeException(nameof(defaultSerializationKind), defaultSerializationKind, "serialization kind is not serializable");
-        }
+        GetSizeExpressionDelegate getSizeExpression = defaultSerializationKind.GetGetSizeExpression();
+        GetSerializationStatementDelegate getSerializationStatement = defaultSerializationKind.GetGetSerializationStatement();
+        GetDeserializationExpressionDelegate getDeserializationExpression = defaultSerializationKind.GetGetDeserializationExpression();
+        _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
+        _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
+        _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;
     }
 
     public Serialization(CustomSerializationNode customSerializationNode, bool isNullable)
@@ -41,7 +31,6 @@ internal class Serialization
         GetSizeExpressionDelegate getSizeExpression = customSerializationNode.GetSizeExpression;
         GetDeserializationExpressionDelegate getDeserializationExpression = customSerializationNode.GetDeserializationExpression;
         GetSerializationStatementDelegate getSerializationStatement = customSerializationNode.GetSerializationStatement;
-
         _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
         _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;
         _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
