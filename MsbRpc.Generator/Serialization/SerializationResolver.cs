@@ -27,5 +27,7 @@ public class SerializationResolver
         (ImmutableArray<CustomSerializationInfo> customSerializations)
         => _serializations = new Dictionary<string, SerializationWriter>(DefaultSerializations);
 
+    public SerializationWriter GetSerializationWriter(DefaultSerializationKind defaultSerializationKind) => _serializations[defaultSerializationKind.GetName()];
+
     public bool TryGetSerializationWriter(string name, out SerializationWriter serializationWriter) => _serializations.TryGetValue(name, out serializationWriter);
 }

@@ -65,6 +65,15 @@ public struct BufferReader
     [MayBeUsedByGenerator]
     public string ReadString() => StringSerializer.ReadString(ref this);
 
+    public T? ReadNullable<T>(Func<T> readValue) where T : struct
+    {
+        if (ReadBool())
+        {
+            return readValue();
+        }
+        return null;
+    }
+
     [PublicAPI]
     public ArraySegment<byte> ReadSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);
 }

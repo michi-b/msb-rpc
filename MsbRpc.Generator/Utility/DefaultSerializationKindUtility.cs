@@ -4,7 +4,7 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.Utility;
 
-internal static class DefaultSerializationKindUtility
+public static class DefaultSerializationKindUtility
 {
     public const int DictionaryCapacity = 100;
 
