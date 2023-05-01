@@ -1,10 +1,11 @@
 ﻿using System;
+using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
-namespace MsbRpc.Generator.GenerationTree;
+namespace MsbRpc.Generator.Serialization;
 
-internal class SerializationNode
+internal class Serialization
 {
     public delegate string GetSizeExpressionDelegate(string targetExpression);
 
@@ -17,7 +18,7 @@ internal class SerializationNode
 
     private readonly GetSizeExpressionDelegate _getSizeExpression;
 
-    public SerializationNode(DefaultSerializationKind defaultSerializationKind, bool isNullable)
+    public Serialization(DefaultSerializationKind defaultSerializationKind, bool isNullable)
     {
         GetSizeExpressionDelegate? getSizeExpression = defaultSerializationKind.GetGetSizeExpression();
         GetSerializationStatementDelegate? getSerializationStatement = defaultSerializationKind.GetGetSerializationStatement();
@@ -35,7 +36,7 @@ internal class SerializationNode
         }
     }
 
-    public SerializationNode(CustomSerializationNode customSerializationNode, bool isNullable)
+    public Serialization(CustomSerializationNode customSerializationNode, bool isNullable)
     {
         GetSizeExpressionDelegate getSizeExpression = customSerializationNode.GetSizeExpression;
         GetDeserializationExpressionDelegate getDeserializationExpression = customSerializationNode.GetDeserializationExpression;

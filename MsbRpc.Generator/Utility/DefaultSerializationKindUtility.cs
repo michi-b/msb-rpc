@@ -19,7 +19,6 @@ internal static class DefaultSerializationKindUtility
     private const string DoubleTypeName = "System.Double";
     private const string DecimalTypeName = "System.Decimal";
     private const string StringTypeName = "System.String";
-    private const string VoidTypeName = "System.Void";
 
     public static readonly Dictionary<string, DefaultSerializationKind> DefaultSerializationKinds = new()
     {
@@ -37,6 +36,5 @@ internal static class DefaultSerializationKindUtility
         { DoubleTypeName, DefaultSerializationKind.Double },
         { DecimalTypeName, DefaultSerializationKind.Decimal },
         { StringTypeName, DefaultSerializationKind.String },
-        { VoidTypeName, DefaultSerializationKind.Void }
     };
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.GenerationTree;
@@ -12,10 +14,17 @@ internal class TypeNode
     public readonly string DeclarationSyntax;
 
     public readonly bool IsVoid;
-    public readonly SerializationNode? Serialization;
+    public readonly Serialization.Serialization? Serialization;
 
     public TypeNode(TypeInfo typeInfo, IReadOnlyDictionary<string, CustomSerializationNode> customSerializations)
     {
+        IsVoid = typeInfo.Name == IndependentNames.Types.Void;
+
+        if (IsVoid)
+        {
+            return;
+        }
+        
         bool isDefaultSerializableType = DefaultSerializationKindUtility.DefaultSerializationKinds.TryGetValue
             (typeInfo.Name, out DefaultSerializationKind defaultSerializationKind);
 
@@ -25,23 +34,17 @@ internal class TypeNode
                 ? typeInfo.Name + '?'
                 : typeInfo.Name;
 
-        IsVoid = isDefaultSerializableType && defaultSerializationKind == DefaultSerializationKind.Void;
-
-        if (IsVoid)
-        {
-            return;
-        }
 
         if (customSerializations.TryGetValue(typeInfo.Name, out CustomSerializationNode? customSerialization))
         {
-            Serialization = new SerializationNode(customSerialization, typeInfo.IsNullable);
+            Serialization = new Serialization.Serialization(customSerialization, typeInfo.IsNullable);
             return;
         }
 
         if (isDefaultSerializableType)
 
         {
-            Serialization = new SerializationNode(defaultSerializationKind, typeInfo.IsNullable);
+            Serialization = new Serialization.Serialization(defaultSerializationKind, typeInfo.IsNullable);
         }
     }
 }

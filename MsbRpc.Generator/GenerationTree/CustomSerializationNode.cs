@@ -1,5 +1,6 @@
 ﻿using System;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -7,11 +8,11 @@ internal class CustomSerializationNode
 {
     private const string StatementClose = ");";
 
-    public SerializationNode.GetSizeExpressionDelegate GetSizeExpression { get; }
+    public Serialization.Serialization.GetSizeExpressionDelegate GetSizeExpression { get; }
 
-    public SerializationNode.GetSerializationStatementDelegate GetSerializationStatement { get; }
+    public Serialization.Serialization.GetSerializationStatementDelegate GetSerializationStatement { get; }
 
-    public SerializationNode.GetDeserializationExpressionDelegate GetDeserializationExpression { get; }
+    public Serialization.Serialization.GetDeserializationExpressionDelegate GetDeserializationExpression { get; }
 
     public CustomSerializationNode(CustomSerializationInfo info)
     {

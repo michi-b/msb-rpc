@@ -1,5 +1,4 @@
 ﻿using System;
-using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Info;
@@ -21,8 +20,9 @@ internal static class SerializationKindExtensions
     private const string ReadDecimal = "." + Methods.BufferReaderReadDecimal + "()";
     private const string ReadString = "." + Methods.BufferReaderReadString + "()";
 
-    private static readonly SerializationNode.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement = (bufferWriterExpression, valueExpression)
-        => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
+    private static readonly Serialization.Serialization.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement =
+        (bufferWriterExpression, valueExpression)
+            => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
 
     public static bool TryGetKeyword(this DefaultSerializationKind serializationKind, out string keyword)
     {
@@ -41,14 +41,13 @@ internal static class SerializationKindExtensions
             DefaultSerializationKind.Float => "float",
             DefaultSerializationKind.Double => "double",
             DefaultSerializationKind.Decimal => "decimal",
-            DefaultSerializationKind.Void => "void",
             DefaultSerializationKind.String => "string",
             _ => throw new ArgumentOutOfRangeException(nameof(serializationKind), serializationKind, null)
         };
         return true;
     }
 
-    public static SerializationNode.GetSizeExpressionDelegate? GetGetSizeExpression(this DefaultSerializationKind target)
+    public static Serialization.Serialization.GetSizeExpressionDelegate? GetGetSizeExpression(this DefaultSerializationKind target)
     {
         return target switch
         {
@@ -66,16 +65,14 @@ internal static class SerializationKindExtensions
             DefaultSerializationKind.Double => _ => GlobalConstants.DoubleSize,
             DefaultSerializationKind.Decimal => _ => GlobalConstants.DecimalSize,
             DefaultSerializationKind.String => targetExpression => $"{Types.StringSerializer}.GetSize({targetExpression})",
-            DefaultSerializationKind.Void => null,
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
     }
 
-    public static SerializationNode.GetSerializationStatementDelegate? GetGetSerializationStatement(this DefaultSerializationKind target)
+    public static Serialization.Serialization.GetSerializationStatementDelegate? GetGetSerializationStatement(this DefaultSerializationKind target)
     {
         return target switch
         {
-            DefaultSerializationKind.Void => null,
             DefaultSerializationKind.Byte => DefaultSerializationTypeWriteStatement,
             DefaultSerializationKind.Sbyte => DefaultSerializationTypeWriteStatement,
             DefaultSerializationKind.Bool => DefaultSerializationTypeWriteStatement,
@@ -94,11 +91,10 @@ internal static class SerializationKindExtensions
         };
     }
 
-    public static SerializationNode.GetDeserializationExpressionDelegate? GetGetDeserializationExpression(this DefaultSerializationKind target)
+    public static Serialization.Serialization.GetDeserializationExpressionDelegate? GetGetDeserializationExpression(this DefaultSerializationKind target)
     {
         return target switch
         {
-            DefaultSerializationKind.Void => null,
             DefaultSerializationKind.Byte => bufferReaderExpression => bufferReaderExpression + ReadByte,
             DefaultSerializationKind.Sbyte => bufferReaderExpression => bufferReaderExpression + ReadSByte,
             DefaultSerializationKind.Bool => bufferReaderExpression => bufferReaderExpression + ReadBool,

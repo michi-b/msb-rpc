@@ -19,10 +19,11 @@ internal static class IndependentNames
 
     public static class Types
     {
-        // system types
+        // basic system types
         public const string VaLueTask = "System.Threading.Tasks.ValueTask";
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
         public const string IPEndPoint = "System.Net.IPEndPoint";
+        public const string Void = "System.Void";
 
         // messaging types
         public const string Messenger = "MsbRpc.Messaging.Messenger";
@@ -35,7 +36,6 @@ internal static class IndependentNames
         public const string Request = "MsbRpc.Serialization.Buffers.Request";
         public const string PrimitiveSerializer = "MsbRpc.Serialization.Primitives.PrimitiveSerializer";
         public const string StringSerializer = "MsbRpc.Serialization.StringSerializer";
-        public const string NullableStringSerializer = "MsbRpc.Serialization.NullableStringSerializer";
 
         // endpoint types
         public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";

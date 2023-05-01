@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
+using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
@@ -119,7 +120,7 @@ internal class InboundEndPointWriter : EndPointWriter
             string implementationCallStatement = $"{Fields.InboundEndpointImplementation}.{procedure.Name}({allValueArgumentsString});";
 
             //call the contract implementation
-            SerializationNode? resultSerialization = returnType.Serialization;
+            Serialization.Serialization? resultSerialization = returnType.Serialization;
             if (resultSerialization != null)
             {
                 writer.WriteLine($"{returnType.DeclarationSyntax} {Variables.Result};");

@@ -16,5 +16,4 @@ internal enum DefaultSerializationKind
     Double = 12,
     Decimal = 13,
     String = 14,
-    Void = 15
 }
