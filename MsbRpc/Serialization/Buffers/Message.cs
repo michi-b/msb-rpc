@@ -27,11 +27,11 @@ public readonly struct Message
 
     public int Length => Buffer.Count;
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferReader GetReader() => new(Buffer);
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BufferWriter GetWriter() => new(Buffer);
 

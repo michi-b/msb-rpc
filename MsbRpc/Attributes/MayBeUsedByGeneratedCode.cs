@@ -4,4 +4,4 @@ using JetBrains.Annotations;
 namespace MsbRpc.Attributes;
 
 [MeansImplicitUse(ImplicitUseKindFlags.Access)]
-internal class MayBeUsedByGeneratorAttribute : Attribute { }
+internal class MayBeUsedByGeneratedCode : Attribute { }

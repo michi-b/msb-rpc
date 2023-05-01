@@ -23,56 +23,50 @@ public struct BufferReader
         return position;
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public byte ReadByte() => _buffer.ReadByte(PostIncrementPosition(ByteSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public sbyte ReadSbyte() => _buffer.ReadSbyte(PostIncrementPosition(SbyteSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public bool ReadBool() => _buffer.ReadBool(PostIncrementPosition(BoolSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public char ReadChar() => _buffer.ReadChar(PostIncrementPosition(CharSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public int ReadInt() => _buffer.ReadInt(PostIncrementPosition(IntSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public long ReadLong() => _buffer.ReadLong(PostIncrementPosition(LongSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public short ReadShort() => _buffer.ReadShort(PostIncrementPosition(ShortSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public uint ReadUint() => _buffer.ReadUint(PostIncrementPosition(UintSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public ulong ReadUlong() => _buffer.ReadUlong(PostIncrementPosition(UlongSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public ushort ReadUshort() => _buffer.ReadUshort(PostIncrementPosition(UshortSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public float ReadFloat() => _buffer.ReadFloat(PostIncrementPosition(FloatSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public double ReadDouble() => _buffer.ReadDouble(PostIncrementPosition(DoubleSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public decimal ReadDecimal() => _buffer.ReadDecimal(PostIncrementPosition(DecimalSize));
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public string ReadString() => StringSerializer.ReadString(ref this);
 
-    public T? ReadNullable<T>(Func<T> readValue) where T : struct
-    {
-        if (ReadBool())
-        {
-            return readValue();
-        }
-        return null;
-    }
+    [MayBeUsedByGeneratedCode]
+    public T? ReadNullable<T>(Func<BufferReader, T> readValue) where T : struct => NullableSerializer<T>.Read(ref this, readValue);
 
     [PublicAPI]
     public ArraySegment<byte> ReadSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);

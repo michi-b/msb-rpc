@@ -11,7 +11,7 @@ using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-[MayBeUsedByGenerator]
+[MayBeUsedByGeneratedCode]
 public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where TProcedure : Enum
 {
     private readonly OutboundEndPointConfiguration _configuration;
@@ -30,7 +30,7 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
     private static RpcRequestException<TProcedure> GetConnectionDisposedException(TProcedure procedure)
         => new(procedure, "Connection disposed while waiting for the response.");
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     protected async ValueTask<Response> SendRequestAsync(Request request)
     {
         TProcedure procedure = GetProcedure(request.ProcedureId);
@@ -124,7 +124,7 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
         }
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     protected Message SendRequest(Request request)
     {
         Messenger.Send(new Message(request));

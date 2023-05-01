@@ -23,89 +23,93 @@ public struct BufferWriter
         return position;
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(byte value)
     {
         _buffer.WriteByte(value, PostIncrementPosition(ByteSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(sbyte value)
     {
         _buffer.WriteSbyte(value, PostIncrementPosition(SbyteSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(bool value)
     {
         _buffer.WriteBool(value, PostIncrementPosition(BoolSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(char value)
     {
         _buffer.WriteChar(value, PostIncrementPosition(CharSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(int value)
     {
         _buffer.WriteInt(value, PostIncrementPosition(IntSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(long value)
     {
         _buffer.WriteLong(value, PostIncrementPosition(LongSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(short value)
     {
         _buffer.WriteShort(value, PostIncrementPosition(ShortSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(uint value)
     {
         _buffer.WriteUint(value, PostIncrementPosition(UintSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(ulong value)
     {
         _buffer.WriteUlong(value, PostIncrementPosition(UlongSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(ushort value)
     {
         _buffer.WriteUshort(value, PostIncrementPosition(UshortSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(float value)
     {
         _buffer.WriteFloat(value, PostIncrementPosition(FloatSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(double value)
     {
         _buffer.WriteDouble(value, PostIncrementPosition(DoubleSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(decimal value)
     {
         _buffer.WriteDecimal(value, PostIncrementPosition(DecimalSize));
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     public void Write(string value)
     {
         StringSerializer.Write(ref this, value);
     }
+
+    [MayBeUsedByGeneratedCode]
+    public void WriteNullable<TValue>(TValue? value, Action<BufferWriter, TValue> writeValue) where TValue : struct
+        => NullableSerializer<TValue>.Write(ref this, value, writeValue);
 
     [PublicAPI]
     public ArraySegment<byte> GetWriteSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);

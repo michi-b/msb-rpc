@@ -33,7 +33,7 @@ public abstract class EndPoint<TProcedure> : Disposable.Disposable where TProced
         base.DisposeManagedResources();
     }
 
-    [MayBeUsedByGenerator]
+    [MayBeUsedByGeneratedCode]
     protected void AssertIsOperable()
     {
         if (IsDisposed)
