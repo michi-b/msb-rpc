@@ -28,21 +28,21 @@ internal class TypeNode
         bool isDefaultSerializableType = DefaultSerializationKindUtility.TryGetByName(typeInfo.Name, out DefaultSerializationKind defaultSerializationKind);
 
         DeclarationSyntax = isDefaultSerializableType && defaultSerializationKind.TryGetKeyword(out string keyword)
-            ? typeInfo.IsNullable ? keyword + '?' : keyword
-            : typeInfo.IsNullable
+            ? typeInfo.IsNullableReferenceType ? keyword + '?' : keyword
+            : typeInfo.IsNullableReferenceType
                 ? typeInfo.Name + '?'
                 : typeInfo.Name;
 
         if (customSerializations.TryGetValue(typeInfo.Name, out CustomSerializationNode? customSerialization))
         {
-            Serialization = new Serialization(customSerialization, typeInfo.IsNullable);
+            Serialization = new Serialization(customSerialization, typeInfo.IsNullableReferenceType);
             return;
         }
 
         if (isDefaultSerializableType)
 
         {
-            Serialization = new Serialization(defaultSerializationKind, typeInfo.IsNullable);
+            Serialization = new Serialization(defaultSerializationKind, typeInfo.IsNullableReferenceType);
         }
     }
 }

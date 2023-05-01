@@ -24,6 +24,7 @@ internal static class IndependentNames
         public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
         public const string IPEndPoint = "System.Net.IPEndPoint";
         public const string Void = "System.Void";
+        public const string Nullable = "System.Nullable";
 
         // messaging types
         public const string Messenger = "MsbRpc.Messaging.Messenger";

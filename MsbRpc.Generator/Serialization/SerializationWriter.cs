@@ -3,35 +3,47 @@ using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.Serialization;
 
-public class SerializationWriter
+public readonly struct SerializationWriter
 {
-    public delegate void WriteSizeExpressionDelegate(IndentedTextWriter writer, string targetExpression);
+    public delegate void SizeExpressionFactory(IndentedTextWriter writer, string targetExpression);
 
-    public delegate void WriteSerializationStatementDelegate(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
+    public delegate void SerializationStatementFactory(IndentedTextWriter writer, string bufferWriterExpression, string targetExpression);
 
-    public delegate void WriteDeserializationExpressionDelegate(IndentedTextWriter writer, string bufferReaderExpression);
+    public delegate void DeserializationExpressionFactory(IndentedTextWriter writer, string bufferReaderExpression);
 
-    private readonly WriteDeserializationExpressionDelegate _writeDeserializationExpression;
+    private readonly DeserializationExpressionFactory _deserializationExpressionFactory;
 
-    private readonly WriteSerializationStatementDelegate _writeSerializationStatement;
+    private readonly SerializationStatementFactory _serializationStatementFactory;
 
-    private readonly WriteSizeExpressionDelegate _writeSizeExpression;
+    private readonly SizeExpressionFactory _sizeExpressionFactory;
 
     public SerializationWriter(DefaultSerializationKind serializationKind)
     {
-        _writeSizeExpression = (writer, expression)
-            => writer.Write(serializationKind.GetGetSizeExpression().Invoke(expression));
-        _writeSerializationStatement = (writer, bufferWriterExpression, valueExpression)
-            => writer.Write(serializationKind.GetGetSerializationStatement().Invoke(bufferWriterExpression, valueExpression));
-        _writeDeserializationExpression = (writer, expression)
-            => writer.Write(serializationKind.GetGetDeserializationExpression().Invoke(expression));
+        _sizeExpressionFactory = (writer, expression)
+            => writer.Write(serializationKind.GetSizeExpressionStringFactory().Invoke(expression));
+        _serializationStatementFactory = (writer, bufferWriterExpression, valueExpression)
+            => writer.Write(serializationKind.GetSerializationStatementStringFactory().Invoke(bufferWriterExpression, valueExpression));
+        _deserializationExpressionFactory = (writer, expression)
+            => writer.Write(serializationKind.GetDeserializationExpressionStringFactory().Invoke(expression));
     }
 
-    public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression) => _writeSizeExpression(writer, targetExpression);
+    public SerializationWriter
+    (
+        SizeExpressionFactory sizeExpressionFactory,
+        SerializationStatementFactory serializationStatementFactory,
+        DeserializationExpressionFactory deserializationExpressionFactory
+    )
+    {
+        _sizeExpressionFactory = sizeExpressionFactory;
+        _serializationStatementFactory = serializationStatementFactory;
+        _deserializationExpressionFactory = deserializationExpressionFactory;
+    }
+
+    public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression) => _sizeExpressionFactory(writer, targetExpression);
 
     public void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression)
-        => _writeSerializationStatement(writer, bufferWriterExpression, valueExpression);
+        => _serializationStatementFactory(writer, bufferWriterExpression, valueExpression);
 
     public void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression)
-        => _writeDeserializationExpression(writer, bufferReaderExpression);
+        => _deserializationExpressionFactory(writer, bufferReaderExpression);
 }

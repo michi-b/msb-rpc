@@ -24,8 +24,7 @@ internal static class DefaultSerializationKindExtensions
     private const string ReadString = "." + Methods.BufferReaderReadString + "()";
 
     private static readonly GenerationTree.Serialization.GetSerializationStatementDelegate DefaultSerializationTypeWriteStatement =
-        (bufferWriterExpression, valueExpression)
-            => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
+        (bufferWriterExpression, valueExpression) => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
 
     private static readonly ReadOnlyDictionary<DefaultSerializationKind, string> Names;
 
@@ -84,7 +83,7 @@ internal static class DefaultSerializationKindExtensions
         return true;
     }
 
-    public static GenerationTree.Serialization.GetSizeExpressionDelegate GetGetSizeExpression(this DefaultSerializationKind target)
+    public static GenerationTree.Serialization.GetSizeExpressionDelegate GetSizeExpressionStringFactory(this DefaultSerializationKind target)
     {
         return target switch
         {
@@ -106,7 +105,7 @@ internal static class DefaultSerializationKindExtensions
         };
     }
 
-    public static GenerationTree.Serialization.GetSerializationStatementDelegate GetGetSerializationStatement(this DefaultSerializationKind target)
+    public static GenerationTree.Serialization.GetSerializationStatementDelegate GetSerializationStatementStringFactory(this DefaultSerializationKind target)
     {
         return target switch
         {
@@ -128,7 +127,7 @@ internal static class DefaultSerializationKindExtensions
         };
     }
 
-    public static GenerationTree.Serialization.GetDeserializationExpressionDelegate GetGetDeserializationExpression(this DefaultSerializationKind target)
+    public static GenerationTree.Serialization.GetDeserializationExpressionDelegate GetDeserializationExpressionStringFactory(this DefaultSerializationKind target)
     {
         return target switch
         {

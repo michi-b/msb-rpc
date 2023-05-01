@@ -18,9 +18,9 @@ internal class Serialization
 
     public Serialization(DefaultSerializationKind defaultSerializationKind, bool isNullable)
     {
-        GetSizeExpressionDelegate getSizeExpression = defaultSerializationKind.GetGetSizeExpression();
-        GetSerializationStatementDelegate getSerializationStatement = defaultSerializationKind.GetGetSerializationStatement();
-        GetDeserializationExpressionDelegate getDeserializationExpression = defaultSerializationKind.GetGetDeserializationExpression();
+        GetSizeExpressionDelegate getSizeExpression = defaultSerializationKind.GetSizeExpressionStringFactory();
+        GetSerializationStatementDelegate getSerializationStatement = defaultSerializationKind.GetSerializationStatementStringFactory();
+        GetDeserializationExpressionDelegate getDeserializationExpression = defaultSerializationKind.GetDeserializationExpressionStringFactory();
         _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
         _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
         _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;
