@@ -8,6 +8,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     ///     fully qualified type name
     /// </summary>
     public readonly string Name;
+
     public readonly TypeInfo TargetType;
     public readonly CustomSerializerKind Kind;
     public readonly string SerializationMethodName;

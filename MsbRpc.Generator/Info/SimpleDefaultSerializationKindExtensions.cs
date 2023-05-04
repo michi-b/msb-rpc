@@ -149,6 +149,6 @@ internal static class SimpleDefaultSerializationKindExtensions
         };
     }
 
-    public static TypeInfo GetTypeInfo(this SimpleDefaultSerializationKind simpleDefaultSerializationKind) 
+    public static TypeInfo GetTypeInfo(this SimpleDefaultSerializationKind simpleDefaultSerializationKind)
         => TypeInfo.CreateSimple(Names[simpleDefaultSerializationKind]);
 }
