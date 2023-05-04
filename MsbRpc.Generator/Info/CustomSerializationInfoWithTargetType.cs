@@ -7,7 +7,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     /// <summary>
     ///     fully qualified type name
     /// </summary>
-    public readonly string Name;
+    public readonly TypeInfo SerializerType;
 
     public readonly TypeInfo TargetType;
     public readonly CustomSerializerKind Kind;
@@ -17,7 +17,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
 
     public CustomSerializationInfoWithTargetType
     (
-        string name,
+        TypeInfo serializerType,
         TypeInfo targetType,
         CustomSerializerKind kind,
         string serializationMethodName,
@@ -25,7 +25,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
         string sizeMemberName
     )
     {
-        Name = name;
+        SerializerType = serializerType;
         TargetType = targetType;
         Kind = kind;
         SerializationMethodName = serializationMethodName;
@@ -34,7 +34,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     }
 
     public bool Equals(CustomSerializationInfoWithTargetType other)
-        => Name == other.Name
+        => SerializerType.Equals(other.SerializerType)
            && TargetType.Equals(other.TargetType)
            && Kind == other.Kind
            && SerializationMethodName == other.SerializationMethodName
@@ -47,7 +47,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     {
         unchecked
         {
-            int hashCode = Name.GetHashCode();
+            int hashCode = SerializerType.GetHashCode();
             hashCode = (hashCode * 397) ^ TargetType.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)Kind;
             hashCode = (hashCode * 397) ^ SerializationMethodName.GetHashCode();

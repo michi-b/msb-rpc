@@ -21,11 +21,10 @@ internal static class ConstantSizeSerializationInfoParser
         // "System.UInt64",
     };
 
-    /// <param name="serializerType">type that is attributed with "ConstantSizeSerializerAttribute"</param>
+    /// <param name="serializerTypeSymbol">type that is attributed with "ConstantSizeSerializerAttribute"</param>
     /// <param name="attribute">attribute data of type "ConstantSizeSerializerAttribute"</param>
-    public static CustomSerializationInfoWithTargetType? Parse(INamedTypeSymbol serializerType, AttributeData attribute)
+    public static CustomSerializationInfoWithTargetType? Parse(INamedTypeSymbol serializerTypeSymbol, AttributeData attribute)
     {
-        string name = serializerType.GetFullName();
         string? serializationMethodName = null;
         string? deserializationMethodName = null;
         string? sizeMemberName = null;
@@ -41,7 +40,7 @@ internal static class ConstantSizeSerializationInfoParser
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         // foreach is more readable to me here
-        foreach (ISymbol member in serializerType.GetMembers())
+        foreach (ISymbol member in serializerTypeSymbol.GetMembers())
         {
             Accessibility? accessibility = member.DeclaredAccessibility;
             if (accessibility != Accessibility.Public && accessibility != Accessibility.Internal)
@@ -78,7 +77,7 @@ internal static class ConstantSizeSerializationInfoParser
 
         return new CustomSerializationInfoWithTargetType
         (
-            name,
+            new TypeInfo(serializerTypeSymbol),
             new TypeInfo(targetTypeSymbol),
             CustomSerializerKind.ConstantSize,
             serializationMethodName!,

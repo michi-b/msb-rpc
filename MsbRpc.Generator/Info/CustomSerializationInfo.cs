@@ -4,11 +4,7 @@ namespace MsbRpc.Generator.Info;
 
 public readonly struct CustomSerializationInfo : IEquatable<CustomSerializationInfo>
 {
-    /// <summary>
-    ///     fully qualified type name
-    /// </summary>
-    public readonly string Name;
-
+    public readonly TypeInfo SerializerType;
     public readonly CustomSerializerKind Kind;
     public readonly string SerializationMethodName;
     public readonly string DeserializationMethodName;
@@ -16,7 +12,7 @@ public readonly struct CustomSerializationInfo : IEquatable<CustomSerializationI
 
     public CustomSerializationInfo(CustomSerializationInfoWithTargetType info)
     {
-        Name = info.Name;
+        SerializerType = info.SerializerType;
         Kind = info.Kind;
         SerializationMethodName = info.SerializationMethodName;
         DeserializationMethodName = info.DeserializationMethodName;
@@ -24,7 +20,7 @@ public readonly struct CustomSerializationInfo : IEquatable<CustomSerializationI
     }
 
     public bool Equals(CustomSerializationInfo other)
-        => Name == other.Name
+        => SerializerType.Equals(other.SerializerType)
            && Kind == other.Kind
            && SerializationMethodName == other.SerializationMethodName
            && DeserializationMethodName == other.DeserializationMethodName
@@ -36,7 +32,7 @@ public readonly struct CustomSerializationInfo : IEquatable<CustomSerializationI
     {
         unchecked
         {
-            int hashCode = Name.GetHashCode();
+            int hashCode = SerializerType.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)Kind;
             hashCode = (hashCode * 397) ^ SerializationMethodName.GetHashCode();
             hashCode = (hashCode * 397) ^ DeserializationMethodName.GetHashCode();

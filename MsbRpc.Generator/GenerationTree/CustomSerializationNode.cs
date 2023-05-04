@@ -18,9 +18,9 @@ internal class CustomSerializationNode
         switch (info.Kind)
         {
             case CustomSerializerKind.ConstantSize:
-                string sizeExpression = $"{info.Name}.{info.SizeMemberName}";
-                string serializationMethodOpen = $"{info.Name}.{info.SerializationMethodName}(";
-                string deserializationMethodOpen = $"{info.Name}.{info.DeserializationMethodName}(";
+                string sizeExpression = $"{info.SerializerType.Name}.{info.SizeMemberName}";
+                string serializationMethodOpen = $"{info.SerializerType.Name}.{info.SerializationMethodName}(";
+                string deserializationMethodOpen = $"{info.SerializerType.Name}.{info.DeserializationMethodName}(";
                 GetSizeExpression = _ => sizeExpression;
                 GetSerializationStatement = (bufferWriterExpression, valueExpression)
                     => $"{serializationMethodOpen}{bufferWriterExpression}, {valueExpression}{StatementClose}";
