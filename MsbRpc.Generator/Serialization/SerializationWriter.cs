@@ -17,7 +17,7 @@ public readonly struct SerializationWriter
 
     private readonly SizeExpressionFactory _sizeExpressionFactory;
 
-    public SerializationWriter(DefaultSerializationKind serializationKind)
+    public SerializationWriter(SimpleDefaultSerializationKind serializationKind)
     {
         _sizeExpressionFactory = (writer, expression)
             => writer.Write(serializationKind.GetSizeExpressionStringFactory().Invoke(expression));

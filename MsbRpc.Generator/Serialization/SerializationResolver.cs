@@ -8,41 +8,40 @@ namespace MsbRpc.Generator.Serialization;
 
 public class SerializationResolver
 {
-    private static readonly ReadOnlyDictionary<string, SerializationWriter> DefaultSerializations;
-    private readonly Dictionary<string, SerializationWriter> _serializationWriters;
-    private readonly Dictionary<string, GenericSerializationWriterFactory> _genericSerializationWriterFactories;
+    private static readonly ReadOnlyDictionary<TypeInfo, SerializationWriter> DefaultSerializations;
+    private readonly Dictionary<TypeInfo, GenericSerializationWriterFactory> _genericSerializationWriterFactories;
     private readonly Dictionary<TypeInfo, SerializationWriter> _genericSerializationWriters;
+    private readonly Dictionary<TypeInfo, SerializationWriter> _serializationWriters;
 
     static SerializationResolver()
     {
-        var defaultSerializations = new Dictionary<string, SerializationWriter>(100);
+        var defaultSerializations = new Dictionary<TypeInfo, SerializationWriter>(100);
 
-        foreach (DefaultSerializationKind serializationKind in DefaultSerializationKindUtility.All)
+        foreach (SimpleDefaultSerializationKind serializationKind in SimpleDefaultSerializationKindUtility.All)
         {
-            defaultSerializations.Add(serializationKind.GetName(), new SerializationWriter(serializationKind));
+            defaultSerializations.Add(serializationKind.GetTypeInfo(), new SerializationWriter(serializationKind));
         }
 
-        DefaultSerializations = new ReadOnlyDictionary<string, SerializationWriter>(defaultSerializations);
+        DefaultSerializations = new ReadOnlyDictionary<TypeInfo, SerializationWriter>(defaultSerializations);
     }
 
-    public SerializationResolver
-        (ImmutableArray<CustomSerializationInfo> customSerializations)
+    public SerializationResolver(ImmutableArray<CustomSerializationInfo> customSerializations)
     {
-        _serializationWriters = new Dictionary<string, SerializationWriter>(DefaultSerializations);
-        _genericSerializationWriterFactories = new Dictionary<string, GenericSerializationWriterFactory>();
+        _serializationWriters = new Dictionary<TypeInfo, SerializationWriter>(DefaultSerializations);
+        _genericSerializationWriterFactories = new Dictionary<TypeInfo, GenericSerializationWriterFactory>();
         _genericSerializationWriters = new Dictionary<TypeInfo, SerializationWriter>();
     }
 
     public bool TryGetSerializationWriter(TypeInfo typeInfo, out SerializationWriter serializationWriter)
     {
-        if(typeInfo.TypeArguments.Count > 0)
+        if (typeInfo.TypeArguments.Count > 0)
         {
-            if(_genericSerializationWriters.TryGetValue(typeInfo, out serializationWriter))
+            if (_genericSerializationWriters.TryGetValue(typeInfo, out serializationWriter))
             {
                 return true;
             }
-            
-            if (_genericSerializationWriterFactories.TryGetValue(typeInfo.Name, out GenericSerializationWriterFactory genericSerializationWriterFactory))
+
+            if (_genericSerializationWriterFactories.TryGetValue(typeInfo, out GenericSerializationWriterFactory genericSerializationWriterFactory))
             {
                 if (genericSerializationWriterFactory.TryInstantiate(this, typeInfo.TypeArguments, out serializationWriter))
                 {
@@ -53,11 +52,13 @@ public class SerializationResolver
 
             return false;
         }
-        return _serializationWriters.TryGetValue(typeInfo.Name, out serializationWriter);
+
+        return _serializationWriters.TryGetValue(typeInfo, out serializationWriter);
     }
 
-    public SerializationWriter GetSerializationWriter(DefaultSerializationKind defaultSerializationKind) => _serializationWriters[defaultSerializationKind.GetName()];
+    public SerializationWriter GetSerializationWriter(SimpleDefaultSerializationKind simpleDefaultSerializationKind)
+        => _serializationWriters[simpleDefaultSerializationKind.GetTypeInfo()];
 
-    public bool TryGetGenericSerializationWriterFactory(string name, out GenericSerializationWriterFactory resGenericSerializationWriterFactory) 
-        => _genericSerializationWriterFactories.TryGetValue(name, out resGenericSerializationWriterFactory);
+    public bool TryGetGenericSerializationWriterFactory(TypeInfo typeInfo, out GenericSerializationWriterFactory resGenericSerializationWriterFactory)
+        => _genericSerializationWriterFactories.TryGetValue(typeInfo, out resGenericSerializationWriterFactory);
 }

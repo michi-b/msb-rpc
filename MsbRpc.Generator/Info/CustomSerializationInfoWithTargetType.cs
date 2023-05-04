@@ -8,8 +8,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     ///     fully qualified type name
     /// </summary>
     public readonly string Name;
-
-    public readonly string TargetTypeName;
+    public readonly TypeInfo TargetType;
     public readonly CustomSerializerKind Kind;
     public readonly string SerializationMethodName;
     public readonly string DeserializationMethodName;
@@ -18,7 +17,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     public CustomSerializationInfoWithTargetType
     (
         string name,
-        string targetTypeName,
+        TypeInfo targetType,
         CustomSerializerKind kind,
         string serializationMethodName,
         string deserializationMethodName,
@@ -26,7 +25,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     )
     {
         Name = name;
-        TargetTypeName = targetTypeName;
+        TargetType = targetType;
         Kind = kind;
         SerializationMethodName = serializationMethodName;
         DeserializationMethodName = deserializationMethodName;
@@ -35,7 +34,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
 
     public bool Equals(CustomSerializationInfoWithTargetType other)
         => Name == other.Name
-           && TargetTypeName == other.TargetTypeName
+           && TargetType.Equals(other.TargetType)
            && Kind == other.Kind
            && SerializationMethodName == other.SerializationMethodName
            && DeserializationMethodName == other.DeserializationMethodName
@@ -48,7 +47,7 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
         unchecked
         {
             int hashCode = Name.GetHashCode();
-            hashCode = (hashCode * 397) ^ TargetTypeName.GetHashCode();
+            hashCode = (hashCode * 397) ^ TargetType.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)Kind;
             hashCode = (hashCode * 397) ^ SerializationMethodName.GetHashCode();
             hashCode = (hashCode * 397) ^ DeserializationMethodName.GetHashCode();

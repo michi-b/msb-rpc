@@ -15,7 +15,7 @@ internal class TypeNode
     public readonly bool IsVoid;
     public readonly Serialization? Serialization;
 
-    public TypeNode(TypeInfo typeInfo, IReadOnlyDictionary<string, CustomSerializationNode> customSerializations)
+    public TypeNode(TypeInfo typeInfo, IReadOnlyDictionary<TypeInfo, CustomSerializationNode> customSerializations)
     {
         IsVoid = typeInfo.Name == IndependentNames.Types.Void;
 
@@ -25,7 +25,7 @@ internal class TypeNode
             return;
         }
 
-        bool isDefaultSerializableType = DefaultSerializationKindUtility.TryGetByName(typeInfo.Name, out DefaultSerializationKind defaultSerializationKind);
+        bool isDefaultSerializableType = SimpleDefaultSerializationKindUtility.TryGet(typeInfo, out SimpleDefaultSerializationKind defaultSerializationKind);
 
         DeclarationSyntax = isDefaultSerializableType && defaultSerializationKind.TryGetKeyword(out string keyword)
             ? typeInfo.IsNullableReferenceType ? keyword + '?' : keyword
@@ -33,7 +33,7 @@ internal class TypeNode
                 ? typeInfo.Name + '?'
                 : typeInfo.Name;
 
-        if (customSerializations.TryGetValue(typeInfo.Name, out CustomSerializationNode? customSerialization))
+        if (customSerializations.TryGetValue(typeInfo, out CustomSerializationNode? customSerialization))
         {
             Serialization = new Serialization(customSerialization, typeInfo.IsNullableReferenceType);
             return;

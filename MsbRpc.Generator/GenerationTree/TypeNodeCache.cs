@@ -10,13 +10,13 @@ internal class TypeNodeCache
 {
     private readonly Dictionary<TypeInfo, TypeNode> _cache = new();
 
-    private readonly IReadOnlyDictionary<string, CustomSerializationNode> _customSerializations;
+    private readonly IReadOnlyDictionary<TypeInfo, CustomSerializationNode> _customSerializations;
 
-    public TypeNodeCache(ImmutableDictionary<string, CustomSerializationInfo> customSerializationInfos)
+    public TypeNodeCache(ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializationInfos)
     {
-        Dictionary<string, CustomSerializationNode> customSerializations = customSerializationInfos
+        Dictionary<TypeInfo, CustomSerializationNode> customSerializations = customSerializationInfos
             .ToDictionary(pair => pair.Key, pair => new CustomSerializationNode(pair.Value));
-        _customSerializations = new ReadOnlyDictionary<string, CustomSerializationNode>(customSerializations);
+        _customSerializations = new ReadOnlyDictionary<TypeInfo, CustomSerializationNode>(customSerializations);
     }
 
     public TypeNode GetOrAdd(TypeInfo typeInfo)

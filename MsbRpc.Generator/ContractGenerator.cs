@@ -9,6 +9,7 @@ using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Utility;
+using TypeInfo = MsbRpc.Generator.Info.TypeInfo;
 
 namespace MsbRpc.Generator;
 
@@ -29,7 +30,7 @@ public class ContractGenerator : IIncrementalGenerator
             .Collect()
             .SelectMany((infos, _) => infos.Distinct(TargetComparer.Instance));
 
-        IncrementalValueProvider<ImmutableDictionary<string, CustomSerializationInfo>> customSerializations = context.SyntaxProvider.CreateSyntaxProvider
+        IncrementalValueProvider<ImmutableDictionary<TypeInfo, CustomSerializationInfo>> customSerializations = context.SyntaxProvider.CreateSyntaxProvider
             (
                 GeneratorUtility.GetIsAttributedNonInterfaceTypeDeclarationSyntax,
                 GeneratorUtility.GetCustomSerializerInfos
@@ -43,34 +44,35 @@ public class ContractGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(rpcContracts, Generate);
     }
 
-    private static ImmutableDictionary<string, CustomSerializationInfo> CreateCustomSerializationsDictionary(ImmutableArray<CustomSerializationInfoWithTargetType> infos)
+    private static ImmutableDictionary<TypeInfo, CustomSerializationInfo> CreateCustomSerializationsDictionary
+        (ImmutableArray<CustomSerializationInfoWithTargetType> infos)
     {
-        ImmutableDictionary<string, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<string, CustomSerializationInfo>();
+        ImmutableDictionary<TypeInfo, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<TypeInfo, CustomSerializationInfo>();
         foreach (CustomSerializationInfoWithTargetType info in infos)
         {
-            builder.Add(info.TargetTypeName, new CustomSerializationInfo(info));
+            builder.Add(info.TargetType, new CustomSerializationInfo(info));
         }
 
         return builder.ToImmutable();
     }
 
     private static ContractInfo GetContractWithUsedCustomSerializations
-        ((ContractInfo contract, ImmutableDictionary<string, CustomSerializationInfo> customSerializations) tuple, CancellationToken _)
+        ((ContractInfo contract, ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializations) tuple, CancellationToken _)
     {
         ContractInfo contract = tuple.contract;
-        ImmutableDictionary<string, CustomSerializationInfo> customSerializations = tuple.customSerializations;
-        ImmutableDictionary<string, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<string, CustomSerializationInfo>();
+        ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializations = tuple.customSerializations;
+        ImmutableDictionary<TypeInfo, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<TypeInfo, CustomSerializationInfo>();
         foreach (ProcedureInfo procedure in contract.Procedures)
         {
             foreach (ParameterInfo parameter in procedure.Parameters)
             {
-                builder.MirrorDistinct(customSerializations, parameter.Type.Name);
+                builder.MirrorDistinct(customSerializations, parameter.Type);
             }
 
-            builder.MirrorDistinct(customSerializations, procedure.ReturnType.Name);
+            builder.MirrorDistinct(customSerializations, procedure.ReturnType);
         }
 
-        ImmutableDictionary<string, CustomSerializationInfo> usedSerializations = builder.ToImmutable();
+        ImmutableDictionary<TypeInfo, CustomSerializationInfo> usedSerializations = builder.ToImmutable();
 
         return tuple.contract.WithCustomSerializations(usedSerializations);
     }

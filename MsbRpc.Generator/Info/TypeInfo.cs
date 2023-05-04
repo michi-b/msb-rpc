@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Extensions;
@@ -12,27 +11,26 @@ public readonly struct TypeInfo : IEquatable<TypeInfo>
     /// <summary>
     ///     the fully qualified reference name of the type, without any type arguments
     /// </summary>
-    public string Name { get; }
+    public string Name { get; } = string.Empty;
 
-    public bool IsNullableReferenceType { get; }
+    public bool IsNullableReferenceType { get; } = false;
 
-    public ImmutableList<TypeInfo> TypeArguments { get; }
+    public ImmutableList<TypeInfo> TypeArguments { get; } = ImmutableList<TypeInfo>.Empty;
 
-    private static TypeInfo CreateTypeInfo(ITypeSymbol typeSymbol)
+    private static TypeInfo Create(ITypeSymbol typeSymbol)
         => typeSymbol is INamedTypeSymbol namedTypeSymbol
             ? new TypeInfo(namedTypeSymbol)
-            : new TypeInfo(typeSymbol);
+            : new TypeInfo();
 
-    /// <summary>
-    ///     ONLY to be used for non-named types
-    /// </summary>
-    private TypeInfo(ITypeSymbol typeSymbol)
+    private TypeInfo(string name, bool isNullableReferenceType, ImmutableList<TypeInfo> typeArguments)
     {
-        Debug.Assert(typeSymbol is not INamedTypeSymbol);
-        TypeArguments = ImmutableList<TypeInfo>.Empty;
-        Name = string.Empty;
-        IsNullableReferenceType = false;
+        Name = name;
+        IsNullableReferenceType = isNullableReferenceType;
+        TypeArguments = typeArguments;
     }
+
+    //create a simple type info, e.g. int, string, etc.
+    public static TypeInfo CreateSimple(string fullyQualifiedReferenceName) => new(fullyQualifiedReferenceName, false, ImmutableList<TypeInfo>.Empty);
 
     public TypeInfo(INamedTypeSymbol typeSymbol)
     {
@@ -44,7 +42,7 @@ public readonly struct TypeInfo : IEquatable<TypeInfo>
         // I find the non-Linq loop more readable
         foreach (ITypeSymbol typeArgument in originalDefinition.TypeArguments)
         {
-            typeArguments = typeArguments.Add(CreateTypeInfo(typeArgument));
+            typeArguments = typeArguments.Add(Create(typeArgument));
         }
 
         TypeArguments = typeArguments;

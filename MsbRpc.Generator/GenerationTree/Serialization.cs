@@ -16,11 +16,11 @@ internal class Serialization
 
     private readonly GetSizeExpressionDelegate _getSizeExpression;
 
-    public Serialization(DefaultSerializationKind defaultSerializationKind, bool isNullable)
+    public Serialization(SimpleDefaultSerializationKind simpleDefaultSerializationKind, bool isNullable)
     {
-        GetSizeExpressionDelegate getSizeExpression = defaultSerializationKind.GetSizeExpressionStringFactory();
-        GetSerializationStatementDelegate getSerializationStatement = defaultSerializationKind.GetSerializationStatementStringFactory();
-        GetDeserializationExpressionDelegate getDeserializationExpression = defaultSerializationKind.GetDeserializationExpressionStringFactory();
+        GetSizeExpressionDelegate getSizeExpression = simpleDefaultSerializationKind.GetSizeExpressionStringFactory();
+        GetSerializationStatementDelegate getSerializationStatement = simpleDefaultSerializationKind.GetSerializationStatementStringFactory();
+        GetDeserializationExpressionDelegate getDeserializationExpression = simpleDefaultSerializationKind.GetDeserializationExpressionStringFactory();
         _getSizeExpression = isNullable ? GetNullableSizeExpression(getSizeExpression) : getSizeExpression;
         _getSerializationStatement = isNullable ? GetNullableSerializationStatement(getSerializationStatement) : getSerializationStatement;
         _getDeserializationExpression = isNullable ? GetNullableDeserializationExpression(getDeserializationExpression) : getDeserializationExpression;

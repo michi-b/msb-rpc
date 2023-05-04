@@ -34,12 +34,10 @@ internal static class ConstantSizeSerializationInfoParser
         IEnumerable<KeyValuePair<string, TypedConstant>> attributeArguments = attribute.GetArguments();
         TypedConstant typeArgument = attributeArguments.First(argument => argument.Key == "type").Value;
 
-        if (typeArgument.Value is not INamedTypeSymbol targetType)
+        if (typeArgument.Value is not INamedTypeSymbol targetTypeSymbol)
         {
             return null;
         }
-
-        string targetTypeName = targetType.GetFullName();
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         // foreach is more readable to me here
@@ -53,12 +51,12 @@ internal static class ConstantSizeSerializationInfoParser
 
             if (!areMethodsResolved && member is IMethodSymbol { IsStatic: true } staticMethod)
             {
-                if (serializationMethodName == null && staticMethod.IsSerializationMethod(targetType))
+                if (serializationMethodName == null && staticMethod.IsSerializationMethod(targetTypeSymbol))
                 {
                     serializationMethodName = staticMethod.Name;
                     areMethodsResolved = deserializationMethodName != null;
                 }
-                else if (deserializationMethodName == null && staticMethod.IsDeserializationMethod(targetType))
+                else if (deserializationMethodName == null && staticMethod.IsDeserializationMethod(targetTypeSymbol))
                 {
                     deserializationMethodName = staticMethod.Name;
                     areMethodsResolved = serializationMethodName != null;
@@ -81,7 +79,7 @@ internal static class ConstantSizeSerializationInfoParser
         return new CustomSerializationInfoWithTargetType
         (
             name,
-            targetTypeName,
+            new TypeInfo(targetTypeSymbol),
             CustomSerializerKind.ConstantSize,
             serializationMethodName!,
             deserializationMethodName!,

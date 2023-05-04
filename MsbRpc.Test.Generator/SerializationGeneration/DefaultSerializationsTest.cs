@@ -15,7 +15,7 @@ public class DefaultSerializationsTest : Base.Test
     public void TestStringSerialization()
     {
         using IndentedTextWriter textWriter = CreateTextWriter();
-        GetSerializationWriter(DefaultSerializationKind.Bool).WriteSizeExpression(textWriter, "myBool");
+        GetSerializationWriter(SimpleDefaultSerializationKind.Bool).WriteSizeExpression(textWriter, "myBool");
         Assert.AreEqual("MsbRpc.Serialization.Primitives.PrimitiveSerializer.BoolSize", GetTextWriterResult(textWriter));
     }
 
@@ -23,7 +23,7 @@ public class DefaultSerializationsTest : Base.Test
     public void HasAllDefaultSerializations()
     {
         SerializationResolver resolver = CreateResolver();
-        foreach (DefaultSerializationKind serializationKind in DefaultSerializationKindUtility.All)
+        foreach (SimpleDefaultSerializationKind serializationKind in SimpleDefaultSerializationKindUtility.All)
         {
             SerializationWriter serializationWriter = resolver.GetSerializationWriter(serializationKind);
             Assert.IsNotNull(serializationWriter);
@@ -36,5 +36,7 @@ public class DefaultSerializationsTest : Base.Test
 
     private static SerializationResolver CreateResolver() => new(ImmutableArray<CustomSerializationInfo>.Empty);
 
-    private static SerializationWriter GetSerializationWriter(DefaultSerializationKind serializationKind) => CreateResolver().GetSerializationWriter(serializationKind);
+    private static SerializationWriter GetSerializationWriter
+        (SimpleDefaultSerializationKind serializationKind)
+        => CreateResolver().GetSerializationWriter(serializationKind);
 }
