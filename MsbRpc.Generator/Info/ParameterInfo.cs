@@ -7,15 +7,15 @@ namespace MsbRpc.Generator.Info;
 internal readonly struct ParameterInfo : IEquatable<ParameterInfo>
 {
     public string Name { get; }
-    public TypeInfo Type { get; }
+    public TypeReferenceInfo TypeReference { get; }
 
     public ParameterInfo(IParameterSymbol parameter)
     {
         Name = parameter.Name.PascalToCamelCase();
-        Type = new TypeInfo((INamedTypeSymbol)parameter.Type);
+        TypeReference = new TypeReferenceInfo((INamedTypeSymbol)parameter.Type);
     }
 
-    public bool Equals(ParameterInfo other) => Name == other.Name && Type.Equals(other.Type);
+    public bool Equals(ParameterInfo other) => Name == other.Name && TypeReference.Equals(other.TypeReference);
 
     public override bool Equals(object? obj) => obj is ParameterInfo other && Equals(other);
 
@@ -23,7 +23,7 @@ internal readonly struct ParameterInfo : IEquatable<ParameterInfo>
     {
         unchecked
         {
-            return (Name.GetHashCode() * 397) ^ Type.GetHashCode();
+            return (Name.GetHashCode() * 397) ^ TypeReference.GetHashCode();
         }
     }
 }

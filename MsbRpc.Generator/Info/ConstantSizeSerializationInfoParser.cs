@@ -77,8 +77,8 @@ internal static class ConstantSizeSerializationInfoParser
 
         return new CustomSerializationInfoWithTargetType
         (
-            new TypeInfo(serializerTypeSymbol),
-            new TypeInfo(targetTypeSymbol),
+            new TypeReferenceInfo(serializerTypeSymbol),
+            new TypeReferenceInfo(targetTypeSymbol),
             CustomSerializerKind.ConstantSize,
             serializationMethodName!,
             deserializationMethodName!,

@@ -8,8 +8,8 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
+using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
-using TypeInfo = MsbRpc.Generator.Info.TypeInfo;
 
 namespace MsbRpc.Generator;
 
@@ -30,7 +30,7 @@ public class ContractGenerator : IIncrementalGenerator
             .Collect()
             .SelectMany((infos, _) => infos.Distinct(TargetComparer.Instance));
 
-        IncrementalValueProvider<ImmutableDictionary<TypeInfo, CustomSerializationInfo>> customSerializations = context.SyntaxProvider.CreateSyntaxProvider
+        IncrementalValueProvider<ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo>> customSerializations = context.SyntaxProvider.CreateSyntaxProvider
             (
                 GeneratorUtility.GetIsAttributedNonInterfaceTypeDeclarationSyntax,
                 GeneratorUtility.GetCustomSerializerInfos
@@ -44,35 +44,35 @@ public class ContractGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(rpcContracts, Generate);
     }
 
-    private static ImmutableDictionary<TypeInfo, CustomSerializationInfo> CreateCustomSerializationsDictionary
+    private static ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> CreateCustomSerializationsDictionary
         (ImmutableArray<CustomSerializationInfoWithTargetType> infos)
     {
-        ImmutableDictionary<TypeInfo, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<TypeInfo, CustomSerializationInfo>();
+        ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<TypeReferenceInfo, CustomSerializationInfo>();
         foreach (CustomSerializationInfoWithTargetType info in infos)
         {
-            builder.Add(info.TargetType, new CustomSerializationInfo(info));
+            builder.Add(info.TargetTypeReference, new CustomSerializationInfo(info));
         }
 
         return builder.ToImmutable();
     }
 
     private static ContractInfo GetContractWithUsedCustomSerializations
-        ((ContractInfo contract, ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializations) tuple, CancellationToken _)
+        ((ContractInfo contract, ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> customSerializations) tuple, CancellationToken _)
     {
         ContractInfo contract = tuple.contract;
-        ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializations = tuple.customSerializations;
-        ImmutableDictionary<TypeInfo, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<TypeInfo, CustomSerializationInfo>();
+        ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> customSerializations = tuple.customSerializations;
+        ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo>.Builder builder = ImmutableDictionary.CreateBuilder<TypeReferenceInfo, CustomSerializationInfo>();
         foreach (ProcedureInfo procedure in contract.Procedures)
         {
             foreach (ParameterInfo parameter in procedure.Parameters)
             {
-                builder.MirrorDistinct(customSerializations, parameter.Type);
+                builder.MirrorDistinct(customSerializations, parameter.TypeReference);
             }
 
-            builder.MirrorDistinct(customSerializations, procedure.ReturnType);
+            builder.MirrorDistinct(customSerializations, procedure.ResultType);
         }
 
-        ImmutableDictionary<TypeInfo, CustomSerializationInfo> usedSerializations = builder.ToImmutable();
+        ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> usedSerializations = builder.ToImmutable();
 
         return tuple.contract.WithCustomSerializations(usedSerializations);
     }
@@ -104,18 +104,17 @@ public class ContractGenerator : IIncrementalGenerator
             {
                 foreach (ParameterNode parameter in parameters)
                 {
-                    TypeNode parameterType = parameter.Type;
-
-                    if (parameterType.Serialization is null)
+                    ISerialization serialization = parameter.Serialization;
+                    if (serialization.GetCanHandleRpcArguments())
                     {
                         context.ReportTypeIsNotAValidRpcParameter(contract, procedure, parameter);
                     }
                 }
             }
 
-            TypeNode returnType = procedure.ReturnType;
+            ISerialization resultSerialization = procedure.ResultSerialization;
 
-            if (returnType.Serialization is null && returnType.IsVoid is false)
+            if (!resultSerialization.GetCanHandleRpcResults())
             {
                 context.ReportTypeIsNotAValidRpcReturnType(contract, procedure);
             }

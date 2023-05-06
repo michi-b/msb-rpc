@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
-using MsbRpc.Generator.Utility;
+using MsbRpc.Generator.Serialization.Default;
 
 namespace MsbRpc.Test.Generator.SerializationGeneration;
 
@@ -15,8 +15,9 @@ public class DefaultSerializationsTest : Base.Test
     public void TestStringSerialization()
     {
         using IndentedTextWriter textWriter = CreateTextWriter();
-        GetSerializationWriter(SimpleDefaultSerializationKind.Bool).WriteSizeExpression(textWriter, "myBool");
+        GetSerialization(SimpleDefaultSerializationKind.Bool).WriteSizeExpression(textWriter, "myBool");
         Assert.AreEqual("MsbRpc.Serialization.Primitives.PrimitiveSerializer.BoolSize", GetTextWriterResult(textWriter));
+        //todo: fix        
     }
 
     [TestMethod]
@@ -25,8 +26,8 @@ public class DefaultSerializationsTest : Base.Test
         SerializationResolver resolver = CreateResolver();
         foreach (SimpleDefaultSerializationKind serializationKind in SimpleDefaultSerializationKindUtility.All)
         {
-            SerializationWriter serializationWriter = resolver.GetSerializationWriter(serializationKind);
-            Assert.IsNotNull(serializationWriter);
+            ISerialization serialization = resolver.Resolve(serializationKind.GetTargetType());
+            Assert.IsNotNull(serialization);
         }
     }
 
@@ -36,7 +37,5 @@ public class DefaultSerializationsTest : Base.Test
 
     private static SerializationResolver CreateResolver() => new(ImmutableArray<CustomSerializationInfo>.Empty);
 
-    private static SerializationWriter GetSerializationWriter
-        (SimpleDefaultSerializationKind serializationKind)
-        => CreateResolver().GetSerializationWriter(serializationKind);
+    private static ISerialization GetSerialization(SimpleDefaultSerializationKind serializationKind) => CreateResolver().Resolve(serializationKind.GetTargetType());
 }

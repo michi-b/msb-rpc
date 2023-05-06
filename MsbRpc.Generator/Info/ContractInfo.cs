@@ -10,7 +10,7 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
     public readonly string Namespace;
     public readonly ImmutableArray<ProcedureInfo> Procedures;
     public readonly RpcContractType ContractType;
-    public readonly ImmutableDictionary<TypeInfo, CustomSerializationInfo> CustomSerializations;
+    public readonly ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> CustomSerializations;
 
     public ContractInfo
     (
@@ -24,12 +24,12 @@ internal readonly struct ContractInfo : IEquatable<ContractInfo>
         Namespace = namespaceName;
         Procedures = procedures;
         ContractType = contractType;
-        CustomSerializations = ImmutableDictionary<TypeInfo, CustomSerializationInfo>.Empty;
+        CustomSerializations = ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo>.Empty;
     }
 
-    public ContractInfo WithCustomSerializations(ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializations) => new(this, customSerializations);
+    public ContractInfo WithCustomSerializations(ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> customSerializations) => new(this, customSerializations);
 
-    private ContractInfo(ContractInfo other, ImmutableDictionary<TypeInfo, CustomSerializationInfo> customSerializations)
+    private ContractInfo(ContractInfo other, ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> customSerializations)
     {
         InterfaceName = other.InterfaceName;
         Namespace = other.Namespace;

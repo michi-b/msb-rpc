@@ -25,6 +25,7 @@ internal static class IndependentNames
         public const string IPEndPoint = "System.Net.IPEndPoint";
         public const string Void = "System.Void";
         public const string Nullable = "System.Nullable";
+        public const string NullableSerializer = "MsbRpc.Serialization.NullableSerializer";
 
         // messaging types
         public const string Messenger = "MsbRpc.Messaging.Messenger";
@@ -94,6 +95,10 @@ internal static class IndependentNames
         public const string BufferReaderReadDouble = "ReadDouble";
         public const string BufferReaderReadDecimal = "ReadDecimal";
         public const string BufferReaderReadString = "ReadString";
+        
+        public const string SerializerGetSize = "GetSize";
+        public const string SerializerWrite = "Write";
+        public const string SerializerRead = "Read";
     }
 
     public static class Parameters

@@ -7,9 +7,9 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     /// <summary>
     ///     fully qualified type name
     /// </summary>
-    public readonly TypeInfo SerializerType;
+    public readonly TypeReferenceInfo SerializerTypeReference;
 
-    public readonly TypeInfo TargetType;
+    public readonly TypeReferenceInfo TargetTypeReference;
     public readonly CustomSerializerKind Kind;
     public readonly string SerializationMethodName;
     public readonly string DeserializationMethodName;
@@ -17,16 +17,16 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
 
     public CustomSerializationInfoWithTargetType
     (
-        TypeInfo serializerType,
-        TypeInfo targetType,
+        TypeReferenceInfo serializerTypeReference,
+        TypeReferenceInfo targetTypeReference,
         CustomSerializerKind kind,
         string serializationMethodName,
         string deserializationMethodName,
         string sizeMemberName
     )
     {
-        SerializerType = serializerType;
-        TargetType = targetType;
+        SerializerTypeReference = serializerTypeReference;
+        TargetTypeReference = targetTypeReference;
         Kind = kind;
         SerializationMethodName = serializationMethodName;
         DeserializationMethodName = deserializationMethodName;
@@ -34,8 +34,8 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     }
 
     public bool Equals(CustomSerializationInfoWithTargetType other)
-        => SerializerType.Equals(other.SerializerType)
-           && TargetType.Equals(other.TargetType)
+        => SerializerTypeReference.Equals(other.SerializerTypeReference)
+           && TargetTypeReference.Equals(other.TargetTypeReference)
            && Kind == other.Kind
            && SerializationMethodName == other.SerializationMethodName
            && DeserializationMethodName == other.DeserializationMethodName
@@ -47,8 +47,8 @@ public readonly struct CustomSerializationInfoWithTargetType : IEquatable<Custom
     {
         unchecked
         {
-            int hashCode = SerializerType.GetHashCode();
-            hashCode = (hashCode * 397) ^ TargetType.GetHashCode();
+            int hashCode = SerializerTypeReference.GetHashCode();
+            hashCode = (hashCode * 397) ^ TargetTypeReference.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)Kind;
             hashCode = (hashCode * 397) ^ SerializationMethodName.GetHashCode();
             hashCode = (hashCode * 397) ^ DeserializationMethodName.GetHashCode();

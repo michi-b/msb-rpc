@@ -1,64 +1,68 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using MsbRpc.Generator.Info;
-using MsbRpc.Generator.Utility;
+using MsbRpc.Generator.Serialization.Default;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Serialization;
 
+using SerializationRegistry = Dictionary<TypeReferenceInfo, ISerialization>;
+
+// using SerializationFactoryRegistry = Dictionary<TypeDeclarationInfo, SerializationFactory>;
+
 public class SerializationResolver
 {
-    private static readonly ReadOnlyDictionary<TypeInfo, SerializationWriter> DefaultSerializations;
-    private readonly Dictionary<TypeInfo, GenericSerializationWriterFactory> _genericSerializationWriterFactories;
-    private readonly Dictionary<TypeInfo, SerializationWriter> _genericSerializationWriters;
-    private readonly Dictionary<TypeInfo, SerializationWriter> _serializationWriters;
+    private static readonly SerializationRegistry DefaultSerializations;
+
+    // private static readonly SerializationFactoryRegistry DefaultGenericSerializations;
+    // private readonly SerializationFactoryRegistry _genericSerializationWriterFactories;
+    private readonly SerializationRegistry _serializations;
 
     static SerializationResolver()
     {
-        var defaultSerializations = new Dictionary<TypeInfo, SerializationWriter>(100);
+        DefaultSerializations = new SerializationRegistry(SimpleDefaultSerializationKindUtility.DictionaryCapacity);
 
+        DefaultSerializations.Add(TypeReferenceInfo.CreateSimple(Types.Void), new VoidSerialization());
+        
         foreach (SimpleDefaultSerializationKind serializationKind in SimpleDefaultSerializationKindUtility.All)
         {
-            defaultSerializations.Add(serializationKind.GetTypeInfo(), new SerializationWriter(serializationKind));
+            DefaultSerializations.Add(serializationKind.GetTargetType(), new SimpleDefaultSerialization(serializationKind));
         }
 
-        DefaultSerializations = new ReadOnlyDictionary<TypeInfo, SerializationWriter>(defaultSerializations);
+        // DefaultGenericSerializations = new SerializationFactoryRegistry(GenericDefaultSerializationKindUtility.DictionaryCapacity);
+        //
+        // foreach (GenericDefaultSerializationKind serializationKind in GenericDefaultSerializationKindUtility.All)
+        // {
+        //     DefaultGenericSerializations.Add(serializationKind.GetTypeDeclarationInfo(), new SerializationFactory(serializationKind));
+        // }
     }
 
-    public SerializationResolver(ImmutableArray<CustomSerializationInfo> customSerializations)
-    {
-        _serializationWriters = new Dictionary<TypeInfo, SerializationWriter>(DefaultSerializations);
-        _genericSerializationWriterFactories = new Dictionary<TypeInfo, GenericSerializationWriterFactory>();
-        _genericSerializationWriters = new Dictionary<TypeInfo, SerializationWriter>();
-    }
+    public SerializationResolver(ImmutableArray<CustomSerializationInfo> customSerializations) => _serializations = new SerializationRegistry(DefaultSerializations);
 
-    public bool TryGetSerializationWriter(TypeInfo typeInfo, out SerializationWriter serializationWriter)
+    // _genericSerializationWriterFactories = new SerializationFactoryRegistry();
+    public ISerialization Resolve(TypeReferenceInfo typeReference)
     {
-        if (typeInfo.TypeArguments.Count > 0)
+        if (_serializations.TryGetValue(typeReference, out ISerialization existingSerialization))
         {
-            if (_genericSerializationWriters.TryGetValue(typeInfo, out serializationWriter))
-            {
-                return true;
-            }
-
-            if (_genericSerializationWriterFactories.TryGetValue(typeInfo, out GenericSerializationWriterFactory genericSerializationWriterFactory))
-            {
-                if (genericSerializationWriterFactory.TryInstantiate(this, typeInfo.TypeArguments, out serializationWriter))
-                {
-                    _genericSerializationWriters.Add(typeInfo, serializationWriter);
-                    return true;
-                }
-            }
-
-            return false;
+            return existingSerialization;
         }
 
-        return _serializationWriters.TryGetValue(typeInfo, out serializationWriter);
+        //todo: re-introduce generic serialization
+        // if (typeReference.TypeArguments.Count > 0)
+        // {
+        //     if (_genericSerializationWriterFactories.TryGetValue(typeReference.Declaration, out SerializationFactory genericSerializationWriterFactory))
+        //     {
+        //         if (genericSerializationWriterFactory.TryInstantiate(this, typeReference.TypeArguments, out ISerialization newSerialization))
+        //         {
+        //             _serializationWriters.Add(typeReference, newSerialization);
+        //             return newSerialization;
+        //         }
+        //     }
+        // }
+
+        //return unresolved serialization, if it could not be resolved
+        ISerialization unresolvedSerialization = new UnresolvedSerialization(typeReference);
+        _serializations.Add(typeReference, unresolvedSerialization);
+        return unresolvedSerialization;
     }
-
-    public SerializationWriter GetSerializationWriter(SimpleDefaultSerializationKind simpleDefaultSerializationKind)
-        => _serializationWriters[simpleDefaultSerializationKind.GetTypeInfo()];
-
-    public bool TryGetGenericSerializationWriterFactory(TypeInfo typeInfo, out GenericSerializationWriterFactory resGenericSerializationWriterFactory)
-        => _genericSerializationWriterFactories.TryGetValue(typeInfo, out resGenericSerializationWriterFactory);
 }

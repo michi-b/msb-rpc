@@ -6,7 +6,8 @@ namespace MsbRpc.Serialization;
 
 public static class NullableSerializer<TValue> where TValue : struct
 {
-    public static int GetSize(TValue? value, Func<int> getValueSize) => value is null ? PrimitiveSerializer.BoolSize : PrimitiveSerializer.BoolSize + getValueSize();
+    public static int GetSize(TValue? value, Func<TValue?, int> getValueSize) 
+        => value is null ? PrimitiveSerializer.BoolSize : PrimitiveSerializer.BoolSize + getValueSize(value);
 
     public static void Write(ref BufferWriter writer, TValue? nullable, Action<BufferWriter, TValue> writeValue)
     {

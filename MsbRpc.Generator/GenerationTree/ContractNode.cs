@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
@@ -26,11 +29,14 @@ internal class ContractNode
         PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
-        var typeCache = new TypeNodeCache(info.CustomSerializations);
-
+        ImmutableArray<CustomSerializationInfo> customSerializations = info.CustomSerializations
+            .Select(pair => pair.Value).ToImmutableArray();
+        
+        SerializationResolver serializationResolver = new SerializationResolver(customSerializations);
+        
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 
-        Procedures = new ProcedureCollectionNode(procedures, this, typeCache);
+        Procedures = new ProcedureCollectionNode(procedures, this, serializationResolver);
 
         ClientEndPoint = CreateEndPointNode(info, ConnectionEndType.Client);
         ServerEndPoint = CreateEndPointNode(info, ConnectionEndType.Server);

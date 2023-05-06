@@ -7,7 +7,7 @@ public class NullableIntSerializer
 {
     public static int GetSize(int? target)
     {
-        return NullableSerializer<int>.GetSize(target, () => PrimitiveSerializer.IntSize);
+        return NullableSerializer<int>.GetSize(target, _ => PrimitiveSerializer.IntSize);
     }
 
     public static void Write(ref BufferWriter writer, int? target)

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization;
 
 namespace MsbRpc.Generator.GenerationTree;
 
 internal class ProcedureNode
 {
+    //todo: remove if not used
     public readonly ProcedureCollectionNode CollectionNode;
 
     public readonly string FullName;
@@ -15,14 +17,14 @@ internal class ProcedureNode
     public readonly string ProcedureEnumIntValue;
 
     public readonly string ProcedureEnumValue;
-    public readonly TypeNode ReturnType;
+    public readonly ISerialization ResultSerialization;
 
     public ProcedureNode
     (
         ProcedureInfo info,
         ProcedureCollectionNode collectionNode,
         int definitionIndex,
-        TypeNodeCache typeNodeCache
+        SerializationResolver serializationResolver
     )
     {
         CollectionNode = collectionNode;
@@ -32,10 +34,10 @@ internal class ProcedureNode
         ProcedureEnumValue = $"{collectionNode.ProcedureEnumName}.{Name}";
         ProcedureEnumIntValue = definitionIndex.ToString();
 
-        ReturnType = typeNodeCache.GetOrAdd(info.ReturnType);
+        ResultSerialization = serializationResolver.Resolve(info.ResultType);
 
         ImmutableArray<ParameterInfo> parameterInfos = info.Parameters;
         HasParameters = parameterInfos.Length > 0;
-        Parameters = HasParameters ? new ParameterCollectionNode(parameterInfos, typeNodeCache) : null;
+        Parameters = HasParameters ? new ParameterCollectionNode(parameterInfos, serializationResolver) : null;
     }
 }

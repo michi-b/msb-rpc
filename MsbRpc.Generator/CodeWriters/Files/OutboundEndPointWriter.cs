@@ -1,7 +1,7 @@
 ﻿using System.CodeDom.Compiler;
-using System.IO;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.GenerationTree;
+using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
@@ -77,11 +77,12 @@ internal class OutboundEndPointWriter : EndPointWriter
     {
         writer.Write("public async ");
 
+        ISerialization resultSerialization = procedure.ResultSerialization;
         writer.Write
         (
-            procedure.ReturnType.IsVoid
+            resultSerialization.GetIsVoid()
                 ? $"{Types.VaLueTask}"
-                : $"{Types.VaLueTask}<{procedure.ReturnType.DeclarationSyntax}>"
+                : $"{Types.VaLueTask}<{resultSerialization.GetDeclarationSyntax()}>"
         );
         writer.WriteLine($" {procedure.Name}{AsyncPostFix}");
         using (writer.GetParenthesesBlock())
@@ -92,18 +93,14 @@ internal class OutboundEndPointWriter : EndPointWriter
                 for (int i = 0; i < parameters.Count; i++)
                 {
                     ParameterNode parameter = parameters[i];
-                    writer.WriteLine
-                    (
-                        i < parameters.Count - 1
-                            ? $"{parameter.Type.DeclarationSyntax} {parameter.Name},"
-                            : $"{parameter.Type.DeclarationSyntax} {parameter.Name}"
-                    );
+                    writer.Write($"{parameter.Serialization.GetDeclarationSyntax()} {parameter.Name}");
+                    writer.WriteLine(i < parameters.Count - 1 ? "," : string.Empty);
                 }
             }
         }
     }
 
-    private void WriteProcedureBody(TextWriter writer, ProcedureNode procedure)
+    private void WriteProcedureBody(IndentedTextWriter writer, ProcedureNode procedure)
     {
         writer.WriteLine($"base.{Methods.AssertIsOperable}();");
 
@@ -118,14 +115,9 @@ internal class OutboundEndPointWriter : EndPointWriter
             foreach (ParameterNode parameter in parameters)
             {
                 string sizeVariableName = parameter.SizeVariableName;
-                if (parameter.Type.Serialization is { } serialization)
-                {
-                    writer.WriteLine($"int {sizeVariableName} = {serialization.GetSizeExpression(parameter.Name)};");
-                }
-                else
-                {
-                    writer.WriteLine($"int {sizeVariableName} = 0;");
-                }
+                writer.Write($"int {sizeVariableName} = ");
+                parameter.Serialization.WriteSizeExpression(writer, parameter.Name);
+                writer.WriteLine(";");
             }
 
             writer.Write($"int {Variables.ArgumentSizeSum} = ");
@@ -151,10 +143,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
             foreach (ParameterNode parameter in parameters)
             {
-                if (parameter.Type.Serialization is { } serialization)
-                {
-                    writer.WriteLine(serialization.GetSerializationStatement(Variables.RequestWriter, parameter.Name));
-                }
+                parameter.Serialization.WriteSerializationStatement(writer, Variables.RequestWriter, parameter.Name);
             }
         }
         else
@@ -164,29 +153,21 @@ internal class OutboundEndPointWriter : EndPointWriter
 
         writer.WriteLine();
 
-        TypeNode resultType = procedure.ReturnType;
-        if (resultType.IsVoid)
+        ISerialization resultSerialization = procedure.ResultSerialization;
+        if (resultSerialization.GetIsVoid())
         {
             writer.WriteLine(SendRequestStatement);
         }
         else
         {
-            if (resultType.Serialization is { } serialization)
-            {
-                writer.WriteLine(SendRequestStatementWithResponse);
-                writer.WriteLine(ResponseReaderInitializationStatement);
+            writer.WriteLine(SendRequestStatementWithResponse);
+            writer.WriteLine(ResponseReaderInitializationStatement);
 
-                string deserializationExpression = serialization.GetDeserializationExpression($"{Variables.ResponseReader}");
-                writer.WriteLine($"{resultType.DeclarationSyntax} {Variables.Result} = {deserializationExpression};");
+            writer.Write($"{resultSerialization.GetDeclarationSyntax()} {Variables.Result} = ");
+            resultSerialization.WriteDeserializationExpression(writer, Variables.ResponseReader);
+            writer.WriteLine(";");
 
-                writer.WriteLine($"return {Variables.Result};");
-            }
-            else
-            {
-                writer.WriteLine(SendRequestStatement);
-                writer.WriteLine();
-                writer.WriteLine("return default!;");
-            }
+            writer.WriteLine($"return {Variables.Result};");
         }
     }
 

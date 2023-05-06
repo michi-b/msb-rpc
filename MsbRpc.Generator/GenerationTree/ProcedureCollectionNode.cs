@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
@@ -25,7 +26,7 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
     (
         ImmutableArray<ProcedureInfo> procedures,
         ContractNode contract,
-        TypeNodeCache typeNodeCache
+        SerializationResolver serializationResolver
     )
     {
         Contract = contract;
@@ -39,7 +40,7 @@ internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
         _procedures = new ProcedureNode[Length];
         for (int i = 0; i < Length; i++)
         {
-            var procedure = new ProcedureNode(procedures[i], this, i, typeNodeCache);
+            var procedure = new ProcedureNode(procedures[i], this, i, serializationResolver);
             _procedures[i] = procedure;
         }
     }

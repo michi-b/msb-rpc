@@ -1,4 +1,6 @@
-﻿using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+﻿using System;
+using MsbRpc.Generator.Serialization;
+using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
@@ -8,18 +10,18 @@ internal class ParameterNode
     public readonly int Index;
     public readonly string Name;
     public readonly string SizeVariableName;
-    public readonly TypeNode Type;
+    public readonly ISerialization Serialization;
 
-    public ParameterNode(string name, int index, TypeNode type)
+    public ParameterNode(string name, int index, ISerialization serialization)
     {
         Name = name.PascalToCamelCase();
         ArgumentVariableName = Name + ArgumentPostfix;
         SizeVariableName = ArgumentVariableName + SizePostfix;
         Index = index;
-        Type = type;
+        Serialization = serialization;
     }
 
-    public string GetDeclarationStatement() => $"{Type.DeclarationSyntax} {ArgumentVariableName};";
+    public string GetDeclarationStatement() => $"{Serialization.GetDeclarationSyntax()} {ArgumentVariableName};";
 
-    public override string ToString() => $"{Name} ({Type})";
+    public override string ToString() => $"{Name} ({Serialization.GetDeclarationSyntax()})";
 }

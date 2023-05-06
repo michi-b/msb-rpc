@@ -11,20 +11,20 @@ internal readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
     public string Name { get; }
     public ImmutableArray<ParameterInfo> Parameters { get; }
 
-    public TypeInfo ReturnType { get; }
+    public TypeReferenceInfo ResultType { get; }
 
     public ProcedureInfo(IMethodSymbol method)
     {
         Name = method.Name.CamelToPascalCase();
         ImmutableArray<IParameterSymbol> parameters = method.Parameters;
         Parameters = parameters.Select(parameter => new ParameterInfo(parameter)).ToImmutableArray();
-        ReturnType = new TypeInfo((INamedTypeSymbol)method.ReturnType);
+        ResultType = new TypeReferenceInfo((INamedTypeSymbol)method.ReturnType);
     }
 
     public bool Equals(ProcedureInfo other)
         => Name == other.Name
            && Parameters.SequenceEqual(other.Parameters)
-           && ReturnType.Equals(other.ReturnType);
+           && ResultType.Equals(other.ResultType);
 
     public override bool Equals(object? obj) => obj is ProcedureInfo other && Equals(other);
 
@@ -32,7 +32,7 @@ internal readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
     {
         unchecked
         {
-            return (Name.GetHashCode() * 397) ^ Parameters.GetHashCode() ^ ReturnType.GetHashCode();
+            return (Name.GetHashCode() * 397) ^ Parameters.GetHashCode() ^ ResultType.GetHashCode();
         }
     }
 }
