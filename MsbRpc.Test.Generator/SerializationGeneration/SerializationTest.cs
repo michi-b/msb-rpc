@@ -1,13 +1,13 @@
 ﻿using System.CodeDom.Compiler;
+using System.Collections.Immutable;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
-using MsbRpc.Generator.Serialization.Default;
 
 namespace MsbRpc.Test.Generator.SerializationGeneration;
 
-internal readonly ref struct SimpleDefaultSerializationTest
+internal readonly ref struct SerializationTest
 {
     public string? ExpectedSizeExpression { get; init; }
     public string? ExpectedSerializationStatement { get; init; }
@@ -24,7 +24,7 @@ internal readonly ref struct SimpleDefaultSerializationTest
 
     public string BufferReaderExpression { get; init; } = "bufferReader";
 
-    public SimpleDefaultSerializationTest(TypeReferenceInfo targetType)
+    public SerializationTest(TypeReferenceInfo targetType)
     {
         TargetType = targetType;
         ExpectedSizeExpression = null;
@@ -34,10 +34,12 @@ internal readonly ref struct SimpleDefaultSerializationTest
         ExpectedIsVoid = false;
     }
 
-    public SimpleDefaultSerializationTest(SimpleDefaultSerializationKind targetType)
-        : this(targetType.GetTargetType()) { }
+    public void Run()
+    {
+        Run(new SerializationResolver(ImmutableArray<CustomSerializationInfo>.Empty));
+    }
 
-    public void Run(SerializationResolver resolver)
+    private void Run(SerializationResolver resolver)
     {
         ISerialization serialization = resolver.Resolve(TargetType);
         Assert.IsTrue(serialization.GetIsResolved());

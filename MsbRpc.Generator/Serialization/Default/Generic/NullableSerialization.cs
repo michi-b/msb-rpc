@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
@@ -7,6 +8,7 @@ namespace MsbRpc.Generator.Serialization.Default.Generic;
 
 public class NullableSerialization : GenericSerialization
 {
+    private const string ValueArgumentName = "innerValue";
     private readonly ISerialization _valueSerialization;
 
     private NullableSerialization(ISerialization valueSerialization) => _valueSerialization = valueSerialization;
@@ -14,9 +16,14 @@ public class NullableSerialization : GenericSerialization
     public override void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
         writer.Write($"{Types.NullableSerializer}<{_valueSerialization.GetDeclarationSyntax()}>");
-        writer.Write($".{Methods.SerializerGetSize}({targetExpression}, (value) => ");
-        _valueSerialization.WriteSizeExpression(writer, "value");
-        writer.Write(");");
+        writer.WriteLine($".{Methods.SerializerGetSize}");
+        using (writer.GetParenthesesBlock(Appendix.None))
+        {
+            writer.WriteLine($"{targetExpression},");
+            writer.Write($"({ValueArgumentName}) => ");
+            _valueSerialization.WriteSizeExpression(writer, ValueArgumentName);
+            writer.WriteLine();
+        }
     }
 
     public override void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression)
