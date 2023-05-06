@@ -87,10 +87,7 @@ public class SimpleDefaultSerializationsTest : Base.Test
 
     //todo: implement integral values serialization test once copilot starts working normally again
     [TestMethod]
-    public void CreatesCorrectLongSerialization()
-    {
-        
-    }
+    public void CreatesCorrectLongSerialization() { }
 
     [TestMethod]
     public void CreatesCorrectFloatSerialization()

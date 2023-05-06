@@ -1,5 +1,6 @@
 ﻿using System.CodeDom.Compiler;
-using MsbRpc.Generator.Serialization;
+
+namespace MsbRpc.Generator.Serialization.Default;
 
 public abstract class GenericSerialization : ISerialization
 {
