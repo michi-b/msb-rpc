@@ -21,7 +21,7 @@ public static class TextWriterExtensions
         writer.WriteFileScopedNamespace(fileScopedNamespace);
     }
 
-    public static void WriteLineSemicolon(this TextWriter writer) => writer.WriteLine(";");
+    public static void WriteLineBreakingSemicolon(this TextWriter writer) => writer.WriteLine(";");
 
     public static void WriteCommaDelimiter(this TextWriter writer, bool withTrailingSpace = false) => writer.Write(withTrailingSpace ? ", " : ",");
 

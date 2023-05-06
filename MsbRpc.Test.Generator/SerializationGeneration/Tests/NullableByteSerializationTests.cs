@@ -8,12 +8,6 @@ namespace MsbRpc.Test.Generator.SerializationGeneration.Tests;
 [TestClass]
 public class NullableByteSerializationTests : Base.Test
 {
-    private const string ExpectedSizeExpression = @"MsbRpc.Serialization.NullableSerializer<byte>.GetSize
-(
-    target,
-    (innerValue) => MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize
-)";
-
     private static readonly TypeReferenceInfo NullableBoolInfo = new
     (
         new TypeDeclarationInfo("System.Nullable", 1),
@@ -43,7 +37,7 @@ public class NullableByteSerializationTests : Base.Test
     }
 
     [TestMethod]
-    public void NullableDeclarationSyntaxIsCorrect()
+    public void DeclarationSyntaxIsCorrect()
     {
         string actual = Serialization.GetDeclarationSyntax();
         Assert.AreEqual("byte?", actual);
@@ -51,10 +45,45 @@ public class NullableByteSerializationTests : Base.Test
     }
 
     [TestMethod]
-    public void NullableSizeExpressionIsCorrect()
+    public void SizeExpressionIsCorrect()
     {
-        var test = new SerializationTest(NullableBoolInfo) { ExpectedSizeExpression = ExpectedSizeExpression };
-        test.Run();
-        TestContext.WriteLine(test.ExpectedSizeExpression);
+        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.GetSize
+(
+    target,
+    (innerValue) => MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize
+)";
+        string actual = new SerializationTest(NullableBoolInfo).GetSizeExpression();
+        Assert.AreEqual(expected, actual);
+        TestContext.Write(actual);
+    }
+
+    [TestMethod]
+    public void SerializationStatementIsCorrect()
+    {
+        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.Write
+(
+    ref bufferWriter,
+    value,
+    (bufferWriter, innerValue) => 
+    {
+        bufferWriter.Write(innerValue);
+    }
+);
+";
+        string actual = new SerializationTest(NullableBoolInfo).GetSerializationStatement();
+        Assert.AreEqual(expected, actual);
+        TestContext.Write(actual);
+    }
+
+    [TestMethod]
+    public void DeserializationExpressionIsCorrect()
+    {
+        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.Read
+(
+    
+)";
+        string actual = new SerializationTest(NullableBoolInfo).GetDeserializationExpression();
+        Assert.AreEqual(expected, actual);
+        TestContext.Write(actual);
     }
 }

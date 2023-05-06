@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.GenerationTree;
+using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
 
@@ -77,5 +78,20 @@ internal static class IndentedTextWriterExtensions
                 writer.WriteLine(executionStageFullName);
             }
         }
+    }
+    
+    public static void WriteSerializationSizeExpression(this IndentedTextWriter writer, ISerialization serialization, string targetExpression)
+    {
+        serialization.WriteSizeExpression(writer, targetExpression);
+    }
+    
+    public static void WriteSerializationStatement(this IndentedTextWriter writer, ISerialization serialization, string bufferWriterExpression, string valueExpression)
+    {
+        serialization.WriteSerializationStatement(writer, bufferWriterExpression, valueExpression);
+    }
+    
+    public static void WriteDeserializationExpression(this IndentedTextWriter writer, ISerialization serialization, string bufferReaderExpression)
+    {
+        serialization.WriteDeserializationExpression(writer, bufferReaderExpression);
     }
 }

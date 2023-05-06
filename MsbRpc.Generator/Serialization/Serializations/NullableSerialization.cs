@@ -15,6 +15,8 @@ public sealed class NullableSerialization : GenericSerialization
 
     private readonly ISerialization _innerValueSerialization;
 
+    private readonly string _serializerName;
+
     private NullableSerialization(ISerialization innerValueSerialization)
     {
         _innerValueSerialization = innerValueSerialization;
@@ -22,24 +24,39 @@ public sealed class NullableSerialization : GenericSerialization
         {
             _canUseNullableAnnotationInsteadOfWrapper = simpleDefaultSerialization.CanUseNullableAnnotationInsteadOfWrapper;
         }
+
+        _serializerName = $"{Types.NullableSerializer}<{_innerValueSerialization.GetDeclarationSyntax()}>";
     }
 
     public override void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
-        writer.Write($"{Types.NullableSerializer}<{_innerValueSerialization.GetDeclarationSyntax()}>");
-        writer.WriteLine($".{Methods.SerializerGetSize}");
+        writer.WriteLine($"{_serializerName}.{Methods.SerializerGetSize}");
+
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{targetExpression},");
+
             writer.Write($"({ValueArgumentName}) => ");
-            _innerValueSerialization.WriteSizeExpression(writer, ValueArgumentName);
+            writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
             writer.WriteLine();
         }
     }
 
     public override void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression)
     {
-        throw new NotImplementedException();
+        writer.WriteLine($"{_serializerName}.{Methods.SerializerWrite}");
+        using (writer.GetParenthesesBlock(Appendix.SemicolonAndNewline))
+        {
+            writer.WriteLine($"ref {bufferWriterExpression},");
+            writer.WriteLine($"{valueExpression},");
+
+            writer.WriteLine($"({BufferWriterArgumentName}, {ValueArgumentName}) => ");
+            using (writer.GetBlock())
+            {
+                writer.WriteSerializationStatement(_innerValueSerialization, BufferWriterArgumentName, ValueArgumentName);
+                writer.WriteLine();
+            }
+        }
     }
 
     public override void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression)

@@ -4,6 +4,7 @@ namespace MsbRpc.Generator.Serialization.Serializations.Abstract;
 
 public abstract class GenericSerialization : ISerialization
 {
+    protected const string BufferWriterArgumentName = "bufferWriter";
     protected GenericSerialization(){}
 
     public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
