@@ -1,10 +1,11 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using MsbRpc.Generator.Serialization.Default;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
-namespace MsbRpc.Generator.Serialization.Default;
+namespace MsbRpc.Generator.Serialization.Serializations;
 
-public class SimpleDefaultSerialization : ISerialization
+public sealed class SimpleDefaultSerialization : ISerialization
 {
     private const string ReadByte = "." + Methods.BufferReaderReadByte + "()";
     private const string ReadSByte = "." + Methods.BufferReaderReadSByte + "()";
@@ -26,6 +27,26 @@ public class SimpleDefaultSerialization : ISerialization
         (bufferWriterExpression, valueExpression) => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
 
     private readonly SimpleDefaultSerializationKind _serializationKind;
+
+    public bool CanUseNullableAnnotationInsteadOfWrapper
+        => _serializationKind switch
+        {
+            SimpleDefaultSerializationKind.Byte => true,
+            SimpleDefaultSerializationKind.Sbyte => true,
+            SimpleDefaultSerializationKind.Bool => true,
+            SimpleDefaultSerializationKind.Char => true,
+            SimpleDefaultSerializationKind.Int => true,
+            SimpleDefaultSerializationKind.Long => true,
+            SimpleDefaultSerializationKind.Short => true,
+            SimpleDefaultSerializationKind.Uint => true,
+            SimpleDefaultSerializationKind.Ulong => true,
+            SimpleDefaultSerializationKind.Ushort => true,
+            SimpleDefaultSerializationKind.Float => true,
+            SimpleDefaultSerializationKind.Double => true,
+            SimpleDefaultSerializationKind.Decimal => true,
+            SimpleDefaultSerializationKind.String => false,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
     public SimpleDefaultSerialization(SimpleDefaultSerializationKind serializationKind) => _serializationKind = serializationKind;
 

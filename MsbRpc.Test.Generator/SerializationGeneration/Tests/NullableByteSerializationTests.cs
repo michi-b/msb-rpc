@@ -45,12 +45,16 @@ public class NullableByteSerializationTests : Base.Test
     [TestMethod]
     public void NullableDeclarationSyntaxIsCorrect()
     {
-        Assert.AreEqual("System.Nullable<byte>", Serialization.GetDeclarationSyntax());
+        string actual = Serialization.GetDeclarationSyntax();
+        Assert.AreEqual("byte?", actual);
+        TestContext.WriteLine(actual);
     }
 
     [TestMethod]
     public void NullableSizeExpressionIsCorrect()
     {
-        new SerializationTest(NullableBoolInfo) { ExpectedSizeExpression = ExpectedSizeExpression }.Run();
+        var test = new SerializationTest(NullableBoolInfo) { ExpectedSizeExpression = ExpectedSizeExpression };
+        test.Run();
+        TestContext.WriteLine(test.ExpectedSizeExpression);
     }
 }

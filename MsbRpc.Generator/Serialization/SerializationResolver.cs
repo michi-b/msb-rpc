@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Default;
-using MsbRpc.Generator.Serialization.Default.Generic;
+using MsbRpc.Generator.Serialization.Serializations;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Serialization;

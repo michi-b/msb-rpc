@@ -1,8 +1,9 @@
 ﻿using System;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization.Serializations;
 
-namespace MsbRpc.Generator.Serialization.Default.Generic;
+namespace MsbRpc.Generator.Serialization.Default;
 
 public static class GenericDefaultSerializationKindExtensions
 {

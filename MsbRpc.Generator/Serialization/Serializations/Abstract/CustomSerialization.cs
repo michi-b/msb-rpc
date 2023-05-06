@@ -1,19 +1,17 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.Serialization;
+namespace MsbRpc.Generator.Serialization.Serializations.Abstract;
 
-public abstract class NonKeywordSerialization : ISerialization
+public abstract class CustomSerialization : ISerialization
 {
     private readonly string _declarationSyntax;
 
-    protected NonKeywordSerialization(TypeReferenceInfo typeReferenceInfo) => _declarationSyntax = typeReferenceInfo.GetDeclarationSyntax();
+    protected CustomSerialization(TypeReferenceInfo typeReferenceInfo) => _declarationSyntax = typeReferenceInfo.GetDeclarationSyntax();
 
     public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
     public abstract void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
     public abstract void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
-
-    public string? GetKeyword() => null;
 
     public bool GetIsVoid() => false;
 

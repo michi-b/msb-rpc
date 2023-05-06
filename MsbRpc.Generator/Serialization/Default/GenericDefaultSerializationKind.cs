@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator.Serialization.Default.Generic;
+﻿namespace MsbRpc.Generator.Serialization.Default;
 
 public enum GenericDefaultSerializationKind
 {

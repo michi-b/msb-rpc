@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using MsbRpc.Generator.Info;
 
-namespace MsbRpc.Generator.Serialization.Default.Generic;
+namespace MsbRpc.Generator.Serialization.Default;
 
 public static class GenericDefaultSerializationKindUtility
 {

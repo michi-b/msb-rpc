@@ -1,17 +1,18 @@
 ﻿using System.CodeDom.Compiler;
 
-namespace MsbRpc.Generator.Serialization.Default;
+namespace MsbRpc.Generator.Serialization.Serializations.Abstract;
 
 public abstract class GenericSerialization : ISerialization
 {
+    protected GenericSerialization(){}
+
     public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
     public abstract void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
     public abstract void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
 
-    public string? GetKeyword() => null;
-
     public bool GetIsVoid() => false;
 
-    public bool GetIsResolved() => true;
+    public virtual bool GetIsResolved() => true;
+
     public abstract string GetDeclarationSyntax();
 }

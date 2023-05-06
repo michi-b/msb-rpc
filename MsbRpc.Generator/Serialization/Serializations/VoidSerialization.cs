@@ -1,9 +1,9 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 
-namespace MsbRpc.Generator.Serialization;
+namespace MsbRpc.Generator.Serialization.Serializations;
 
-public class VoidSerialization : ISerialization
+public sealed class VoidSerialization : ISerialization
 {
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression) => throw new InvalidOperationException();
 

@@ -2,26 +2,37 @@
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Serialization.Serializations.Abstract;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
-namespace MsbRpc.Generator.Serialization.Default.Generic;
+namespace MsbRpc.Generator.Serialization.Serializations;
 
-public class NullableSerialization : GenericSerialization
+public sealed class NullableSerialization : GenericSerialization
 {
     private const string ValueArgumentName = "innerValue";
-    private readonly ISerialization _valueSerialization;
 
-    private NullableSerialization(ISerialization valueSerialization) => _valueSerialization = valueSerialization;
+    private readonly bool _canUseNullableAnnotationInsteadOfWrapper;
+
+    private readonly ISerialization _innerValueSerialization;
+
+    private NullableSerialization(ISerialization innerValueSerialization)
+    {
+        _innerValueSerialization = innerValueSerialization;
+        if (innerValueSerialization is SimpleDefaultSerialization simpleDefaultSerialization)
+        {
+            _canUseNullableAnnotationInsteadOfWrapper = simpleDefaultSerialization.CanUseNullableAnnotationInsteadOfWrapper;
+        }
+    }
 
     public override void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
-        writer.Write($"{Types.NullableSerializer}<{_valueSerialization.GetDeclarationSyntax()}>");
+        writer.Write($"{Types.NullableSerializer}<{_innerValueSerialization.GetDeclarationSyntax()}>");
         writer.WriteLine($".{Methods.SerializerGetSize}");
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{targetExpression},");
             writer.Write($"({ValueArgumentName}) => ");
-            _valueSerialization.WriteSizeExpression(writer, ValueArgumentName);
+            _innerValueSerialization.WriteSizeExpression(writer, ValueArgumentName);
             writer.WriteLine();
         }
     }
@@ -36,7 +47,10 @@ public class NullableSerialization : GenericSerialization
         throw new NotImplementedException();
     }
 
-    public override string GetDeclarationSyntax() => $"{Types.Nullable}<{_valueSerialization.GetDeclarationSyntax()}>";
+    public override string GetDeclarationSyntax()
+        => _canUseNullableAnnotationInsteadOfWrapper
+            ? $"{_innerValueSerialization.GetDeclarationSyntax()}?"
+            : $"{Types.Nullable}<{_innerValueSerialization.GetDeclarationSyntax()}>";
 
     public class Factory : IGenericSerializationFactory
     {
