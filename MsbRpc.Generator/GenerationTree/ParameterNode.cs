@@ -1,5 +1,4 @@
-﻿using System;
-using MsbRpc.Generator.Serialization;
+﻿using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
@@ -9,8 +8,8 @@ internal class ParameterNode
     public readonly string ArgumentVariableName;
     public readonly int Index;
     public readonly string Name;
-    public readonly string SizeVariableName;
     public readonly ISerialization Serialization;
+    public readonly string SizeVariableName;
 
     public ParameterNode(string name, int index, ISerialization serialization)
     {

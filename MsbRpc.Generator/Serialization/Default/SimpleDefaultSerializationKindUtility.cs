@@ -8,7 +8,7 @@ public static class SimpleDefaultSerializationKindUtility
 {
     public const int DictionaryCapacity = 100;
 
-    private static readonly ReadOnlyDictionary<TypeDeclarationInfo, SimpleDefaultSerializationKind> Values;
+    private static readonly ReadOnlyDictionary<TypeReferenceInfo, SimpleDefaultSerializationKind> Values;
 
     public static readonly SimpleDefaultSerializationKind[] All =
     {
@@ -30,12 +30,12 @@ public static class SimpleDefaultSerializationKindUtility
 
     static SimpleDefaultSerializationKindUtility()
     {
-        Dictionary<TypeDeclarationInfo, SimpleDefaultSerializationKind> values = new(DictionaryCapacity);
+        Dictionary<TypeReferenceInfo, SimpleDefaultSerializationKind> values = new(DictionaryCapacity);
         foreach (SimpleDefaultSerializationKind serializationKind in All)
         {
-            values.Add(serializationKind.GetTargetType().Declaration, serializationKind);
+            values.Add(serializationKind.GetTargetType(), serializationKind);
         }
 
-        Values = new ReadOnlyDictionary<TypeDeclarationInfo, SimpleDefaultSerializationKind>(values);
+        Values = new ReadOnlyDictionary<TypeReferenceInfo, SimpleDefaultSerializationKind>(values);
     }
 }

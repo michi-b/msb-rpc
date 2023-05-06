@@ -18,6 +18,6 @@ public class UnresolvedSerialization : NonKeywordSerialization
     {
         writer.Write("default!");
     }
-    
+
     public override bool GetIsResolved() => false;
 }

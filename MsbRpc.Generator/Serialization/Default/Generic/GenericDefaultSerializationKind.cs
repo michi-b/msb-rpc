@@ -2,5 +2,5 @@
 
 public enum GenericDefaultSerializationKind
 {
-    Nullable = 1,
+    Nullable = 1
 }

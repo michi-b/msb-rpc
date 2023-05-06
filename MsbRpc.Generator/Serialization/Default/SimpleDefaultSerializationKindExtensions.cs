@@ -19,7 +19,7 @@ public static class SimpleDefaultSerializationKindExtensions
     private static readonly TypeReferenceInfo DoubleType = TypeReferenceInfo.CreateSimple("System.Double");
     private static readonly TypeReferenceInfo DecimalType = TypeReferenceInfo.CreateSimple("System.Decimal");
     private static readonly TypeReferenceInfo StringType = TypeReferenceInfo.CreateSimple("System.String");
-    
+
     public static TypeReferenceInfo GetTargetType(this SimpleDefaultSerializationKind target)
     {
         return target switch

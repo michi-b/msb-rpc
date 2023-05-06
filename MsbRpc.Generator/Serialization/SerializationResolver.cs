@@ -23,7 +23,7 @@ public class SerializationResolver
         DefaultSerializations = new SerializationRegistry(SimpleDefaultSerializationKindUtility.DictionaryCapacity);
 
         DefaultSerializations.Add(TypeReferenceInfo.CreateSimple(Types.Void), new VoidSerialization());
-        
+
         foreach (SimpleDefaultSerializationKind serializationKind in SimpleDefaultSerializationKindUtility.All)
         {
             DefaultSerializations.Add(serializationKind.GetTargetType(), new SimpleDefaultSerialization(serializationKind));

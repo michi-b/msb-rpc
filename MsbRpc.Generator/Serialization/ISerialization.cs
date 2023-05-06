@@ -8,8 +8,6 @@ public interface ISerialization
     public void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
     public void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
 
-    public string? GetKeyword();
-
     public bool GetIsVoid();
 
     public bool GetIsResolved();

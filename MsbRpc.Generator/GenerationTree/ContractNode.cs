@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using MsbRpc.Generator.Enums;
@@ -30,10 +29,11 @@ internal class ContractNode
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
         ImmutableArray<CustomSerializationInfo> customSerializations = info.CustomSerializations
-            .Select(pair => pair.Value).ToImmutableArray();
-        
-        SerializationResolver serializationResolver = new SerializationResolver(customSerializations);
-        
+            .Select(pair => pair.Value)
+            .ToImmutableArray();
+
+        var serializationResolver = new SerializationResolver(customSerializations);
+
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 
         Procedures = new ProcedureCollectionNode(procedures, this, serializationResolver);

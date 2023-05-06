@@ -23,7 +23,7 @@ internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
         for (int i = 0; i < Count; i++)
         {
             ParameterInfo parameterInfo = parameterInfos[i];
-            
+
             ISerialization serialization = serializationResolver.Resolve(parameterInfo.TypeReference);
 
             var parameter = new ParameterNode(parameterInfo.Name, i, serialization);

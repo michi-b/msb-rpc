@@ -95,7 +95,7 @@ internal static class IndependentNames
         public const string BufferReaderReadDouble = "ReadDouble";
         public const string BufferReaderReadDecimal = "ReadDecimal";
         public const string BufferReaderReadString = "ReadString";
-        
+
         public const string SerializerGetSize = "GetSize";
         public const string SerializerWrite = "Write";
         public const string SerializerRead = "Read";

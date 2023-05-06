@@ -11,8 +11,6 @@ public class VoidSerialization : ISerialization
 
     public void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression) => throw new InvalidOperationException();
 
-    public string? GetKeyword() => "void";
-
     public bool GetIsVoid() => true;
     public bool GetIsResolved() => true;
 

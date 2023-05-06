@@ -12,11 +12,11 @@ public abstract class NonKeywordSerialization : ISerialization
     public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
     public abstract void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
     public abstract void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
-    
+
     public string? GetKeyword() => null;
-    
+
     public bool GetIsVoid() => false;
-    
+
     public virtual bool GetIsResolved() => true;
 
     public string GetDeclarationSyntax() => _declarationSyntax;

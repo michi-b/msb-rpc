@@ -21,7 +21,7 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
             ? new TypeReferenceInfo(namedTypeSymbol)
             : new TypeReferenceInfo();
 
-    private TypeReferenceInfo(TypeDeclarationInfo declaration, bool isNullableReference, ImmutableList<TypeReferenceInfo> typeArguments)
+    public TypeReferenceInfo(TypeDeclarationInfo declaration, bool isNullableReference, ImmutableList<TypeReferenceInfo> typeArguments)
     {
         Declaration = declaration;
         IsNullableReference = isNullableReference;
