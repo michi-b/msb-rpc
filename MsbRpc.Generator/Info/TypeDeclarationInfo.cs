@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.Extensions;
 
 namespace MsbRpc.Generator.Info;
 
@@ -19,7 +20,7 @@ public readonly struct TypeDeclarationInfo : IEquatable<TypeDeclarationInfo>
     }
 
     public TypeDeclarationInfo(INamedTypeSymbol typeSymbol)
-        : this(typeSymbol.Name, typeSymbol.TypeParameters.Length) { }
+        : this(typeSymbol.GetFullName(), typeSymbol.TypeParameters.Length) { }
 
     public bool Equals(TypeDeclarationInfo other)
         => Name == other.Name

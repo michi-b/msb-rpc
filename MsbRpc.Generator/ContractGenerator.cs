@@ -105,7 +105,7 @@ public class ContractGenerator : IIncrementalGenerator
                 foreach (ParameterNode parameter in parameters)
                 {
                     ISerialization serialization = parameter.Serialization;
-                    if (serialization.GetCanHandleRpcArguments())
+                    if (!serialization.GetCanHandleRpcArguments())
                     {
                         context.ReportTypeIsNotAValidRpcParameter(contract, procedure, parameter);
                     }
