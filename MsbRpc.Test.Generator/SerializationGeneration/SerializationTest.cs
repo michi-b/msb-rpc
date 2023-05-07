@@ -1,6 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Info;
@@ -27,7 +27,7 @@ internal readonly ref struct SerializationTest
     public string BufferReaderExpression { get; init; } = "bufferReader";
 
     public SerializationTest(TypeReferenceInfo targetType)
-        : this(new SerializationResolver(ImmutableArray<CustomSerializationInfo>.Empty), targetType) { }
+        : this(new SerializationResolver(Array.Empty<KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>>()), targetType) { }
 
     public SerializationTest(SerializationResolver serializationResolver, TypeReferenceInfo targetType)
     {
@@ -52,7 +52,7 @@ internal readonly ref struct SerializationTest
         bool isVoid = serialization.GetIsVoid();
         testContext?.WriteLine($"Is void: {isVoid}");
         Assert.AreEqual(ExpectedIsVoid, isVoid);
-        
+
         string declarationSyntax = serialization.GetDeclarationSyntax();
         testContext?.WriteLine($"Declaration syntax: {declarationSyntax}");
         if (ExpectedDeclarationSyntax != null)

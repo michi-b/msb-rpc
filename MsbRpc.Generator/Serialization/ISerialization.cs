@@ -5,14 +5,15 @@ namespace MsbRpc.Generator.Serialization;
 public interface ISerialization
 {
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
-    
+
     /// <summary>
-    /// write statement to serialize the value, excluding the trailing semicolon and newline
+    ///     write statement to serialize the value, excluding the trailing semicolon and newline
     /// </summary>
     /// <param name="writer"></param>
     /// <param name="bufferWriterExpression"></param>
     /// <param name="valueExpression"></param>
     public void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
+
     public void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
 
     public bool GetIsVoid();

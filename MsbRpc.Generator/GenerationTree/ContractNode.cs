@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using MsbRpc.Generator.Enums;
@@ -28,11 +29,9 @@ internal class ContractNode
         PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
-        ImmutableArray<CustomSerializationInfo> customSerializations = info.CustomSerializations
-            .Select(pair => pair.Value)
-            .ToImmutableArray();
+        KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>[] customerializations = info.CustomSerializations.ToArray();
 
-        var serializationResolver = new SerializationResolver(customSerializations);
+        var serializationResolver = new SerializationResolver(customerializations);
 
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 

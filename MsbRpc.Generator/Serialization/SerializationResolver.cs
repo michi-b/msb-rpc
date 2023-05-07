@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Default;
 using MsbRpc.Generator.Serialization.Serializations;
@@ -39,9 +38,18 @@ public class SerializationResolver
         }
     }
 
-    public SerializationResolver(ImmutableArray<CustomSerializationInfo> customSerializations)
+    public SerializationResolver()
+        : this(CustomSerialization.EmptyArray) { }
+
+    public SerializationResolver(KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>[] customSerializations)
     {
         _serializations = new SerializationRegistry(DefaultSerializations);
+
+        foreach (KeyValuePair<TypeReferenceInfo, CustomSerializationInfo> customSerialization in customSerializations)
+        {
+            _serializations.Add(customSerialization.Key, new CustomSerialization(customSerialization.Key, customSerialization.Value));
+        }
+
         _genericSerializationsFactories = new GenericSerializationFactoryRegistry(DefaultGenericSerializationsFactories);
     }
 

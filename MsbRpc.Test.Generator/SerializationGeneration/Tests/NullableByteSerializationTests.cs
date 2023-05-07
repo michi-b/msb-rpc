@@ -19,7 +19,7 @@ public class NullableByteSerializationTests : Base.Test
     {
         get
         {
-            SerializationResolver resolver = new(ImmutableArray<CustomSerializationInfo>.Empty);
+            SerializationResolver resolver = new();
             return resolver.Resolve(NullableBoolInfo);
         }
     }

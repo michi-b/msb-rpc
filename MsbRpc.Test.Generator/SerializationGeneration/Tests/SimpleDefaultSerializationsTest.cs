@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Immutable;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Serialization.Default;
 
@@ -196,5 +194,5 @@ public class SimpleDefaultSerializationsTest : Base.Test
         }.Run(TestContext);
     }
 
-    private static SerializationResolver CreateResolver() => new(ImmutableArray<CustomSerializationInfo>.Empty);
+    private static SerializationResolver CreateResolver() => new();
 }
