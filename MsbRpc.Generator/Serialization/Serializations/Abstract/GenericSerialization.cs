@@ -1,10 +1,12 @@
 ﻿using System.CodeDom.Compiler;
+using MsbRpc.Generator.CodeWriters.Utility;
 
 namespace MsbRpc.Generator.Serialization.Serializations.Abstract;
 
 public abstract class GenericSerialization : ISerialization
 {
-    protected const string BufferWriterArgumentName = "bufferWriter";
+    protected const string BufferWriterArgumentName = IndependentNames.Variables.RequestWriter;
+    protected const string BufferReaderArgumentName = IndependentNames.Variables.ResponseReader;
     protected GenericSerialization(){}
 
     public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);

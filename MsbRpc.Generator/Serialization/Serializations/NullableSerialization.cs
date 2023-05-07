@@ -61,7 +61,18 @@ public sealed class NullableSerialization : GenericSerialization
 
     public override void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression)
     {
-        throw new NotImplementedException();
+        writer.WriteLine($"{_serializerName}.{Methods.SerializerRead}");
+        using (writer.GetParenthesesBlock(Appendix.None))
+        {
+            writer.WriteLine($"ref {bufferReaderExpression},");
+
+            writer.WriteLine($"({BufferReaderArgumentName}) => ");
+            using (writer.GetBlock())
+            {
+                writer.WriteDeserializationExpression(_innerValueSerialization, BufferReaderArgumentName);
+                writer.WriteLine();
+            }
+        }
     }
 
     public override string GetDeclarationSyntax()

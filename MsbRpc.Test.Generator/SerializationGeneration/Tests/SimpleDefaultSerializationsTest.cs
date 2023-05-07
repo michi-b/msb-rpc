@@ -185,7 +185,7 @@ public class SimpleDefaultSerializationsTest : Base.Test
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
 
-    private static void RunSerializationTest(SimpleDefaultSerializationKind target)
+    private void RunSerializationTest(SimpleDefaultSerializationKind target)
     {
         new SerializationTest(target.GetTargetType())
         {
@@ -193,7 +193,7 @@ public class SimpleDefaultSerializationsTest : Base.Test
             ExpectedSizeExpression = GetExpectedSizeExpression(target),
             ExpectedSerializationStatement = GetExpectedSerializationStatement(target),
             ExpectedDeserializationExpression = GetExpectedDeserializationExpression(target)
-        }.Run();
+        }.Run(TestContext);
     }
 
     private static SerializationResolver CreateResolver() => new(ImmutableArray<CustomSerializationInfo>.Empty);

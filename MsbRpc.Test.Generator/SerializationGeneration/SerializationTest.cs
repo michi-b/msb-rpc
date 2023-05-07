@@ -40,29 +40,45 @@ internal readonly ref struct SerializationTest
         ExpectedIsVoid = false;
     }
 
-    public void Run()
+    public void Run(TestContext? testContext = null)
     {
         ISerialization serialization = _serializationResolver.Resolve(TargetType);
-        Assert.IsTrue(serialization.GetIsResolved());
-        Assert.AreEqual(ExpectedIsVoid, serialization.GetIsVoid());
+        testContext?.WriteLine($"Serialization has type {serialization.GetType()}");
+
+        bool isResolved = serialization.GetIsResolved();
+        testContext?.WriteLine($"Is resolved: {isResolved}");
+        Assert.IsTrue(isResolved);
+
+        bool isVoid = serialization.GetIsVoid();
+        testContext?.WriteLine($"Is void: {isVoid}");
+        Assert.AreEqual(ExpectedIsVoid, isVoid);
+        
+        string declarationSyntax = serialization.GetDeclarationSyntax();
+        testContext?.WriteLine($"Declaration syntax: {declarationSyntax}");
         if (ExpectedDeclarationSyntax != null)
         {
-            Assert.AreEqual(ExpectedDeclarationSyntax, serialization.GetDeclarationSyntax());
+            Assert.AreEqual(ExpectedDeclarationSyntax, declarationSyntax);
         }
 
+        string sizeExpression = GetSizeExpression(serialization, TargetExpression);
+        testContext?.WriteLine($"Size expression: {sizeExpression}");
         if (ExpectedSizeExpression != null)
         {
-            Assert.AreEqual(ExpectedSizeExpression, GetSizeExpression(serialization, TargetExpression));
+            Assert.AreEqual(ExpectedSizeExpression, sizeExpression);
         }
 
+        string serializationStatement = GetSerializationStatement(serialization, BufferWriterExpression, ValueExpression);
+        testContext?.WriteLine($"Serialization statement: {serializationStatement}");
         if (ExpectedSerializationStatement != null)
         {
-            Assert.AreEqual(ExpectedSerializationStatement, GetSerializationStatement(serialization, BufferWriterExpression, ValueExpression));
+            Assert.AreEqual(ExpectedSerializationStatement, serializationStatement);
         }
 
+        string deserializationExpression = GetDeserializationExpression(serialization, BufferReaderExpression);
+        testContext?.WriteLine($"Deserialization expression: {deserializationExpression}");
         if (ExpectedDeserializationExpression != null)
         {
-            Assert.AreEqual(ExpectedDeserializationExpression, GetDeserializationExpression(serialization, BufferReaderExpression));
+            Assert.AreEqual(ExpectedDeserializationExpression, deserializationExpression);
         }
     }
 
