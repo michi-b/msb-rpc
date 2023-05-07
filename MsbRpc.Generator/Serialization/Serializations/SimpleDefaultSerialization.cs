@@ -1,7 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.Serialization.Default;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Serialization.Serializations;
 
@@ -24,7 +24,7 @@ public sealed class SimpleDefaultSerialization : ISerialization
     private const string ReadString = "." + Methods.BufferReaderReadString + "()";
 
     private static readonly Func<string, string, string> DefaultSerializationTypeWriteStatement =
-        (bufferWriterExpression, valueExpression) => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression});";
+        (bufferWriterExpression, valueExpression) => $"{bufferWriterExpression}.{Methods.BufferWriterWrite}({valueExpression})";
 
     private readonly SimpleDefaultSerializationKind _serializationKind;
 

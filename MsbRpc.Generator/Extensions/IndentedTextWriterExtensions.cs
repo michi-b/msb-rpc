@@ -2,10 +2,11 @@
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Serialization;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
+using MsbRpc.Generator.Utility;
+using static MsbRpc.Generator.Utility.IndependentCode;
+using static MsbRpc.Generator.Utility.IndependentNames.Types;
 
-namespace MsbRpc.Generator.CodeWriters.Utility;
+namespace MsbRpc.Generator.Extensions;
 
 internal static class IndentedTextWriterExtensions
 {
@@ -40,25 +41,6 @@ internal static class IndentedTextWriterExtensions
         }
     }
 
-    /// <summary>
-    ///     MsbRpc.Serialization.Buffers.Response response = Buffer.GetResponse(Implementation.RanToCompletion, resultSize);
-    ///     MsbRpc.Serialization.Buffers.BufferWriter responseWriter = response.GetWriter();
-    ///     responseWriter.Write(result);
-    ///     return response;
-    /// </summary>
-    public static void WriteReturnResultResponse(this IndentedTextWriter writer, string writeResultToResponseStatement)
-    {
-        writer.WriteLine
-        (
-            $"{Response} {IndependentNames.Variables.Response} = {IndependentNames.Fields.EndPointBuffer}.{IndependentNames.Methods.GetResponse}("
-            + $"{IndependentNames.Fields.InboundEndpointImplementation}.{IndependentNames.Properties.RanToCompletion}, "
-            + $"{IndependentNames.Variables.ResultSize});"
-        );
-        writer.WriteLine(GetResponseWriterStatement);
-        writer.WriteLine(writeResultToResponseStatement);
-        writer.WriteLine(ReturnResponseStatement);
-    }
-
     public static void WriteRpcExecutionExceptionCatchBlock
     (
         this IndentedTextWriter writer,
@@ -79,19 +61,46 @@ internal static class IndentedTextWriterExtensions
             }
         }
     }
-    
+
     public static void WriteSerializationSizeExpression(this IndentedTextWriter writer, ISerialization serialization, string targetExpression)
     {
         serialization.WriteSizeExpression(writer, targetExpression);
     }
-    
+
     public static void WriteSerializationStatement(this IndentedTextWriter writer, ISerialization serialization, string bufferWriterExpression, string valueExpression)
     {
         serialization.WriteSerializationStatement(writer, bufferWriterExpression, valueExpression);
     }
-    
+
     public static void WriteDeserializationExpression(this IndentedTextWriter writer, ISerialization serialization, string bufferReaderExpression)
     {
         serialization.WriteDeserializationExpression(writer, bufferReaderExpression);
+    }
+
+    /// <summary>
+    ///     same as <see cref="WriteSerializationStatement" />, but with trailing semicolon and new line
+    /// </summary>
+    public static void WriteFinalizedSerializationStatement
+    (
+        this IndentedTextWriter writer,
+        ISerialization serialization,
+        string bufferWriterExpression,
+        string valueExpression
+    )
+    {
+        serialization.WriteFinalizedSerializationStatement(writer, bufferWriterExpression, valueExpression);
+    }
+
+    /// <summary>
+    ///     same as <see cref="WriteDeserializationExpression" />, but with trailing semicolon and new line
+    /// </summary>
+    public static void WriteFinalizedDeserializationStatement
+    (
+        this IndentedTextWriter writer,
+        ISerialization serialization,
+        string bufferReaderExpression
+    )
+    {
+        serialization.WriteFinalizedDeserializationExpression(writer, bufferReaderExpression);
     }
 }

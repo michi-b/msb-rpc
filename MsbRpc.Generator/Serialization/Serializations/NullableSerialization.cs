@@ -1,9 +1,9 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using MsbRpc.Generator.CodeWriters.Utility;
+﻿using System.CodeDom.Compiler;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Serializations.Abstract;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using MsbRpc.Generator.Utility;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Serialization.Serializations;
 
@@ -45,17 +45,14 @@ public sealed class NullableSerialization : GenericSerialization
     public override void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression)
     {
         writer.WriteLine($"{_serializerName}.{Methods.SerializerWrite}");
-        using (writer.GetParenthesesBlock(Appendix.SemicolonAndNewline))
+        using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"ref {bufferWriterExpression},");
             writer.WriteLine($"{valueExpression},");
 
-            writer.WriteLine($"({BufferWriterArgumentName}, {ValueArgumentName}) => ");
-            using (writer.GetBlock())
-            {
-                writer.WriteSerializationStatement(_innerValueSerialization, BufferWriterArgumentName, ValueArgumentName);
-                writer.WriteLine();
-            }
+            writer.Write($"({BufferWriterArgumentName}, {ValueArgumentName}) => ");
+            writer.WriteSerializationStatement(_innerValueSerialization, BufferWriterArgumentName, ValueArgumentName);
+            writer.WriteLine();
         }
     }
 
@@ -66,12 +63,9 @@ public sealed class NullableSerialization : GenericSerialization
         {
             writer.WriteLine($"ref {bufferReaderExpression},");
 
-            writer.WriteLine($"({BufferReaderArgumentName}) => ");
-            using (writer.GetBlock())
-            {
-                writer.WriteDeserializationExpression(_innerValueSerialization, BufferReaderArgumentName);
-                writer.WriteLine();
-            }
+            writer.Write($"({BufferReaderArgumentName}) => ");
+            writer.WriteDeserializationExpression(_innerValueSerialization, BufferReaderArgumentName);
+            writer.WriteLine();
         }
     }
 

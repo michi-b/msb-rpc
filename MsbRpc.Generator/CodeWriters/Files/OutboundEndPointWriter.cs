@@ -1,9 +1,10 @@
 ﻿using System.CodeDom.Compiler;
-using MsbRpc.Generator.CodeWriters.Utility;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Serialization;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using MsbRpc.Generator.Utility;
+using static MsbRpc.Generator.Utility.IndependentCode;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
@@ -143,7 +144,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
             foreach (ParameterNode parameter in parameters)
             {
-                parameter.Serialization.WriteSerializationStatement(writer, Variables.RequestWriter, parameter.Name);
+                writer.WriteFinalizedSerializationStatement(parameter.Serialization, Variables.RequestWriter, parameter.Name);
             }
         }
         else
@@ -164,8 +165,7 @@ internal class OutboundEndPointWriter : EndPointWriter
             writer.WriteLine(ResponseReaderInitializationStatement);
 
             writer.Write($"{resultSerialization.GetDeclarationSyntax()} {Variables.Result} = ");
-            resultSerialization.WriteDeserializationExpression(writer, Variables.ResponseReader);
-            writer.WriteLine(";");
+            writer.WriteFinalizedDeserializationStatement(resultSerialization, Variables.ResponseReader);
 
             writer.WriteLine($"return {Variables.Result};");
         }

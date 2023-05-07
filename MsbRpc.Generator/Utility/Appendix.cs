@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MsbRpc.Generator.CodeWriters.Utility;
+namespace MsbRpc.Generator.Utility;
 
 [Flags]
 public enum Appendix

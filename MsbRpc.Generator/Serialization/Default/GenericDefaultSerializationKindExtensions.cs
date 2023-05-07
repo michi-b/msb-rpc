@@ -1,7 +1,7 @@
 ﻿using System;
-using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Serializations;
+using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Serialization.Default;
 

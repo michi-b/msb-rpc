@@ -148,20 +148,20 @@ public class SimpleDefaultSerializationsTest : Base.Test
     private static string GetExpectedSerializationStatement(SimpleDefaultSerializationKind target)
         => target switch
         {
-            SimpleDefaultSerializationKind.Byte => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Sbyte => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Bool => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Char => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Int => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Long => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Short => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Uint => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Ulong => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Ushort => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Float => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Double => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.Decimal => "bufferWriter.Write(value);",
-            SimpleDefaultSerializationKind.String => "bufferWriter.Write(value);",
+            SimpleDefaultSerializationKind.Byte => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Sbyte => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Bool => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Char => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Int => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Long => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Short => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Uint => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Ulong => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Ushort => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Float => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Double => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Decimal => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.String => "bufferWriter.Write(value)",
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
 

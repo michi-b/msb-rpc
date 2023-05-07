@@ -1,9 +1,10 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using MsbRpc.Generator.CodeWriters.Utility;
 using MsbRpc.Generator.Enums;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using MsbRpc.Generator.Utility;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 

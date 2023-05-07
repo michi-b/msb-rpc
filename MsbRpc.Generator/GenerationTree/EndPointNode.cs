@@ -1,5 +1,5 @@
 ﻿using MsbRpc.Generator.Enums;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 

@@ -1,7 +1,7 @@
 ﻿using MsbRpc.Generator.GenerationTree;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
-namespace MsbRpc.Generator.CodeWriters.Utility;
+namespace MsbRpc.Generator.Utility;
 
 internal static class IndependentCode
 {

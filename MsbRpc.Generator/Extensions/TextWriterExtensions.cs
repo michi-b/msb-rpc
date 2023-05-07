@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace MsbRpc.Generator.CodeWriters.Utility;
+namespace MsbRpc.Generator.Extensions;
 
 public static class TextWriterExtensions
 {
@@ -21,7 +21,7 @@ public static class TextWriterExtensions
         writer.WriteFileScopedNamespace(fileScopedNamespace);
     }
 
-    public static void WriteLineBreakingSemicolon(this TextWriter writer) => writer.WriteLine(";");
+    public static void WriteSemicolonLineBreak(this TextWriter writer) => writer.WriteLine(";");
 
     public static void WriteCommaDelimiter(this TextWriter writer, bool withTrailingSpace = false) => writer.Write(withTrailingSpace ? ", " : ",");
 

@@ -1,8 +1,40 @@
-﻿namespace MsbRpc.Generator.Serialization;
+﻿using System.CodeDom.Compiler;
+using MsbRpc.Generator.Extensions;
+
+namespace MsbRpc.Generator.Serialization;
 
 public static class SerializationExtensions
 {
     public static bool GetCanHandleRpcArguments(this ISerialization serialization) => serialization.GetIsResolved() && !serialization.GetIsVoid();
 
     public static bool GetCanHandleRpcResults(this ISerialization serialization) => serialization.GetIsResolved();
+
+    /// <summary>
+    ///     same as <see cref="ISerialization.WriteSerializationStatement" />, but with trailing semicolon and new line
+    /// </summary>
+    public static void WriteFinalizedSerializationStatement
+    (
+        this ISerialization serialization,
+        IndentedTextWriter writer,
+        string bufferWriterExpression,
+        string valueExpression
+    )
+    {
+        serialization.WriteSerializationStatement(writer, bufferWriterExpression, valueExpression);
+        writer.WriteSemicolonLineBreak();
+    }
+
+    /// <summary>
+    ///     same as <see cref="ISerialization.WriteDeserializationStatement" />, but with trailing semicolon and new line
+    /// </summary>
+    public static void WriteFinalizedDeserializationExpression
+    (
+        this ISerialization serialization,
+        IndentedTextWriter writer,
+        string bufferReaderExpression
+    )
+    {
+        serialization.WriteDeserializationExpression(writer, bufferReaderExpression);
+        writer.WriteSemicolonLineBreak();
+    }
 }

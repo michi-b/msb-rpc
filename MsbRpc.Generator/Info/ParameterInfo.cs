@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
-using MsbRpc.Generator.CodeWriters.Utility;
+using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 

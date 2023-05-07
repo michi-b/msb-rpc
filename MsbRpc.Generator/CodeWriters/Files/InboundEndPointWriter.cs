@@ -1,11 +1,12 @@
 ﻿using System.CodeDom.Compiler;
 using System.Linq;
-using MsbRpc.Generator.CodeWriters.Utility;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Serialization;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentCode;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames;
-using static MsbRpc.Generator.CodeWriters.Utility.IndependentNames.Types;
+using MsbRpc.Generator.Utility;
+using static MsbRpc.Generator.Utility.IndependentCode;
+using static MsbRpc.Generator.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.IndependentNames.Types;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
@@ -161,7 +162,8 @@ internal class InboundEndPointWriter : EndPointWriter
                         + $"{Variables.ResultSize});"
                     );
                     writer.WriteLine(GetResponseWriterStatement);
-                    resultSerialization.WriteSerializationStatement(writer, Variables.ResponseWriter, Variables.Result);
+                    writer.WriteFinalizedSerializationStatement(resultSerialization, Variables.ResponseWriter, Variables.Result);
+                    writer.WriteSemicolonLineBreak();
                     writer.WriteLine(ReturnResponseStatement);
                 }
 
@@ -179,8 +181,7 @@ internal class InboundEndPointWriter : EndPointWriter
         foreach (ParameterNode parameter in parameters)
         {
             writer.Write($"{parameter.ArgumentVariableName} = ");
-            parameter.Serialization.WriteDeserializationExpression(writer, Variables.RequestReader);
-            writer.WriteLine(");");
+            writer.WriteFinalizedDeserializationStatement(parameter.Serialization, Variables.RequestReader);
         }
     }
 }

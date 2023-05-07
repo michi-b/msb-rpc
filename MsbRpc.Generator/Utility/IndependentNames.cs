@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator.CodeWriters.Utility;
+﻿namespace MsbRpc.Generator.Utility;
 
 internal static class IndependentNames
 {
