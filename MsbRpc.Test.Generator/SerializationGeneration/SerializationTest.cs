@@ -45,15 +45,15 @@ internal readonly ref struct SerializationTest
         ISerialization serialization = _serializationResolver.Resolve(TargetType);
         testContext?.WriteLine($"Serialization has type {serialization.GetType()}");
 
-        bool isResolved = serialization.GetIsResolved();
+        bool isResolved = serialization.IsResolved;
         testContext?.WriteLine($"Is resolved: {isResolved}");
         Assert.IsTrue(isResolved);
 
-        bool isVoid = serialization.GetIsVoid();
+        bool isVoid = serialization.IsVoid;
         testContext?.WriteLine($"Is void: {isVoid}");
         Assert.AreEqual(ExpectedIsVoid, isVoid);
 
-        string declarationSyntax = serialization.GetDeclarationSyntax();
+        string declarationSyntax = serialization.DeclarationSyntax;
         testContext?.WriteLine($"Declaration syntax: {declarationSyntax}");
         if (ExpectedDeclarationSyntax != null)
         {

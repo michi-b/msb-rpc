@@ -17,6 +17,13 @@ public sealed class NullableSerialization : GenericSerialization
 
     private readonly string _serializerName;
 
+    public override bool IsConstantSize => _innerValueSerialization.IsConstantSize;
+
+    public override string DeclarationSyntax
+        => _canUseNullableAnnotationInsteadOfWrapper
+            ? $"{_innerValueSerialization.DeclarationSyntax}?"
+            : $"{Types.Nullable}<{_innerValueSerialization.DeclarationSyntax}>";
+
     private NullableSerialization(ISerialization innerValueSerialization)
     {
         _innerValueSerialization = innerValueSerialization;
@@ -25,20 +32,27 @@ public sealed class NullableSerialization : GenericSerialization
             _canUseNullableAnnotationInsteadOfWrapper = simpleDefaultSerialization.CanUseNullableAnnotationInsteadOfWrapper;
         }
 
-        _serializerName = $"{Types.NullableSerializer}<{_innerValueSerialization.GetDeclarationSyntax()}>";
+        _serializerName = $"{Types.NullableSerializer}<{_innerValueSerialization.DeclarationSyntax}>";
     }
 
     public override void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
-        writer.WriteLine($"{_serializerName}.{Methods.SerializerGetSize}");
-
-        using (writer.GetParenthesesBlock(Appendix.None))
+        if (_innerValueSerialization.IsConstantSize)
         {
-            writer.WriteLine($"{targetExpression},");
-
-            writer.Write($"({ValueArgumentName}) => ");
+            writer.Write("(");
             writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
-            writer.WriteLine();
+            writer.Write($" + {Fields.PrimitiveSerializerBoolSize})");
+        }
+        else
+        {
+            writer.WriteLine($"{_serializerName}.{Methods.SerializerGetSize}");
+            using (writer.GetParenthesesBlock(Appendix.None))
+            {
+                writer.WriteLine($"{targetExpression},");
+                writer.Write($"({ValueArgumentName}) => ");
+                writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
+                writer.WriteLine();
+            }
         }
     }
 
@@ -68,11 +82,6 @@ public sealed class NullableSerialization : GenericSerialization
             writer.WriteLine();
         }
     }
-
-    public override string GetDeclarationSyntax()
-        => _canUseNullableAnnotationInsteadOfWrapper
-            ? $"{_innerValueSerialization.GetDeclarationSyntax()}?"
-            : $"{Types.Nullable}<{_innerValueSerialization.GetDeclarationSyntax()}>";
 
     public class Factory : IGenericSerializationFactory
     {

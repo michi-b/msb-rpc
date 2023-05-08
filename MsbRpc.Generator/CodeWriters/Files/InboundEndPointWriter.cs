@@ -83,7 +83,7 @@ internal class InboundEndPointWriter : EndPointWriter
             //read arguments into local variables
             if (parameters != null)
             {
-                bool hasAnySerializableParameters = parameters.Any(p => p.Serialization.GetIsResolved());
+                bool hasAnySerializableParameters = parameters.Any(p => p.Serialization.IsResolved);
 
                 foreach (ParameterNode parameter in parameters)
                 {
@@ -120,15 +120,15 @@ internal class InboundEndPointWriter : EndPointWriter
             string implementationCallStatement = $"{Fields.InboundEndpointImplementation}.{procedure.Name}({allValueArgumentsString});";
 
             //call the contract implementation
-            if (!resultSerialization.GetIsVoid())
+            if (!resultSerialization.IsVoid)
             {
-                writer.WriteLine($"{resultSerialization.GetDeclarationSyntax()} {Variables.Result};");
+                writer.WriteLine($"{resultSerialization.DeclarationSyntax} {Variables.Result};");
                 writer.WriteLine();
             }
 
             using (writer.GetTryBlock())
             {
-                if (!resultSerialization.GetIsVoid())
+                if (!resultSerialization.IsVoid)
                 {
                     writer.Write($"{Variables.Result} = ");
                 }
@@ -142,7 +142,7 @@ internal class InboundEndPointWriter : EndPointWriter
 
             //return the result
 
-            if (!resultSerialization.GetIsVoid())
+            if (!resultSerialization.IsVoid)
             {
                 writer.WriteLine($"{Response} {Variables.Response};");
 

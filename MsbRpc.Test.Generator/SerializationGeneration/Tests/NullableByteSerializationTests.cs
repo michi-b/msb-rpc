@@ -27,19 +27,19 @@ public class NullableByteSerializationTests : Base.Test
     [TestMethod]
     public void SerializationsAreResolved()
     {
-        Assert.IsTrue(Serialization.GetIsResolved());
+        Assert.IsTrue(Serialization.IsResolved);
     }
 
     [TestMethod]
     public void SerializationsAreNotVoid()
     {
-        Assert.IsFalse(Serialization.GetIsVoid());
+        Assert.IsFalse(Serialization.IsVoid);
     }
 
     [TestMethod]
     public void DeclarationSyntaxIsCorrect()
     {
-        string actual = Serialization.GetDeclarationSyntax();
+        string actual = Serialization.DeclarationSyntax;
         Assert.AreEqual("byte?", actual);
         TestContext.WriteLine(actual);
     }
@@ -47,11 +47,7 @@ public class NullableByteSerializationTests : Base.Test
     [TestMethod]
     public void SizeExpressionIsCorrect()
     {
-        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.GetSize
-(
-    target,
-    (innerValue) => MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize
-)";
+        const string expected = @"(MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize + MsbRpc.Serialization.Primitives.PrimitiveSerializer.BoolSize)";
         string actual = new SerializationTest(NullableBoolInfo).GetSizeExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);

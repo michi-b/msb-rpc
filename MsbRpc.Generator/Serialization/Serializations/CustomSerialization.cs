@@ -12,10 +12,10 @@ public sealed class CustomSerialization : ISerialization
 
     private readonly string _declarationSyntax;
     private readonly string _deserializationMethod;
+    private readonly bool _isConstantSize;
     private readonly string _serializationMethod;
     private readonly string _sizeMember;
-    private readonly bool _isConstantSize;
-    
+
     public CustomSerialization(TypeReferenceInfo targetType, CustomSerializationInfo serializationInfo)
     {
         _declarationSyntax = targetType.GetDeclarationSyntax();
@@ -41,9 +41,10 @@ public sealed class CustomSerialization : ISerialization
         writer.Write($"{_deserializationMethod}({bufferReaderExpression})");
     }
 
-    public bool GetIsVoid() => false;
+    public bool IsVoid => false;
 
-    public bool GetIsResolved() => true;
+    public bool IsResolved => true;
+    public bool IsConstantSize => _isConstantSize;
 
-    public string GetDeclarationSyntax() => _declarationSyntax;
+    public string DeclarationSyntax => _declarationSyntax;
 }

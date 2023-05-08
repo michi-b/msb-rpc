@@ -16,10 +16,12 @@ public interface ISerialization
 
     public void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
 
-    public bool GetIsVoid();
+    public bool IsVoid { get; }
 
-    public bool GetIsResolved();
+    public bool IsResolved { get; }
+
+    public bool IsConstantSize { get; }
 
     /// <summary>declaration syntax for a variable to store the target type, eg. "int?", "string", "MyStruct" etc.</summary>
-    public string GetDeclarationSyntax();
+    public string DeclarationSyntax { get; }
 }

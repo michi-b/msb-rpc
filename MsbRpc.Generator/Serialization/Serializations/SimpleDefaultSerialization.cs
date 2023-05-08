@@ -123,27 +123,44 @@ public sealed class SimpleDefaultSerialization : ISerialization
         );
     }
 
-    public bool GetIsVoid() => false;
+    public bool IsVoid => false;
 
-    public bool GetIsResolved() => true;
+    public bool IsResolved => true;
+    public bool IsConstantSize => _serializationKind switch
+    {
+        SimpleDefaultSerializationKind.Byte => true,
+        SimpleDefaultSerializationKind.Sbyte => true,
+        SimpleDefaultSerializationKind.Bool => true,
+        SimpleDefaultSerializationKind.Char => true,
+        SimpleDefaultSerializationKind.Int => true,
+        SimpleDefaultSerializationKind.Long => true,
+        SimpleDefaultSerializationKind.Short => true,
+        SimpleDefaultSerializationKind.Uint => true,
+        SimpleDefaultSerializationKind.Ulong => true,
+        SimpleDefaultSerializationKind.Ushort => true,
+        SimpleDefaultSerializationKind.Float => true,
+        SimpleDefaultSerializationKind.Double => true,
+        SimpleDefaultSerializationKind.Decimal => true,
+        SimpleDefaultSerializationKind.String => false,
+        _ => throw new ArgumentOutOfRangeException()
+    };
 
-    public string GetDeclarationSyntax()
-        => _serializationKind switch
-        {
-            SimpleDefaultSerializationKind.Byte => "byte",
-            SimpleDefaultSerializationKind.Sbyte => "sbyte",
-            SimpleDefaultSerializationKind.Bool => "bool",
-            SimpleDefaultSerializationKind.Char => "char",
-            SimpleDefaultSerializationKind.Int => "int",
-            SimpleDefaultSerializationKind.Long => "long",
-            SimpleDefaultSerializationKind.Short => "short",
-            SimpleDefaultSerializationKind.Uint => "uint",
-            SimpleDefaultSerializationKind.Ulong => "ulong",
-            SimpleDefaultSerializationKind.Ushort => "ushort",
-            SimpleDefaultSerializationKind.Float => "float",
-            SimpleDefaultSerializationKind.Double => "double",
-            SimpleDefaultSerializationKind.Decimal => "decimal",
-            SimpleDefaultSerializationKind.String => "string",
-            _ => throw new ArgumentOutOfRangeException()
-        };
+    public string DeclarationSyntax => _serializationKind switch
+    {
+        SimpleDefaultSerializationKind.Byte => "byte",
+        SimpleDefaultSerializationKind.Sbyte => "sbyte",
+        SimpleDefaultSerializationKind.Bool => "bool",
+        SimpleDefaultSerializationKind.Char => "char",
+        SimpleDefaultSerializationKind.Int => "int",
+        SimpleDefaultSerializationKind.Long => "long",
+        SimpleDefaultSerializationKind.Short => "short",
+        SimpleDefaultSerializationKind.Uint => "uint",
+        SimpleDefaultSerializationKind.Ulong => "ulong",
+        SimpleDefaultSerializationKind.Ushort => "ushort",
+        SimpleDefaultSerializationKind.Float => "float",
+        SimpleDefaultSerializationKind.Double => "double",
+        SimpleDefaultSerializationKind.Decimal => "decimal",
+        SimpleDefaultSerializationKind.String => "string",
+        _ => throw new ArgumentOutOfRangeException()
+    };
 }

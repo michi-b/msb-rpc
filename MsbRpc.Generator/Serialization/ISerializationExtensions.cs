@@ -5,9 +5,9 @@ namespace MsbRpc.Generator.Serialization;
 
 public static class SerializationExtensions
 {
-    public static bool GetCanHandleRpcArguments(this ISerialization serialization) => serialization.GetIsResolved() && !serialization.GetIsVoid();
+    public static bool GetCanHandleRpcArguments(this ISerialization serialization) => serialization.IsResolved && !serialization.IsVoid;
 
-    public static bool GetCanHandleRpcResults(this ISerialization serialization) => serialization.GetIsResolved();
+    public static bool GetCanHandleRpcResults(this ISerialization serialization) => serialization.IsResolved;
 
     /// <summary>
     ///     same as <see cref="ISerialization.WriteSerializationStatement" />, but with trailing semicolon and new line
@@ -25,7 +25,8 @@ public static class SerializationExtensions
     }
 
     /// <summary>
-    ///     same as <see cref="ISerialization.WriteDeserializationStatement" />, but with trailing semicolon and new line
+    ///     same as <see cref="MsbRpc.Generator.Serialization.ISerialization.WriteDeserializationExpression" />, but with
+    ///     trailing semicolon and new line
     /// </summary>
     public static void WriteFinalizedDeserializationExpression
     (

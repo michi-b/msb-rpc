@@ -81,9 +81,9 @@ internal class OutboundEndPointWriter : EndPointWriter
         ISerialization resultSerialization = procedure.ResultSerialization;
         writer.Write
         (
-            resultSerialization.GetIsVoid()
+            resultSerialization.IsVoid
                 ? $"{Types.VaLueTask}"
-                : $"{Types.VaLueTask}<{resultSerialization.GetDeclarationSyntax()}>"
+                : $"{Types.VaLueTask}<{resultSerialization.DeclarationSyntax}>"
         );
         writer.WriteLine($" {procedure.Name}{AsyncPostFix}");
         using (writer.GetParenthesesBlock())
@@ -94,7 +94,7 @@ internal class OutboundEndPointWriter : EndPointWriter
                 for (int i = 0; i < parameters.Count; i++)
                 {
                     ParameterNode parameter = parameters[i];
-                    writer.Write($"{parameter.Serialization.GetDeclarationSyntax()} {parameter.Name}");
+                    writer.Write($"{parameter.Serialization.DeclarationSyntax} {parameter.Name}");
                     writer.WriteLine(i < parameters.Count - 1 ? "," : string.Empty);
                 }
             }
@@ -155,7 +155,7 @@ internal class OutboundEndPointWriter : EndPointWriter
         writer.WriteLine();
 
         ISerialization resultSerialization = procedure.ResultSerialization;
-        if (resultSerialization.GetIsVoid())
+        if (resultSerialization.IsVoid)
         {
             writer.WriteLine(SendRequestStatement);
         }
@@ -164,7 +164,7 @@ internal class OutboundEndPointWriter : EndPointWriter
             writer.WriteLine(SendRequestStatementWithResponse);
             writer.WriteLine(ResponseReaderInitializationStatement);
 
-            writer.Write($"{resultSerialization.GetDeclarationSyntax()} {Variables.Result} = ");
+            writer.Write($"{resultSerialization.DeclarationSyntax} {Variables.Result} = ");
             writer.WriteFinalizedDeserializationStatement(resultSerialization, Variables.ResponseReader);
 
             writer.WriteLine($"return {Variables.Result};");

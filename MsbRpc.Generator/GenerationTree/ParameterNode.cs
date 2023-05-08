@@ -20,7 +20,7 @@ internal class ParameterNode
         Serialization = serialization;
     }
 
-    public string GetDeclarationStatement() => $"{Serialization.GetDeclarationSyntax()} {ArgumentVariableName};";
+    public string GetDeclarationStatement() => $"{Serialization.DeclarationSyntax} {ArgumentVariableName};";
 
-    public override string ToString() => $"{Name} ({Serialization.GetDeclarationSyntax()})";
+    public override string ToString() => $"{Name} ({Serialization.DeclarationSyntax})";
 }

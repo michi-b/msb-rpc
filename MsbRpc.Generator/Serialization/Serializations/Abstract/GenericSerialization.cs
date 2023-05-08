@@ -12,9 +12,10 @@ public abstract class GenericSerialization : ISerialization
     public abstract void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
     public abstract void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
 
-    public bool GetIsVoid() => false;
+    public bool IsVoid => false;
 
-    public virtual bool GetIsResolved() => true;
+    public virtual bool IsResolved => true;
+    public abstract bool IsConstantSize { get; }
 
-    public abstract string GetDeclarationSyntax();
+    public abstract string DeclarationSyntax { get; }
 }
