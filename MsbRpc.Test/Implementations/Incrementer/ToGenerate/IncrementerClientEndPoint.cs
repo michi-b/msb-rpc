@@ -55,11 +55,11 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerProcedure>
         return result;
     }
 
-    public async ValueTask<string?> IncrementNullableStringAsync(string? value)
+    public async ValueTask<string> IncrementStringAsync(string value)
     {
         AssertIsOperable();
 
-        int valueArgumentSize = NullableStringSerializer.GetSize(value);
+        int valueArgumentSize = StringSerializer.GetSize(value);
         // ReSharper disable once InlineTemporaryVariable
         int dynamicArgumentSizeSum = valueArgumentSize + PrimitiveSerializer.IntSize;
 
@@ -67,12 +67,12 @@ public class IncrementerClientEndPoint : OutboundEndPoint<IncrementerProcedure>
 
         BufferWriter requestWriter = request.GetWriter();
 
-        requestWriter.WriteNullable(value);
+        requestWriter.Write(value);
 
         Response responseMessage = await SendRequestAsync(request);
         BufferReader responseReader = responseMessage.GetReader();
 
-        string? result = responseReader.ReadStringNullable();
+        string result = responseReader.ReadString();
 
         return result;
     }

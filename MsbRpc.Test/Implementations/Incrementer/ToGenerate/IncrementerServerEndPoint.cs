@@ -72,14 +72,14 @@ public class IncrementerServerEndPoint
         string? valueArgument;
         try
         {
-            valueArgument = requestReader.ReadStringNullable();
+            valueArgument = requestReader.ReadString();
         }
         catch (Exception e)
         {
             throw new RpcExecutionException<IncrementerProcedure>(e, IncrementerProcedure.IncrementString, RpcExecutionStage.ArgumentDeserialization);
         }
 
-        string? result;
+        string result;
         try
         {
             result = Implementation.IncrementString(valueArgument);
@@ -92,14 +92,14 @@ public class IncrementerServerEndPoint
         Response response;
         try
         {
-            int resultSize = NullableStringSerializer.GetSize(result);
+            int resultSize = StringSerializer.GetSize(result);
 
             int responseSize = resultSize + PrimitiveSerializer.IntSize;
 
             response = Buffer.GetResponse(Implementation.RanToCompletion, responseSize);
             BufferWriter responseWriter = response.GetWriter();
 
-            responseWriter.WriteNullable(result);
+            responseWriter.Write(result);
         }
         catch (Exception e)
         {

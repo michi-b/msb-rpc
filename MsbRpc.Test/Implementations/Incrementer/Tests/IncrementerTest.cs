@@ -159,18 +159,8 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         const string expected = "1";
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-        string? result = await client.IncrementNullableStringAsync(value);
+        string result = await client.IncrementStringAsync(value);
         Assert.AreEqual(expected, result);
-    }
-
-    [TestMethod]
-    public async Task IncrementsNullString()
-    {
-        const string? value = null;
-        using IncrementerServer server = StartServer();
-        IncrementerClientEndPoint client = await ConnectClient(server);
-        string? result = await client.IncrementNullableStringAsync(value);
-        Assert.IsNull(result);
     }
 
     [TestMethod]
@@ -180,10 +170,10 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         const string value = "a";
         using IncrementerServer server = StartServer();
         IncrementerClientEndPoint client = await ConnectClient(server);
-        await client.IncrementNullableStringAsync(value);
+        await client.IncrementStringAsync(value);
         try
         {
-            await client.IncrementNullableStringAsync(value);
+            await client.IncrementStringAsync(value);
         }
         catch (RpcRemoteException<IncrementerProcedure> exception)
         {
@@ -205,7 +195,7 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         IncrementerClientEndPoint client = await ConnectClient(server);
         try
         {
-            await client.IncrementNullableStringAsync(value);
+            await client.IncrementStringAsync(value);
         }
         catch (RpcRemoteException<IncrementerProcedure> exception)
         {
@@ -228,7 +218,7 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         IncrementerClientEndPoint client = await ConnectClient(server);
         try
         {
-            await client.IncrementNullableStringAsync(value);
+            await client.IncrementStringAsync(value);
         }
         catch (RpcRemoteException<IncrementerProcedure> exception)
         {
@@ -251,7 +241,7 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         IncrementerClientEndPoint client = await ConnectClient(server);
         try
         {
-            await client.IncrementNullableStringAsync(value);
+            await client.IncrementStringAsync(value);
         }
         catch (RpcRemoteException<IncrementerProcedure> exception)
         {
@@ -274,7 +264,7 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         IncrementerClientEndPoint client = await ConnectClient(server);
         try
         {
-            await client.IncrementNullableStringAsync(value);
+            await client.IncrementStringAsync(value);
         }
         catch (RpcRemoteException<IncrementerProcedure> exception)
         {
@@ -297,7 +287,7 @@ public class IncrementerTest : ServerTest<IncrementerTest,
         IncrementerClientEndPoint client = await ConnectClient(server);
         try
         {
-            await client.IncrementNullableStringAsync(value);
+            await client.IncrementStringAsync(value);
         }
         catch (RpcRemoteException<IncrementerProcedure> exception)
         {

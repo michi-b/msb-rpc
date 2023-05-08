@@ -30,7 +30,7 @@ public static class StringSerializer
         return reader.ReadString(count);
     }
 
-    internal static string ReadString(ref this BufferReader reader, int count)
+    private static string ReadString(ref this BufferReader reader, int count)
     {
         ArraySegment<byte> segment = reader.ReadSegment(count * PrimitiveSerializer.CharSize);
         char[] characters = new char[count];
