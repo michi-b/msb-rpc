@@ -3,7 +3,7 @@ using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class EndPointNode
+public class EndPointNode
 {
     public readonly ContractNode Contract;
     public readonly EndPointDirection Direction;

@@ -11,6 +11,7 @@ public sealed class VoidSerialization : ISerialization
     public bool IsConstantSize => true;
 
     public string DeclarationSyntax => throw new InvalidOperationException();
+    public bool NeedsSemicolonAfterSerializationStatement => throw new InvalidOperationException();
 
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression) => throw new InvalidOperationException();
 

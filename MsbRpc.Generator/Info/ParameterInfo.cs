@@ -4,7 +4,7 @@ using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 
-internal readonly struct ParameterInfo : IEquatable<ParameterInfo>
+public readonly struct ParameterInfo : IEquatable<ParameterInfo>
 {
     public string Name { get; }
     public TypeReferenceInfo TypeReference { get; }

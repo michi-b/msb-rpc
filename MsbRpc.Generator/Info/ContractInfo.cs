@@ -4,7 +4,7 @@ using MsbRpc.Generator.Attributes;
 
 namespace MsbRpc.Generator.Info;
 
-internal readonly struct ContractInfo : IEquatable<ContractInfo>
+public readonly struct ContractInfo : IEquatable<ContractInfo>
 {
     public readonly string InterfaceName;
     public readonly string Namespace;

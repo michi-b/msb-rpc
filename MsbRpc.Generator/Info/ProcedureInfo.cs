@@ -6,7 +6,7 @@ using MsbRpc.Generator.Utility;
 
 namespace MsbRpc.Generator.Info;
 
-internal readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
+public readonly struct ProcedureInfo : IEquatable<ProcedureInfo>
 {
     public string Name { get; }
     public ImmutableArray<ParameterInfo> Parameters { get; }

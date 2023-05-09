@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Enums;
 
-internal enum EndPointDirection
+public enum EndPointDirection
 {
     Inbound,
     Outbound

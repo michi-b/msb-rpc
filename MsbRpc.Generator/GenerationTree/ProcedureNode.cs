@@ -4,7 +4,7 @@ using MsbRpc.Generator.Serialization;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ProcedureNode
+public class ProcedureNode
 {
     //todo: remove if not used
     public readonly ProcedureCollectionNode CollectionNode;

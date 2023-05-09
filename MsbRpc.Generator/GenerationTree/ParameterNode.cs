@@ -3,7 +3,7 @@ using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ParameterNode
+public class ParameterNode
 {
     public readonly string ArgumentVariableName;
     public readonly int Index;

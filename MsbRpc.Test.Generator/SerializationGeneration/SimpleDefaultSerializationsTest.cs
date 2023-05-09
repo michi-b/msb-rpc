@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Serialization.Default;
 
-namespace MsbRpc.Test.Generator.SerializationGeneration.Tests;
+namespace MsbRpc.Test.Generator.SerializationGeneration;
 
 [TestClass]
 public class SimpleDefaultSerializationsTest : Base.Test
@@ -143,43 +143,43 @@ public class SimpleDefaultSerializationsTest : Base.Test
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
 
-    private static string GetExpectedSerializationStatement(SimpleDefaultSerializationKind target)
+    private static string GetExpectedFinalizedSerializationStatement(SimpleDefaultSerializationKind target)
         => target switch
         {
-            SimpleDefaultSerializationKind.Byte => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Sbyte => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Bool => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Char => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Int => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Long => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Short => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Uint => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Ulong => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Ushort => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Float => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Double => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.Decimal => "bufferWriter.Write(value)",
-            SimpleDefaultSerializationKind.String => "bufferWriter.Write(value)",
+            SimpleDefaultSerializationKind.Byte => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Sbyte => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Bool => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Char => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Int => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Long => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Short => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Uint => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Ulong => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Ushort => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Float => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Double => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.Decimal => "bufferWriter.Write(value);\n",
+            SimpleDefaultSerializationKind.String => "bufferWriter.Write(value);\n",
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
 
-    private static string GetExpectedDeserializationExpression(SimpleDefaultSerializationKind target)
+    private static string GetExpectedFinalizedDeserializationExpression(SimpleDefaultSerializationKind target)
         => target switch
         {
-            SimpleDefaultSerializationKind.Byte => "bufferReader.ReadByte()",
-            SimpleDefaultSerializationKind.Sbyte => "bufferReader.ReadSByte()",
-            SimpleDefaultSerializationKind.Bool => "bufferReader.ReadBool()",
-            SimpleDefaultSerializationKind.Char => "bufferReader.ReadChar()",
-            SimpleDefaultSerializationKind.Int => "bufferReader.ReadInt()",
-            SimpleDefaultSerializationKind.Long => "bufferReader.ReadLong()",
-            SimpleDefaultSerializationKind.Short => "bufferReader.ReadShort()",
-            SimpleDefaultSerializationKind.Uint => "bufferReader.ReadUInt()",
-            SimpleDefaultSerializationKind.Ulong => "bufferReader.ReadULong()",
-            SimpleDefaultSerializationKind.Ushort => "bufferReader.ReadUShort()",
-            SimpleDefaultSerializationKind.Float => "bufferReader.ReadFloat()",
-            SimpleDefaultSerializationKind.Double => "bufferReader.ReadDouble()",
-            SimpleDefaultSerializationKind.Decimal => "bufferReader.ReadDecimal()",
-            SimpleDefaultSerializationKind.String => "bufferReader.ReadString()",
+            SimpleDefaultSerializationKind.Byte => "bufferReader.ReadByte();\n",
+            SimpleDefaultSerializationKind.Sbyte => "bufferReader.ReadSByte();\n",
+            SimpleDefaultSerializationKind.Bool => "bufferReader.ReadBool();\n",
+            SimpleDefaultSerializationKind.Char => "bufferReader.ReadChar();\n",
+            SimpleDefaultSerializationKind.Int => "bufferReader.ReadInt();\n",
+            SimpleDefaultSerializationKind.Long => "bufferReader.ReadLong();\n",
+            SimpleDefaultSerializationKind.Short => "bufferReader.ReadShort();\n",
+            SimpleDefaultSerializationKind.Uint => "bufferReader.ReadUInt();\n",
+            SimpleDefaultSerializationKind.Ulong => "bufferReader.ReadULong();\n",
+            SimpleDefaultSerializationKind.Ushort => "bufferReader.ReadUShort();\n",
+            SimpleDefaultSerializationKind.Float => "bufferReader.ReadFloat();\n",
+            SimpleDefaultSerializationKind.Double => "bufferReader.ReadDouble();\n",
+            SimpleDefaultSerializationKind.Decimal => "bufferReader.ReadDecimal();\n",
+            SimpleDefaultSerializationKind.String => "bufferReader.ReadString();\n",
             _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
         };
 
@@ -189,8 +189,8 @@ public class SimpleDefaultSerializationsTest : Base.Test
         {
             ExpectedDeclarationSyntax = GetExpectedDeclarationSyntax(target),
             ExpectedSizeExpression = GetExpectedSizeExpression(target),
-            ExpectedSerializationStatement = GetExpectedSerializationStatement(target),
-            ExpectedDeserializationExpression = GetExpectedDeserializationExpression(target)
+            ExpectedSerializationStatement = GetExpectedFinalizedSerializationStatement(target),
+            ExpectedDeserializationExpression = GetExpectedFinalizedDeserializationExpression(target)
         }.Run(TestContext);
     }
 

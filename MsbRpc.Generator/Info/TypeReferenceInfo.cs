@@ -31,11 +31,11 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
     //create a simple type info, e.g. int, string, etc.
 
     /// <remarks>never use this with generic or non-default types</remarks>
-    public static TypeReferenceInfo CreateSimple(string fullyQualifiedSimpleTypeName)
+    public static TypeReferenceInfo CreateSimple(string fullyQualifiedSimpleTypeName, bool isNullableReference = false)
         => new
         (
             new TypeDeclarationInfo(fullyQualifiedSimpleTypeName, 0),
-            false,
+            isNullableReference,
             ImmutableList<TypeReferenceInfo>.Empty
         );
 
@@ -86,4 +86,6 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
     }
 
     private bool GetIsGeneric() => Declaration.TypeParameterCount > 0;
+
+    public TypeReferenceInfo MakeNullable(bool nullable) => new(Declaration, nullable, TypeArguments);
 }

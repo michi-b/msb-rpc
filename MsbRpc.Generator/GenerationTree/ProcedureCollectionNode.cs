@@ -7,7 +7,7 @@ using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
+public class ProcedureCollectionNode : IReadOnlyList<ProcedureNode>
 {
     private readonly ProcedureNode[] _procedures;
     public readonly ContractNode Contract;

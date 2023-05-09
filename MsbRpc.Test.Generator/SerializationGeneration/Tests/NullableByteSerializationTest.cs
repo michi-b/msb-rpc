@@ -15,17 +15,10 @@ public class NullableByteSerializationTests : Base.Test
         new[] { TypeReferenceInfo.CreateSimple("System.Byte") }.ToImmutableList()
     );
 
-    private static ISerialization Serialization
-    {
-        get
-        {
-            SerializationResolver resolver = new();
-            return resolver.Resolve(NullableBoolInfo);
-        }
-    }
+    private static ISerialization Serialization => new SerializationResolver().Resolve(NullableBoolInfo);
 
     [TestMethod]
-    public void SerializationsAreResolved()
+    public void SerializationIsResolved()
     {
         Assert.IsTrue(Serialization.IsResolved);
     }
@@ -60,9 +53,13 @@ public class NullableByteSerializationTests : Base.Test
 (
     ref bufferWriter,
     value,
-    (requestWriter, innerValue) => requestWriter.Write(innerValue)
-)";
-        string actual = new SerializationTest(NullableBoolInfo).GetSerializationStatement();
+    (requestWriter, innerValue) => 
+    {
+        requestWriter.Write(innerValue);
+    }
+);
+";
+        string actual = new SerializationTest(NullableBoolInfo).GetFinalizedSerializationStatement();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }
@@ -73,9 +70,9 @@ public class NullableByteSerializationTests : Base.Test
         const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.Read
 (
     ref bufferReader,
-    (responseReader) => responseReader.ReadByte()
-)";
-        string actual = new SerializationTest(NullableBoolInfo).GetDeserializationExpression();
+    (responseReader) => responseReader.ReadByte());
+";
+        string actual = new SerializationTest(NullableBoolInfo).GetFinalizedDeserializationExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }

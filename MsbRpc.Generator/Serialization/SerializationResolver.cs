@@ -2,6 +2,7 @@
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Default;
 using MsbRpc.Generator.Serialization.Serializations;
+using MsbRpc.Generator.Serialization.Serializations.Decorators;
 using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.Serialization;
@@ -54,26 +55,35 @@ public class SerializationResolver
     }
 
     // _genericSerializationWriterFactories = new SerializationFactoryRegistry();
-    public ISerialization Resolve(TypeReferenceInfo typeReference)
+    public ISerialization Resolve(TypeReferenceInfo type)
     {
-        if (_serializations.TryGetValue(typeReference, out ISerialization existingSerialization))
+        if (_serializations.TryGetValue(type, out ISerialization existingSerialization))
         {
             return existingSerialization;
         }
 
-        if (typeReference.TypeArguments.Count > 0)
+        if (type.IsNullableReference)
         {
-            if (_genericSerializationsFactories.TryGetValue(typeReference.Declaration, out IGenericSerializationFactory serializationFactory))
+            TypeReferenceInfo nonNullableType = type.MakeNullable(false);
+            ISerialization nonNullableSerialization = Resolve(nonNullableType);
+            ISerialization nullableSerialization = new NullableReferenceSerialization(nonNullableSerialization);
+            _serializations.Add(type, nullableSerialization);
+            return nullableSerialization;
+        }
+
+        if (type.TypeArguments.Count > 0)
+        {
+            if (_genericSerializationsFactories.TryGetValue(type.Declaration, out IGenericSerializationFactory serializationFactory))
             {
-                ISerialization newSerializationInstance = serializationFactory.Create(typeReference, this);
-                _serializations.Add(typeReference, newSerializationInstance);
+                ISerialization newSerializationInstance = serializationFactory.Create(type, this);
+                _serializations.Add(type, newSerializationInstance);
                 return newSerializationInstance;
             }
         }
 
         //return unresolved serialization, if it could not be resolved
-        ISerialization unresolvedSerialization = new UnresolvedSerialization(typeReference);
-        _serializations.Add(typeReference, unresolvedSerialization);
+        ISerialization unresolvedSerialization = new UnresolvedSerialization(type);
+        _serializations.Add(type, unresolvedSerialization);
         return unresolvedSerialization;
     }
 }

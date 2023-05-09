@@ -8,7 +8,7 @@ using static MsbRpc.Generator.Utility.IndependentNames.Types;
 
 namespace MsbRpc.Generator.Extensions;
 
-internal static class IndentedTextWriterExtensions
+public static class IndentedTextWriterExtensions
 {
     public static string GetResult(this IndentedTextWriter writer) => writer.InnerWriter.ToString();
 
@@ -67,18 +67,13 @@ internal static class IndentedTextWriterExtensions
         serialization.WriteSizeExpression(writer, targetExpression);
     }
 
-    public static void WriteSerializationStatement(this IndentedTextWriter writer, ISerialization serialization, string bufferWriterExpression, string valueExpression)
-    {
-        serialization.WriteSerializationStatement(writer, bufferWriterExpression, valueExpression);
-    }
-
     public static void WriteDeserializationExpression(this IndentedTextWriter writer, ISerialization serialization, string bufferReaderExpression)
     {
         serialization.WriteDeserializationExpression(writer, bufferReaderExpression);
     }
 
     /// <summary>
-    ///     same as <see cref="WriteSerializationStatement" />, but with trailing semicolon and new line
+    ///     same as <see cref="MsbRpc.Generator.Serialization.ISerialization.WriteSerializationStatement"/>, but with trailing semicolon and new line
     /// </summary>
     public static void WriteFinalizedSerializationStatement
     (
@@ -88,7 +83,8 @@ internal static class IndentedTextWriterExtensions
         string valueExpression
     )
     {
-        serialization.WriteFinalizedSerializationStatement(writer, bufferWriterExpression, valueExpression);
+        serialization.WriteSerializationStatement(writer, bufferWriterExpression, valueExpression);
+        writer.FinalizeSerializationStatement(serialization);
     }
 
     /// <summary>
@@ -101,6 +97,7 @@ internal static class IndentedTextWriterExtensions
         string bufferReaderExpression
     )
     {
-        serialization.WriteFinalizedDeserializationExpression(writer, bufferReaderExpression);
+        serialization.WriteDeserializationExpression(writer, bufferReaderExpression);
+        writer.WriteSemicolonLineBreak();
     }
 }

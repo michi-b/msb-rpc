@@ -9,7 +9,7 @@ using static MsbRpc.Generator.Utility.IndependentNames;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ContractNode
+public class ContractNode
 {
     public readonly EndPointNode ClientEndPoint;
 

@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
 
@@ -64,41 +65,55 @@ internal readonly ref struct SerializationTest
         testContext?.WriteLine($"Size expression: {sizeExpression}");
         if (ExpectedSizeExpression != null)
         {
-            Assert.AreEqual(ExpectedSizeExpression, sizeExpression);
+            Assert.AreEqual(ExpectedSizeExpression, sizeExpression, CodeComparer.Instance);
         }
 
-        string serializationStatement = GetSerializationStatement(serialization, BufferWriterExpression, ValueExpression);
+        string serializationStatement = GetFinalizedSerializationStatement(serialization, BufferWriterExpression, ValueExpression);
         testContext?.WriteLine($"Serialization statement: {serializationStatement}");
         if (ExpectedSerializationStatement != null)
         {
-            Assert.AreEqual(ExpectedSerializationStatement, serializationStatement);
+            Assert.AreEqual(ExpectedSerializationStatement, serializationStatement, CodeComparer.Instance);
         }
 
-        string deserializationExpression = GetDeserializationExpression(serialization, BufferReaderExpression);
+        string deserializationExpression = GetFinalizedDeserializationExpression(serialization, BufferReaderExpression);
         testContext?.WriteLine($"Deserialization expression: {deserializationExpression}");
         if (ExpectedDeserializationExpression != null)
         {
-            Assert.AreEqual(ExpectedDeserializationExpression, deserializationExpression);
+            Assert.AreEqual(ExpectedDeserializationExpression, deserializationExpression, CodeComparer.Instance);
         }
     }
 
+    private class CodeComparer : IEqualityComparer<string>
+    {
+        public static readonly CodeComparer Instance = new();
+        
+        public bool Equals(string? left, string? right)
+            => left == null
+                ? right == null
+                : left.ReplaceLineEndings() == right!.ReplaceLineEndings();
+
+        public int GetHashCode(string target) => target.ReplaceLineEndings().GetHashCode();
+    }
+
     public string GetSizeExpression() => GetSizeExpression(_serializationResolver.Resolve(TargetType), TargetExpression);
-    public string GetDeserializationExpression() => GetDeserializationExpression(_serializationResolver.Resolve(TargetType), BufferReaderExpression);
-    public string GetSerializationStatement() => GetSerializationStatement(_serializationResolver.Resolve(TargetType), BufferWriterExpression, ValueExpression);
+    public string GetFinalizedDeserializationExpression() => GetFinalizedDeserializationExpression(_serializationResolver.Resolve(TargetType), BufferReaderExpression);
+
+    public string GetFinalizedSerializationStatement()
+        => GetFinalizedSerializationStatement(_serializationResolver.Resolve(TargetType), BufferWriterExpression, ValueExpression);
 
     private static string GetSizeExpression(ISerialization serialization, string targetExpression)
     {
         return GetCode(writer => serialization.WriteSizeExpression(writer, targetExpression));
     }
 
-    private static string GetDeserializationExpression(ISerialization serialization, string bufferReaderExpression)
+    private static string GetFinalizedDeserializationExpression(ISerialization serialization, string bufferReaderExpression)
     {
-        return GetCode(writer => serialization.WriteDeserializationExpression(writer, bufferReaderExpression));
+        return GetCode(writer => writer.WriteFinalizedDeserializationStatement(serialization, bufferReaderExpression));
     }
 
-    private static string GetSerializationStatement(ISerialization serialization, string bufferWriterExpression, string valueExpression)
+    private static string GetFinalizedSerializationStatement(ISerialization serialization, string bufferWriterExpression, string valueExpression)
     {
-        return GetCode(writer => serialization.WriteSerializationStatement(writer, bufferWriterExpression, valueExpression));
+        return GetCode(writer => writer.WriteFinalizedSerializationStatement(serialization, bufferWriterExpression, valueExpression));
     }
 
     private static string GetCode(Action<IndentedTextWriter> write)

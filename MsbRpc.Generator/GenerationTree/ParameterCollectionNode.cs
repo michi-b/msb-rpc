@@ -7,7 +7,7 @@ using MsbRpc.Generator.Serialization;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-internal class ParameterCollectionNode : IReadOnlyList<ParameterNode>
+public class ParameterCollectionNode : IReadOnlyList<ParameterNode>
 {
     private readonly ParameterNode[] _parameters;
 

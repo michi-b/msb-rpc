@@ -8,14 +8,16 @@ public abstract class GenericSerialization : ISerialization
     protected const string BufferWriterArgumentName = IndependentNames.Variables.RequestWriter;
     protected const string BufferReaderArgumentName = IndependentNames.Variables.ResponseReader;
 
-    public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
-    public abstract void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
-    public abstract void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
-
     public bool IsVoid => false;
 
     public virtual bool IsResolved => true;
     public abstract bool IsConstantSize { get; }
 
     public abstract string DeclarationSyntax { get; }
+
+    public virtual bool NeedsSemicolonAfterSerializationStatement => true;
+
+    public abstract void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
+    public abstract void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
+    public abstract void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
 }

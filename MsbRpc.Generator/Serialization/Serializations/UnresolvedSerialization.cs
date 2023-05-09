@@ -5,6 +5,14 @@ namespace MsbRpc.Generator.Serialization.Serializations;
 
 public sealed class UnresolvedSerialization : ISerialization
 {
+    public bool IsVoid => false;
+
+    public bool IsResolved => false;
+    public bool IsConstantSize => true;
+
+    public string DeclarationSyntax { get; }
+
+    public bool NeedsSemicolonAfterSerializationStatement => true;
     public UnresolvedSerialization(TypeReferenceInfo typeReferenceInfo) => DeclarationSyntax = typeReferenceInfo.GetDeclarationSyntax();
 
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
@@ -18,11 +26,4 @@ public sealed class UnresolvedSerialization : ISerialization
     {
         writer.Write("default!");
     }
-
-    public bool IsVoid => false;
-
-    public bool IsResolved => false;
-    public bool IsConstantSize => true;
-
-    public string DeclarationSyntax { get; }
 }

@@ -4,6 +4,21 @@ namespace MsbRpc.Generator.Serialization;
 
 public interface ISerialization
 {
+    public bool IsVoid { get; }
+
+    public bool IsResolved { get; }
+
+    public bool IsConstantSize { get; }
+
+    /// <summary>declaration syntax for a variable to store the target type, eg. "int?", "string", "MyStruct" etc.</summary>
+    public string DeclarationSyntax { get; }
+
+    /// <summary>
+    ///     whether the serialization statement needs a semicolon after it,
+    ///     which is true for all statements except when it writes a block
+    /// </summary>
+    public bool NeedsSemicolonAfterSerializationStatement { get; }
+
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression);
 
     /// <summary>
@@ -15,13 +30,4 @@ public interface ISerialization
     public void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression);
 
     public void WriteDeserializationExpression(IndentedTextWriter writer, string bufferReaderExpression);
-
-    public bool IsVoid { get; }
-
-    public bool IsResolved { get; }
-
-    public bool IsConstantSize { get; }
-
-    /// <summary>declaration syntax for a variable to store the target type, eg. "int?", "string", "MyStruct" etc.</summary>
-    public string DeclarationSyntax { get; }
 }
