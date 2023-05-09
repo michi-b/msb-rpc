@@ -73,7 +73,8 @@ public static class IndentedTextWriterExtensions
     }
 
     /// <summary>
-    ///     same as <see cref="MsbRpc.Generator.Serialization.ISerialization.WriteSerializationStatement"/>, but with trailing semicolon and new line
+    ///     same as <see cref="MsbRpc.Generator.Serialization.ISerialization.WriteSerializationStatement" />, but with trailing
+    ///     semicolon and new line
     /// </summary>
     public static void WriteFinalizedSerializationStatement
     (

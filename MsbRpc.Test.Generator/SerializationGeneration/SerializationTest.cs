@@ -86,7 +86,7 @@ internal readonly ref struct SerializationTest
     private class CodeComparer : IEqualityComparer<string>
     {
         public static readonly CodeComparer Instance = new();
-        
+
         public bool Equals(string? left, string? right)
             => left == null
                 ? right == null
