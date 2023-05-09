@@ -6,7 +6,6 @@ using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
 using MsbRpc.Servers;
 using MsbRpc.Servers.Generic;
-using MsbRpc.Test.Implementations.Incrementer.Tests;
 using MsbRpc.Test.Utility;
 
 namespace MsbRpc.Test.Base.Generic;
@@ -85,21 +84,21 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
 
     protected static void LogTransmittedExceptionTypeName(RpcExceptionTransmission transmission)
     {
-        Test<IncrementerTest>.Logger.LogInformation("exception type name is '{ExceptionTypeName}'", transmission.ExceptionTypeName);
+        Logger.LogInformation("exception type name is '{ExceptionTypeName}'", transmission.ExceptionTypeName);
     }
 
     protected static void LogTransmittedExceptionMessage(RpcExceptionTransmission transmission)
     {
-        Test<IncrementerTest>.Logger.LogInformation("exception message is '{ExceptionMessage}'", transmission.ExceptionMessage);
+        Logger.LogInformation("exception message is '{ExceptionMessage}'", transmission.ExceptionMessage);
     }
 
     protected static void LogTransmittedSourceExecutionStage(RpcExceptionTransmission transmission)
     {
-        Test<IncrementerTest>.Logger.LogInformation("source execution stage is '{SourceExecutionStage}'", transmission.SourceExecutionStage);
+        Logger.LogInformation("source execution stage is '{SourceExecutionStage}'", transmission.SourceExecutionStage);
     }
 
     protected static void LogTransmittedRemoteContinuation(RpcExceptionTransmission transmission)
     {
-        Test<IncrementerTest>.Logger.LogInformation("remote continuation is '{RemoteContinuation}'", transmission.RemoteContinuation);
+        Logger.LogInformation("remote continuation is '{RemoteContinuation}'", transmission.RemoteContinuation);
     }
 }
