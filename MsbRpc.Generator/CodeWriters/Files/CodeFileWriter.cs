@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
+using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 
@@ -10,15 +11,21 @@ namespace MsbRpc.Generator.CodeWriters.Files;
 
 internal abstract class CodeFileWriter
 {
-    private readonly string _generatedNamespace;
+    private readonly string _nameSpace;
 
     protected abstract string FileName { get; }
 
     protected virtual string[] UsedNamespaces => Array.Empty<string>();
 
-    protected CodeFileWriter(ContractNode contract) : this(contract.Namespace) { }
+    protected readonly string ContractAccessibilityKeyword;
 
-    private CodeFileWriter(string generatedNamespace) => _generatedNamespace = generatedNamespace;
+    protected CodeFileWriter(ContractNode contract) : this(contract.Namespace, contract.Accessibility.GetKeyword()) { }
+
+    private CodeFileWriter(string nameSpace, string contractAccessibilityKeyword)
+    {
+        _nameSpace = nameSpace;
+        ContractAccessibilityKeyword = contractAccessibilityKeyword;
+    }
 
     public Result Generate()
     {
@@ -45,7 +52,7 @@ internal abstract class CodeFileWriter
     {
         IndentedTextWriter writer = new(new StringWriter());
 
-        writer.WriteFileHeader(_generatedNamespace, UsedNamespaces);
+        writer.WriteFileHeader(_nameSpace, UsedNamespaces);
 
         return writer;
     }

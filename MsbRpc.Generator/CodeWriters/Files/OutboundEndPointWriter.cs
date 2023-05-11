@@ -14,7 +14,7 @@ internal class OutboundEndPointWriter : EndPointWriter
 
     protected override void WriteClassHeader(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public class {Name}");
+        writer.WriteLine($"{ContractAccessibilityKeyword} class {Name}");
         writer.Indent++;
         writer.WriteLine($": {Types.OutboundEndPoint}<{Procedures.ProcedureEnumType}>");
         writer.Indent--;

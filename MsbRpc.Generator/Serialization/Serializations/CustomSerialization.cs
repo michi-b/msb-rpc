@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Info;
 
 namespace MsbRpc.Generator.Serialization.Serializations;

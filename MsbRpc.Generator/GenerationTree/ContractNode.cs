@@ -20,6 +20,7 @@ public class ContractNode
     public readonly string PascalCaseName;
     public readonly ProcedureCollectionNode Procedures;
     public readonly EndPointNode ServerEndPoint;
+    public readonly ContractAccessibility Accessibility;
 
     public ContractNode(ref ContractInfo info)
     {
@@ -28,6 +29,7 @@ public class ContractNode
         PascalCaseName = GetContractName(InterfaceName);
         PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
+        Accessibility = info.Accessibility;
 
         KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>[] customerializations = info.CustomSerializations.ToArray();
 

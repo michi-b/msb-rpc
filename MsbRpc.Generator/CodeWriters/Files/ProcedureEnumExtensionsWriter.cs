@@ -25,7 +25,7 @@ internal class ProcedureEnumExtensionsWriter : CodeFileWriter
 
     protected override void Write(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public static class {_name}");
+        writer.WriteLine($"{ContractAccessibilityKeyword} static class {_name}");
         using (writer.GetBlock(Appendix.None))
         {
             WriteGetNameExtension(writer);

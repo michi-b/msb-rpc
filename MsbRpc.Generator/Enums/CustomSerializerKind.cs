@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Generator.Info;
+﻿namespace MsbRpc.Generator.Enums;
 
 public enum CustomSerializerKind
 {

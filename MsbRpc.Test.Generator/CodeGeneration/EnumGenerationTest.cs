@@ -6,32 +6,23 @@ using MsbRpc.Test.Generator.Base;
 namespace MsbRpc.Test.Generator.CodeGeneration;
 
 [TestClass]
-public class DateTimeEchoGenerationTest : ContractGenerationTest<DateTimeEchoGenerationTest, ContractGenerator>
+public class EnumGenerationTest : ContractGenerationTest<EnumGenerationTest, ContractGenerator>
 {
-    private const string Code = @"[ConstantSizeSerializer(typeof(DateTime))]
-public static class DateTimeSerializer
+    private const string Code = @"internal enum MyEnum
 {
-    [SerializedSize] public const int Size = PrimitiveSerializer.LongSize;
-
-    [SerializationMethod]
-    public static void Write(BufferWriter writer, DateTime value)
-    {
-        writer.Write(value.Ticks);
-    }
-
-    [DeserializationMethod]
-    public static DateTime Read(BufferReader reader) => new(reader.ReadLong());
+    Call,
+    Return
 }
 
 [RpcContract(RpcContractType.ClientToServer)]
-public interface IDateTimeEcho : IRpcContract
+internal interface IEnumTest : IRpcContract
 {
-    System.DateTime GetDateTime(System.DateTime myDateTime);
+    MyEnum Call(MyEnum value);
 }";
 
     private const string Namespace = "MsbRpc.Test.Generator.CodeGeneration";
 
-    public DateTimeEchoGenerationTest() : base(Code, Namespace) { }
+    public EnumGenerationTest() : base(Code, Namespace) { }
 
     [TestMethod]
     public async Task GeneratorHasResult()
@@ -66,12 +57,12 @@ public interface IDateTimeEcho : IRpcContract
     [TestMethod]
     public async Task GeneratesServerEndPoint()
     {
-        await TestGeneratesFile("DateTimeEchoServerEndPoint.g.cs");
+        await TestGeneratesFile("EnumTestServerEndPoint.g.cs");
     }
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        await TestGeneratesFile("DateTimeEchoClientEndPoint.g.cs");
+        await TestGeneratesFile("EnumTestClientEndPoint.g.cs");
     }
 }

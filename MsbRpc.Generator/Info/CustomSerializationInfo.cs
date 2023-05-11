@@ -1,4 +1,5 @@
 ﻿using System;
+using MsbRpc.Generator.Enums;
 
 namespace MsbRpc.Generator.Info;
 

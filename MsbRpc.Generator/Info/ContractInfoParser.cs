@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Attributes;
+using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Extensions;
 
 namespace MsbRpc.Generator.Info;
@@ -65,11 +66,16 @@ internal static class ContractInfoParser
             .Select(m => new ProcedureInfo(m!))
             .ToImmutableArray();
 
+        if (!symbol.DeclaredAccessibility.TryGet(out ContractAccessibility accessibility))
+        {
+            return null;
+        }
+        
         if (procedures.Length == 0)
         {
             return null;
         }
 
-        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value);
+        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value, accessibility);
     }
 }

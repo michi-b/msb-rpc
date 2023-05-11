@@ -23,7 +23,7 @@ internal class ProcedureEnumFileWriter : CodeFileWriter
     {
         string GetEnumMemberDefinition(int i) => $"{Procedures[i].Name} = {Procedures[i].ProcedureEnumIntValue}";
 
-        writer.WriteLine($"public enum {Procedures.ProcedureEnumName}");
+        writer.WriteLine($"{ContractAccessibilityKeyword} enum {Procedures.ProcedureEnumName}");
         using (writer.GetBlock(Appendix.None))
         {
             for (int i = 0; i < Procedures.LastIndex; i++)
