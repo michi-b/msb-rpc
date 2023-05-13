@@ -11,6 +11,7 @@ namespace MsbRpc.Generator.GenerationTree;
 
 public class ContractNode
 {
+    public readonly ContractAccessibility Accessibility;
     public readonly EndPointNode ClientEndPoint;
 
     public readonly string InterfaceName;
@@ -20,7 +21,6 @@ public class ContractNode
     public readonly string PascalCaseName;
     public readonly ProcedureCollectionNode Procedures;
     public readonly EndPointNode ServerEndPoint;
-    public readonly ContractAccessibility Accessibility;
 
     public ContractNode(ref ContractInfo info)
     {

@@ -8,7 +8,7 @@ namespace MsbRpc.Test.Generator.CodeGeneration;
 [TestClass]
 public class EnumGenerationTest : ContractGenerationTest<EnumGenerationTest, ContractGenerator>
 {
-    private const string Code = @"internal enum MyEnum
+    private const string Code = @"internal enum MyEnum : byte
 {
     Call,
     Return

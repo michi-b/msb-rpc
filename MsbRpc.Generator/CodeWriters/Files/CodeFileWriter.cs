@@ -3,7 +3,6 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
-using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 
@@ -13,11 +12,11 @@ internal abstract class CodeFileWriter
 {
     private readonly string _nameSpace;
 
+    protected readonly string ContractAccessibilityKeyword;
+
     protected abstract string FileName { get; }
 
     protected virtual string[] UsedNamespaces => Array.Empty<string>();
-
-    protected readonly string ContractAccessibilityKeyword;
 
     protected CodeFileWriter(ContractNode contract) : this(contract.Namespace, contract.Accessibility.GetKeyword()) { }
 
