@@ -163,7 +163,6 @@ internal class InboundEndPointWriter : EndPointWriter
                     );
                     writer.WriteLine(GetResponseWriterStatement);
                     writer.WriteFinalizedSerializationStatement(resultSerialization, Variables.ResponseWriter, Variables.Result);
-                    writer.WriteSemicolonLineBreak();
                     writer.WriteLine(ReturnResponseStatement);
                 }
 

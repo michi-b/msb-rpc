@@ -16,14 +16,20 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
 
     public ImmutableList<TypeReferenceInfo> TypeArguments { get; } = ImmutableList<TypeReferenceInfo>.Empty;
 
-    public TypeDeclarationInfo? EnumUnderlyingType { get; } = null;
-
     private static TypeReferenceInfo Create(ITypeSymbol typeSymbol)
         => typeSymbol is INamedTypeSymbol namedTypeSymbol
             ? new TypeReferenceInfo(namedTypeSymbol)
             : new TypeReferenceInfo();
 
-    public TypeReferenceInfo(TypeDeclarationInfo declaration, bool isNullableReference, ImmutableList<TypeReferenceInfo> typeArguments)
+    public TypeReferenceInfo(TypeDeclarationInfo declaration, bool isNullableReference = false)
+        : this(declaration, ImmutableList<TypeReferenceInfo>.Empty, isNullableReference) { }
+
+    public TypeReferenceInfo
+    (
+        TypeDeclarationInfo declaration,
+        ImmutableList<TypeReferenceInfo> typeArguments,
+        bool isNullableReference = false
+    )
     {
         Declaration = declaration;
         IsNullableReference = isNullableReference;
@@ -37,15 +43,13 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
     public static TypeReferenceInfo CreateSimple(string fullyQualifiedSimpleTypeName, bool isNullableReference = false)
         => new
         (
-            new TypeDeclarationInfo(fullyQualifiedSimpleTypeName, 0),
-            isNullableReference,
-            ImmutableList<TypeReferenceInfo>.Empty
+            new TypeDeclarationInfo(fullyQualifiedSimpleTypeName),
+            ImmutableList<TypeReferenceInfo>.Empty,
+            isNullableReference
         );
 
     public TypeReferenceInfo(INamedTypeSymbol typeSymbol)
     {
-        EnumUnderlyingType = typeSymbol.EnumUnderlyingType is { } enumUnderlyingType ? new TypeDeclarationInfo(enumUnderlyingType) : null;
-
         var typeArguments = ImmutableList<TypeReferenceInfo>.Empty;
 
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
@@ -63,8 +67,7 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
     public bool Equals(TypeReferenceInfo other)
         => Declaration.Equals(other.Declaration)
            && IsNullableReference == other.IsNullableReference
-           && TypeArguments.SequenceEqual(other.TypeArguments)
-           && EnumUnderlyingType.Equals(other.EnumUnderlyingType);
+           && TypeArguments.SequenceEqual(other.TypeArguments);
 
     public override bool Equals(object? obj) => obj is TypeReferenceInfo other && Equals(other);
 
@@ -75,7 +78,6 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
             int hashCode = Declaration.GetHashCode();
             hashCode = (hashCode * 397) ^ IsNullableReference.GetHashCode();
             hashCode = (hashCode * 397) ^ TypeArguments.GetHashCode();
-            hashCode = (hashCode * 397) ^ EnumUnderlyingType.GetHashCode();
             return hashCode;
         }
     }
@@ -94,5 +96,5 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
 
     private bool GetIsGeneric() => Declaration.TypeParameterCount > 0;
 
-    public TypeReferenceInfo MakeNullable(bool nullable) => new(Declaration, nullable, TypeArguments);
+    public TypeReferenceInfo MakeNullable(bool nullable) => new(Declaration, TypeArguments, nullable);
 }

@@ -24,7 +24,8 @@ public static class AccessibilityExtensions
                 return true;
             default:
                 throw new ArgumentOutOfRangeException(nameof(declaredAccessibility), declaredAccessibility, null);
-        }        
+        }
+
         result = default;
         return false;
     }
