@@ -10,7 +10,7 @@ public class EnumSerializationTest : Base.Test
 {
     private const string EnumName = "MyEnum";
 
-    private static readonly TypeDeclarationInfo EnumDeclaration = new(EnumName, 0, EnumSerializationKind.Int);
+    private static readonly NamedTypeDeclarationInfo EnumDeclaration = new(EnumName, 0, EnumSerializationKind.Int);
 
     private static readonly TypeReferenceInfo EnumInfo = new(EnumDeclaration);
 

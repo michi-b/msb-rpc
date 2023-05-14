@@ -10,7 +10,7 @@ public class NullableByteSerializationTests : Base.Test
 {
     private static readonly TypeReferenceInfo NullableBoolInfo = new
     (
-        new TypeDeclarationInfo("System.Nullable", 1),
+        new NamedTypeDeclarationInfo("System.Nullable", 1),
         new[] { TypeReferenceInfo.CreateSimple("System.Byte") }.ToImmutableList()
     );
 

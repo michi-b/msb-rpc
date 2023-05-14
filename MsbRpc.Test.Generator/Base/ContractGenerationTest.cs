@@ -11,7 +11,7 @@ using Serilog.Core;
 namespace MsbRpc.Test.Generator.Base;
 
 public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerationTest<TTest, TGenerator>
-    where TTest : ContractGenerationTest<TTest, TGenerator>
+    where TTest : ContractGenerationTest<TTest, TGenerator>, new()
     where TGenerator : IIncrementalGenerator, new()
 {
     // ReSharper disable once StaticMemberInGenericType

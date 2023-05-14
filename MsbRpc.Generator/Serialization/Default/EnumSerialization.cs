@@ -14,7 +14,7 @@ public class EnumSerialization : ISerialization
     public string DeclarationSyntax { get; }
     public bool NeedsSemicolonAfterSerializationStatement => true;
 
-    public EnumSerialization(TypeDeclarationInfo enumDeclaration, EnumSerializationKind enumSerializationKind)
+    public EnumSerialization(NamedTypeDeclarationInfo enumDeclaration, EnumSerializationKind enumSerializationKind)
     {
         Debug.Assert(enumDeclaration.EnumSerializationKind == enumSerializationKind);
         _underlyingTypeSerialization = SerializationResolver.GetEnumUnderlyingTypeSerialization(enumSerializationKind);

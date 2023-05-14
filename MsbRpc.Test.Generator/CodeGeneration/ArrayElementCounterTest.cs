@@ -6,30 +6,17 @@ using MsbRpc.Test.Generator.Base;
 namespace MsbRpc.Test.Generator.CodeGeneration;
 
 [TestClass]
-public class IncrementerGenerationTest : ContractGenerationTest<IncrementerGenerationTest, ContractGenerator>
+public class ArrayElementCounterTest : ContractGenerationTest<ArrayElementCounterTest, ContractGenerator>
 {
     private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
-public interface IIncrementer : IRpcContract
+public interface IArrayElementCounter : IRpcContract
 {
-    int Increment(int value);
-    int? IncrementNullable(int? value);
-    string IncrementString(string value);
-    public void Store(int value);
-    public void IncrementStored();
-    public int GetStored();
-    public void Finish();
+    int CountElements(int[] array);
 }";
 
-    private const string Namespace = nameof(IncrementerGenerationTest);
+    private const string Namespace = nameof(ArrayElementCounterTest);
 
-    public IncrementerGenerationTest()
-        : base(Code, Namespace) { }
-
-    [TestMethod]
-    public async Task GeneratorRuns()
-    {
-        await TestGeneratorRuns();
-    }
+    public ArrayElementCounterTest() : base(Code, Namespace) { }
 
     [TestMethod]
     public async Task GeneratorHasResult()
@@ -62,26 +49,14 @@ public interface IIncrementer : IRpcContract
     }
 
     [TestMethod]
-    public async Task GeneratesServerProcedureEnum()
-    {
-        await TestGeneratesFile("IncrementerProcedure.g.cs");
-    }
-
-    [TestMethod]
-    public async Task GeneratesServerProcedureEnumExtensions()
-    {
-        await TestGeneratesFile("IncrementerProcedureExtensions.g.cs");
-    }
-
-    [TestMethod]
     public async Task GeneratesServerEndPoint()
     {
-        await TestGeneratesFile("IncrementerServerEndPoint.g.cs");
+        await TestGeneratesFile("ArrayElementCounterServerEndPoint.g.cs");
     }
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        await TestGeneratesFile("IncrementerClientEndPoint.g.cs");
+        await TestGeneratesFile("ArrayElementCounterClientEndPoint.g.cs");
     }
 }

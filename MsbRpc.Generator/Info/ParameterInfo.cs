@@ -12,7 +12,7 @@ public readonly struct ParameterInfo : IEquatable<ParameterInfo>
     public ParameterInfo(IParameterSymbol parameter)
     {
         Name = parameter.Name.PascalToCamelCase();
-        TypeReference = new TypeReferenceInfo((INamedTypeSymbol)parameter.Type);
+        TypeReference = new TypeReferenceInfo(parameter.Type);
     }
 
     public bool Equals(ParameterInfo other) => Name == other.Name && TypeReference.Equals(other.TypeReference);

@@ -8,9 +8,10 @@ namespace MsbRpc.Generator.Info;
 public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
 {
     /// <summary>
-    ///     the fully qualified reference name of the type, without any type arguments
+    ///     the fully qualified reference name of the type, without any type arguments;
+    ///     for arrays, this is the element type
     /// </summary>
-    public TypeDeclarationInfo Declaration { get; }
+    public NamedTypeDeclarationInfo? NamedDeclaration { get; }
 
     public bool IsNullableReference { get; } = false;
 
@@ -21,17 +22,17 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
             ? new TypeReferenceInfo(namedTypeSymbol)
             : new TypeReferenceInfo();
 
-    public TypeReferenceInfo(TypeDeclarationInfo declaration, bool isNullableReference = false)
-        : this(declaration, ImmutableList<TypeReferenceInfo>.Empty, isNullableReference) { }
+    public TypeReferenceInfo(NamedTypeDeclarationInfo namedDeclaration, bool isNullableReference = false)
+        : this(namedDeclaration, ImmutableList<TypeReferenceInfo>.Empty, isNullableReference) { }
 
     public TypeReferenceInfo
     (
-        TypeDeclarationInfo declaration,
+        NamedTypeDeclarationInfo? namedDeclaration,
         ImmutableList<TypeReferenceInfo> typeArguments,
         bool isNullableReference = false
     )
     {
-        Declaration = declaration;
+        NamedDeclaration = namedDeclaration;
         IsNullableReference = isNullableReference;
         TypeArguments = typeArguments;
     }
@@ -43,29 +44,26 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
     public static TypeReferenceInfo CreateSimple(string fullyQualifiedSimpleTypeName, bool isNullableReference = false)
         => new
         (
-            new TypeDeclarationInfo(fullyQualifiedSimpleTypeName),
+            new NamedTypeDeclarationInfo(fullyQualifiedSimpleTypeName),
             ImmutableList<TypeReferenceInfo>.Empty,
             isNullableReference
         );
 
-    public TypeReferenceInfo(INamedTypeSymbol typeSymbol)
+    public TypeReferenceInfo(ITypeSymbol typeSymbol)
     {
-        var typeArguments = ImmutableList<TypeReferenceInfo>.Empty;
-
-        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-        // I find the non-Linq loop more readable
-        foreach (ITypeSymbol typeArgument in typeSymbol.TypeArguments)
-        {
-            typeArguments = typeArguments.Add(Create(typeArgument));
-        }
-
-        TypeArguments = typeArguments;
-        Declaration = new TypeDeclarationInfo(typeSymbol.OriginalDefinition);
         IsNullableReference = typeSymbol is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated };
+
+        TypeArguments = ImmutableList<TypeReferenceInfo>.Empty;
+
+        if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
+        {
+            NamedDeclaration = new NamedTypeDeclarationInfo(namedTypeSymbol);
+            TypeArguments = TypeArguments.AddRange(namedTypeSymbol.TypeArguments.Select(Create));
+        }
     }
 
     public bool Equals(TypeReferenceInfo other)
-        => Declaration.Equals(other.Declaration)
+        => NamedDeclaration.Equals(other.NamedDeclaration)
            && IsNullableReference == other.IsNullableReference
            && TypeArguments.SequenceEqual(other.TypeArguments);
 
@@ -75,7 +73,7 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
     {
         unchecked
         {
-            int hashCode = Declaration.GetHashCode();
+            int hashCode = NamedDeclaration.GetHashCode();
             hashCode = (hashCode * 397) ^ IsNullableReference.GetHashCode();
             hashCode = (hashCode * 397) ^ TypeArguments.GetHashCode();
             return hashCode;
@@ -87,14 +85,17 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
         string GetNullableAnnotated(string target, bool isNullableReference) => isNullableReference ? target + '?' : target;
         return GetNullableAnnotated
         (
-            GetIsGeneric()
-                ? Declaration.Name + "<" + string.Join(", ", TypeArguments.Select(x => x.GetDeclarationSyntax())) + ">"
-                : Declaration.Name,
+            NamedDeclaration != null
+                ? GetIsGeneric()
+                    ? NamedDeclaration.Value.Name + "<" + string.Join(", ", TypeArguments.Select(x => x.GetDeclarationSyntax())) + ">"
+                    : NamedDeclaration.Value.Name
+                //todo: implement non-name-declared type declaration syntax
+                : throw new ArgumentOutOfRangeException(),
             IsNullableReference
         );
     }
 
-    private bool GetIsGeneric() => Declaration.TypeParameterCount > 0;
+    private bool GetIsGeneric() => NamedDeclaration is { TypeParameterCount: > 0 };
 
-    public TypeReferenceInfo MakeNullable(bool nullable) => new(Declaration, TypeArguments, nullable);
+    public TypeReferenceInfo MakeNullable(bool nullable) => new(NamedDeclaration, TypeArguments, nullable);
 }

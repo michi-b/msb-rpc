@@ -29,7 +29,7 @@ public interface IDateTimeEcho : IRpcContract
     System.DateTime GetDateTime(System.DateTime myDateTime);
 }";
 
-    private const string Namespace = "MsbRpc.Test.Generator.CodeGeneration";
+    private const string Namespace = nameof(DateTimeEchoGenerationTest);
 
     public DateTimeEchoGenerationTest() : base(Code, Namespace) { }
 

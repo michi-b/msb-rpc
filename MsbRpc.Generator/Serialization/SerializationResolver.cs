@@ -8,7 +8,7 @@ using static MsbRpc.Generator.Utility.IndependentNames;
 namespace MsbRpc.Generator.Serialization;
 
 using SerializationRegistry = Dictionary<TypeReferenceInfo, ISerialization>;
-using GenericSerializationFactoryRegistry = Dictionary<TypeDeclarationInfo, IGenericSerializationFactory>;
+using GenericSerializationFactoryRegistry = Dictionary<NamedTypeDeclarationInfo, IGenericSerializationFactory>;
 
 public class SerializationResolver
 {
@@ -16,7 +16,7 @@ public class SerializationResolver
 
     private static readonly GenericSerializationFactoryRegistry DefaultGenericSerializationsFactories;
 
-    private static readonly SimpleDefaultSerialization[] _SimpleDefaultSerializations;
+    private static readonly SimpleDefaultSerialization[] SimpleDefaultSerializations;
 
     private readonly GenericSerializationFactoryRegistry _genericSerializationsFactories;
 
@@ -24,17 +24,18 @@ public class SerializationResolver
 
     static SerializationResolver()
     {
-        DefaultSerializations = new SerializationRegistry(SimpleDefaultSerializationKindUtility.DictionaryCapacity);
-
-        DefaultSerializations.Add(TypeReferenceInfo.CreateSimple(Types.Void), new VoidSerialization());
+        DefaultSerializations = new SerializationRegistry(SimpleDefaultSerializationKindUtility.DictionaryCapacity)
+        {
+            { TypeReferenceInfo.CreateSimple(Types.Void), new VoidSerialization() }
+        };
 
         const int simpleDefaultSerializationsCount = SimpleDefaultSerializationKindUtility.Count;
-        _SimpleDefaultSerializations = new SimpleDefaultSerialization[simpleDefaultSerializationsCount];
+        SimpleDefaultSerializations = new SimpleDefaultSerialization[simpleDefaultSerializationsCount];
         for (int i = 0; i < simpleDefaultSerializationsCount; i++)
         {
             SimpleDefaultSerializationKind serializationKind = SimpleDefaultSerializationKindUtility.All[i];
             SimpleDefaultSerialization serialization = new(serializationKind);
-            _SimpleDefaultSerializations[i] = serialization;
+            SimpleDefaultSerializations[i] = serialization;
             DefaultSerializations.Add(serializationKind.GetTargetType(), serialization);
         }
 
@@ -49,7 +50,7 @@ public class SerializationResolver
     public SerializationResolver()
         : this(CustomSerialization.EmptyArray) { }
 
-    public SerializationResolver(KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>[] customSerializations)
+    public SerializationResolver(IEnumerable<KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>> customSerializations)
     {
         _serializations = new SerializationRegistry(DefaultSerializations);
 
@@ -61,13 +62,9 @@ public class SerializationResolver
         _genericSerializationsFactories = new GenericSerializationFactoryRegistry(DefaultGenericSerializationsFactories);
     }
 
-    public static SimpleDefaultSerialization GetSimpleDefaultSerialization(SimpleDefaultSerializationKind kind) => _SimpleDefaultSerializations[(int)kind];
-
-    public static SimpleDefaultSerialization GetEnumUnderlyingTypeSerialization
-        (EnumSerializationKind kind)
+    public static SimpleDefaultSerialization GetEnumUnderlyingTypeSerialization(EnumSerializationKind kind)
         => GetSimpleDefaultSerialization(kind.GetSimpleDefaultSerializationKind());
 
-    // _genericSerializationWriterFactories = new SerializationFactoryRegistry();
     public ISerialization Resolve(TypeReferenceInfo type)
     {
         if (_serializations.TryGetValue(type, out ISerialization existingSerialization))
@@ -85,24 +82,27 @@ public class SerializationResolver
             return nullableSerialization;
         }
 
-        TypeDeclarationInfo typeDeclaration = type.Declaration;
-
-        //try instantiate enum serialization
-        if (type.Declaration.EnumSerializationKind is { } enumSerializationKind)
+        if (type.NamedDeclaration != null)
         {
-            EnumSerialization enumSerialization = new(typeDeclaration, enumSerializationKind);
-            _serializations.Add(type, enumSerialization);
-            return enumSerialization;
-        }
+            NamedTypeDeclarationInfo namedTypeDeclaration = type.NamedDeclaration.Value;
 
-        //try instantiate generic serialization
-        if (type.TypeArguments.Count > 0)
-        {
-            if (_genericSerializationsFactories.TryGetValue(typeDeclaration, out IGenericSerializationFactory serializationFactory))
+            //try instantiate enum serialization
+            if (namedTypeDeclaration.EnumSerializationKind is { } enumSerializationKind)
             {
-                ISerialization newSerializationInstance = serializationFactory.Create(type, this);
-                _serializations.Add(type, newSerializationInstance);
-                return newSerializationInstance;
+                EnumSerialization enumSerialization = new(namedTypeDeclaration, enumSerializationKind);
+                _serializations.Add(type, enumSerialization);
+                return enumSerialization;
+            }
+
+            //try instantiate generic serialization
+            if (type.TypeArguments.Count > 0)
+            {
+                if (_genericSerializationsFactories.TryGetValue(namedTypeDeclaration, out IGenericSerializationFactory serializationFactory))
+                {
+                    ISerialization newSerializationInstance = serializationFactory.Create(type, this);
+                    _serializations.Add(type, newSerializationInstance);
+                    return newSerializationInstance;
+                }
             }
         }
 
@@ -111,4 +111,6 @@ public class SerializationResolver
         _serializations.Add(type, unresolvedSerialization);
         return unresolvedSerialization;
     }
+
+    private static SimpleDefaultSerialization GetSimpleDefaultSerialization(SimpleDefaultSerializationKind kind) => SimpleDefaultSerializations[(int)kind];
 }

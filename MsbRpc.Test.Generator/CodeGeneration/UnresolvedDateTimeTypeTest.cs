@@ -14,7 +14,7 @@ public interface IDateTimeEcho : IRpcContract
     System.DateTime GetDateTime(System.DateTime myDateTime);
 }";
 
-    private const string Namespace = "MsbRpc.Test.Generator.Echo.Tests";
+    private const string Namespace = nameof(UnresolvedDateTimeTypeTest);
 
     public UnresolvedDateTimeTypeTest() : base(Code, Namespace) { }
 

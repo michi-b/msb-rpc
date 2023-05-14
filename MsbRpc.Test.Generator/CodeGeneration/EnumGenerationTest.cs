@@ -20,7 +20,7 @@ internal interface IEnumTest : IRpcContract
     MyEnum Call(MyEnum value);
 }";
 
-    private const string Namespace = "MsbRpc.Test.Generator.CodeGeneration";
+    private const string Namespace = nameof(EnumGenerationTest);
 
     public EnumGenerationTest() : base(Code, Namespace) { }
 

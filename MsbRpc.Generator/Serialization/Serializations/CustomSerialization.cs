@@ -27,11 +27,20 @@ public sealed class CustomSerialization : ISerialization
     public CustomSerialization(TypeReferenceInfo targetType, CustomSerializationInfo serializationInfo)
     {
         DeclarationSyntax = targetType.GetDeclarationSyntax();
-        string serializerName = serializationInfo.SerializerTypeReference.Declaration.Name;
+        TypeReferenceInfo serializerType = serializationInfo.SerializerTypeReference;
         IsConstantSize = serializationInfo.Kind == CustomSerializerKind.ConstantSize;
-        _sizeMember = serializerName + "." + serializationInfo.SizeMemberName;
-        _serializationMethod = serializerName + "." + serializationInfo.SerializationMethodName;
-        _deserializationMethod = serializerName + "." + serializationInfo.DeserializationMethodName;
+
+        if (serializerType.NamedDeclaration is { } namedDeclaration)
+        {
+            string serializerName = namedDeclaration.Name;
+            _sizeMember = serializerName + "." + serializationInfo.SizeMemberName;
+            _serializationMethod = serializerName + "." + serializationInfo.SerializationMethodName;
+            _deserializationMethod = serializerName + "." + serializationInfo.DeserializationMethodName;
+        }
+        else
+        {
+            throw new InvalidOperationException("serializer type must be a named type");
+        }
     }
 
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
