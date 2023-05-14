@@ -37,10 +37,14 @@ public class NullableByteSerializationTests : Base.Test
     }
 
     [TestMethod]
-    public void SizeExpressionIsCorrect()
+    public void DeserializationExpressionIsCorrect()
     {
-        const string expected = @"(MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize + MsbRpc.Serialization.Primitives.PrimitiveSerializer.BoolSize)";
-        string actual = new SerializationTest(NullableBoolInfo).GetSizeExpression();
+        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.Read
+(
+    ref bufferReader,
+    (responseReader) => responseReader.ReadByte());
+";
+        string actual = new SerializationTest(NullableBoolInfo).GetFinalizedDeserializationExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }
@@ -64,14 +68,10 @@ public class NullableByteSerializationTests : Base.Test
     }
 
     [TestMethod]
-    public void DeserializationExpressionIsCorrect()
+    public void SizeExpressionIsCorrect()
     {
-        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.Read
-(
-    ref bufferReader,
-    (responseReader) => responseReader.ReadByte());
-";
-        string actual = new SerializationTest(NullableBoolInfo).GetFinalizedDeserializationExpression();
+        const string expected = @"(MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize + MsbRpc.Serialization.Primitives.PrimitiveSerializer.BoolSize)";
+        string actual = new SerializationTest(NullableBoolInfo).GetSizeExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }
