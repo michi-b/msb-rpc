@@ -8,8 +8,8 @@ namespace MsbRpc.Generator.Info;
 public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
 {
     /// <summary>
-    ///     the fully qualified reference name of the type, without any type arguments;
-    ///     for arrays, this is the element type
+    ///     the fully qualified reference name of the type, without any type arguments, if it is a named type and not e.g. an
+    ///     array type;
     /// </summary>
     public NamedTypeDeclarationInfo? NamedDeclaration { get; }
 
