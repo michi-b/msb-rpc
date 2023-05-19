@@ -38,7 +38,7 @@ public static class Array6DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter writer, TElement[,,,,,] array, WriteDelegate<TElement> writeElement)
+    public static void Write(ref BufferWriter writer, TElement[,,,,,] array, WriteDelegate<TElement> writeElement)
     {
         writer.Write(array.GetLength(0));
         writer.Write(array.GetLength(1));

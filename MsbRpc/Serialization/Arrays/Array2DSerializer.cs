@@ -25,7 +25,7 @@ public static class Array2DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter bufferWriter, TElement[,] array, WriteDelegate<TElement> writeElement)
+    public static void Write(ref BufferWriter bufferWriter, TElement[,] array, WriteDelegate<TElement> writeElement)
     {
         bufferWriter.Write(array.GetLength(0));
         bufferWriter.Write(array.GetLength(1));

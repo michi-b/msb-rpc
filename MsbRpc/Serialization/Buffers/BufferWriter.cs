@@ -110,7 +110,7 @@ public struct BufferWriter
     }
 
     [MayBeUsedByGeneratedCode]
-    public void WriteNullable<TValue>(TValue? value, Action<BufferWriter, TValue> writeValue) where TValue : struct
+    public void WriteNullable<TValue>(TValue? value, WriteDelegate<TValue> writeValue) where TValue : struct
         => NullableSerializer<TValue>.Write(ref this, value, writeValue);
 
     [PublicAPI]

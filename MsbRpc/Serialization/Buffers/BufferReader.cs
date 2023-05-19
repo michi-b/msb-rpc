@@ -71,7 +71,7 @@ public struct BufferReader
     public string ReadString() => StringSerializer.ReadString(ref this);
 
     [MayBeUsedByGeneratedCode]
-    public T? ReadNullable<T>(Func<BufferReader, T> readValue) where T : struct => NullableSerializer<T>.Read(ref this, readValue);
+    public TValue? ReadNullable<TValue>(ReadDelegate<TValue> readValue) where TValue : struct => NullableSerializer<TValue>.Read(ref this, readValue);
 
     [PublicAPI]
     public ArraySegment<byte> ReadSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);

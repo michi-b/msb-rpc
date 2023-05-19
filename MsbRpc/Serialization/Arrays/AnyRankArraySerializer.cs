@@ -37,7 +37,7 @@ public static class AnyRankArraySerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter writer, Array array, WriteDelegate<TElement> writeElement)
+    public static void Write(ref BufferWriter writer, Array array, WriteDelegate<TElement> writeElement)
     {
         int rank = array.Rank;
 

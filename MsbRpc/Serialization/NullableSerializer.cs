@@ -2,6 +2,8 @@
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using static MsbRpc.Serialization.Buffers.BufferReader;
+using static MsbRpc.Serialization.Buffers.BufferWriter;
 
 namespace MsbRpc.Serialization;
 
@@ -15,7 +17,7 @@ public static class NullableSerializer<TValue> where TValue : struct
         => value is null ? PrimitiveSerializer.BoolSize : PrimitiveSerializer.BoolSize + getValueSize(value);
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(ref BufferWriter writer, TValue? nullable, Action<BufferWriter, TValue> writeValue)
+    public static void Write(ref BufferWriter writer, TValue? nullable, WriteDelegate<TValue> writeValue)
     {
         if (nullable is null)
         {
@@ -24,14 +26,14 @@ public static class NullableSerializer<TValue> where TValue : struct
         else
         {
             writer.Write(true);
-            writeValue(writer, nullable.Value);
+            writer.WriteCustom(nullable.Value, writeValue);
         }
     }
 
     [MayBeUsedByGeneratedCode]
-    public static TValue? Read(ref BufferReader reader, Func<BufferReader, TValue> readValue)
+    public static TValue? Read<TValue>(ref BufferReader reader, ReadDelegate<TValue> readValue) where TValue : struct
     {
         bool isNull = reader.ReadBool();
-        return isNull ? null : readValue(reader);
+        return isNull ? null : reader.ReadCustom(readValue);
     }
 }
