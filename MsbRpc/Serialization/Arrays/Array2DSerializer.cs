@@ -2,6 +2,8 @@
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using static MsbRpc.Serialization.Buffers.BufferReader;
+using static MsbRpc.Serialization.Buffers.BufferWriter;
 
 namespace MsbRpc.Serialization.Arrays;
 
@@ -23,7 +25,7 @@ public static class Array2DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter bufferWriter, TElement[,] array, Action<BufferWriter, TElement> writeElement)
+    public static void Write(BufferWriter bufferWriter, TElement[,] array, WriteDelegate<TElement> writeElement)
     {
         bufferWriter.Write(array.GetLength(0));
         bufferWriter.Write(array.GetLength(1));
@@ -32,13 +34,14 @@ public static class Array2DSerializer<TElement>
         {
             for (int j = 0; j < array.GetLength(1); j++)
             {
-                writeElement(bufferWriter, array[i, j]);
+                TElement element = array[i, j];
+                bufferWriter.WriteCustom(element, writeElement);
             }
         }
     }
 
     [MayBeUsedByGeneratedCode]
-    public static TElement[,] Read(ref BufferReader reader, Func<BufferReader, TElement> readElement)
+    public static TElement[,] Read(ref BufferReader reader, ReadDelegate<TElement> readElement)
     {
         int length0 = reader.ReadInt();
         int length1 = reader.ReadInt();
@@ -49,7 +52,8 @@ public static class Array2DSerializer<TElement>
         {
             for (int j = 0; j < length1; j++)
             {
-                array[i, j] = readElement(reader);
+                TElement element = reader.ReadCustom(readElement);
+                array[i, j] = element;
             }
         }
 

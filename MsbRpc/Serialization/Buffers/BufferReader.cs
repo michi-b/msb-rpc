@@ -26,7 +26,7 @@ public struct BufferReader
     }
 
     [MayBeUsedByGeneratedCode]
-    public TValue Read<TValue>(ReadDelegate<TValue> read) => read(ref this);
+    public TValue ReadCustom<TValue>(ReadDelegate<TValue> read) => read(ref this);
 
     [MayBeUsedByGeneratedCode]
     public byte ReadByte() => _buffer.ReadByte(PostIncrementPosition(ByteSize));

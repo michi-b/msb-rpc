@@ -2,6 +2,8 @@
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using static MsbRpc.Serialization.Buffers.BufferReader;
+using static MsbRpc.Serialization.Buffers.BufferWriter;
 
 namespace MsbRpc.Serialization.Arrays;
 
@@ -33,13 +35,13 @@ public static class Array5DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter bufferWriter, TElement[,,,,] array, Action<BufferWriter, TElement> writeElement)
+    public static void Write(BufferWriter writer, TElement[,,,,] array, WriteDelegate<TElement> writeElement)
     {
-        bufferWriter.Write(array.GetLength(0));
-        bufferWriter.Write(array.GetLength(1));
-        bufferWriter.Write(array.GetLength(2));
-        bufferWriter.Write(array.GetLength(3));
-        bufferWriter.Write(array.GetLength(4));
+        writer.Write(array.GetLength(0));
+        writer.Write(array.GetLength(1));
+        writer.Write(array.GetLength(2));
+        writer.Write(array.GetLength(3));
+        writer.Write(array.GetLength(4));
 
         for (int i = 0; i < array.GetLength(0); i++)
         {
@@ -51,7 +53,8 @@ public static class Array5DSerializer<TElement>
                     {
                         for (int m = 0; m < array.GetLength(4); m++)
                         {
-                            writeElement(bufferWriter, array[i, j, k, m, m]);
+                            TElement element = array[i, j, k, m, m];
+                            writer.WriteCustom(element, writeElement);
                         }
                     }
                 }
@@ -60,7 +63,7 @@ public static class Array5DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static TElement[,,,,] Read(ref BufferReader reader, Func<BufferReader, TElement> readElement)
+    public static TElement[,,,,] Read(ref BufferReader reader, ReadDelegate<TElement> readElement)
     {
         int length0 = reader.ReadInt();
         int length1 = reader.ReadInt();
@@ -80,7 +83,8 @@ public static class Array5DSerializer<TElement>
                     {
                         for (int m = 0; m < length4; m++)
                         {
-                            array[i, j, k, l, m] = readElement(reader);
+                            TElement element = reader.ReadCustom(readElement);
+                            array[i, j, k, l, m] = element;
                         }
                     }
                 }

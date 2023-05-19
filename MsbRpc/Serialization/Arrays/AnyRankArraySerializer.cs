@@ -2,6 +2,8 @@
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using static MsbRpc.Serialization.Buffers.BufferReader;
+using static MsbRpc.Serialization.Buffers.BufferWriter;
 
 namespace MsbRpc.Serialization.Arrays;
 
@@ -35,13 +37,13 @@ public static class AnyRankArraySerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter bufferWriter, Array array, Action<BufferWriter, TElement> writeElement)
+    public static void Write(BufferWriter writer, Array array, WriteDelegate<TElement> writeElement)
     {
         int rank = array.Rank;
 
         for (int i = 0; i < rank; i++)
         {
-            bufferWriter.Write(array.GetLength(rank));
+            writer.Write(array.GetLength(rank));
         }
 
         int[] accumulatedCounts = GetAccumulatedCounts(array);
@@ -52,18 +54,19 @@ public static class AnyRankArraySerializer<TElement>
         for (int linearIndex = 0; linearIndex < elementCount; linearIndex++)
         {
             DeLinearizeIndex(linearIndex, accumulatedCounts, currentIndex);
-            writeElement(bufferWriter, (TElement)array.GetValue(currentIndex));
+            var element = (TElement)array.GetValue(currentIndex);
+            writer.WriteCustom(element, writeElement);
         }
     }
 
     [MayBeUsedByGeneratedCode]
-    public static Array Read(BufferReader bufferReader, int rank, Func<BufferReader, TElement> readElement)
+    public static Array Read(BufferReader reader, int rank, ReadDelegate<TElement> readElement)
     {
         int[] lengths = new int[rank];
 
         for (int i = 0; i < rank; i++)
         {
-            lengths[i] = bufferReader.ReadInt();
+            lengths[i] = reader.ReadInt();
         }
 
         var array = Array.CreateInstance(typeof(TElement), lengths);
@@ -76,7 +79,8 @@ public static class AnyRankArraySerializer<TElement>
         for (int linearIndex = 0; linearIndex < elementCount; linearIndex++)
         {
             DeLinearizeIndex(linearIndex, accumulatedCounts, currentIndex);
-            array.SetValue(readElement(bufferReader), currentIndex);
+            TElement element = reader.ReadCustom(readElement);
+            array.SetValue(element, currentIndex);
         }
 
         return array;

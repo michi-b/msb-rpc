@@ -2,6 +2,8 @@
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using static MsbRpc.Serialization.Buffers.BufferReader;
+using static MsbRpc.Serialization.Buffers.BufferWriter;
 
 namespace MsbRpc.Serialization.Arrays;
 
@@ -39,15 +41,15 @@ public static class Array7DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter bufferWriter, TElement[,,,,,,] array, Action<BufferWriter, TElement> writeElement)
+    public static void Write(BufferWriter writer, TElement[,,,,,,] array, WriteDelegate<TElement> writeElement)
     {
-        bufferWriter.Write(array.GetLength(0));
-        bufferWriter.Write(array.GetLength(1));
-        bufferWriter.Write(array.GetLength(2));
-        bufferWriter.Write(array.GetLength(3));
-        bufferWriter.Write(array.GetLength(4));
-        bufferWriter.Write(array.GetLength(5));
-        bufferWriter.Write(array.GetLength(6));
+        writer.Write(array.GetLength(0));
+        writer.Write(array.GetLength(1));
+        writer.Write(array.GetLength(2));
+        writer.Write(array.GetLength(3));
+        writer.Write(array.GetLength(4));
+        writer.Write(array.GetLength(5));
+        writer.Write(array.GetLength(6));
 
         for (int i = 0; i < array.GetLength(0); i++)
         {
@@ -63,7 +65,8 @@ public static class Array7DSerializer<TElement>
                             {
                                 for (int o = 0; o < array.GetLength(6); o++)
                                 {
-                                    writeElement(bufferWriter, array[i, j, k, l, m, n, o]);
+                                    TElement element = array[i, j, k, l, m, n, o];
+                                    writer.WriteCustom(element, writeElement);
                                 }
                             }
                         }
@@ -74,15 +77,15 @@ public static class Array7DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static TElement[,,,,,,] Read(BufferReader bufferReader, Func<BufferReader, TElement> readElement)
+    public static TElement[,,,,,,] Read(BufferReader reader, ReadDelegate<TElement> readElement)
     {
-        int length0 = bufferReader.ReadInt();
-        int length1 = bufferReader.ReadInt();
-        int length2 = bufferReader.ReadInt();
-        int length3 = bufferReader.ReadInt();
-        int length4 = bufferReader.ReadInt();
-        int length5 = bufferReader.ReadInt();
-        int length6 = bufferReader.ReadInt();
+        int length0 = reader.ReadInt();
+        int length1 = reader.ReadInt();
+        int length2 = reader.ReadInt();
+        int length3 = reader.ReadInt();
+        int length4 = reader.ReadInt();
+        int length5 = reader.ReadInt();
+        int length6 = reader.ReadInt();
 
         var array = new TElement[length0, length1, length2, length3, length4, length5, length6];
 
@@ -100,7 +103,8 @@ public static class Array7DSerializer<TElement>
                             {
                                 for (int o = 0; o < length6; o++)
                                 {
-                                    array[i, j, k, l, m, n, o] = readElement(bufferReader);
+                                    TElement element = reader.ReadCustom(readElement);
+                                    array[i, j, k, l, m, n, o] = element;
                                 }
                             }
                         }
