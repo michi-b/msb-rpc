@@ -70,7 +70,11 @@ public class NullableByteSerializationTests : Base.Test
     [TestMethod]
     public void SizeExpressionIsCorrect()
     {
-        const string expected = @"(MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize + MsbRpc.Serialization.Primitives.PrimitiveSerializer.BoolSize)";
+        const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.GetSize
+(
+    target,
+    MsbRpc.Serialization.Primitives.PrimitiveSerializer.ByteSize
+)";
         string actual = new SerializationTest(NullableBoolInfo).GetSizeExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);

@@ -8,7 +8,7 @@ public sealed class VoidSerialization : ISerialization
     public bool IsVoid => true;
 
     public bool IsResolved => true;
-    public bool IsConstantSize => true;
+    public bool InnerValueIsConstantSize => true;
 
     public string DeclarationSyntax => throw new InvalidOperationException();
     public bool NeedsSemicolonAfterSerializationStatement => throw new InvalidOperationException();

@@ -8,7 +8,7 @@ public sealed class UnresolvedSerialization : ISerialization
     public bool IsVoid => false;
 
     public bool IsResolved => false;
-    public bool IsConstantSize => true;
+    public bool InnerValueIsConstantSize => true;
 
     public string DeclarationSyntax { get; }
 

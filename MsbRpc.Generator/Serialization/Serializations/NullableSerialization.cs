@@ -17,7 +17,7 @@ public sealed class NullableSerialization : GenericSerialization
 
     private readonly string _serializerName;
 
-    public override bool IsConstantSize => _innerValueSerialization.IsConstantSize;
+    public override bool InnerValueIsConstantSize => _innerValueSerialization.InnerValueIsConstantSize;
 
     public override string DeclarationSyntax
         => _canUseNullableAnnotationInsteadOfWrapper
@@ -37,22 +37,19 @@ public sealed class NullableSerialization : GenericSerialization
 
     public override void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
-        if (_innerValueSerialization.IsConstantSize)
+        writer.WriteLine($"{_serializerName}.{Methods.SerializerGetSize}");
+        using (writer.GetParenthesesBlock(Appendix.None))
         {
-            writer.Write("(");
-            writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
-            writer.Write($" + {Fields.PrimitiveSerializerBoolSize})");
-        }
-        else
-        {
-            writer.WriteLine($"{_serializerName}.{Methods.SerializerGetSize}");
-            using (writer.GetParenthesesBlock(Appendix.None))
+            writer.WriteLine($"{targetExpression},");
+
+            //pass lambda to write size of inner value if it is not constant size, otherwise pass the constant size (different overload)
+            if (!InnerValueIsConstantSize)
             {
-                writer.WriteLine($"{targetExpression},");
                 writer.Write($"({ValueArgumentName}) => ");
-                writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
-                writer.WriteLine();
             }
+
+            writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
+            writer.WriteLine();
         }
     }
 

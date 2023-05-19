@@ -11,7 +11,7 @@ public class NullableReferenceSerialization : ISerialization
 
     public bool IsVoid => false;
     public bool IsResolved => true;
-    public bool IsConstantSize => false;
+    public bool InnerValueIsConstantSize => false;
     public string DeclarationSyntax => $"{_nonNullableSerialization.DeclarationSyntax}?";
 
     public bool NeedsSemicolonAfterSerializationStatement => false;

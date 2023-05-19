@@ -11,7 +11,7 @@ public abstract class GenericSerialization : ISerialization
     public bool IsVoid => false;
 
     public virtual bool IsResolved => true;
-    public abstract bool IsConstantSize { get; }
+    public abstract bool InnerValueIsConstantSize { get; }
 
     public abstract string DeclarationSyntax { get; }
 

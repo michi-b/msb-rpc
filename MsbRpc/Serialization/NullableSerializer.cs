@@ -8,6 +8,9 @@ namespace MsbRpc.Serialization;
 public static class NullableSerializer<TValue> where TValue : struct
 {
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(TValue? value, int constantValueSize) => value is null ? PrimitiveSerializer.BoolSize : PrimitiveSerializer.BoolSize + constantValueSize;
+
+    [MayBeUsedByGeneratedCode]
     public static int GetSize(TValue? value, Func<TValue?, int> getValueSize)
         => value is null ? PrimitiveSerializer.BoolSize : PrimitiveSerializer.BoolSize + getValueSize(value);
 
