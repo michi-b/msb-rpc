@@ -34,7 +34,7 @@ public static class Array6DSerializer<TElement>
 
         return size;
     }
-    
+
     [MayBeUsedByGeneratedCode]
     public static void Write(BufferWriter bufferWriter, TElement[,,,,,] array, Action<BufferWriter, TElement> writeElement)
     {
@@ -65,7 +65,7 @@ public static class Array6DSerializer<TElement>
             }
         }
     }
-    
+
     [MayBeUsedByGeneratedCode]
     public static TElement[,,,,,] Read(BufferReader bufferReader, Func<BufferReader, TElement> readElement)
     {
@@ -75,7 +75,7 @@ public static class Array6DSerializer<TElement>
         int length3 = bufferReader.ReadInt();
         int length4 = bufferReader.ReadInt();
         int length5 = bufferReader.ReadInt();
-        
+
         var array = new TElement[length0, length1, length2, length3, length4, length5];
 
         for (int i = 0; i < length0; i++)

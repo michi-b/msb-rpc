@@ -5,18 +5,23 @@ using MsbRpc.Serialization.Buffers;
 namespace MsbRpc.Test.Serialization;
 
 [TestClass]
-public class StringSerializationTest
+public class StringSerializationTest : Base.Test
 {
     [TestMethod]
     public void PreservesHelloWorldInBufferReaderAndWriter()
     {
-        const string value = "Hello World!";
-        int size = StringSerializer.GetSize(value);
-        var buffer = new ArraySegment<byte>(new byte[size]);
+        const string testValue = "Hello World!";
+
+        int size = StringSerializer.GetSize(testValue);
+        
+        ArraySegment<byte> buffer = BufferUtility.Create(size);
+        
         var writer = new BufferWriter(buffer);
-        writer.Write(value);
+        
+        writer.Write(testValue);
         var reader = new BufferReader(buffer);
         string result = reader.ReadString();
-        Assert.AreEqual(value, result);
+        
+        Assert.AreEqual(testValue, result);
     }
 }

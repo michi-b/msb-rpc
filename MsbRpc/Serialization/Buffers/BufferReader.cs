@@ -7,6 +7,8 @@ namespace MsbRpc.Serialization.Buffers;
 
 public struct BufferReader
 {
+    public delegate TValue ReadDelegate<out TValue>(ref BufferReader reader);
+
     private readonly ArraySegment<byte> _buffer;
     private int _position;
 
@@ -22,6 +24,9 @@ public struct BufferReader
         _position += increment;
         return position;
     }
+
+    [MayBeUsedByGeneratedCode]
+    public TValue Read<TValue>(ReadDelegate<TValue> read) => read(ref this);
 
     [MayBeUsedByGeneratedCode]
     public byte ReadByte() => _buffer.ReadByte(PostIncrementPosition(ByteSize));

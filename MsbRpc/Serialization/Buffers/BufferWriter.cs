@@ -7,6 +7,8 @@ namespace MsbRpc.Serialization.Buffers;
 
 public struct BufferWriter
 {
+    public delegate void WriteDelegate<in TValue>(ref BufferWriter writer, TValue value);
+
     private int _position;
     private readonly ArraySegment<byte> _buffer;
 
@@ -113,4 +115,6 @@ public struct BufferWriter
 
     [PublicAPI]
     public ArraySegment<byte> GetWriteSegment(int count) => _buffer.GetOffsetSubSegment(PostIncrementPosition(count), count);
+
+    public void WriteCustom<TValue>(TValue value, WriteDelegate<TValue> writeDelegate) => writeDelegate(ref this, value);
 }

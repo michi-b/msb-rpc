@@ -14,23 +14,23 @@ public static class ArraySerializer<TElement>
     public static int GetSize(TElement[] array, Func<TElement, int> getElementSize) => PrimitiveSerializer.IntSize + array.Sum(getElementSize);
 
     [MayBeUsedByGeneratedCode]
-    public static void Write(BufferWriter bufferWriter, TElement[] array, Action<BufferWriter, TElement> writeElement)
+    public static void Write(ref BufferWriter bufferWriter, TElement[] array, BufferWriter.WriteDelegate<TElement> writeElement)
     {
         bufferWriter.Write(array.Length);
         foreach (TElement element in array)
         {
-            writeElement(bufferWriter, element);
+            bufferWriter.WriteCustom(element, writeElement);
         }
     }
 
     [MayBeUsedByGeneratedCode]
-    public static TElement[] Read(ref BufferReader reader, Func<BufferReader, TElement> readElement)
+    public static TElement[] Read(ref BufferReader reader, BufferReader.ReadDelegate<TElement> readElement)
     {
         int length = reader.ReadInt();
         var array = new TElement[length];
         for (int i = 0; i < length; i++)
         {
-            array[i] = readElement(reader);
+            array[i] = reader.Read(readElement);
         }
 
         return array;
