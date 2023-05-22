@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using JetBrains.Annotations;
 using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
 
 namespace MsbRpc.Serialization.Buffers;
 
+[DebuggerDisplay("Position = {_position}, Length = {_buffer.Count}")]
 public struct BufferReader
 {
     public delegate TValue ReadDelegate<out TValue>(ref BufferReader reader);
