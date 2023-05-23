@@ -97,6 +97,9 @@ public static class AnyRankArraySerializer<TElement>
             result[currentRank] = currentDimensionIndex;
             linearIndex -= currentDimensionIndex * nextRankAccumulatedCount;
         }
+
+        Debug.Assert(linearIndex < accumulatedCounts[maxRank]);
+        result[maxRank] = linearIndex;
     }
 
     private static int[] GetAccumulatedCounts(Array array)
