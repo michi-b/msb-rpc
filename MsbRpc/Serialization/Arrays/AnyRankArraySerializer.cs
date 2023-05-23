@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
@@ -39,15 +40,15 @@ public static class AnyRankArraySerializer<TElement>
     [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter writer, Array array, WriteDelegate<TElement> writeElement)
     {
-        int rank = array.Rank;
+        int rankCount = array.Rank;
 
-        for (int i = 0; i < rank; i++)
+        for (int rank = 0; rank < rankCount; rank++)
         {
             writer.Write(array.GetLength(rank));
         }
 
         int[] accumulatedCounts = GetAccumulatedCounts(array);
-        int[] currentIndex = new int[rank];
+        int[] currentIndex = new int[rankCount];
 
         int elementCount = GetElementCount(array);
 
@@ -60,7 +61,7 @@ public static class AnyRankArraySerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
-    public static Array Read(BufferReader reader, int rank, ReadDelegate<TElement> readElement)
+    public static Array Read(ref BufferReader reader, int rank, ReadDelegate<TElement> readElement)
     {
         int[] lengths = new int[rank];
 
@@ -88,11 +89,13 @@ public static class AnyRankArraySerializer<TElement>
 
     private static void DeLinearizeIndex(int linearIndex, int[] accumulatedCounts, int[] result)
     {
-        for (int dimension = 0; dimension < accumulatedCounts.Length; dimension++)
+        int maxRank = accumulatedCounts.Length - 1;
+        for (int currentRank = 0; currentRank < maxRank; currentRank++)
         {
-            int currentDimensionIndex = linearIndex / accumulatedCounts[dimension];
-            result[dimension] = currentDimensionIndex;
-            linearIndex -= currentDimensionIndex * accumulatedCounts[dimension];
+            int nextRankAccumulatedCount = accumulatedCounts[currentRank + 1];
+            int currentDimensionIndex = linearIndex / nextRankAccumulatedCount;
+            result[currentRank] = currentDimensionIndex;
+            linearIndex -= currentDimensionIndex * nextRankAccumulatedCount;
         }
     }
 
@@ -115,7 +118,7 @@ public static class AnyRankArraySerializer<TElement>
 
     private static int GetElementCount(Array array)
     {
-        int count = 0;
+        int count = 1;
         for (int i = 0; i < array.Rank; i++)
         {
             count *= array.GetLength(i);
