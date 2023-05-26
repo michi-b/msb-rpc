@@ -6,8 +6,14 @@ using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
 {
+    public string? DebuggerDisplay
+        => ArrayDeclaration != null
+            ? ArrayDeclaration.DebuggerDisplay
+            : NamedDeclaration?.GetDebuggerDisplay(TypeArguments);
+
     /// <summary>
     ///     the named type declaration, without any type arguments, if it is a named type and not e.g. an array type
     /// </summary>

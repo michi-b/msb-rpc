@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 namespace MsbRpc.Generator.Info;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class ArrayDeclarationInfo : IEquatable<ArrayDeclarationInfo>
 {
     public TypeReferenceInfo ElementType { get; }
     public int Rank { get; }
+    public string? DebuggerDisplay => ElementType.DebuggerDisplay + $"[{new string(',', Rank - 1)}]";
 
     public ArrayDeclarationInfo(IArrayTypeSymbol arrayTypeSymbol)
     {

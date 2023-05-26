@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Serialization.Default;
 
 namespace MsbRpc.Generator.Info;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct NamedTypeDeclarationInfo : IEquatable<NamedTypeDeclarationInfo>
 {
+    public string DebuggerDisplay => Name + (TypeParameterCount > 0 ? $"<{new string(',', TypeParameterCount - 1)}>" : string.Empty);
+
+    public string GetDebuggerDisplay(ImmutableList<TypeReferenceInfo> typeArguments)
+    {
+        return Name + (typeArguments.Any() ? $"<{string.Join(", ", typeArguments.Select(t => t.DebuggerDisplay))}>" : string.Empty);
+    }
+
     /// <summary>
     ///     the fully qualified reference name of the type, without any type arguments
     /// </summary>
