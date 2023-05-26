@@ -30,9 +30,15 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
 
     public ImmutableList<TypeReferenceInfo> TypeArguments { get; } = ImmutableList<TypeReferenceInfo>.Empty;
 
+    /// <summary>
+    ///     creates a simple non-generic, non-array type reference info
+    /// </summary>
     public TypeReferenceInfo(NamedTypeDeclarationInfo namedDeclaration, bool isNullableReference = false)
         : this(namedDeclaration, null, ImmutableList<TypeReferenceInfo>.Empty, isNullableReference) { }
 
+    /// <summary>
+    ///     creates a generic type reference info
+    /// </summary>
     public TypeReferenceInfo
     (
         NamedTypeDeclarationInfo namedDeclaration,
@@ -40,6 +46,12 @@ public readonly struct TypeReferenceInfo : IEquatable<TypeReferenceInfo>
         bool isNullableReference = false
     )
         : this(namedDeclaration, null, typeArguments, isNullableReference) { }
+
+    /// <summary>
+    ///     creates an array type reference info
+    /// </summary>
+    public TypeReferenceInfo(ArrayDeclarationInfo arrayDeclaration, bool isNullableReference = false)
+        : this(null, arrayDeclaration, ImmutableList<TypeReferenceInfo>.Empty, isNullableReference) { }
 
     private TypeReferenceInfo
     (

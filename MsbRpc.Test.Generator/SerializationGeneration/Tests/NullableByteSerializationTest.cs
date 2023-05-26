@@ -6,7 +6,7 @@ using MsbRpc.Generator.Serialization;
 namespace MsbRpc.Test.Generator.SerializationGeneration.Tests;
 
 [TestClass]
-public class NullableByteSerializationTests : Base.Test
+public class NullableByteSerializationTest : Base.Test
 {
     private static readonly TypeReferenceInfo NullableBoolInfo = new
     (
