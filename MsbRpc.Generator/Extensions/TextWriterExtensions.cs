@@ -24,8 +24,6 @@ public static class TextWriterExtensions
 
     public static void WriteSemicolonLineBreak(this TextWriter writer) => writer.WriteLine(";");
 
-    public static void WriteCommaDelimiter(this TextWriter writer, bool withTrailingSpace = false) => writer.Write(withTrailingSpace ? ", " : ",");
-
     public static void FinalizeSerializationStatement(this TextWriter writer, ISerialization serialization)
     {
         if (serialization.NeedsSemicolonAfterSerializationStatement)
