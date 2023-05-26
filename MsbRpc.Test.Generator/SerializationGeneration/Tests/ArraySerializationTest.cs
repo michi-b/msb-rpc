@@ -24,4 +24,57 @@ public class ArraySerializationTest : Base.Test
     {
         Assert.IsFalse(Serialization.IsVoid);
     }
+
+    [TestMethod]
+    public void DeclarationSyntaxIsCorrect()
+    {
+        string actual = Serialization.DeclarationSyntax;
+        Assert.AreEqual(@"int[]", actual);
+        TestContext.WriteLine(actual);
+    }
+
+    [TestMethod]
+    public void DeserializationExpressionIsCorrect()
+    {
+        const string expected = @"MsbRpc.Serialization.Arrays.ArraySerializer.Read
+(
+    ref bufferReader,
+    (ref MsbRpc.Serialization.Buffers.BufferReader reader) => reader.ReadInt()
+);
+";
+        string actual = new SerializationTest(IntArrayInfo).GetFinalizedDeserializationExpression();
+        Assert.AreEqual(expected, actual);
+        TestContext.Write(actual);
+    }
+
+    [TestMethod]
+    public void SerializationStatementIsCorrect()
+    {
+        const string expected = @"MsbRpc.Serialization.Arrays.ArraySerializer.Write
+(
+    ref bufferWriter,
+    value,
+    (ref MsbRpc.Serialization.Buffers.BufferWriter writer, int element) => 
+    {
+        writer.Write(element);
+    }
+);
+";
+        string actual = new SerializationTest(IntArrayInfo).GetFinalizedSerializationStatement();
+        Assert.AreEqual(expected, actual);
+        TestContext.Write(actual);
+    }
+
+    [TestMethod]
+    public void SizeExpressionIsCorrect()
+    {
+        const string expected =
+            @"MsbRpc.Serialization.Arrays.ArraySerializer<int>.GetSize(
+    target,
+    MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize
+)";
+        string actual = new SerializationTest(IntArrayInfo).GetSizeExpression();
+        Assert.AreEqual(expected, actual);
+        TestContext.Write(actual);
+    }
 }

@@ -35,6 +35,16 @@ public static class Array5DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(TElement[,,,,] array, int constantElementSize)
+        => PrimitiveSerializer.IntSize * 5 +
+           array.GetLength(0)
+           * array.GetLength(1)
+           * array.GetLength(2)
+           * array.GetLength(3)
+           * array.GetLength(4)
+           * constantElementSize;
+
+    [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter writer, TElement[,,,,] array, WriteDelegate<TElement> writeElement)
     {
         writer.Write(array.GetLength(0));

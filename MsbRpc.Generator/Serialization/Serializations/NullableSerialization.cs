@@ -17,7 +17,9 @@ public sealed class NullableSerialization : GenericSerialization
 
     private readonly string _serializerName;
 
-    public override bool InnerValueIsConstantSize => _innerValueSerialization.InnerValueIsConstantSize;
+    public override bool IsResolved => _innerValueSerialization.IsResolved;
+
+    public override bool IsConstantSize => false;
 
     public override string DeclarationSyntax
         => _canUseNullableAnnotationInsteadOfWrapper
@@ -43,11 +45,12 @@ public sealed class NullableSerialization : GenericSerialization
             writer.WriteLine($"{targetExpression},");
 
             //pass lambda to write size of inner value if it is not constant size, otherwise pass the constant size (different overload)
-            if (!InnerValueIsConstantSize)
+            if (!_innerValueSerialization.IsConstantSize)
             {
                 writer.Write($"({ValueArgumentName}) => ");
             }
 
+            //value argument is not used if inner value is constant size
             writer.WriteSerializationSizeExpression(_innerValueSerialization, ValueArgumentName);
             writer.WriteLine();
         }

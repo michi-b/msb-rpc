@@ -16,6 +16,9 @@ public static class ArraySerializer<TElement>
     public static int GetSize(TElement[] array, Func<TElement, int> getElementSize) => PrimitiveSerializer.IntSize + array.Sum(getElementSize);
 
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(TElement[] array, int constantElementSize) => PrimitiveSerializer.IntSize + array.Length * constantElementSize;
+
+    [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter writer, TElement[] array, WriteDelegate<TElement> writeElement)
     {
         writer.Write(array.Length);

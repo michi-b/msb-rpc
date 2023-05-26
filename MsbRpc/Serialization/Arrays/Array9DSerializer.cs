@@ -47,6 +47,20 @@ public static class Array9DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(TElement[,,,,,,,,] array, int constantElementSize)
+        => PrimitiveSerializer.IntSize * 9 +
+           array.GetLength(0)
+           * array.GetLength(1)
+           * array.GetLength(2)
+           * array.GetLength(3)
+           * array.GetLength(4)
+           * array.GetLength(5)
+           * array.GetLength(6)
+           * array.GetLength(7)
+           * array.GetLength(8)
+           * constantElementSize;
+
+    [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter writer, TElement[,,,,,,,,] array, WriteDelegate<TElement> writeElement)
     {
         writer.Write(array.GetLength(0));

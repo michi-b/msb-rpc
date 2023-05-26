@@ -29,6 +29,14 @@ public static class Array3DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(TElement[,,] array, int constantElementSize)
+        => PrimitiveSerializer.IntSize * 3 +
+           array.GetLength(0)
+           * array.GetLength(1)
+           * array.GetLength(2)
+           * constantElementSize;
+
+    [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter writer, TElement[,,] array, WriteDelegate<TElement> writeElement)
     {
         writer.Write(array.GetLength(0));

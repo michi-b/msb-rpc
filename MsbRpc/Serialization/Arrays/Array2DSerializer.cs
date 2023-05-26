@@ -25,6 +25,13 @@ public static class Array2DSerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(TElement[,] array, int constantElementSize)
+        => PrimitiveSerializer.IntSize * 2 +
+           array.GetLength(0)
+           * array.GetLength(1)
+           * constantElementSize;
+
+    [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter bufferWriter, TElement[,] array, WriteDelegate<TElement> writeElement)
     {
         bufferWriter.Write(array.GetLength(0));

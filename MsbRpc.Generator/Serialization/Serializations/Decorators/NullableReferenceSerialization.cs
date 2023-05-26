@@ -10,8 +10,8 @@ public class NullableReferenceSerialization : ISerialization
     private readonly ISerialization _nonNullableSerialization;
 
     public bool IsVoid => false;
-    public bool IsResolved => true;
-    public bool InnerValueIsConstantSize => false;
+    public bool IsResolved => _nonNullableSerialization.IsResolved;
+    public bool IsConstantSize => false;
     public string DeclarationSyntax => $"{_nonNullableSerialization.DeclarationSyntax}?";
 
     public bool NeedsSemicolonAfterSerializationStatement => false;

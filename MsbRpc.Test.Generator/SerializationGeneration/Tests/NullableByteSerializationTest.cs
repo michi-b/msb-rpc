@@ -42,7 +42,7 @@ public class NullableByteSerializationTest : Base.Test
         const string expected = @"MsbRpc.Serialization.NullableSerializer<byte>.Read
 (
     ref bufferReader,
-    (ref MsbRpc.Serialization.Buffers.BufferReader responseReader) => responseReader.ReadByte()
+    (ref MsbRpc.Serialization.Buffers.BufferReader reader) => reader.ReadByte()
 );
 ";
         string actual = new SerializationTest(NullableBoolInfo).GetFinalizedDeserializationExpression();
@@ -57,9 +57,9 @@ public class NullableByteSerializationTest : Base.Test
 (
     ref bufferWriter,
     value,
-    (ref MsbRpc.Serialization.Buffers.BufferWriter requestWriter, byte innerValue) => 
+    (ref MsbRpc.Serialization.Buffers.BufferWriter writer, byte innerValue) => 
     {
-        requestWriter.Write(innerValue);
+        writer.Write(innerValue);
     }
 );
 ";

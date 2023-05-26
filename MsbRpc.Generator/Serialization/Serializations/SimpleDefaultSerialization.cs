@@ -52,7 +52,7 @@ public sealed class SimpleDefaultSerialization : ISerialization
 
     public bool IsResolved => true;
 
-    public bool InnerValueIsConstantSize
+    public bool IsConstantSize
         => _serializationKind switch
         {
             SimpleDefaultSerializationKind.Byte => true,

@@ -46,7 +46,7 @@ public class ArraySerializationTest : Base.Test
             { { string.Empty }, { "yes" } }
         };
 
-        int size = Array3DSerializer<string>.GetSize(value, StringSerializer.GetSize);
+        int size = Array3DSerializer<string>.GetSize(value, element => StringSerializer.GetSize(element));
 
         TestContext.WriteLine("Size is {0}", size);
 

@@ -38,6 +38,9 @@ public static class AnyRankArraySerializer<TElement>
     }
 
     [MayBeUsedByGeneratedCode]
+    public static int GetSize(Array array, int constantElementSize) => PrimitiveSerializer.IntSize * array.Rank + GetElementCount(array) * constantElementSize;
+
+    [MayBeUsedByGeneratedCode]
     public static void Write(ref BufferWriter writer, Array array, WriteDelegate<TElement> writeElement)
     {
         int rankCount = array.Rank;

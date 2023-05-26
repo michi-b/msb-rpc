@@ -18,7 +18,7 @@ public sealed class CustomSerialization : ISerialization
     public bool IsVoid => false;
 
     public bool IsResolved => true;
-    public bool InnerValueIsConstantSize { get; }
+    public bool IsConstantSize { get; }
 
     public string DeclarationSyntax { get; }
 
@@ -28,7 +28,7 @@ public sealed class CustomSerialization : ISerialization
     {
         DeclarationSyntax = targetType.GetDeclarationSyntax();
         TypeReferenceInfo serializerType = serializationInfo.SerializerTypeReference;
-        InnerValueIsConstantSize = serializationInfo.Kind == CustomSerializerKind.ConstantSize;
+        IsConstantSize = serializationInfo.Kind == CustomSerializerKind.ConstantSize;
 
         if (serializerType.NamedDeclaration is { } namedDeclaration)
         {
@@ -45,7 +45,7 @@ public sealed class CustomSerialization : ISerialization
 
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
-        writer.Write(InnerValueIsConstantSize ? _sizeMember : $"{_sizeMember}({targetExpression})");
+        writer.Write(IsConstantSize ? _sizeMember : $"{_sizeMember}({targetExpression})");
     }
 
     public void WriteSerializationStatement(IndentedTextWriter writer, string bufferWriterExpression, string valueExpression)

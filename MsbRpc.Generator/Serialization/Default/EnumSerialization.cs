@@ -10,7 +10,7 @@ public class EnumSerialization : ISerialization
     private readonly SimpleDefaultSerialization _underlyingTypeSerialization;
     public bool IsVoid => false;
     public bool IsResolved => true;
-    public bool InnerValueIsConstantSize => true;
+    public bool IsConstantSize => true;
     public string DeclarationSyntax { get; }
     public bool NeedsSemicolonAfterSerializationStatement => true;
 

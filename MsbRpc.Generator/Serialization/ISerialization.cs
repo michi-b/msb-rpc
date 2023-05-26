@@ -8,7 +8,7 @@ public interface ISerialization
 
     public bool IsResolved { get; }
 
-    public bool InnerValueIsConstantSize { get; }
+    public bool IsConstantSize { get; }
 
     /// <summary>declaration syntax for a variable to store the target type, eg. "int?", "string", "MyStruct" etc.</summary>
     public string DeclarationSyntax { get; }

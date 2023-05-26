@@ -82,9 +82,10 @@ public class SerializationResolver
             return nullableSerialization;
         }
 
-        if (type.NamedDeclaration != null)
+        NamedTypeDeclarationInfo? namedDeclaration = type.NamedDeclaration;
+        if (namedDeclaration != null)
         {
-            NamedTypeDeclarationInfo namedTypeDeclaration = type.NamedDeclaration.Value;
+            NamedTypeDeclarationInfo namedTypeDeclaration = namedDeclaration.Value;
 
             //try instantiate enum serialization
             if (namedTypeDeclaration.EnumSerializationKind is { } enumSerializationKind)
@@ -104,6 +105,16 @@ public class SerializationResolver
                     return newSerializationInstance;
                 }
             }
+        }
+
+        ArrayDeclarationInfo? arrayDeclaration = type.ArrayDeclaration;
+        if (arrayDeclaration != null)
+        {
+            TypeReferenceInfo elementType = arrayDeclaration.ElementType;
+            ISerialization elementSerialization = Resolve(elementType);
+            ISerialization arraySerialization = new ArraySerialization(elementSerialization, arrayDeclaration.Rank);
+            _serializations.Add(type, arraySerialization);
+            return arraySerialization;
         }
 
         //return unresolved serialization, if it could not be resolved
