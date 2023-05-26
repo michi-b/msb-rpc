@@ -13,15 +13,15 @@ public class StringSerializationTest : Base.Test
         const string testValue = "Hello World!";
 
         int size = StringSerializer.GetSize(testValue);
-        
+
         ArraySegment<byte> buffer = BufferUtility.Create(size);
-        
+
         var writer = new BufferWriter(buffer);
-        
+
         writer.Write(testValue);
         var reader = new BufferReader(buffer);
         string result = reader.ReadString();
-        
+
         Assert.AreEqual(testValue, result);
     }
 }

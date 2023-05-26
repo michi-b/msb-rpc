@@ -18,7 +18,7 @@ public static class BufferExtensions
     public static ArraySegment<byte> GetOffsetSubSegment(this ArraySegment<byte> target, int offset, int count)
     {
         Debug.Assert(offset >= 0);
-        Debug.Assert(count >=0);
+        Debug.Assert(count >= 0);
         Debug.Assert(target.Array != null);
         target.AssertContains(offset, count);
         return new ArraySegment<byte>(target.Array!, target.Offset + offset, count);

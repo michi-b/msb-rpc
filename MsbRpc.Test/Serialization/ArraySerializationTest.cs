@@ -47,7 +47,7 @@ public class ArraySerializationTest : Base.Test
         };
 
         int size = Array3DSerializer<string>.GetSize(value, StringSerializer.GetSize);
-        
+
         TestContext.WriteLine("Size is {0}", size);
 
         ArraySegment<byte> buffer = BufferUtility.Create(size);
@@ -67,22 +67,22 @@ public class ArraySerializationTest : Base.Test
     public void Preserves11DimensionalSingleCharArray()
     {
         const int rank = 11;
-        
+
         char[,,,,,,,,,,] value =
         {
-            { { { { { { { { { {'H'} } } } } } } } } },
-            { { { { { { { { { {'e'} } } } } } } } } },
-            { { { { { { { { { {'l'} } } } } } } } } },
-            { { { { { { { { { {'l'} } } } } } } } } },
-            { { { { { { { { { {'o'} } } } } } } } } }
+            { { { { { { { { { { 'H' } } } } } } } } } },
+            { { { { { { { { { { 'e' } } } } } } } } } },
+            { { { { { { { { { { 'l' } } } } } } } } } },
+            { { { { { { { { { { 'l' } } } } } } } } } },
+            { { { { { { { { { { 'o' } } } } } } } } } }
         };
-        
+
         Assert.AreEqual(rank, value.Rank);
-        
+
         int size = AnyRankArraySerializer<char>.GetSize(value, _ => PrimitiveSerializer.CharSize);
-        
+
         TestContext.WriteLine("Size is {0}", size);
-        
+
         ArraySegment<byte> buffer = BufferUtility.Create(size);
 
         var writer = new BufferWriter(buffer);
@@ -95,27 +95,27 @@ public class ArraySerializationTest : Base.Test
 
         CollectionAssert.AreEqual(value, result);
     }
-    
+
     [TestMethod]
     public void Preserves11DimensionalTwoCharArray()
     {
         const int rank = 11;
-        
+
         char[,,,,,,,,,,] value =
         {
-            { { { { { { { { { {'H', 'e'} } } } } } } } } },
-            { { { { { { { { { {'l', 'l'} } } } } } } } } },
-            { { { { { { { { { {'o', 'W'} } } } } } } } } },
-            { { { { { { { { { {'o', 'r'} } } } } } } } } },
-            { { { { { { { { { {'l', 'd'} } } } } } } } } }
+            { { { { { { { { { { 'H', 'e' } } } } } } } } } },
+            { { { { { { { { { { 'l', 'l' } } } } } } } } } },
+            { { { { { { { { { { 'o', 'W' } } } } } } } } } },
+            { { { { { { { { { { 'o', 'r' } } } } } } } } } },
+            { { { { { { { { { { 'l', 'd' } } } } } } } } } }
         };
-        
+
         Assert.AreEqual(rank, value.Rank);
-        
+
         int size = AnyRankArraySerializer<char>.GetSize(value, _ => PrimitiveSerializer.CharSize);
-        
+
         TestContext.WriteLine("Size is {0}", size);
-        
+
         ArraySegment<byte> buffer = BufferUtility.Create(size);
 
         var writer = new BufferWriter(buffer);
