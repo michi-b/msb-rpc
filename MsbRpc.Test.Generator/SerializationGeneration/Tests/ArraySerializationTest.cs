@@ -36,7 +36,7 @@ public class ArraySerializationTest : Base.Test
     [TestMethod]
     public void DeserializationExpressionIsCorrect()
     {
-        const string expected = @"MsbRpc.Serialization.Arrays.ArraySerializer.Read
+        const string expected = @"MsbRpc.Serialization.Arrays.ArraySerializer<int>.Read
 (
     ref bufferReader,
     (ref MsbRpc.Serialization.Buffers.BufferReader reader) => reader.ReadInt()
@@ -50,7 +50,7 @@ public class ArraySerializationTest : Base.Test
     [TestMethod]
     public void SerializationStatementIsCorrect()
     {
-        const string expected = @"MsbRpc.Serialization.Arrays.ArraySerializer.Write
+        const string expected = @"MsbRpc.Serialization.Arrays.ArraySerializer<int>.Write
 (
     ref bufferWriter,
     value,

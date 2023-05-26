@@ -25,7 +25,7 @@ public class ArraySerialization : ISerialization
     {
         _elementSerialization = elementSerialization;
         _rank = rank;
-        _serializerName = GetSerializerClassReference(rank);
+        _serializerName = $"{GetSerializerClassReferenceWithoutTypeArgument(rank)}<{_elementSerialization.DeclarationSyntax}>";
 
         //rank > 9 uses any rank array serializer, which returns an untyped array that needs to be cast to the target type on deserialization
         _needsCastOnDeserialization = rank > 9;
@@ -33,7 +33,7 @@ public class ArraySerialization : ISerialization
 
     public void WriteSizeExpression(IndentedTextWriter writer, string targetExpression)
     {
-        writer.Write($"{_serializerName}<{_elementSerialization.DeclarationSyntax}>.{Methods.SerializerGetSize}");
+        writer.Write($"{_serializerName}.{Methods.SerializerGetSize}");
         using (writer.GetParenthesesBlock(Appendix.None))
         {
             writer.WriteLine($"{targetExpression},");
@@ -81,7 +81,7 @@ public class ArraySerialization : ISerialization
         }
     }
 
-    private static string GetSerializerClassReference(int rank)
+    private static string GetSerializerClassReferenceWithoutTypeArgument(int rank)
         => rank switch
         {
             1 => Types.ArraySerializer,
