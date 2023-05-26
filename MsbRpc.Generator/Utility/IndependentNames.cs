@@ -16,7 +16,6 @@ internal static class IndependentNames
     {
         public const string MsbRpcSerialization = "MsbRpc.Serialization";
         public const string MsbRpcArraySerialization = MsbRpcSerialization + ".Arrays";
-
     }
 
     public static class Types
@@ -58,7 +57,7 @@ internal static class IndependentNames
         public const string RpcExecutionStageArgumentDeserialization = RpcExecutionStage + ".ArgumentDeserialization";
         public const string RpcExecutionStageImplementationExecution = RpcExecutionStage + ".ImplementationExecution";
         public const string RpcExecutionStageResponseSerialization = RpcExecutionStage + ".ResponseSerialization";
-        
+
         // array serializers
         public const string ArraySerializer = Namespaces.MsbRpcArraySerialization + ".ArraySerializer";
         public const string Array2DSerializer = Namespaces.MsbRpcArraySerialization + ".Array2DSerializer";
