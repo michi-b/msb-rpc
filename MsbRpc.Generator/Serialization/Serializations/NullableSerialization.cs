@@ -61,7 +61,7 @@ public sealed class NullableSerialization : GenericSerialization
             writer.WriteLine($"ref {bufferWriterExpression},");
             writer.WriteLine($"{valueExpression},");
 
-            writer.WriteLine($"({BufferWriterArgumentName}, {ValueArgumentName}) => ");
+            writer.WriteLine($"(ref {BufferWriterArgumentName}, {ValueArgumentName}) => ");
             using (writer.GetBlock())
             {
                 writer.WriteFinalizedSerializationStatement(_innerValueSerialization, BufferWriterArgumentName, ValueArgumentName);

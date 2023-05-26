@@ -33,7 +33,7 @@ public static class NullableSerializer<TValue> where TValue : struct
     [MayBeUsedByGeneratedCode]
     public static TValue? Read(ref BufferReader reader, ReadDelegate<TValue> readValue)
     {
-        bool isNull = reader.ReadBool();
-        return isNull ? null : reader.ReadCustom(readValue);
+        bool hasValue = reader.ReadBool();
+        return hasValue ? reader.ReadCustom(readValue) : null;
     }
 }
