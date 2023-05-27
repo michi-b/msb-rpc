@@ -8,7 +8,6 @@ namespace MsbRpc.Configuration;
 public readonly struct LogConfiguration : IConfiguration
 {
     public readonly EventId Id;
-    public readonly bool Enabled;
     public readonly LogLevel Level;
 
     /// <summary>
@@ -17,7 +16,6 @@ public readonly struct LogConfiguration : IConfiguration
     public LogConfiguration(EventId id)
     {
         Id = id;
-        Enabled = false;
         Level = LogLevel.Information;
     }
 
@@ -27,16 +25,12 @@ public readonly struct LogConfiguration : IConfiguration
     public LogConfiguration(EventId id, LogLevel logLevel)
     {
         Id = id;
-        Enabled = true;
         Level = logLevel;
     }
 
     public LogConfiguration(EventId id, bool enabled, LogLevel level)
     {
         Id = id;
-        Enabled = enabled;
         Level = level;
     }
-
-    public bool IsEnabled(ILogger logger) => Enabled && logger.IsEnabled(Level);
 }
