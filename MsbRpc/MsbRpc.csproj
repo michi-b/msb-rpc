@@ -9,7 +9,7 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <Version>0.0.0-preview.12</Version>
+        <Version>0.0.0-preview.13</Version>
         <Title>MsbRpc</Title>
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
         <Authors>Michael Simon Brunner</Authors>

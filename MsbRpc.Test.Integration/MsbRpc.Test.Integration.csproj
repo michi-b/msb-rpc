@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
@@ -11,20 +11,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0-rc.2.22472.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+        <PackageReference Include="MsbRpc" Version="0.0.0-preview.13" />
+        <PackageReference Include="MsbRpc.Generator" Version="0.0.0-preview.13" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
         <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
         <PackageReference Include="coverlet.collector" Version="3.1.2" />
         <PackageReference Include="Serilog" Version="2.10.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MsbRpc.Test\MsbRpc.Test.csproj" />
       <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" />
-      <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
-      <ProjectReference Include="..\MsbRpc.Generator\MsbRpc.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

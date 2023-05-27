@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRpc.Test.Integration", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRpc.Test.Generator", "MsbRpc.Test.Generator\MsbRpc.Test.Generator.csproj", "{9B40A8A9-355D-4961-92EF-B85900682FAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbRpc.Test.Integration.Nuget", "MsbRpc.Test.Integration.Nuget\MsbRpc.Test.Integration.Nuget.csproj", "{8F7F7B30-BDA6-40F8-9518-535633871A99}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,14 +81,6 @@ Global
 		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|x86.ActiveCfg = Release|Any CPU
 		{9B40A8A9-355D-4961-92EF-B85900682FAF}.Release|x86.Build.0 = Release|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Debug|x86.Build.0 = Debug|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Release|x86.ActiveCfg = Release|Any CPU
-		{8F7F7B30-BDA6-40F8-9518-535633871A99}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
