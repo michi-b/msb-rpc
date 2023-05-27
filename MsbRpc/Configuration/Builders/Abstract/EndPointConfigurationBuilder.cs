@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using MsbRpc.Configuration.Interfaces;
 
-namespace MsbRpc.Configuration.Builders;
+namespace MsbRpc.Configuration.Builders.Abstract;
 
 [PublicAPI]
 public abstract class EndPointConfigurationBuilder<TConfiguration> : ConfigurationWithLoggerFactoryBuilder<TConfiguration> where TConfiguration : IConfiguration

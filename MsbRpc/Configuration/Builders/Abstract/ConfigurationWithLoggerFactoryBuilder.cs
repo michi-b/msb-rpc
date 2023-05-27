@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Configuration.Interfaces;
 
-namespace MsbRpc.Configuration.Builders;
+namespace MsbRpc.Configuration.Builders.Abstract;
 
 public abstract class ConfigurationWithLoggerFactoryBuilder<TConfiguration> : ConfigurationBuilder<TConfiguration>, IConfigurationWithLoggerFactoryBuilder
     where TConfiguration : IConfiguration

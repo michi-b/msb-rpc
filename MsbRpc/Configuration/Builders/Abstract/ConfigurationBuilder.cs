@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Configuration.Interfaces;
 
-namespace MsbRpc.Configuration.Builders;
+namespace MsbRpc.Configuration.Builders.Abstract;
 
 public abstract class ConfigurationBuilder<TConfiguration> : IConfigurationBuilder<TConfiguration> where TConfiguration : IConfiguration
 {
