@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
+using MsbRpc.Configuration.Builders;
+using MsbRpc.Configuration.Builders.Extensions;
 
 namespace MsbRpc.Test.Utility;
 
@@ -11,7 +13,10 @@ public static class ServerTestUtility
     private const int RetryTimeOut = 1;
 
     public static readonly IPAddress LocalHost = Dns.GetHostEntry("localhost").AddressList[0];
-    public static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new() { LoggerFactory = TestUtility.LoggerFactory };
+
+    public static readonly OutboundEndPointConfiguration ClientEndPointConfiguration = new OutboundEndPointConfigurationBuilder()
+        .WithLoggerFactory(TestUtility.LoggerFactory)
+        .Build();
 
     public static async ValueTask AssertBecomesEqual<T>(T expected, Func<T> getActual, string? message = null) where T : IEquatable<T>
     {

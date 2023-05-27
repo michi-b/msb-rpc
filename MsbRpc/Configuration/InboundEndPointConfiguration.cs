@@ -1,36 +1,47 @@
 ﻿using Microsoft.Extensions.Logging;
-using MsbRpc.Logging;
+using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class InboundEndPointConfiguration : EndPointConfiguration
+public class InboundEndPointConfiguration : EndPointConfiguration, IInboundEndPointConfiguration
 {
-    public LogConfiguration LogArgumentDeserializationException;
-    public LogConfiguration LogExceptionTransmissionException;
+    /// <inheritdoc cref="IInboundEndPointConfiguration.LoggingName" />
+    /// >
+    public string LoggingName { get; }
 
-    /// <summary>
-    ///     Prefix for log messages for easier identification
-    /// </summary>
-    public string LoggingName = "InboundEndPoint";
+    public LogConfiguration LogStartedListening { get; }
+    public LogConfiguration LogReceivedAnyRequest { get; }
+    public LogConfiguration LogArgumentDeserializationException { get; }
+    public LogConfiguration LogProcedureExecutionException { get; }
+    public LogConfiguration LogResponseSerializationException { get; }
+    public LogConfiguration LogExceptionTransmissionException { get; }
+    public LogConfiguration LogRanToCompletion { get; }
+    public LogConfiguration LogStoppedListeningWithoutRunningToCompletion { get; }
 
-    public LogConfiguration LogProcedureExecutionException;
-    public LogConfiguration LogRanToCompletion;
-    public LogConfiguration LogReceivedAnyRequest;
-    public LogConfiguration LogResponseSerializationException;
-    public LogConfiguration LogStartedListening;
-    public LogConfiguration LogStoppedListeningWithoutRunningToCompletion;
-
-    public InboundEndPointConfiguration()
+    public InboundEndPointConfiguration
+    (
+        int initialBufferSize,
+        ILoggerFactory? loggerFactory,
+        string loggingName,
+        LogConfiguration logStartedListening,
+        LogConfiguration logReceivedAnyRequest,
+        LogConfiguration logArgumentDeserializationException,
+        LogConfiguration logExceptionTransmissionException,
+        LogConfiguration logProcedureExecutionException,
+        LogConfiguration logResponseSerializationException,
+        LogConfiguration logRanToCompletion,
+        LogConfiguration logStoppedListeningWithoutRunningToCompletion
+    )
+        : base(initialBufferSize, loggerFactory)
     {
-        LogStoppedListeningWithoutRunningToCompletion
-            = new LogConfiguration(LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion, LogLevel.Error);
-        LogStartedListening = new LogConfiguration(LogEventIds.InboundEndPointStartedListening, LogLevel.Information);
-        LogRanToCompletion = new LogConfiguration(LogEventIds.InboundEndPointRanToCompletion, LogLevel.Information);
-        LogReceivedAnyRequest = new LogConfiguration(LogEventIds.InboundEndPointReceivedAnyRequest, LogLevel.Trace);
-        LogArgumentDeserializationException = new LogConfiguration(LogEventIds.InboundEndPointArgumentDeserializationException, LogLevel.Error);
-        LogProcedureExecutionException = new LogConfiguration(LogEventIds.InboundEndPointProcedureExecutionException, LogLevel.Error);
-        LogResponseSerializationException = new LogConfiguration(LogEventIds.InboundEndPointResponseSerializationException, LogLevel.Error);
-        LogExceptionTransmissionException = new LogConfiguration(LogEventIds.InboundEndPointExceptionTransmissionException, LogLevel.Critical);
-        LoggerFactory = null;
+        LoggingName = loggingName;
+        LogStartedListening = logStartedListening;
+        LogReceivedAnyRequest = logReceivedAnyRequest;
+        LogArgumentDeserializationException = logArgumentDeserializationException;
+        LogExceptionTransmissionException = logExceptionTransmissionException;
+        LogProcedureExecutionException = logProcedureExecutionException;
+        LogResponseSerializationException = logResponseSerializationException;
+        LogRanToCompletion = logRanToCompletion;
+        LogStoppedListeningWithoutRunningToCompletion = logStoppedListeningWithoutRunningToCompletion;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
+using MsbRpc.Configuration.Builders;
+using MsbRpc.Configuration.Builders.Extensions;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 
@@ -27,26 +29,22 @@ public abstract class Server<TServer, TEndPoint> : Server
     protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger, InboundEndPointConfiguration endPointConfiguration);
 
     private static ServerConfiguration CreateServerConfiguration(ILoggerFactory loggerFactory, string serverName)
-        => new()
-        {
-            LoggerFactory = loggerFactory,
-            LoggingName = serverName,
-            ThreadName = serverName
-        };
+        => new ServerConfigurationBuilder()
+            .WithLoggerFactory(loggerFactory)
+            .WithName(serverName)
+            .Build();
 
     private InboundEndPointConfiguration CreateInboundEndPointConfiguration(ILoggerFactory loggerFactory)
-        => new()
-        {
-            LoggerFactory = loggerFactory,
-            LoggingName = _endpointName
-        };
+        => new InboundEndPointConfigurationBuilder()
+            .WithLoggerFactory(loggerFactory)
+            .WithLoggingName(_endpointName)
+            .Build();
 
     private InboundEndpointRegistryConfiguration CreateInboundEndpointRegistryConfiguration(ILoggerFactory loggerFactory)
-        => new()
-        {
-            LoggerFactory = loggerFactory,
-            LoggingName = _serverName + "EndpointRegistry"
-        };
+        => new InboundEndPointRegistryConfigurationBuilder()
+            .WithLoggerFactory(loggerFactory)
+            .WithLoggingName(_serverName + "EndpointRegistry")
+            .Build();
 
     protected override void Accept(Messenger messenger)
     {

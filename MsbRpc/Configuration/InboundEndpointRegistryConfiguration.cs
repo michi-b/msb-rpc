@@ -1,27 +1,34 @@
 ﻿using Microsoft.Extensions.Logging;
-using MsbRpc.Logging;
-using MsbRpc.Servers;
+using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class InboundEndpointRegistryConfiguration : Configuration
+public class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFactory, IInboundEndpointRegistryConfiguration
 {
-    public LogConfiguration LogDeregisteredEndpoint;
-    public LogConfiguration LogDeregisteredEndpointOnDisposal;
-    public LogConfiguration LogEndpointThrewException;
+    public string LoggingName { get; }
 
-    /// <summary>
-    ///     prefix for log messages for easier identification
-    /// </summary>
-    public string LoggingName = nameof(InboundEndPointRegistry);
+    public LogConfiguration LogRegisteredEndpoint { get; }
 
-    public LogConfiguration LogRegisteredEndpoint;
+    public LogConfiguration LogEndpointThrewException { get; }
 
-    public InboundEndpointRegistryConfiguration()
+    public LogConfiguration LogDeregisteredEndpoint { get; }
+
+    public LogConfiguration LogDeregisteredEndpointOnDisposal { get; }
+
+    public InboundEndpointRegistryConfiguration
+    (
+        ILoggerFactory? loggerFactory,
+        string loggingName,
+        LogConfiguration logRegisteredEndpoint,
+        LogConfiguration logEndpointThrewException,
+        LogConfiguration logDeregisteredEndpoint,
+        LogConfiguration logDeregisteredEndpointOnDisposal
+    ) : base(loggerFactory)
     {
-        LogEndpointThrewException = new LogConfiguration(LogEventIds.ServerEndPointThrewException, LogLevel.Error);
-        LogRegisteredEndpoint = new LogConfiguration(LogEventIds.ServerEndPointRegistered, LogLevel.Debug);
-        LogDeregisteredEndpoint = new LogConfiguration(LogEventIds.ServerEndPointDeregistered, LogLevel.Debug);
-        LogDeregisteredEndpointOnDisposal = new LogConfiguration(LogEventIds.ServerEndPointDeregisteredOnRegistryDisposal, LogLevel.Warning);
+        LoggingName = loggingName;
+        LogRegisteredEndpoint = logRegisteredEndpoint;
+        LogEndpointThrewException = logEndpointThrewException;
+        LogDeregisteredEndpoint = logDeregisteredEndpoint;
+        LogDeregisteredEndpointOnDisposal = logDeregisteredEndpointOnDisposal;
     }
 }

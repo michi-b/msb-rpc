@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using MsbRpc.Configuration;
+using MsbRpc.Configuration.Builders;
 
 namespace MsbRpc.Serialization.Buffers;
 
@@ -8,7 +8,7 @@ public class RpcBuffer
 {
     private byte[] _bytes;
 
-    public RpcBuffer(int count = EndPointConfiguration.DefaultInitialSize)
+    public RpcBuffer(int count = EndPointConfigurationBuilder.DefaultInitialBufferSize)
     {
         Debug.Assert(count >= 0);
         _bytes = count == 0 ? ByteArrayUtility.Empty : new byte[count];

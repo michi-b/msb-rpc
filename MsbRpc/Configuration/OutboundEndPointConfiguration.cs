@@ -1,18 +1,26 @@
 ﻿using Microsoft.Extensions.Logging;
-using MsbRpc.Logging;
+using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class OutboundEndPointConfiguration : EndPointConfiguration
+public class OutboundEndPointConfiguration : EndPointConfiguration, IOutboundEndPointConfiguration
 {
-    public LogConfiguration LogExceptionTransmissionException;
-    public LogConfiguration LogRemoteRpcException;
-    public LogConfiguration LogSentAnyRequest;
+    public LogConfiguration LogSentAnyRequest { get; }
+    public LogConfiguration LogRemoteRpcException { get; }
+    public LogConfiguration LogExceptionTransmissionException { get; }
 
-    public OutboundEndPointConfiguration()
+    public OutboundEndPointConfiguration
+    (
+        int initialBufferSize,
+        ILoggerFactory? loggerFactory,
+        LogConfiguration logSentAnyRequest,
+        LogConfiguration logRemoteRpcException,
+        LogConfiguration logExceptionTransmissionException
+    )
+        : base(initialBufferSize, loggerFactory)
     {
-        LogSentAnyRequest = new LogConfiguration(LogEventIds.OutboundEndPointSentAnyRequest, LogLevel.Trace);
-        LogRemoteRpcException = new LogConfiguration(LogEventIds.OutboundEndPointRemoteRpcException, LogLevel.Error);
-        LogExceptionTransmissionException = new LogConfiguration(LogEventIds.OutboundEndPointExceptionTransmissionException, LogLevel.Critical);
+        LogSentAnyRequest = logSentAnyRequest;
+        LogRemoteRpcException = logRemoteRpcException;
+        LogExceptionTransmissionException = logExceptionTransmissionException;
     }
 }

@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 namespace MsbRpc.Configuration;
 
 [PublicAPI]
-public struct LogConfiguration
+public readonly struct LogConfiguration
 {
-    public EventId Id;
-    public bool Enabled;
-    public LogLevel Level;
+    public readonly EventId Id;
+    public readonly bool Enabled;
+    public readonly LogLevel Level;
 
     /// <summary>
     ///     Creates a disabled <see cref="LogConfiguration" />.
