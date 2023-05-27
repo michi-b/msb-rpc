@@ -1,10 +1,11 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
 [PublicAPI]
-public readonly struct LogConfiguration
+public readonly struct LogConfiguration : IConfiguration
 {
     public readonly EventId Id;
     public readonly bool Enabled;

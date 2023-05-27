@@ -3,7 +3,7 @@ using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class ConfigurationWithLoggerFactory : IConfigurationWithLoggerFactory
+public class ConfigurationWithLoggerFactory : Configuration, IConfigurationWithLoggerFactory
 {
     public ILoggerFactory? LoggerFactory { get; }
 

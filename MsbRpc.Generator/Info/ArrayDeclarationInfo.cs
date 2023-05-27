@@ -9,7 +9,7 @@ public class ArrayDeclarationInfo : IEquatable<ArrayDeclarationInfo>
 {
     public TypeReferenceInfo ElementType { get; }
     public int Rank { get; }
-    public string? DebuggerDisplay => ElementType.DebuggerDisplay + $"[{new string(',', Rank - 1)}]";
+    public string DebuggerDisplay => ElementType.DebuggerDisplay + $"[{new string(',', Rank - 1)}]";
 
     public ArrayDeclarationInfo(IArrayTypeSymbol arrayTypeSymbol)
         : this(new TypeReferenceInfo(arrayTypeSymbol.ElementType), arrayTypeSymbol.Rank) { }

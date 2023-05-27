@@ -4,11 +4,9 @@ using MsbRpc.Configuration.Interfaces;
 namespace MsbRpc.Configuration.Builders;
 
 [PublicAPI]
-public class EndPointConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder, IConfigurationBuilder<EndPointConfiguration>
+public abstract class EndPointConfigurationBuilder<TConfiguration> : ConfigurationWithLoggerFactoryBuilder<TConfiguration> where TConfiguration : IConfiguration
 {
     public const int DefaultInitialBufferSize = 1024;
 
     [PublicAPI] public int InitialBufferSize { get; set; } = DefaultInitialBufferSize;
-
-    public new EndPointConfiguration Build() => new(InitialBufferSize, LoggerFactory);
 }

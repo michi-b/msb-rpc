@@ -1,12 +1,11 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Logging;
 
 namespace MsbRpc.Configuration.Builders;
 
 [PublicAPI]
-public class InboundEndPointConfigurationBuilder : EndPointConfigurationBuilder, IConfigurationBuilder<InboundEndPointConfiguration>
+public class InboundEndPointConfigurationBuilder : EndPointConfigurationBuilder<InboundEndPointConfiguration>
 {
     public string LoggingName { get; set; } = "InboundEndPoint";
     public LogConfiguration LogStartedListening { get; set; } = new(LogEventIds.InboundEndPointStartedListening, LogLevel.Information);
@@ -20,7 +19,7 @@ public class InboundEndPointConfigurationBuilder : EndPointConfigurationBuilder,
     public LogConfiguration LogStoppedListeningWithoutRunningToCompletion { get; set; } =
         new(LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion, LogLevel.Error);
 
-    public new InboundEndPointConfiguration Build()
+    public override InboundEndPointConfiguration Build()
         => new
         (
             InitialBufferSize,

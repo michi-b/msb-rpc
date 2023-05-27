@@ -1,12 +1,11 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Logging;
 
 namespace MsbRpc.Configuration.Builders;
 
 [PublicAPI]
-public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder, IConfigurationBuilder<ServerConfiguration>
+public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<ServerConfiguration>
 {
     public int ListenBacklogSize { get; set; } = 100;
     public LogConfiguration LogAcceptedNewConnection { get; set; } = new(LogEventIds.ServerAcceptedNewConnection, LogLevel.Trace);
@@ -24,7 +23,7 @@ public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder,
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
 
-    public new ServerConfiguration Build()
+    public override ServerConfiguration Build()
         => new
         (
             ThreadName,

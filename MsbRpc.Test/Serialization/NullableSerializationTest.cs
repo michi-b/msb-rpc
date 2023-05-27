@@ -23,7 +23,7 @@ public class NullableSerializationTest : Base.Test
         (
             ref writer,
             value,
-            (ref BufferWriter writer, int innerValue) => { writer.Write(innerValue); }
+            (ref BufferWriter valueWriter, int innerValue) => { valueWriter.Write(innerValue); }
         );
 
         var reader = new BufferReader(buffer);
@@ -31,7 +31,7 @@ public class NullableSerializationTest : Base.Test
         int? result = NullableSerializer<int>.Read
         (
             ref reader,
-            (ref BufferReader reader) => reader.ReadInt()
+            (ref BufferReader valueReader) => valueReader.ReadInt()
         );
 
         Assert.AreEqual(value, result);
@@ -54,7 +54,7 @@ public class NullableSerializationTest : Base.Test
         (
             ref writer,
             value,
-            (ref BufferWriter writer, int innerValue) => { writer.Write(innerValue); }
+            (ref BufferWriter valueWriter, int innerValue) => { valueWriter.Write(innerValue); }
         );
 
         var reader = new BufferReader(buffer);
@@ -62,7 +62,7 @@ public class NullableSerializationTest : Base.Test
         int? result = NullableSerializer<int>.Read
         (
             ref reader,
-            (ref BufferReader reader) => reader.ReadInt()
+            (ref BufferReader valueReader) => valueReader.ReadInt()
         );
 
         Assert.AreEqual(value, result);
