@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
@@ -13,6 +14,7 @@ using MsbRpc.Serialization.Buffers;
 namespace MsbRpc.EndPoints;
 
 [MayBeUsedByGeneratedCode]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutboundEndPoint where TProcedure : Enum
 {
     private readonly ILogger<OutboundEndPoint<TProcedure>>? _logger;

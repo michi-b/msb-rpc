@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
-using MsbRpc.Configuration.Builders;
 using MsbRpc.Configuration.Builders.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Test.Base.Generic;
@@ -93,5 +92,5 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     }
 
     protected override DateTimeEchoClientEndPoint CreateClient(Messenger messenger)
-        => new(messenger, new OutboundEndPointConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
+        => new(messenger, new DateTimeEchoClientConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
 }

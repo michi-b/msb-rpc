@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
@@ -13,6 +14,7 @@ using MsbRpc.Serialization.Buffers;
 namespace MsbRpc.EndPoints;
 
 [MayBeUsedByGeneratedCode]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TProcedure>, IInboundEndPoint where TImplementation : IRpcContract
     where TProcedure : Enum
 {

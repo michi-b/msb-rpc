@@ -13,7 +13,6 @@ namespace MsbRpc.EndPoints;
 public abstract class EndPoint<TProcedure> : MarkedDisposable, IEndPoint where TProcedure : Enum
 {
     protected readonly string LoggingNameWithId;
-    private string DebuggerDisplay => $"{LoggingNameWithId} ({GetType().Name})";
     public int Id { get; }
 
     public string Name { get; }
@@ -21,6 +20,8 @@ public abstract class EndPoint<TProcedure> : MarkedDisposable, IEndPoint where T
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
     public bool RanToCompletion { get; protected set; }
+
+    private string DebuggerDisplay => $"{LoggingNameWithId} ({GetType().Name})";
 
     protected EndPoint(Messenger messenger, int initialBufferSize, string loggingName)
     {
