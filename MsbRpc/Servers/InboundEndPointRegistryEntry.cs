@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using MsbRpc.EndPoints;
+using MsbRpc.EndPoints.Interfaces;
 
 namespace MsbRpc.Servers;
 

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
+using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Exceptions;
 using MsbRpc.Exceptions.Generic;
 using MsbRpc.Extensions;
@@ -12,7 +13,7 @@ using MsbRpc.Serialization.Buffers;
 namespace MsbRpc.EndPoints;
 
 [MayBeUsedByGeneratedCode]
-public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where TProcedure : Enum
+public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutboundEndPoint where TProcedure : Enum
 {
     private readonly ILogger<OutboundEndPoint<TProcedure>>? _logger;
 

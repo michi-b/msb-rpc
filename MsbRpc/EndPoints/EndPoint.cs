@@ -1,18 +1,22 @@
 ﻿using System;
-using JetBrains.Annotations;
+using System.Diagnostics;
 using MsbRpc.Attributes;
 using MsbRpc.Disposable;
+using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure : Enum
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public abstract class EndPoint<TProcedure> : MarkedDisposable, IEndPoint where TProcedure : Enum
 {
-    [PublicAPI] public readonly int Id;
-
     protected readonly string LoggingNameWithId;
+    private string DebuggerDisplay => $"{LoggingNameWithId} ({GetType().Name})";
+    public int Id { get; }
+
+    public string Name { get; }
 
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
@@ -20,10 +24,12 @@ public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure :
 
     protected EndPoint(Messenger messenger, int initialBufferSize, string loggingName)
     {
-        Messenger = messenger;
-        Buffer = new RpcBuffer(initialBufferSize);
+        Name = loggingName;
         LoggingNameWithId = loggingName;
         Id = -1;
+
+        Messenger = messenger;
+        Buffer = new RpcBuffer(initialBufferSize);
     }
 
     protected EndPoint
@@ -34,10 +40,12 @@ public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure :
         string loggingName
     )
     {
-        Messenger = messenger;
-        Buffer = new RpcBuffer(initialBufferSize);
+        Name = loggingName;
         LoggingNameWithId = $"{loggingName}[{id}]";
         Id = id;
+
+        Messenger = messenger;
+        Buffer = new RpcBuffer(initialBufferSize);
     }
 
     protected override void Dispose(bool disposing)

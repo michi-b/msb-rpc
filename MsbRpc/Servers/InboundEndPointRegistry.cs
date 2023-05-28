@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
 using MsbRpc.Disposable;
-using MsbRpc.EndPoints;
+using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Extensions;
 
 namespace MsbRpc.Servers;

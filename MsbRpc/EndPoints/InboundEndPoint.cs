@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
 using MsbRpc.Contracts;
+using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Exceptions;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
