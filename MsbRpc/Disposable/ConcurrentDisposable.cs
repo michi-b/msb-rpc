@@ -8,6 +8,8 @@ public abstract class ConcurrentDisposable : IDisposable
 {
     private const int LockTimeOutMilliseconds = 60000; // 1 minute
 
+    private readonly object _lock = new();
+
     [PublicAPI] public bool IsDisposed { get; private set; }
 
     public void Dispose()
@@ -39,7 +41,7 @@ public abstract class ConcurrentDisposable : IDisposable
             return;
         }
 
-        if (Monitor.TryEnter(this, LockTimeOutMilliseconds))
+        if (Monitor.TryEnter(_lock, LockTimeOutMilliseconds))
         {
             try
             {
@@ -53,7 +55,7 @@ public abstract class ConcurrentDisposable : IDisposable
             }
             finally
             {
-                Monitor.Exit(this);
+                Monitor.Exit(_lock);
             }
         }
         else
@@ -69,7 +71,7 @@ public abstract class ConcurrentDisposable : IDisposable
             throw new ObjectDisposedException(GetType().Name);
         }
 
-        if (Monitor.TryEnter(this, LockTimeOutMilliseconds))
+        if (Monitor.TryEnter(_lock, LockTimeOutMilliseconds))
         {
             try
             {
@@ -82,7 +84,7 @@ public abstract class ConcurrentDisposable : IDisposable
             }
             finally
             {
-                Monitor.Exit(this);
+                Monitor.Exit(_lock);
             }
         }
         // ReSharper disable once RedundantIfElseBlock
@@ -99,7 +101,7 @@ public abstract class ConcurrentDisposable : IDisposable
     {
         if (!IsDisposed)
         {
-            if (Monitor.TryEnter(this, LockTimeOutMilliseconds))
+            if (Monitor.TryEnter(_lock, LockTimeOutMilliseconds))
             {
                 try
                 {
@@ -116,7 +118,7 @@ public abstract class ConcurrentDisposable : IDisposable
                 }
                 finally
                 {
-                    Monitor.Exit(this);
+                    Monitor.Exit(_lock);
                 }
             }
             else
