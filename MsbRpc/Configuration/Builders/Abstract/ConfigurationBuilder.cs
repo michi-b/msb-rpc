@@ -1,4 +1,5 @@
-﻿using MsbRpc.Configuration.Interfaces;
+﻿using MsbRpc.Configuration.Builders.Interfaces;
+using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration.Builders.Abstract;
 

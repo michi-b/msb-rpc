@@ -1,42 +1,22 @@
-﻿using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Abstract;
+using MsbRpc.Configuration.Builders.Interfaces;
 
 namespace MsbRpc.Configuration.Builders;
 
-[PublicAPI]
-public class LogConfigurationBuilder : ConfigurationBuilder<LogConfiguration>
+public class LogConfigurationBuilder : ConfigurationBuilder<LogConfiguration>, ILogConfigurationBuilder
 {
     public EventId Id { get; set; }
-    public bool Enabled { get; set; }
     public LogLevel Level { get; set; }
-
-    /// <summary>
-    ///     Creates a disabled <see cref="LogConfiguration" />.
-    /// </summary>
-    public LogConfigurationBuilder(EventId id)
-    {
-        Id = id;
-        Enabled = false;
-        Level = LogLevel.Information;
-    }
 
     /// <summary>
     ///     Creates ane enabled <see cref="LogConfiguration" />.
     /// </summary>
-    public LogConfigurationBuilder(EventId id, LogLevel logLevel)
+    public LogConfigurationBuilder(EventId id, LogLevel logLevel = LogLevel.Information)
     {
         Id = id;
-        Enabled = true;
         Level = logLevel;
     }
 
-    public LogConfigurationBuilder(EventId id, bool enabled, LogLevel level)
-    {
-        Id = id;
-        Enabled = enabled;
-        Level = level;
-    }
-
-    public override LogConfiguration Build() => new(Id, Enabled, Level);
+    public override LogConfiguration Build() => this;
 }

@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using JetBrains.Annotations;
+using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
+[PublicAPI]
 public class EndPointConfiguration : ConfigurationWithLoggerFactory, IEndPointConfiguration
 {
     public int InitialBufferSize { get; }
 
-    public EndPointConfiguration(int initialBufferSize, ILoggerFactory? loggerFactory) : base(loggerFactory) => InitialBufferSize = initialBufferSize;
+    [PublicAPI]
+    public EndPointConfiguration(IEndPointConfigurationBuilder builder) : base(builder) => InitialBufferSize = builder.InitialBufferSize;
 }

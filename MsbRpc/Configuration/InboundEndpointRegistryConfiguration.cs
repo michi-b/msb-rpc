@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFactory, IInboundEndpointRegistryConfiguration
+public abstract class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFactory, IInboundEndpointRegistryConfiguration
 {
     public string LoggingName { get; }
 
@@ -15,20 +15,12 @@ public class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFacto
 
     public LogConfiguration LogDeregisteredEndpointOnDisposal { get; }
 
-    public InboundEndpointRegistryConfiguration
-    (
-        ILoggerFactory? loggerFactory,
-        string loggingName,
-        LogConfiguration logRegisteredEndpoint,
-        LogConfiguration logEndpointThrewException,
-        LogConfiguration logDeregisteredEndpoint,
-        LogConfiguration logDeregisteredEndpointOnDisposal
-    ) : base(loggerFactory)
+    public InboundEndpointRegistryConfiguration(IInboundEndPointRegistryConfigurationBuilder builder) : base(builder)
     {
-        LoggingName = loggingName;
-        LogRegisteredEndpoint = logRegisteredEndpoint;
-        LogEndpointThrewException = logEndpointThrewException;
-        LogDeregisteredEndpoint = logDeregisteredEndpoint;
-        LogDeregisteredEndpointOnDisposal = logDeregisteredEndpointOnDisposal;
+        LoggingName = builder.LoggingName;
+        LogRegisteredEndpoint = builder.LogRegisteredEndpoint;
+        LogEndpointThrewException = builder.LogEndpointThrewException;
+        LogDeregisteredEndpoint = builder.LogDeregisteredEndpoint;
+        LogDeregisteredEndpointOnDisposal = builder.LogDeregisteredEndpointOnDisposal;
     }
 }

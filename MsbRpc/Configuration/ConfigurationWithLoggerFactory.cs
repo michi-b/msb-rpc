@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
@@ -7,5 +9,6 @@ public class ConfigurationWithLoggerFactory : Configuration, IConfigurationWithL
 {
     public ILoggerFactory? LoggerFactory { get; }
 
-    public ConfigurationWithLoggerFactory(ILoggerFactory? loggerFactory) => LoggerFactory = loggerFactory;
+    [PublicAPI]
+    public ConfigurationWithLoggerFactory(IConfigurationWithLoggerFactoryBuilder builder) => LoggerFactory = builder.LoggerFactory;
 }

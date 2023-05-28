@@ -4,7 +4,7 @@ using MsbRpc.Exceptions;
 
 namespace MsbRpc.Test.Integration.LoopBack;
 
-public class LoopBackInitiator : ILoopBackReceiver
+public class LoopBackInitiator : ILoopBackInitiator
 {
     private ILogger<LoopBackInitiator> Logger { get; }
 

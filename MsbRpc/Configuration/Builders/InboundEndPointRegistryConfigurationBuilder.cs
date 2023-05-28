@@ -1,13 +1,13 @@
-﻿using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Abstract;
+using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Logging;
 using MsbRpc.Servers;
 
 namespace MsbRpc.Configuration.Builders;
 
-[PublicAPI]
-public class InboundEndPointRegistryConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<InboundEndpointRegistryConfiguration>
+public class InboundEndPointRegistryConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<InboundEndpointRegistryConfiguration>,
+    IInboundEndPointRegistryConfigurationBuilder
 {
     public string LoggingName { get; set; } = nameof(InboundEndPointRegistry);
     public LogConfigurationBuilder LogRegisteredEndpoint { get; set; } = new(LogEventIds.ServerEndPointDeregistered, LogLevel.Debug);
@@ -15,14 +15,5 @@ public class InboundEndPointRegistryConfigurationBuilder : ConfigurationWithLogg
     public LogConfigurationBuilder LogDeregisteredEndpoint { get; set; } = new(LogEventIds.ServerEndPointDeregistered, LogLevel.Debug);
     public LogConfigurationBuilder LogDeregisteredEndpointOnDisposal { get; set; } = new(LogEventIds.ServerEndPointDeregisteredOnRegistryDisposal, LogLevel.Warning);
 
-    public override InboundEndpointRegistryConfiguration Build()
-        => new
-        (
-            LoggerFactory,
-            LoggingName,
-            LogRegisteredEndpoint,
-            LogEndpointThrewException,
-            LogDeregisteredEndpoint,
-            LogDeregisteredEndpointOnDisposal
-        );
+    public override InboundEndpointRegistryConfiguration Build() => this;
 }

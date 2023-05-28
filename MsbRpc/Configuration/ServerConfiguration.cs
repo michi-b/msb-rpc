@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Builders;
 using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
@@ -33,32 +33,20 @@ public class ServerConfiguration : ConfigurationWithLoggerFactory, IServerConfig
 
     public ServerConfiguration
     (
-        string threadName,
-        string loggingName,
-        int port,
-        int listenBacklogSize,
-        ILoggerFactory? loggerFactory,
-        LogConfiguration logWasCreatedWithSpecifiedPort,
-        LogConfiguration logWasCreatedWithEphemeralPort,
-        LogConfiguration logStartedListening,
-        LogConfiguration logAcceptedNewConnection,
-        LogConfiguration logDeclinedNewConnectionDuringDisposal,
-        LogConfiguration logStoppedListeningDueToDisposal,
-        LogConfiguration logStoppedListeningDueToException,
-        bool logExceptionWhenLoggingStoppedListeningDueToDisposal
-    ) : base(loggerFactory)
+        IServerConfigurationBuilder builder
+    ) : base(builder)
     {
-        ListenBacklogSize = listenBacklogSize;
-        LogAcceptedNewConnection = logAcceptedNewConnection;
-        LogDeclinedNewConnectionDuringDisposal = logDeclinedNewConnectionDuringDisposal;
-        LogExceptionWhenLoggingStoppedListeningDueToDisposal = logExceptionWhenLoggingStoppedListeningDueToDisposal;
-        LoggingName = loggingName;
-        LogStartedListening = logStartedListening;
-        LogStoppedListeningDueToDisposal = logStoppedListeningDueToDisposal;
-        LogStoppedListeningDueToException = logStoppedListeningDueToException;
-        LogWasCreatedWithEphemeralPort = logWasCreatedWithEphemeralPort;
-        LogWasCreatedWithSpecifiedPort = logWasCreatedWithSpecifiedPort;
-        Port = port;
-        ThreadName = threadName;
+        ListenBacklogSize = builder.ListenBacklogSize;
+        LogAcceptedNewConnection = builder.LogAcceptedNewConnection;
+        LogDeclinedNewConnectionDuringDisposal = builder.LogDeclinedNewConnectionDuringDisposal;
+        LogExceptionWhenLoggingStoppedListeningDueToDisposal = builder.LogExceptionWhenLoggingStoppedListeningDueToDisposal;
+        LoggingName = builder.LoggingName;
+        LogStartedListening = builder.LogStartedListening;
+        LogStoppedListeningDueToDisposal = builder.LogStoppedListeningDueToDisposal;
+        LogStoppedListeningDueToException = builder.LogStoppedListeningDueToException;
+        LogWasCreatedWithEphemeralPort = builder.LogWasCreatedWithEphemeralPort;
+        LogWasCreatedWithSpecifiedPort = builder.LogWasCreatedWithSpecifiedPort;
+        Port = builder.Port;
+        ThreadName = builder.ThreadName;
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
@@ -18,30 +18,16 @@ public class InboundEndPointConfiguration : EndPointConfiguration, IInboundEndPo
     public LogConfiguration LogRanToCompletion { get; }
     public LogConfiguration LogStoppedListeningWithoutRunningToCompletion { get; }
 
-    public InboundEndPointConfiguration
-    (
-        int initialBufferSize,
-        ILoggerFactory? loggerFactory,
-        string loggingName,
-        LogConfiguration logStartedListening,
-        LogConfiguration logReceivedAnyRequest,
-        LogConfiguration logArgumentDeserializationException,
-        LogConfiguration logExceptionTransmissionException,
-        LogConfiguration logProcedureExecutionException,
-        LogConfiguration logResponseSerializationException,
-        LogConfiguration logRanToCompletion,
-        LogConfiguration logStoppedListeningWithoutRunningToCompletion
-    )
-        : base(initialBufferSize, loggerFactory)
+    public InboundEndPointConfiguration(IInboundEndPointConfigurationBuilder builder) : base(builder)
     {
-        LoggingName = loggingName;
-        LogStartedListening = logStartedListening;
-        LogReceivedAnyRequest = logReceivedAnyRequest;
-        LogArgumentDeserializationException = logArgumentDeserializationException;
-        LogExceptionTransmissionException = logExceptionTransmissionException;
-        LogProcedureExecutionException = logProcedureExecutionException;
-        LogResponseSerializationException = logResponseSerializationException;
-        LogRanToCompletion = logRanToCompletion;
-        LogStoppedListeningWithoutRunningToCompletion = logStoppedListeningWithoutRunningToCompletion;
+        LoggingName = builder.LoggingName;
+        LogStartedListening = builder.LogStartedListening;
+        LogReceivedAnyRequest = builder.LogReceivedAnyRequest;
+        LogArgumentDeserializationException = builder.LogArgumentDeserializationException;
+        LogExceptionTransmissionException = builder.LogExceptionTransmissionException;
+        LogProcedureExecutionException = builder.LogProcedureExecutionException;
+        LogResponseSerializationException = builder.LogResponseSerializationException;
+        LogRanToCompletion = builder.LogRanToCompletion;
+        LogStoppedListeningWithoutRunningToCompletion = builder.LogStoppedListeningWithoutRunningToCompletion;
     }
 }
