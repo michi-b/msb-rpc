@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using MsbRpc.Attributes;
 using MsbRpc.Disposable;
 using MsbRpc.Exceptions;
@@ -9,18 +10,34 @@ namespace MsbRpc.EndPoints;
 
 public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure : Enum
 {
+    [PublicAPI] public readonly int Id;
+
+    protected readonly string LoggingNameWithId;
+
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
     public bool RanToCompletion { get; protected set; }
 
+    protected EndPoint(Messenger messenger, int initialBufferSize, string loggingName)
+    {
+        Messenger = messenger;
+        Buffer = new RpcBuffer(initialBufferSize);
+        LoggingNameWithId = loggingName;
+        Id = -1;
+    }
+
     protected EndPoint
     (
         Messenger messenger,
-        int initialBufferSize
+        int id,
+        int initialBufferSize,
+        string loggingName
     )
     {
         Messenger = messenger;
         Buffer = new RpcBuffer(initialBufferSize);
+        LoggingNameWithId = $"{loggingName}[{id}]";
+        Id = id;
     }
 
     protected override void Dispose(bool disposing)
@@ -41,14 +58,14 @@ public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure :
                 throw new EndPointRanToCompletionException(GetType().Name);
             }
 
-            throw new ObjectDisposedException(GetType().Name, $"endpoint {GetType().Name} is disposed");
+            throw new ObjectDisposedException(LoggingNameWithId, $"{LoggingNameWithId} with id is disposed");
         }
 #if DEBUG
         if (RanToCompletion)
         {
             throw new InvalidOperationException
             (
-                $"Endpoint {GetType().Name} has run to completion but is not disposed."
+                $"{LoggingNameWithId} has run to completion but is not disposed."
                 + " This is supposed to be impossible to happen."
             );
         }

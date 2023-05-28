@@ -25,8 +25,21 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
     (
         Messenger messenger,
         TImplementation implementation,
+        int id,
         in InboundEndPointConfiguration configuration
-    ) : base(messenger, configuration.InitialBufferSize)
+    ) : base(messenger, id, configuration.InitialBufferSize, configuration.LoggingName)
+    {
+        _logger = configuration.LoggerFactory?.CreateLogger<InboundEndPoint<TProcedure, TImplementation>>();
+        Configuration = configuration;
+        Implementation = implementation;
+    }
+
+    protected InboundEndPoint
+    (
+        Messenger messenger,
+        TImplementation implementation,
+        in InboundEndPointConfiguration configuration
+    ) : base(messenger, configuration.InitialBufferSize, configuration.LoggingName)
     {
         _logger = configuration.LoggerFactory?.CreateLogger<InboundEndPoint<TProcedure, TImplementation>>();
         Configuration = configuration;
@@ -126,7 +139,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
             case RpcExecutionStage.None:
                 throw new ArgumentException
                 (
-                    "Cannot log exception with source stage 'None'. This value is reserved for transmitted exceptions.",
+                    $"{LoggingNameWithId} Cannot log exception with source stage 'None'. This value is reserved for transmitted exceptions.",
                     nameof(sourceStage)
                 );
             case RpcExecutionStage.ArgumentDeserialization:
@@ -162,10 +175,10 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "{LoggingName} failed to transmit exception ({ExceptionType}) with message '{ExceptionMessage}' and handling instructions '{HandlingInstructions}'"
+                    "{LoggingNameWithId} failed to transmit exception ({ExceptionType}) with message '{ExceptionMessage}' and handling instructions '{HandlingInstructions}'"
                     + " thrown in execution stage {ExecutionStage} and with continuation {RpcExceptionContinuation}"
                     + ", and as a result the endpoint is being disposed",
-                    Configuration.LoggingName,
+                    LoggingNameWithId,
                     originalException.GetType().FullName,
                     originalException.Message,
                     handlingInstructions.ToString(),
@@ -187,8 +200,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 configuration.Level,
                 configuration.Id,
                 originalException,
-                "{LoggingName} failed to deserialize RPC argument, and the exception is handled with instructions '{HandlingInstructions}'",
-                Configuration.LoggingName,
+                "{LoggingNameWithId} failed to deserialize RPC argument, and the exception is handled with instructions '{HandlingInstructions}'",
+                LoggingNameWithId,
                 handlingInstructionsString
             );
         }
@@ -205,8 +218,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 configuration.Level,
                 configuration.Id,
                 originalException,
-                "{LoggingName} failed during RPC procedure invocation, and the exception is handled with instructions '{HandlingInstructions}'",
-                Configuration.LoggingName,
+                "{LoggingNameWithId} failed during RPC procedure invocation, and the exception is handled with instructions '{HandlingInstructions}'",
+                LoggingNameWithId,
                 handlingInstructionsString
             );
         }
@@ -223,8 +236,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 configuration.Level,
                 configuration.Id,
                 originalException,
-                "{LoggingName} failed to serialize RPC result, and the exception is handled with instructions '{HandlingInstructions}'",
-                Configuration.LoggingName,
+                "{LoggingNameWithId} failed to serialize RPC result, and the exception is handled with instructions '{HandlingInstructions}'",
+                LoggingNameWithId,
                 handlingInstructionsString
             );
         }
@@ -241,8 +254,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} stopped listening without running to completion with listen return code: {ListenReturnCode}",
-                    Configuration.LoggingName,
+                    "{LoggingNameWithId} stopped listening without running to completion with listen return code: {ListenReturnCode}",
+                    LoggingNameWithId,
                     listenReturnCode.GetName()
                 );
             }
@@ -260,8 +273,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} started listening",
-                    Configuration.LoggingName
+                    "{LoggingNameWithId} started listening",
+                    LoggingNameWithId
                 );
             }
         }
@@ -278,8 +291,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} ran to completion with listen return code: {ListenReturnCode}",
-                    Configuration.LoggingName,
+                    "{LoggingNameWithId} ran to completion with listen return code: {ListenReturnCode}",
+                    LoggingNameWithId,
                     listenReturnCode.GetName()
                 );
             }
@@ -297,8 +310,8 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} received call to {ProcedureName} with {ArgumentByteCount} argument bytes",
-                    Configuration.LoggingName,
+                    "{LoggingNameWithId} received call to {ProcedureName} with {ArgumentByteCount} argument bytes",
+                    LoggingNameWithId,
                     GetName(procedure),
                     argumentByteCount
                 );

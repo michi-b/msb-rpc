@@ -6,13 +6,8 @@ namespace MsbRpc.Configuration;
 public readonly struct InboundEndPointConfiguration
 {
     public readonly int InitialBufferSize;
-
     public readonly ILoggerFactory? LoggerFactory;
-
-    /// <inheritdoc cref="IInboundEndPointConfiguration.LoggingName" />
-    /// >
     public readonly string LoggingName;
-
     public readonly LogConfiguration LogStartedListening;
     public readonly LogConfiguration LogReceivedAnyRequest;
     public readonly LogConfiguration LogArgumentDeserializationException;
@@ -25,6 +20,7 @@ public readonly struct InboundEndPointConfiguration
     public InboundEndPointConfiguration(IInboundEndPointConfigurationBuilder builder)
     {
         InitialBufferSize = builder.InitialBufferSize;
+        LoggerFactory = builder.LoggerFactory;
         LoggingName = builder.LoggingName;
         LogStartedListening = builder.LogStartedListening;
         LogReceivedAnyRequest = builder.LogReceivedAnyRequest;

@@ -8,4 +8,5 @@ public interface IOutboundEndPointConfigurationBuilder : IEndPointConfigurationB
     LogConfigurationBuilder LogSentAnyRequest { get; set; }
     LogConfigurationBuilder LogRemoteRpcException { get; set; }
     LogConfigurationBuilder LogExceptionTransmissionException { get; set; }
+    string LoggingName { get; set; }
 }

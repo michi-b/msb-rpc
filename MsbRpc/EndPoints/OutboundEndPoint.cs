@@ -21,9 +21,21 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
     protected OutboundEndPoint
     (
         Messenger messenger,
+        int id,
         in OutboundEndPointConfiguration configuration
     )
-        : base(messenger, configuration.InitialBufferSize)
+        : base(messenger, id, configuration.InitialBufferSize, configuration.LoggingName)
+    {
+        Configuration = configuration;
+        _logger = Configuration.LoggerFactory?.CreateLogger<OutboundEndPoint<TProcedure>>();
+    }
+
+    protected OutboundEndPoint
+    (
+        Messenger messenger,
+        in OutboundEndPointConfiguration configuration
+    )
+        : base(messenger, configuration.InitialBufferSize, configuration.LoggingName)
     {
         Configuration = configuration;
         _logger = Configuration.LoggerFactory?.CreateLogger<OutboundEndPoint<TProcedure>>();
@@ -163,8 +175,9 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "An exception occurred while receiving an exception transmission for procedure '{ProcedureName}'"
+                    "{LoggingNameWithId} encountered an exception while receiving an exception transmission for procedure '{ProcedureName}'"
                     + " and as a result this endpoint is being disposed",
+                    LoggingNameWithId,
                     GetName(procedure)
                 );
             }
@@ -184,8 +197,9 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "Remote endpoint reported an exception while handling a request for procedure '{ProcedureName}'"
+                    "{LoggingNameWithId} had remote endpoint report an exception while handling a request for procedure '{ProcedureName}'"
                     + " with transmitted report '{ExceptionReport}'",
+                    LoggingNameWithId,
                     GetName(exception.Procedure),
                     transmission.GetReport()
                 );
@@ -204,7 +218,8 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
                 (
                     configuration.Level,
                     configuration.Id,
-                    "Sent a request to {ProcedureName} with {ArgumentByteCount} argument bytes",
+                    "{LoggingNameWithId} sent a request to {ProcedureName} with {ArgumentByteCount} argument bytes",
+                    LoggingNameWithId,
                     GetName(procedure),
                     argumentByteCount
                 );
