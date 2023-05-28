@@ -21,5 +21,5 @@ public class InboundEndPointConfigurationBuilder : EndPointConfigurationBuilder<
     public LogConfigurationBuilder LogStoppedListeningWithoutRunningToCompletion { get; set; } =
         new(LogEventIds.InboundEndPointStoppedListeningWithoutRunningToCompletion, LogLevel.Error);
 
-    public override InboundEndPointConfiguration Build() => this;
+    public override InboundEndPointConfiguration Build() => new(this);
 }

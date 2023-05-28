@@ -15,5 +15,5 @@ public class InboundEndPointRegistryConfigurationBuilder : ConfigurationWithLogg
     public LogConfigurationBuilder LogDeregisteredEndpoint { get; set; } = new(LogEventIds.ServerEndPointDeregistered, LogLevel.Debug);
     public LogConfigurationBuilder LogDeregisteredEndpointOnDisposal { get; set; } = new(LogEventIds.ServerEndPointDeregisteredOnRegistryDisposal, LogLevel.Warning);
 
-    public override InboundEndpointRegistryConfiguration Build() => this;
+    public override InboundEndpointRegistryConfiguration Build() => new(this);
 }

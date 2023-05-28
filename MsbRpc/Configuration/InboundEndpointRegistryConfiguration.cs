@@ -3,7 +3,7 @@ using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public abstract class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFactory, IInboundEndpointRegistryConfiguration
+public class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFactory, IInboundEndpointRegistryConfiguration
 {
     public string LoggingName { get; }
 

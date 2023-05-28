@@ -10,5 +10,5 @@ public class OutboundEndPointConfigurationBuilder : EndPointConfigurationBuilder
     public LogConfigurationBuilder LogSentAnyRequest { get; set; } = new(LogEventIds.OutboundEndPointSentAnyRequest, LogLevel.Trace);
     public LogConfigurationBuilder LogRemoteRpcException { get; set; } = new(LogEventIds.OutboundEndPointRemoteRpcException, LogLevel.Error);
     public LogConfigurationBuilder LogExceptionTransmissionException { get; set; } = new(LogEventIds.OutboundEndPointExceptionTransmissionException, LogLevel.Critical);
-    public override OutboundEndPointConfiguration Build() => this;
+    public override OutboundEndPointConfiguration Build() => new(this);
 }

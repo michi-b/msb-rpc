@@ -41,5 +41,5 @@ public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<
     // 0 means "ephemeral port"
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
-    public override ServerConfiguration Build() => this;
+    public override ServerConfiguration Build() => new(this);
 }

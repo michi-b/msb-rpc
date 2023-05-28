@@ -26,12 +26,12 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
 
     protected TServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {
-        TServer server = CreateServer(exceptionTransmissionOptions);
+        TServer server = CreateServer();
         server.Start();
         return server;
     }
 
-    protected abstract TServer CreateServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None);
+    protected abstract TServer CreateServer();
 
     protected abstract ValueTask<TClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration);
 

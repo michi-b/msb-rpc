@@ -18,5 +18,5 @@ public class LogConfigurationBuilder : ConfigurationBuilder<LogConfiguration>, I
         Level = logLevel;
     }
 
-    public override LogConfiguration Build() => this;
+    public override LogConfiguration Build() => new(this);
 }

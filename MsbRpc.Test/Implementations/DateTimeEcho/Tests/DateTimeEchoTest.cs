@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
-using MsbRpc.Exceptions;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 using MsbRpc.Test.Utility;
@@ -72,7 +71,7 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
         Assert.IsTrue(client.RanToCompletion);
     }
 
-    protected override DateTimeEchoServer CreateServer(RpcExceptionTransmissionOptions _ = RpcExceptionTransmissionOptions.None) => new(TestUtility.LoggerFactory);
+    protected override DateTimeEchoServer CreateServer() => new(TestUtility.LoggerFactory);
 
     protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration)
         => await DateTimeEchoClientEndPoint.ConnectAsync(endPoint, configuration);
