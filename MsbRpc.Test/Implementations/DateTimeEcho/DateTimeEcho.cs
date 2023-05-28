@@ -19,4 +19,9 @@ public class DateTimeEcho : RpcContractImplementation, IDateTimeEcho
 
         return result;
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        // Nothing to dispose
+    }
 }

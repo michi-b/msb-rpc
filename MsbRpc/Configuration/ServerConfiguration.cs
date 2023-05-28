@@ -31,10 +31,7 @@ public class ServerConfiguration : ConfigurationWithLoggerFactory, IServerConfig
 
     public string ThreadName { get; }
 
-    public ServerConfiguration
-    (
-        IServerConfigurationBuilder builder
-    ) : base(builder)
+    public ServerConfiguration(IServerConfigurationBuilder builder) : base(builder)
     {
         ListenBacklogSize = builder.ListenBacklogSize;
         LogAcceptedNewConnection = builder.LogAcceptedNewConnection;

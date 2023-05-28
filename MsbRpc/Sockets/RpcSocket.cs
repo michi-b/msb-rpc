@@ -3,12 +3,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using MsbRpc.Disposable;
 using MsbRpc.Sockets.Exceptions;
 
 namespace MsbRpc.Sockets;
 
 [PublicAPI]
-public class RpcSocket : Disposable.Disposable
+public class RpcSocket : MarkedDisposable
 {
     private readonly Socket _socket;
     public readonly int Port;
@@ -150,16 +151,15 @@ public class RpcSocket : Disposable.Disposable
 
     /// <summary>
     ///     disposes the underlying socket
-    ///     this is done on any encountered exception
-    ///     harsh, but there is no other way to make the socket operations cancellable
-    ///     and it probably means the socket should no longer be used anyway,
-    ///     without reconnecting at least, which is not in the scope of this class
     /// </summary>
+    /// <param name="disposing"></param>
     [PublicAPI]
-    protected override void DisposeManagedResources()
+    protected override void Dispose(bool disposing)
     {
-        _socket.Dispose();
-        base.DisposeManagedResources();
+        if (disposing)
+        {
+            _socket.Dispose();
+        }
     }
 
     /// <exception cref="RpcSocketReceiveException"></exception>

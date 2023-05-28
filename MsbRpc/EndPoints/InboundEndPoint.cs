@@ -51,10 +51,10 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
         }
     }
 
-    protected override void DisposeManagedResources()
+    protected override void Dispose(bool disposing)
     {
         Implementation.Dispose();
-        base.DisposeManagedResources();
+        base.Dispose(disposing);
     }
 
     private bool ReceiveMessage(Message message)

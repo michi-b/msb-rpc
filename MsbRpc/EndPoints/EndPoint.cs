@@ -2,13 +2,14 @@
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
+using MsbRpc.Disposable;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
 
 namespace MsbRpc.EndPoints;
 
-public abstract class EndPoint<TProcedure> : Disposable.Disposable where TProcedure : Enum
+public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure : Enum
 {
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
@@ -27,10 +28,12 @@ public abstract class EndPoint<TProcedure> : Disposable.Disposable where TProced
         Buffer = new RpcBuffer(configuration.InitialBufferSize);
     }
 
-    protected override void DisposeManagedResources()
+    protected override void Dispose(bool disposing)
     {
-        Messenger.Dispose();
-        base.DisposeManagedResources();
+        if (disposing)
+        {
+            Messenger.Dispose();
+        }
     }
 
     [MayBeUsedByGeneratedCode]

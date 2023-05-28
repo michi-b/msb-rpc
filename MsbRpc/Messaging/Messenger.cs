@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using MsbRpc.Disposable;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
@@ -9,7 +10,7 @@ using MsbRpc.Sockets;
 namespace MsbRpc.Messaging;
 
 [PublicAPI]
-public class Messenger : Disposable.Disposable
+public class Messenger : MarkedDisposable
 {
     private const int CountSize = PrimitiveSerializer.IntSize;
     private static readonly ReceiveResult ClosedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionClosed);
@@ -155,10 +156,12 @@ public class Messenger : Disposable.Disposable
         _socket.Send(message.GetFullMessageBuffer());
     }
 
-    protected override void DisposeManagedResources()
+    protected override void Dispose(bool disposing)
     {
-        _socket.Dispose();
-        base.DisposeManagedResources();
+        if (disposing)
+        {
+            _socket.Dispose();
+        }
     }
 
     private ReceiveResult Receive(Message message)
