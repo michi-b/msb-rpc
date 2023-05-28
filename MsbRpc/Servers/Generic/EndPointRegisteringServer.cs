@@ -1,4 +1,4 @@
-﻿using MsbRpc.Configuration.Interfaces;
+﻿using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 
@@ -10,8 +10,11 @@ public abstract class EndPointRegisteringServer : Server
 
     public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
 
-    protected EndPointRegisteringServer(IServerConfiguration configuration) : base(configuration)
-        => _endPointRegistry = new InboundEndPointRegistry(configuration.InboundEndPointRegistryConfiguration);
+    protected EndPointRegisteringServer(ref ServerConfiguration configuration) : base(ref configuration)
+    {
+        InboundEndpointRegistryConfiguration endPointRegistryConfiguration = configuration.InboundEndPointRegistryConfiguration;
+        _endPointRegistry = new InboundEndPointRegistry(ref endPointRegistryConfiguration);
+    }
 
     protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger);
 

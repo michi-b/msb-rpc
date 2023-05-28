@@ -1,22 +1,25 @@
-﻿using MsbRpc.Configuration.Builders.Interfaces;
-using MsbRpc.Configuration.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Builders.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class InboundEndpointRegistryConfiguration : ConfigurationWithLoggerFactory, IInboundEndpointRegistryConfiguration
+public readonly struct InboundEndpointRegistryConfiguration
 {
-    public string LoggingName { get; }
+    public readonly ILoggerFactory? LoggerFactory;
 
-    public LogConfiguration LogRegisteredEndpoint { get; }
+    public readonly string LoggingName;
 
-    public LogConfiguration LogEndpointThrewException { get; }
+    public readonly LogConfiguration LogRegisteredEndpoint;
 
-    public LogConfiguration LogDeregisteredEndpoint { get; }
+    public readonly LogConfiguration LogEndpointThrewException;
 
-    public LogConfiguration LogDeregisteredEndpointOnDisposal { get; }
+    public readonly LogConfiguration LogDeregisteredEndpoint;
 
-    public InboundEndpointRegistryConfiguration(IInboundEndPointRegistryConfigurationBuilder builder) : base(builder)
+    public readonly LogConfiguration LogDeregisteredEndpointOnDisposal;
+
+    public InboundEndpointRegistryConfiguration(IInboundEndPointRegistryConfigurationBuilder builder)
     {
+        LoggerFactory = builder.LoggerFactory;
         LoggingName = builder.LoggingName;
         LogRegisteredEndpoint = builder.LogRegisteredEndpoint;
         LogEndpointThrewException = builder.LogEndpointThrewException;

@@ -1,12 +1,11 @@
 ﻿using JetBrains.Annotations;
 using MsbRpc.Configuration.Builders.Interfaces;
-using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration.Builders.Abstract;
 
 [PublicAPI]
 public abstract class EndPointConfigurationBuilder<TConfiguration> : ConfigurationWithLoggerFactoryBuilder<TConfiguration>, IEndPointConfigurationBuilder
-    where TConfiguration : IConfiguration
+    where TConfiguration : struct
 {
     public const int DefaultInitialBufferSize = 1024;
 

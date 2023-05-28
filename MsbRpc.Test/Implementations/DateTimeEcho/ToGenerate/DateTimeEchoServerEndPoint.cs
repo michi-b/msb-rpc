@@ -1,4 +1,4 @@
-﻿using MsbRpc.Configuration.Interfaces;
+﻿using MsbRpc.Configuration;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
@@ -16,7 +16,7 @@ public class DateTimeEchoServerEndPoint
     (
         Messenger messenger,
         IDateTimeEcho implementation,
-        IInboundEndPointConfiguration configuration
+        in InboundEndPointConfiguration configuration
     ) : base
     (
         messenger,

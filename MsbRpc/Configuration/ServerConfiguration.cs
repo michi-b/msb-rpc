@@ -1,42 +1,45 @@
 ﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Interfaces;
-using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
 
 [PublicAPI]
-public class ServerConfiguration : ConfigurationWithLoggerFactory, IServerConfiguration
+public readonly struct ServerConfiguration
 {
-    public int ListenBacklogSize { get; }
+    public readonly ILoggerFactory? LoggerFactory;
 
-    public LogConfiguration LogAcceptedNewConnection { get; }
+    public readonly int ListenBacklogSize;
 
-    public LogConfiguration LogDeclinedNewConnectionDuringDisposal { get; }
+    public readonly LogConfiguration LogAcceptedNewConnection;
 
-    public bool LogExceptionWhenLoggingStoppedListeningDueToDisposal { get; }
+    public readonly LogConfiguration LogDeclinedNewConnectionDuringDisposal;
 
-    public string LoggingName { get; }
+    public readonly bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
 
-    public LogConfiguration LogStartedListening { get; }
+    public readonly string LoggingName;
 
-    public LogConfiguration LogStoppedListeningDueToDisposal { get; }
+    public readonly LogConfiguration LogStartedListening;
 
-    public LogConfiguration LogStoppedListeningDueToException { get; }
+    public readonly LogConfiguration LogStoppedListeningDueToDisposal;
 
-    public LogConfiguration LogWasCreatedWithEphemeralPort { get; }
+    public readonly LogConfiguration LogStoppedListeningDueToException;
 
-    public LogConfiguration LogWasCreatedWithSpecifiedPort { get; }
+    public readonly LogConfiguration LogWasCreatedWithEphemeralPort;
 
-    public int Port { get; }
+    public readonly LogConfiguration LogWasCreatedWithSpecifiedPort;
 
-    public string ThreadName { get; }
+    public readonly int Port;
 
-    public IInboundEndPointConfiguration InboundEndPointConfiguration { get; }
+    public readonly string ThreadName;
 
-    public IInboundEndpointRegistryConfiguration InboundEndPointRegistryConfiguration { get; }
+    public readonly InboundEndPointConfiguration InboundEndPointConfiguration;
 
-    public ServerConfiguration(IServerConfigurationBuilder builder) : base(builder)
+    public readonly InboundEndpointRegistryConfiguration InboundEndPointRegistryConfiguration;
+
+    public ServerConfiguration(IServerConfigurationBuilder builder)
     {
+        LoggerFactory = builder.LoggerFactory;
         ListenBacklogSize = builder.ListenBacklogSize;
         LogAcceptedNewConnection = builder.LogAcceptedNewConnection;
         LogDeclinedNewConnectionDuringDisposal = builder.LogDeclinedNewConnectionDuringDisposal;

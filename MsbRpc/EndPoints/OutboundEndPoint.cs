@@ -14,15 +14,20 @@ namespace MsbRpc.EndPoints;
 [MayBeUsedByGeneratedCode]
 public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where TProcedure : Enum
 {
-    private readonly OutboundEndPointConfiguration _configuration;
+    private readonly ILogger<OutboundEndPoint<TProcedure>>? _logger;
+
+    [MayBeUsedByGeneratedCode] protected readonly OutboundEndPointConfiguration Configuration;
 
     protected OutboundEndPoint
     (
         Messenger messenger,
-        OutboundEndPointConfiguration configuration
+        in OutboundEndPointConfiguration configuration
     )
-        : base(messenger, configuration)
-        => _configuration = configuration;
+        : base(messenger, configuration.InitialBufferSize)
+    {
+        Configuration = configuration;
+        _logger = Configuration.LoggerFactory?.CreateLogger<OutboundEndPoint<TProcedure>>();
+    }
 
     private static RpcRequestException<TProcedure> GetConnectionClosedException(TProcedure procedure)
         => new(procedure, "Connection closed while waiting for the response.");
@@ -148,12 +153,12 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
 
     private void LogExceptionTransmissionException(TProcedure procedure, Exception exception)
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogExceptionTransmissionException;
-            if (Logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogExceptionTransmissionException;
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
@@ -168,13 +173,13 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
 
     private void LogRemoteRpcException(RpcRemoteException<TProcedure> exception)
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogRemoteRpcException;
+            LogConfiguration configuration = Configuration.LogRemoteRpcException;
             RpcExceptionTransmission transmission = exception.RemoteExceptionTransmission;
-            if (Logger.GetIsEnabled(configuration))
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
@@ -190,12 +195,12 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure> where 
 
     private void LogSentAnyRequest(TProcedure procedure, int argumentByteCount)
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogSentAnyRequest;
-            if (Logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogSentAnyRequest;
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,

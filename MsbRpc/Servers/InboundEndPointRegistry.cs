@@ -6,7 +6,6 @@ using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
-using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Disposable;
 using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
@@ -16,9 +15,9 @@ namespace MsbRpc.Servers;
 [PublicAPI]
 public class InboundEndPointRegistry : ConcurrentDisposable
 {
-    private readonly IInboundEndpointRegistryConfiguration _configuration;
     private readonly Dictionary<int, InboundEndPointRegistryEntry> _endPoints = new(); // key is managed thread id
     private readonly ILogger<InboundEndPointRegistry>? _logger;
+    protected readonly InboundEndpointRegistryConfiguration Configuration;
     private int _connectionCount;
 
     [PublicAPI]
@@ -30,10 +29,10 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     protected virtual string Name => nameof(InboundEndPointRegistry);
 
     [PublicAPI]
-    public InboundEndPointRegistry(IInboundEndpointRegistryConfiguration configuration)
+    public InboundEndPointRegistry(ref InboundEndpointRegistryConfiguration configuration)
     {
-        _configuration = configuration;
-        _logger = _configuration.LoggerFactory?.CreateLogger<InboundEndPointRegistry>();
+        Configuration = configuration;
+        _logger = Configuration.LoggerFactory?.CreateLogger<InboundEndPointRegistry>();
     }
 
     [PublicAPI]
@@ -101,7 +100,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogEndpointThrewException;
+            LogConfiguration configuration = Configuration.LogEndpointThrewException;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -110,7 +109,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
                     configuration.Id,
                     exception,
                     "{LoggingName} caught an endpoint exception",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -120,7 +119,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogRegisteredEndpoint;
+            LogConfiguration configuration = Configuration.LogRegisteredEndpoint;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -128,7 +127,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} registered new endpoint with thread id {TargetThreadId}. Connection count is {ConnectionCount}",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     threadId,
                     connectionCount
                 );
@@ -140,7 +139,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogDeregisteredEndpoint;
+            LogConfiguration configuration = Configuration.LogDeregisteredEndpoint;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -148,7 +147,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} deregistered endpoint. Connection count is {ConnectionCount}",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     connectionCount
                 );
             }
@@ -159,7 +158,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogDeregisteredEndpointOnDisposal;
+            LogConfiguration configuration = Configuration.LogDeregisteredEndpointOnDisposal;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -167,7 +166,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} deregistered endpoint with thread id {TargetThreadId} on disposal. Connection count is {ConnectionCount}",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     threadId,
                     connectionCount
                 );

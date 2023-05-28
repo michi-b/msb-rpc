@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Configuration;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Configuration.Builders.Extensions;
 using MsbRpc.Messaging;
@@ -74,19 +75,20 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
 
     protected override DateTimeEchoServer CreateServer()
     {
+        ServerConfiguration configuration = new DateTimeEchoServerConfigurationBuilder().Configure
+        (
+            builder =>
+            {
+                builder.LoggerFactory = TestUtility.LoggerFactory;
+                builder.EndPointConfiguration.LoggerFactory = TestUtility.LoggerFactory;
+                builder.EndPointRegistryConfiguration.LoggerFactory = TestUtility.LoggerFactory;
+            }
+        );
+
         return new DateTimeEchoServer
         (
             new DateTimeEchoImplementationFactory(() => new DateTimeEcho()),
-            new DateTimeEchoServerConfigurationBuilder().Configure
-                (
-                    builder =>
-                    {
-                        builder.LoggerFactory = TestUtility.LoggerFactory;
-                        builder.EndPointConfiguration.LoggerFactory = TestUtility.LoggerFactory;
-                        builder.EndPointRegistryConfiguration.LoggerFactory = TestUtility.LoggerFactory;
-                    }
-                )
-                .Build()
+            ref configuration
         );
     }
 

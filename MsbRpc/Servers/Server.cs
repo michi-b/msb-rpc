@@ -5,7 +5,6 @@ using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
-using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Disposable;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
@@ -20,15 +19,15 @@ public abstract class Server : ConcurrentDisposable
     private readonly ILogger<Server>? _logger;
     private readonly string _threadName;
 
-    public readonly int Port;
+    protected readonly ServerConfiguration Configuration;
 
-    [PublicAPI] private IServerConfiguration _configuration;
+    public readonly int Port;
 
     private Thread? _listenThread;
 
-    protected Server(IServerConfiguration configuration)
+    protected Server(ref ServerConfiguration configuration)
     {
-        _configuration = configuration;
+        Configuration = configuration;
         _logger = configuration.LoggerFactory?.CreateLogger<Server>();
 
         IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
@@ -37,7 +36,7 @@ public abstract class Server : ConcurrentDisposable
 
         var listenEndPoint = _listenSocket.LocalEndPoint as IPEndPoint;
         Port = configuration.Port == 0 ? listenEndPoint!.Port : configuration.Port;
-        _threadName = $"{_configuration.ThreadName}:{Port}";
+        _threadName = $"{Configuration.ThreadName}:{Port}";
         if (Port == 0)
         {
             LogWasCreatedWithEphemeralPort();
@@ -58,7 +57,7 @@ public abstract class Server : ConcurrentDisposable
 
         Thread StartUnsafe()
         {
-            _listenThread = new Thread(() => Run(_configuration.ListenBacklogSize)) { Name = _threadName };
+            _listenThread = new Thread(() => Run(Configuration.ListenBacklogSize)) { Name = _threadName };
             _listenThread.Start();
             return _listenThread;
         }
@@ -136,7 +135,7 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogStoppedListeningDueToException;
+            LogConfiguration configuration = Configuration.LogStoppedListeningDueToException;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -145,7 +144,7 @@ public abstract class Server : ConcurrentDisposable
                     configuration.Id,
                     exception,
                     "{LoggingName} stopped listening due to an exception",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -155,7 +154,7 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogStartedListening;
+            LogConfiguration configuration = Configuration.LogStartedListening;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -163,7 +162,7 @@ public abstract class Server : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} started listening",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -173,16 +172,16 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogStoppedListeningDueToDisposal;
+            LogConfiguration configuration = Configuration.LogStoppedListeningDueToDisposal;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
-                    _configuration.LogExceptionWhenLoggingStoppedListeningDueToDisposal ? exception : null,
+                    Configuration.LogExceptionWhenLoggingStoppedListeningDueToDisposal ? exception : null,
                     "{LoggingName} stopped listening due to disposal",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -192,7 +191,7 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogWasCreatedWithEphemeralPort;
+            LogConfiguration configuration = Configuration.LogWasCreatedWithEphemeralPort;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -200,7 +199,7 @@ public abstract class Server : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} was created with ephemeral port",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -210,7 +209,7 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogWasCreatedWithSpecifiedPort;
+            LogConfiguration configuration = Configuration.LogWasCreatedWithSpecifiedPort;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -218,7 +217,7 @@ public abstract class Server : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} was created with specified port",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -228,7 +227,7 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogAcceptedNewConnection;
+            LogConfiguration configuration = Configuration.LogAcceptedNewConnection;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -236,7 +235,7 @@ public abstract class Server : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} accepted new connection",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -246,7 +245,7 @@ public abstract class Server : ConcurrentDisposable
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogDeclinedNewConnectionDuringDisposal;
+            LogConfiguration configuration = Configuration.LogDeclinedNewConnectionDuringDisposal;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
@@ -254,7 +253,7 @@ public abstract class Server : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} immediately disposed new connection because this server is disposed",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }

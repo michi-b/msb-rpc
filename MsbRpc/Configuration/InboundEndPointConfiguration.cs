@@ -1,25 +1,30 @@
-﻿using MsbRpc.Configuration.Builders.Interfaces;
-using MsbRpc.Configuration.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Builders.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class InboundEndPointConfiguration : EndPointConfiguration, IInboundEndPointConfiguration
+public readonly struct InboundEndPointConfiguration
 {
+    public readonly int InitialBufferSize;
+
+    public readonly ILoggerFactory? LoggerFactory;
+
     /// <inheritdoc cref="IInboundEndPointConfiguration.LoggingName" />
     /// >
-    public string LoggingName { get; }
+    public readonly string LoggingName;
 
-    public LogConfiguration LogStartedListening { get; }
-    public LogConfiguration LogReceivedAnyRequest { get; }
-    public LogConfiguration LogArgumentDeserializationException { get; }
-    public LogConfiguration LogProcedureExecutionException { get; }
-    public LogConfiguration LogResponseSerializationException { get; }
-    public LogConfiguration LogExceptionTransmissionException { get; }
-    public LogConfiguration LogRanToCompletion { get; }
-    public LogConfiguration LogStoppedListeningWithoutRunningToCompletion { get; }
+    public readonly LogConfiguration LogStartedListening;
+    public readonly LogConfiguration LogReceivedAnyRequest;
+    public readonly LogConfiguration LogArgumentDeserializationException;
+    public readonly LogConfiguration LogProcedureExecutionException;
+    public readonly LogConfiguration LogResponseSerializationException;
+    public readonly LogConfiguration LogExceptionTransmissionException;
+    public readonly LogConfiguration LogRanToCompletion;
+    public readonly LogConfiguration LogStoppedListeningWithoutRunningToCompletion;
 
-    public InboundEndPointConfiguration(IInboundEndPointConfigurationBuilder builder) : base(builder)
+    public InboundEndPointConfiguration(IInboundEndPointConfigurationBuilder builder)
     {
+        InitialBufferSize = builder.InitialBufferSize;
         LoggingName = builder.LoggingName;
         LogStartedListening = builder.LogStartedListening;
         LogReceivedAnyRequest = builder.LogReceivedAnyRequest;

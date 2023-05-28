@@ -12,7 +12,7 @@ public class DateTimeEchoClientEndPoint
     public DateTimeEchoClientEndPoint
     (
         Messenger messenger,
-        OutboundEndPointConfiguration configuration
+        in OutboundEndPointConfiguration configuration
     ) : base
     (
         messenger,

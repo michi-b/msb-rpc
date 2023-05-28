@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
-using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Contracts;
 using MsbRpc.Exceptions;
 using MsbRpc.Extensions;
@@ -16,17 +15,21 @@ namespace MsbRpc.EndPoints;
 public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TProcedure>, IInboundEndPoint where TImplementation : IRpcContract
     where TProcedure : Enum
 {
-    private readonly IInboundEndPointConfiguration _configuration;
+    private readonly ILogger<InboundEndPoint<TProcedure, TImplementation>>? _logger;
+
+    [MayBeUsedByGeneratedCode] protected readonly InboundEndPointConfiguration Configuration;
+
     [PublicAPI] public readonly TImplementation Implementation;
 
     protected InboundEndPoint
     (
         Messenger messenger,
         TImplementation implementation,
-        IInboundEndPointConfiguration configuration
-    ) : base(messenger, configuration)
+        in InboundEndPointConfiguration configuration
+    ) : base(messenger, configuration.InitialBufferSize)
     {
-        _configuration = configuration;
+        _logger = configuration.LoggerFactory?.CreateLogger<InboundEndPoint<TProcedure, TImplementation>>();
+        Configuration = configuration;
         Implementation = implementation;
     }
 
@@ -85,9 +88,9 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
     {
         try
         {
-            if (handlingInstructions.Log && Logger != null)
+            if (handlingInstructions.Log && _logger != null)
             {
-                LogRpcException(Logger, originalException, sourceStage, handlingInstructions);
+                LogRpcException(_logger, originalException, sourceStage, handlingInstructions);
             }
 
             RpcExceptionContinuation continuation = handlingInstructions.Continuation;
@@ -111,7 +114,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogRpcException
     (
-        ILogger logger,
+        ILogger<InboundEndPoint<TProcedure, TImplementation>> logger,
         Exception originalException,
         RpcExecutionStage sourceStage,
         RpcExceptionHandlingInstructions handlingInstructions
@@ -149,12 +152,12 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
         RpcExceptionContinuation continuation
     )
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogExceptionTransmissionException;
-            if (Logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogExceptionTransmissionException;
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
@@ -162,7 +165,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                     "{LoggingName} failed to transmit exception ({ExceptionType}) with message '{ExceptionMessage}' and handling instructions '{HandlingInstructions}'"
                     + " thrown in execution stage {ExecutionStage} and with continuation {RpcExceptionContinuation}"
                     + ", and as a result the endpoint is being disposed",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     originalException.GetType().FullName,
                     originalException.Message,
                     handlingInstructions.ToString(),
@@ -173,9 +176,10 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
         }
     }
 
-    private void LogArgumentDeserializationException(ILogger logger, Exception originalException, string handlingInstructionsString)
+    private void LogArgumentDeserializationException
+        (ILogger<InboundEndPoint<TProcedure, TImplementation>> logger, Exception originalException, string handlingInstructionsString)
     {
-        LogConfiguration configuration = _configuration.LogArgumentDeserializationException;
+        LogConfiguration configuration = Configuration.LogArgumentDeserializationException;
         if (logger.GetIsEnabled(configuration))
         {
             logger.Log
@@ -184,15 +188,16 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 configuration.Id,
                 originalException,
                 "{LoggingName} failed to deserialize RPC argument, and the exception is handled with instructions '{HandlingInstructions}'",
-                _configuration.LoggingName,
+                Configuration.LoggingName,
                 handlingInstructionsString
             );
         }
     }
 
-    private void LogImplementationExecutionException(ILogger logger, Exception originalException, string handlingInstructionsString)
+    private void LogImplementationExecutionException
+        (ILogger<InboundEndPoint<TProcedure, TImplementation>> logger, Exception originalException, string handlingInstructionsString)
     {
-        LogConfiguration configuration = _configuration.LogProcedureExecutionException;
+        LogConfiguration configuration = Configuration.LogProcedureExecutionException;
         if (logger.GetIsEnabled(configuration))
         {
             logger.Log
@@ -201,15 +206,16 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 configuration.Id,
                 originalException,
                 "{LoggingName} failed during RPC procedure invocation, and the exception is handled with instructions '{HandlingInstructions}'",
-                _configuration.LoggingName,
+                Configuration.LoggingName,
                 handlingInstructionsString
             );
         }
     }
 
-    private void LogResponseSerializationException(ILogger logger, Exception originalException, string handlingInstructionsString)
+    private void LogResponseSerializationException
+        (ILogger<InboundEndPoint<TProcedure, TImplementation>> logger, Exception originalException, string handlingInstructionsString)
     {
-        LogConfiguration configuration = _configuration.LogResponseSerializationException;
+        LogConfiguration configuration = Configuration.LogResponseSerializationException;
         if (logger.GetIsEnabled(configuration))
         {
             logger.Log
@@ -218,7 +224,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
                 configuration.Id,
                 originalException,
                 "{LoggingName} failed to serialize RPC result, and the exception is handled with instructions '{HandlingInstructions}'",
-                _configuration.LoggingName,
+                Configuration.LoggingName,
                 handlingInstructionsString
             );
         }
@@ -226,18 +232,17 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogStoppedListeningWithoutRunningToCompletion(ListenReturnCode listenReturnCode)
     {
-        ILogger<EndPoint<TProcedure>>? logger = Logger;
-        if (logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogStoppedListeningWithoutRunningToCompletion;
-            if (logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogStoppedListeningWithoutRunningToCompletion;
+            if (_logger.GetIsEnabled(configuration))
             {
-                logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} stopped listening without running to completion with listen return code: {ListenReturnCode}",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     listenReturnCode.GetName()
                 );
             }
@@ -246,17 +251,17 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogStartListening()
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogStartedListening;
-            if (Logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogStartedListening;
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} started listening",
-                    _configuration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -264,17 +269,17 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogRanToCompletion(ListenReturnCode listenReturnCode)
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogRanToCompletion;
-            if (Logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogRanToCompletion;
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} ran to completion with listen return code: {ListenReturnCode}",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     listenReturnCode.GetName()
                 );
             }
@@ -283,17 +288,17 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
 
     private void LogReceivedAnyRequest(TProcedure procedure, int argumentByteCount)
     {
-        if (Logger != null)
+        if (_logger != null)
         {
-            LogConfiguration configuration = _configuration.LogReceivedAnyRequest;
-            if (Logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogReceivedAnyRequest;
+            if (_logger.GetIsEnabled(configuration))
             {
-                Logger.Log
+                _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} received call to {ProcedureName} with {ArgumentByteCount} argument bytes",
-                    _configuration.LoggingName,
+                    Configuration.LoggingName,
                     GetName(procedure),
                     argumentByteCount
                 );

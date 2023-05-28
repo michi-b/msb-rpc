@@ -1,4 +1,4 @@
-﻿using MsbRpc.Configuration.Interfaces;
+﻿using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.Generic;
@@ -8,16 +8,12 @@ namespace MsbRpc.Test.Implementations.DateTimeEcho;
 
 public class DateTimeEchoServer : EndPointRegisteringServer
 {
-    private readonly IServerConfiguration _configuration;
     private readonly IFactory<IDateTimeEcho> _implementationFactory;
 
-    public DateTimeEchoServer(IFactory<IDateTimeEcho> implementationFactory, IServerConfiguration configuration)
-        : base(configuration)
-    {
-        _implementationFactory = implementationFactory;
-        _configuration = configuration;
-    }
+    public DateTimeEchoServer(IFactory<IDateTimeEcho> implementationFactory, ref ServerConfiguration configuration)
+        : base(ref configuration)
+        => _implementationFactory = implementationFactory;
 
     protected override IInboundEndPoint CreateEndPoint(Messenger messenger)
-        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), _configuration.InboundEndPointConfiguration);
+        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), Configuration.InboundEndPointConfiguration);
 }

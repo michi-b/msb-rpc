@@ -1,17 +1,22 @@
-﻿using MsbRpc.Configuration.Builders.Interfaces;
-using MsbRpc.Configuration.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Builders.Interfaces;
 
 namespace MsbRpc.Configuration;
 
-public class OutboundEndPointConfiguration : EndPointConfiguration, IOutboundEndPointConfiguration
+public readonly struct OutboundEndPointConfiguration
 {
-    public LogConfiguration LogSentAnyRequest { get; }
-    public LogConfiguration LogRemoteRpcException { get; }
-    public LogConfiguration LogExceptionTransmissionException { get; }
+    public readonly int InitialBufferSize;
+
+    public readonly ILoggerFactory? LoggerFactory;
+
+    public readonly LogConfiguration LogSentAnyRequest;
+    public readonly LogConfiguration LogRemoteRpcException;
+    public readonly LogConfiguration LogExceptionTransmissionException;
 
     public OutboundEndPointConfiguration(IOutboundEndPointConfigurationBuilder builder)
-        : base(builder)
     {
+        InitialBufferSize = builder.InitialBufferSize;
+        LoggerFactory = builder.LoggerFactory;
         LogSentAnyRequest = builder.LogSentAnyRequest;
         LogRemoteRpcException = builder.LogRemoteRpcException;
         LogExceptionTransmissionException = builder.LogExceptionTransmissionException;
