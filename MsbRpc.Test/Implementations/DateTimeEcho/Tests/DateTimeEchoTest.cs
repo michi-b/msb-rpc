@@ -1,7 +1,7 @@
-﻿using System.Net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Configuration;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Configuration.Builders;
 using MsbRpc.Configuration.Builders.Extensions;
+using MsbRpc.Messaging;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 using MsbRpc.Test.Utility;
@@ -82,14 +82,14 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
                     builder =>
                     {
                         builder.LoggerFactory = TestUtility.LoggerFactory;
-                        builder.InboundEndPointConfiguration.LoggerFactory = TestUtility.LoggerFactory;
-                        builder.InboundEndPointRegistryConfiguration.LoggerFactory = TestUtility.LoggerFactory;
+                        builder.EndPointConfiguration.LoggerFactory = TestUtility.LoggerFactory;
+                        builder.EndPointRegistryConfiguration.LoggerFactory = TestUtility.LoggerFactory;
                     }
                 )
                 .Build()
         );
     }
 
-    protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration)
-        => await DateTimeEchoClientEndPoint.ConnectAsync(endPoint, configuration);
+    protected override DateTimeEchoClientEndPoint CreateClient(Messenger messenger)
+        => new(messenger, new OutboundEndPointConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
 }

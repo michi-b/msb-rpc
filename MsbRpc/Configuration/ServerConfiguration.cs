@@ -49,7 +49,7 @@ public class ServerConfiguration : ConfigurationWithLoggerFactory, IServerConfig
         LogWasCreatedWithSpecifiedPort = builder.LogWasCreatedWithSpecifiedPort;
         Port = builder.Port;
         ThreadName = builder.ThreadName;
-        InboundEndPointConfiguration = new InboundEndPointConfiguration(builder.InboundEndPointConfiguration);
-        InboundEndPointRegistryConfiguration = new InboundEndpointRegistryConfiguration(builder.InboundEndPointRegistryConfiguration);
+        InboundEndPointConfiguration = new InboundEndPointConfiguration(builder.EndPointConfiguration);
+        InboundEndPointRegistryConfiguration = new InboundEndpointRegistryConfiguration(builder.EndPointRegistryConfiguration);
     }
 }

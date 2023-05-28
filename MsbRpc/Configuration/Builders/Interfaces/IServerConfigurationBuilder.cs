@@ -17,6 +17,6 @@ public interface IServerConfigurationBuilder : IConfigurationWithLoggerFactoryBu
     LogConfigurationBuilder LogWasCreatedWithSpecifiedPort { get; set; }
     int Port { get; set; }
     string ThreadName { get; set; }
-    IInboundEndPointRegistryConfigurationBuilder InboundEndPointRegistryConfiguration { get; set; }
-    IInboundEndPointConfigurationBuilder InboundEndPointConfiguration { get; set; }
+    IInboundEndPointRegistryConfigurationBuilder EndPointRegistryConfiguration { get; set; }
+    IInboundEndPointConfigurationBuilder EndPointConfiguration { get; set; }
 }

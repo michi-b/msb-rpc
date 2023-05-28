@@ -2,13 +2,15 @@
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho;
 
-public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder<DateTimeEchoServerConfiguration>
+public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder
 {
     public DateTimeEchoServerConfigurationBuilder()
     {
         LoggingName = "DateTimeEchoServer";
         ThreadName = "DateTimeEchoServer";
-    }
+        EndPointConfiguration.LoggingName = "DateTimeEchoServerEndPoint";
+        EndPointRegistryConfiguration.LoggingName = "DateTimeEchoServerEndPointRegistry";
 
-    public override DateTimeEchoServerConfiguration Build() => new(this);
+        EndPointConfiguration.InitialBufferSize = 1024;
+    }
 }

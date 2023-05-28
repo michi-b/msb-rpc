@@ -2,15 +2,12 @@
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Abstract;
 using MsbRpc.Configuration.Builders.Interfaces;
-using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Logging;
 
 namespace MsbRpc.Configuration.Builders;
 
 [PublicAPI]
-public abstract class ServerConfigurationBuilder<TConfiguration>
-    : ConfigurationWithLoggerFactoryBuilder<TConfiguration>, IServerConfigurationBuilder
-    where TConfiguration : IConfiguration
+public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<ServerConfiguration>, IServerConfigurationBuilder
 {
     public int ListenBacklogSize { get; set; } = 100;
     public LogConfigurationBuilder LogAcceptedNewConnection { get; set; } = new(LogEventIds.ServerAcceptedNewConnection, LogLevel.Trace);
@@ -28,7 +25,8 @@ public abstract class ServerConfigurationBuilder<TConfiguration>
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
 
-    public IInboundEndPointRegistryConfigurationBuilder InboundEndPointRegistryConfiguration { get; set; } = new InboundEndPointRegistryConfigurationBuilder();
+    public IInboundEndPointRegistryConfigurationBuilder EndPointRegistryConfiguration { get; set; } = new InboundEndPointRegistryConfigurationBuilder();
 
-    public IInboundEndPointConfigurationBuilder InboundEndPointConfiguration { get; set; } = new InboundEndPointConfigurationBuilder();
+    public IInboundEndPointConfigurationBuilder EndPointConfiguration { get; set; } = new InboundEndPointConfigurationBuilder();
+    public override ServerConfiguration Build() => new(this);
 }

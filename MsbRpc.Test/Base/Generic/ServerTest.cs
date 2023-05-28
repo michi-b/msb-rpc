@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
-using MsbRpc.Configuration;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
+using MsbRpc.Messaging;
 using MsbRpc.Servers;
 using MsbRpc.Servers.Generic;
 using MsbRpc.Test.Utility;
@@ -19,10 +19,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     where TContract : IRpcContract
 {
     protected async ValueTask<TClientEndPoint> ConnectClient(Server server)
-    {
-        IPEndPoint endPoint = new(ServerTestUtility.LocalHost, server.Port);
-        return await ConnectClient(endPoint, ServerTestUtility.ClientEndPointConfiguration);
-    }
+        => CreateClient(await MessengerFactory.ConnectAsync(new IPEndPoint(ServerTestUtility.LocalHost, server.Port)));
 
     protected TServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {
@@ -33,7 +30,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
 
     protected abstract TServer CreateServer();
 
-    protected abstract ValueTask<TClientEndPoint> ConnectClient(IPEndPoint endPoint, OutboundEndPointConfiguration configuration);
+    protected abstract TClientEndPoint CreateClient(Messenger messenger);
 
     protected void TestListens()
     {
