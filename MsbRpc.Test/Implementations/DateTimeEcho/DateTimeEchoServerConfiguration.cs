@@ -1,8 +1,9 @@
-﻿using MsbRpc.Configuration.Generic;
+﻿using MsbRpc.Configuration;
+using MsbRpc.Configuration.Builders.Interfaces;
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho;
 
-public class DateTimeEchoServerConfiguration : ServerConfiguration<IDateTimeEcho>
+public class DateTimeEchoServerConfiguration : ServerConfiguration
 {
-    public DateTimeEchoServerConfiguration(DateTimeEchoServerConfigurationBuilder builder) : base(builder) { }
+    public DateTimeEchoServerConfiguration(IServerConfigurationBuilder builder) : base(builder) { }
 }

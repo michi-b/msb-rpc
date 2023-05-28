@@ -1,14 +1,14 @@
-﻿using MsbRpc.Configuration.Builders.Generic;
-using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
+﻿using MsbRpc.Configuration.Builders;
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho;
 
-public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder<DateTimeEchoServerConfiguration, IDateTimeEcho>
+public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder<DateTimeEchoServerConfiguration>
 {
-    public DateTimeEchoServerConfigurationBuilder(IFactory<IDateTimeEcho> implementationFactory) : base(implementationFactory) { }
-
-    public DateTimeEchoServerConfigurationBuilder(DateTimeEchoImplementationByDelegateFactory.FactoryDelegate createDateTimeEcho)
-        : this((DateTimeEchoImplementationByDelegateFactory)createDateTimeEcho) { }
+    public DateTimeEchoServerConfigurationBuilder()
+    {
+        LoggingName = "DateTimeEchoServer";
+        ThreadName = "DateTimeEchoServer";
+    }
 
     public override DateTimeEchoServerConfiguration Build() => new(this);
 }

@@ -76,7 +76,8 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     {
         return new DateTimeEchoServer
         (
-            new DateTimeEchoServerConfigurationBuilder(() => new DateTimeEcho()).Configure
+            new DateTimeEchoImplementationFactory(() => new DateTimeEcho()),
+            new DateTimeEchoServerConfigurationBuilder().Configure
                 (
                     builder =>
                     {

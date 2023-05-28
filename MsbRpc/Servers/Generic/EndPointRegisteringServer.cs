@@ -1,22 +1,17 @@
-﻿using MsbRpc.Configuration.Interfaces.Generic;
-using MsbRpc.Contracts;
+﻿using MsbRpc.Configuration.Interfaces;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 
 namespace MsbRpc.Servers.Generic;
 
-public abstract class Server<TContract> : Server where TContract : IRpcContract
+public abstract class EndPointRegisteringServer : Server
 {
-    private readonly IServerConfiguration<TContract> _configuration;
     private readonly InboundEndPointRegistry _endPointRegistry;
 
     public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
 
-    protected Server(IServerConfiguration<TContract> configuration) : base(configuration)
-    {
-        _configuration = configuration;
-        _endPointRegistry = new InboundEndPointRegistry(configuration.InboundEndPointRegistryConfiguration);
-    }
+    protected EndPointRegisteringServer(IServerConfiguration configuration) : base(configuration)
+        => _endPointRegistry = new InboundEndPointRegistry(configuration.InboundEndPointRegistryConfiguration);
 
     protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger);
 

@@ -12,7 +12,7 @@ namespace MsbRpc.Test.Base.Generic;
 
 public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract> : Test<TTest>
     where TTest : ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract>
-    where TServer : Server<TContract>
+    where TServer : EndPointRegisteringServer
     where TServerEndPoint : InboundEndPoint<TProcedure, TContract>
     where TClientEndPoint : OutboundEndPoint<TProcedure>
     where TProcedure : Enum
