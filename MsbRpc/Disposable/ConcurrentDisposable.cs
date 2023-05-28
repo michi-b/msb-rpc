@@ -99,42 +99,42 @@ public abstract class ConcurrentDisposable : IDisposable
 
     private void Dispose(bool disposing)
     {
-        if (!IsDisposed)
+        // early exit without locking if this is already disposed
+        if (IsDisposed)
         {
-            if (Monitor.TryEnter(_lock, LockTimeOutMilliseconds))
-            {
-                try
-                {
-                    if (!IsDisposed)
-                    {
-                        IsDisposed = true;
-                        if (disposing)
-                        {
-                            DisposeManagedResources();
-                        }
+            return;
+        }
 
-                        DisposeUnmanagedResources();
-                    }
-                }
-                finally
-                {
-                    Monitor.Exit(_lock);
-                }
-            }
-            else
+        bool needsDisposal = false;
+
+        lock (_lock)
+        {
+            if (!IsDisposed)
             {
-                throw GetTimeoutException();
+
+                IsDisposed = true;
+                // after marking this as disposed, actual disposal is delayed until after the lock is released
+                // this is ABSOLUTELY NECESSARY in order to avoid deadlocks
+                // a deadlock could otherwise occur, if the Dispose() method in turn recursively triggers disposal of this object again from another thread
+                // that may not have received the IsDisposed flag yet (non-locking early-exit fails)
+                // this might be avoidable with memory barriers as well, but be sure to extensively test this race condition when refactoring this
+                needsDisposal = true;
+            }
+        }
+
+        if (needsDisposal)
+        {
+            if (disposing)
+            {
+                DisposeManagedResources();
             }
 
-            DisposeManagedResourcesAfterUnlocking();
+            DisposeUnmanagedResources();
         }
     }
 
     [PublicAPI]
     protected virtual void DisposeUnmanagedResources() { }
-
-    [PublicAPI]
-    protected virtual void DisposeManagedResourcesAfterUnlocking() { }
 
     [PublicAPI]
     protected virtual void DisposeManagedResources() { }
