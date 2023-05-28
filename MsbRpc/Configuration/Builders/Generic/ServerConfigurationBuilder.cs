@@ -9,5 +9,7 @@ public abstract class ServerConfigurationBuilder<TConfiguration, TContract>
     where TConfiguration : IServerConfiguration<TContract>
     where TContract : IRpcContract
 {
-    public IFactory<TContract>? ImplementationFactory { get; set; } = null;
+    public IFactory<TContract> ImplementationFactory { get; set; }
+
+    protected ServerConfigurationBuilder(IFactory<TContract> implementationFactory) => ImplementationFactory = implementationFactory;
 }

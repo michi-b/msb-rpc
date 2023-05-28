@@ -27,4 +27,8 @@ public abstract class ServerConfigurationBuilder<TConfiguration>
     // 0 means "ephemeral port"
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
+
+    public IInboundEndPointRegistryConfigurationBuilder InboundEndPointRegistryConfiguration { get; set; } = new InboundEndPointRegistryConfigurationBuilder();
+
+    public IInboundEndPointConfigurationBuilder InboundEndPointConfiguration { get; set; } = new InboundEndPointConfigurationBuilder();
 }

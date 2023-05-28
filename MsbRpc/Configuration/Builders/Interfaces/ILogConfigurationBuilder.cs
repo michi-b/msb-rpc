@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using MsbRpc.Configuration.Builders.Interfaces.Generic;
 
 namespace MsbRpc.Configuration.Builders.Interfaces;
 

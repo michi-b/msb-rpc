@@ -1,10 +1,6 @@
-﻿using JetBrains.Annotations;
-using MsbRpc.Configuration.Interfaces;
+﻿namespace MsbRpc.Configuration.Builders.Interfaces;
 
-namespace MsbRpc.Configuration.Builders.Interfaces;
-
-[PublicAPI]
-public interface IConfigurationBuilder<out TConfiguration> where TConfiguration : IConfiguration
-{
-    TConfiguration Build();
-}
+/// <summary>
+///     base interface for all configuration builders, used to allow for generic configuration extension methods
+/// </summary>
+public interface IConfigurationBuilder { }

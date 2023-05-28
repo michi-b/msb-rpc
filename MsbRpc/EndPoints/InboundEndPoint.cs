@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
 using MsbRpc.Configuration;
+using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Contracts;
 using MsbRpc.Exceptions;
 using MsbRpc.Extensions;
@@ -15,14 +16,14 @@ namespace MsbRpc.EndPoints;
 public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TProcedure>, IInboundEndPoint where TImplementation : IRpcContract
     where TProcedure : Enum
 {
-    private readonly InboundEndPointConfiguration _configuration;
+    private readonly IInboundEndPointConfiguration _configuration;
     [PublicAPI] public readonly TImplementation Implementation;
 
     protected InboundEndPoint
     (
         Messenger messenger,
         TImplementation implementation,
-        InboundEndPointConfiguration configuration
+        IInboundEndPointConfiguration configuration
     ) : base(messenger, configuration)
     {
         _configuration = configuration;

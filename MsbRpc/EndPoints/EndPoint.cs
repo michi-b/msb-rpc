@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
-using MsbRpc.Configuration;
+using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Disposable;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
@@ -14,13 +14,12 @@ public abstract class EndPoint<TProcedure> : MarkedDisposable where TProcedure :
     protected Messenger Messenger { get; }
     protected RpcBuffer Buffer { get; }
     protected ILogger<EndPoint<TProcedure>>? Logger { get; }
-
     public bool RanToCompletion { get; protected set; }
 
     protected EndPoint
     (
         Messenger messenger,
-        EndPointConfiguration configuration
+        IEndPointConfiguration configuration
     )
     {
         Messenger = messenger;

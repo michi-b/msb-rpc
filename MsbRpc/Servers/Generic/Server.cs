@@ -15,10 +15,7 @@ public abstract class Server<TContract> : Server where TContract : IRpcContract
     protected Server(IServerConfiguration<TContract> configuration) : base(configuration)
     {
         _configuration = configuration;
-
-        //todo: fix this
-        _endPointRegistry = null!;
-        //new InboundEndPointRegistry(CreateInboundEndpointRegistryConfiguration(loggerFactory));
+        _endPointRegistry = new InboundEndPointRegistry(configuration.InboundEndPointRegistryConfiguration);
     }
 
     protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger);

@@ -31,6 +31,10 @@ public class ServerConfiguration : ConfigurationWithLoggerFactory, IServerConfig
 
     public string ThreadName { get; }
 
+    public IInboundEndPointConfiguration InboundEndPointConfiguration { get; }
+
+    public IInboundEndpointRegistryConfiguration InboundEndPointRegistryConfiguration { get; }
+
     public ServerConfiguration(IServerConfigurationBuilder builder) : base(builder)
     {
         ListenBacklogSize = builder.ListenBacklogSize;
@@ -45,5 +49,7 @@ public class ServerConfiguration : ConfigurationWithLoggerFactory, IServerConfig
         LogWasCreatedWithSpecifiedPort = builder.LogWasCreatedWithSpecifiedPort;
         Port = builder.Port;
         ThreadName = builder.ThreadName;
+        InboundEndPointConfiguration = new InboundEndPointConfiguration(builder.InboundEndPointConfiguration);
+        InboundEndPointRegistryConfiguration = new InboundEndpointRegistryConfiguration(builder.InboundEndPointRegistryConfiguration);
     }
 }

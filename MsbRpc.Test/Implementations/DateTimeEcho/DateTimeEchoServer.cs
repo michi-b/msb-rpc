@@ -13,12 +13,5 @@ public class DateTimeEchoServer : Server<IDateTimeEcho>
     public DateTimeEchoServer(DateTimeEchoServerConfiguration configuration) : base(configuration) => _configuration = configuration;
 
     protected override IInboundEndPoint CreateEndPoint(Messenger messenger)
-        =>
-            //todo: fix this
-            new DateTimeEchoServerEndPoint(messenger, _configuration.ImplementationFactory.Create(), null);
-
-    protected override void Accept(Messenger messenger)
-    {
-        throw new NotImplementedException();
-    }
+        => new DateTimeEchoServerEndPoint(messenger, _configuration.ImplementationFactory.Create(), _configuration.InboundEndPointConfiguration);
 }

@@ -7,5 +7,5 @@ namespace MsbRpc.Configuration.Builders.Interfaces.Generic;
 public interface IServerConfigurationBuilder<TContract> : IServerConfigurationBuilder
     where TContract : IRpcContract
 {
-    public IFactory<TContract>? ImplementationFactory { get; set; }
+    public IFactory<TContract> ImplementationFactory { get; set; }
 }

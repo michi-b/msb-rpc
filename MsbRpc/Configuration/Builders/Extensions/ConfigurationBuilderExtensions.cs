@@ -1,16 +1,30 @@
-﻿using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using JetBrains.Annotations;
 using MsbRpc.Configuration.Builders.Interfaces;
 
 namespace MsbRpc.Configuration.Builders.Extensions;
 
 [PublicAPI]
-public static class ConfigurationBuilderWithLoggerFactoryExtensions
+public static class ConfigurationBuilderExtensions
 {
-    public static TConfigurationBuilder WithLoggerFactory<TConfigurationBuilder>(this TConfigurationBuilder target, ILoggerFactory? loggerFactory)
-        where TConfigurationBuilder : IConfigurationWithLoggerFactoryBuilder
+    // configuration action for classes
+    public static TConfigurationBuilder Configure<TConfigurationBuilder>
+    (
+        this TConfigurationBuilder target,
+        Action<TConfigurationBuilder> configure
+    )
+        where TConfigurationBuilder : class, IConfigurationBuilder
     {
-        target.LoggerFactory = loggerFactory;
+        configure(target);
         return target;
     }
+
+    // configuration func for structs
+    public static TConfigurationBuilder Configure<TConfigurationBuilder>
+    (
+        this TConfigurationBuilder target,
+        Func<TConfigurationBuilder, TConfigurationBuilder> configure
+    )
+        where TConfigurationBuilder : struct, IConfigurationBuilder
+        => configure(target);
 }

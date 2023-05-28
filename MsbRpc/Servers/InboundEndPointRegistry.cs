@@ -6,6 +6,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
+using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Disposable;
 using MsbRpc.EndPoints;
 using MsbRpc.Extensions;
@@ -15,7 +16,7 @@ namespace MsbRpc.Servers;
 [PublicAPI]
 public class InboundEndPointRegistry : ConcurrentDisposable
 {
-    private readonly InboundEndpointRegistryConfiguration _configuration;
+    private readonly IInboundEndpointRegistryConfiguration _configuration;
     private readonly Dictionary<int, InboundEndPointRegistryEntry> _endPoints = new(); // key is managed thread id
     private readonly ILogger<InboundEndPointRegistry>? _logger;
     private int _connectionCount;
@@ -23,17 +24,13 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     [PublicAPI]
     public InboundEndPointRegistryEntry[] EndPoints
     {
-        get
-        {
-            InboundEndPointRegistryEntry[] GetEndpointsUnsafe() => _endPoints.Values.ToArray();
-            return ExecuteIfNotDisposed(GetEndpointsUnsafe);
-        }
+        get { return ExecuteIfNotDisposed(() => _endPoints.Values.ToArray()); }
     }
 
     protected virtual string Name => nameof(InboundEndPointRegistry);
 
     [PublicAPI]
-    public InboundEndPointRegistry(InboundEndpointRegistryConfiguration configuration)
+    public InboundEndPointRegistry(IInboundEndpointRegistryConfiguration configuration)
     {
         _configuration = configuration;
         _logger = _configuration.LoggerFactory?.CreateLogger<InboundEndPointRegistry>();

@@ -31,4 +31,8 @@ public interface IServerConfiguration : IConfigurationWithLoggerFactory
     ///     Thread name for easier identification, will have the port number appended to it
     /// </summary>
     public string ThreadName { get; }
+
+    public IInboundEndPointConfiguration InboundEndPointConfiguration { get; }
+
+    public IInboundEndpointRegistryConfiguration InboundEndPointRegistryConfiguration { get; }
 }
