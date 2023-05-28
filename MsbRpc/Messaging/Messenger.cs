@@ -21,6 +21,8 @@ public class Messenger : MarkedDisposable
 
     public bool IsConnected => _socket.IsConnected;
 
+    //todo: add messenger creation overloads instead of generating client endpoint constructor overloads
+    
     public Messenger(RpcSocket socket)
     {
         _socket = socket;
