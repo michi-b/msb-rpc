@@ -1,54 +1,31 @@
-﻿using Microsoft.Extensions.Logging;
-using MsbRpc.Configuration;
-using MsbRpc.Configuration.Builders;
-using MsbRpc.Configuration.Builders.Extensions;
+﻿using MsbRpc.Configuration.Interfaces.Generic;
+using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 
 namespace MsbRpc.Servers.Generic;
 
-public abstract class Server<TServer, TEndPoint> : Server
-    where TServer : Server<TServer, TEndPoint>
-    where TEndPoint : IInboundEndPoint
+public abstract class Server<TContract> : Server where TContract : IRpcContract
 {
-    private readonly string _endpointName;
+    private readonly IServerConfiguration<TContract> _configuration;
     private readonly InboundEndPointRegistry _endPointRegistry;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly string _serverName;
 
     public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
 
-    protected Server(ILoggerFactory loggerFactory) : base(CreateServerConfiguration(loggerFactory, typeof(TServer).Name))
+    protected Server(IServerConfiguration<TContract> configuration) : base(configuration)
     {
-        _endPointRegistry = new InboundEndPointRegistry(CreateInboundEndpointRegistryConfiguration(loggerFactory));
-        _loggerFactory = loggerFactory;
-        _serverName = typeof(TServer).Name;
-        _endpointName = typeof(TEndPoint).Name;
+        _configuration = configuration;
+
+        //todo: fix this
+        _endPointRegistry = null!;
+        //new InboundEndPointRegistry(CreateInboundEndpointRegistryConfiguration(loggerFactory));
     }
 
-    protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger, InboundEndPointConfiguration endPointConfiguration);
-
-    private static ServerConfiguration CreateServerConfiguration(ILoggerFactory loggerFactory, string serverName)
-        => new ServerConfigurationBuilder()
-            .WithLoggerFactory(loggerFactory)
-            .WithName(serverName)
-            .Build();
-
-    private InboundEndPointConfiguration CreateInboundEndPointConfiguration(ILoggerFactory loggerFactory)
-        => new InboundEndPointConfigurationBuilder()
-            .WithLoggerFactory(loggerFactory)
-            .WithLoggingName(_endpointName)
-            .Build();
-
-    private InboundEndpointRegistryConfiguration CreateInboundEndpointRegistryConfiguration(ILoggerFactory loggerFactory)
-        => new InboundEndPointRegistryConfigurationBuilder()
-            .WithLoggerFactory(loggerFactory)
-            .WithLoggingName(_serverName + "EndpointRegistry")
-            .Build();
+    protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger);
 
     protected override void Accept(Messenger messenger)
     {
-        _endPointRegistry.Start(CreateEndPoint(messenger, CreateInboundEndPointConfiguration(_loggerFactory)));
+        _endPointRegistry.Start(CreateEndPoint(messenger));
     }
 
     protected override void DisposeManagedResources()

@@ -12,13 +12,13 @@ namespace MsbRpc.Test.Base.Generic;
 
 public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract> : Test<TTest>
     where TTest : ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract>
-    where TServer : Server<TServer, TServerEndPoint>
+    where TServer : Server<TContract>
     where TServerEndPoint : InboundEndPoint<TProcedure, TContract>
     where TClientEndPoint : OutboundEndPoint<TProcedure>
     where TProcedure : Enum
     where TContract : IRpcContract
 {
-    protected async ValueTask<TClientEndPoint> ConnectClient(TServer server)
+    protected async ValueTask<TClientEndPoint> ConnectClient(Server server)
     {
         IPEndPoint endPoint = new(ServerTestUtility.LocalHost, server.Port);
         return await ConnectClient(endPoint, ServerTestUtility.ClientEndPointConfiguration);
@@ -39,7 +39,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     {
         for (int timeout = 0; timeout < 10; timeout++)
         {
-            Server server = StartServer();
+            TServer server = StartServer();
             Thread.Sleep(timeout);
             server.Dispose();
         }

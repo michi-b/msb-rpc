@@ -2,12 +2,15 @@
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Abstract;
 using MsbRpc.Configuration.Builders.Interfaces;
+using MsbRpc.Configuration.Interfaces;
 using MsbRpc.Logging;
 
 namespace MsbRpc.Configuration.Builders;
 
 [PublicAPI]
-public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<ServerConfiguration>, IServerConfigurationBuilder
+public abstract class ServerConfigurationBuilder<TConfiguration>
+    : ConfigurationWithLoggerFactoryBuilder<TConfiguration>, IServerConfigurationBuilder
+    where TConfiguration : IConfiguration
 {
     public int ListenBacklogSize { get; set; } = 100;
     public LogConfigurationBuilder LogAcceptedNewConnection { get; set; } = new(LogEventIds.ServerAcceptedNewConnection, LogLevel.Trace);
@@ -24,5 +27,4 @@ public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<
     // 0 means "ephemeral port"
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
-    public override ServerConfiguration Build() => new(this);
 }
