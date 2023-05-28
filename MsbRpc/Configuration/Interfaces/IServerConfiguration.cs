@@ -1,5 +1,8 @@
-﻿namespace MsbRpc.Configuration.Interfaces;
+﻿using JetBrains.Annotations;
 
+namespace MsbRpc.Configuration.Interfaces;
+
+[PublicAPI]
 public interface IServerConfiguration : IConfigurationWithLoggerFactory
 {
     public int ListenBacklogSize { get; }
