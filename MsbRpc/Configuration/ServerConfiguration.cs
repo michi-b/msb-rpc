@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using MsbRpc.Configuration.Builders;
+using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Configuration.Interfaces;
 
 namespace MsbRpc.Configuration;
