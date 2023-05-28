@@ -13,7 +13,7 @@ using MsbRpc.Extensions;
 namespace MsbRpc.Servers;
 
 [PublicAPI]
-public class InboundEndPointRegistry : SelfLockingDisposable
+public class InboundEndPointRegistry : ConcurrentDisposable
 {
     private readonly InboundEndpointRegistryConfiguration _configuration;
     private readonly Dictionary<int, InboundEndPointRegistryEntry> _endPoints = new(); // key is managed thread id

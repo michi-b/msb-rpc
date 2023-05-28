@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace MsbRpc.Disposable;
 
-public abstract class SelfLockingDisposable : IDisposable
+public abstract class ConcurrentDisposable : IDisposable
 {
     private const int LockTimeOutMilliseconds = 60000; // 1 minute
 
@@ -16,7 +16,7 @@ public abstract class SelfLockingDisposable : IDisposable
         Dispose(true);
     }
 
-    ~SelfLockingDisposable()
+    ~ConcurrentDisposable()
     {
         Dispose(false);
     }

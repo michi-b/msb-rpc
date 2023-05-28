@@ -12,7 +12,7 @@ using MsbRpc.Sockets;
 
 namespace MsbRpc.Servers;
 
-public abstract class Server : SelfLockingDisposable
+public abstract class Server : ConcurrentDisposable
 {
     private readonly Socket _listenSocket;
 
