@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Threading;
 using JetBrains.Annotations;
 
 namespace MsbRpc.Disposable;
 
+/// <summary>
+///     Base implementation of <see cref="IDisposable" /> that ensures that <see cref="Dispose" /> is only called
+///     once even if called from multiple threads by guarding an "IsDisposed" flag with a lock.
+///     Also provides a method to execute a function if not disposed, and ensures it is not disposed during execution.
+/// </summary>
 public abstract class ConcurrentDisposable : IDisposable
 {
-    private const int LockTimeOutMilliseconds = 60000; // 1 minute
-
     private readonly object _lock = new();
 
     [PublicAPI] public bool IsDisposed { get; private set; }
@@ -23,6 +25,17 @@ public abstract class ConcurrentDisposable : IDisposable
         Dispose(false);
     }
 
+    /// <summary>
+    ///     executes provided function if this object is not disposed, and ensures it is not disposed during execution
+    /// </summary>
+    /// <param name="action">action to execute if not disposes</param>
+    /// <param name="throwObjectDisposedExceptionOtherwise">whether an exception should be thrown if disposed</param>
+    /// <param name="alternativeAction">optional alternative action to execute if disposed</param>
+    /// <exception cref="ObjectDisposedException"></exception>
+    /// <remarks>
+    ///     there is still some danker in this, because any trigger for disposing this object may still occur while performing
+    ///     the action, but actual disposal will be delayed until after the action returned
+    /// </remarks>
     protected void ExecuteIfNotDisposed(Action action, bool throwObjectDisposedExceptionOtherwise = true, Action? alternativeAction = null)
     {
         void OnDisposed()
@@ -35,63 +48,49 @@ public abstract class ConcurrentDisposable : IDisposable
             }
         }
 
+        // early exit without locking if this is already disposed on this thread
         if (IsDisposed)
         {
             OnDisposed();
             return;
         }
 
-        if (Monitor.TryEnter(_lock, LockTimeOutMilliseconds))
+        lock (_lock)
         {
-            try
+            if (IsDisposed)
             {
-                if (IsDisposed)
-                {
-                    OnDisposed();
-                    return;
-                }
+                OnDisposed();
+                return;
+            }
 
-                action();
-            }
-            finally
-            {
-                Monitor.Exit(_lock);
-            }
-        }
-        else
-        {
-            throw GetTimeoutException();
+            action();
         }
     }
 
+    /// <summary>
+    ///     executes provided function if this object is not disposed, and ensures it is not disposed during execution
+    /// </summary>
+    /// <exception cref="ObjectDisposedException"></exception>
+    /// <remarks>
+    ///     there is still some danker in this, because any trigger for disposing this object may still occur while performing
+    ///     the action, but actual disposal will be delayed until after the action returned
+    /// </remarks>
     protected T ExecuteIfNotDisposed<T>(Func<T> func)
     {
+        // early exit without locking if this is already disposed on this thread
         if (IsDisposed)
         {
             throw new ObjectDisposedException(GetType().Name);
         }
 
-        if (Monitor.TryEnter(_lock, LockTimeOutMilliseconds))
+        lock (_lock)
         {
-            try
+            if (IsDisposed)
             {
-                if (IsDisposed)
-                {
-                    throw new ObjectDisposedException(GetType().Name);
-                }
+                throw new ObjectDisposedException(GetType().Name);
+            }
 
-                return func();
-            }
-            finally
-            {
-                Monitor.Exit(_lock);
-            }
-        }
-        // ReSharper disable once RedundantIfElseBlock
-        // I like this 'else'
-        else
-        {
-            throw GetTimeoutException();
+            return func();
         }
     }
 
@@ -99,7 +98,7 @@ public abstract class ConcurrentDisposable : IDisposable
 
     private void Dispose(bool disposing)
     {
-        // early exit without locking if this is already disposed
+        // early exit without locking if this is already disposed on this thread
         if (IsDisposed)
         {
             return;
@@ -111,7 +110,6 @@ public abstract class ConcurrentDisposable : IDisposable
         {
             if (!IsDisposed)
             {
-
                 IsDisposed = true;
                 // after marking this as disposed, actual disposal is delayed until after the lock is released
                 // this is ABSOLUTELY NECESSARY in order to avoid deadlocks
