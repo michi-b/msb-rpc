@@ -94,8 +94,6 @@ public abstract class ConcurrentDisposable : IDisposable
         }
     }
 
-    private static TimeoutException GetTimeoutException() => new();
-
     private void Dispose(bool disposing)
     {
         // early exit without locking if this is already disposed on this thread

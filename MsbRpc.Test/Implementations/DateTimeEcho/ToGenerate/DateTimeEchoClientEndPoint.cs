@@ -25,7 +25,7 @@ public class DateTimeEchoClientEndPoint
         OutboundEndPointConfiguration configuration
     )
     {
-        Messenger messenger = await MessengerFactory.ConnectAsync(endPoint);
+        Messenger messenger = await Messenger.ConnectAsync(endPoint);
         return new DateTimeEchoClientEndPoint(messenger, configuration);
     }
 

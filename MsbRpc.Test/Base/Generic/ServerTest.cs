@@ -19,7 +19,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     where TContract : IRpcContract
 {
     protected async ValueTask<TClientEndPoint> ConnectClient(Server server)
-        => CreateClient(await MessengerFactory.ConnectAsync(new IPEndPoint(ServerTestUtility.LocalHost, server.Port)));
+        => CreateClient(await Messenger.ConnectAsync(new IPEndPoint(ServerTestUtility.LocalHost, server.Port)));
 
     protected TServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {

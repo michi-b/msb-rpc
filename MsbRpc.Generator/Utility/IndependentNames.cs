@@ -30,7 +30,6 @@ internal static class IndependentNames
 
         // messaging types
         public const string Messenger = "MsbRpc.Messaging.Messenger";
-        public const string MessengerFactory = "MsbRpc.Messaging.MessengerFactory";
 
         // serialization types
         public const string BufferWriter = "MsbRpc.Serialization.Buffers.BufferWriter";

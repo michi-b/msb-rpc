@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using MsbRpc.Disposable;
+using MsbRpc.Logging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
@@ -21,12 +25,42 @@ public class Messenger : MarkedDisposable
 
     public bool IsConnected => _socket.IsConnected;
 
-    //todo: add messenger creation overloads instead of generating client endpoint constructor overloads
-    
+    public Messenger(Socket socket)
+    {
+        _socket = new RpcSocket(socket);
+        Port = ((IPEndPoint)socket.RemoteEndPoint).Port;
+    }
+
     public Messenger(RpcSocket socket)
     {
         _socket = socket;
         Port = socket.Port;
+    }
+
+    public static async ValueTask<Messenger> ConnectAsync(IPAddress address, int port, ILoggerFactory? loggerFactory = null)
+    {
+        IPEndPoint serverEndPoint = new(address, port);
+        return await ConnectAsync(serverEndPoint, loggerFactory);
+    }
+
+    public static async ValueTask<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory = null)
+    {
+        Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        try
+        {
+            await socket.ConnectAsync(serverEndPoint);
+        }
+        catch (Exception exception)
+        {
+            if (loggerFactory != null)
+            {
+                LogConnectionFailed(loggerFactory.CreateLogger<Messenger>(), serverEndPoint, exception);
+            }
+
+            throw;
+        }
+
+        return new Messenger(new RpcSocket(socket));
     }
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
@@ -213,5 +247,13 @@ public class Messenger : MarkedDisposable
 
         count = 0;
         return false;
+    }
+
+    private static void LogConnectionFailed(ILogger logger, IPEndPoint endPoint, Exception exception)
+    {
+        if (logger.IsEnabled(LogLevel.Error))
+        {
+            logger.LogError(LogEventIds.MessengerConnectionFailed, exception, "Failed to connect messenger to remote endpoint {Endpoint}", endPoint);
+        }
     }
 }
