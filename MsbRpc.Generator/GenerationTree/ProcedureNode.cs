@@ -6,9 +6,6 @@ namespace MsbRpc.Generator.GenerationTree;
 
 public class ProcedureNode
 {
-    //todo: remove if not used
-    public readonly ProcedureCollectionNode CollectionNode;
-
     public readonly string FullName;
     public readonly bool HasParameters;
 
@@ -27,8 +24,6 @@ public class ProcedureNode
         SerializationResolver serializationResolver
     )
     {
-        CollectionNode = collectionNode;
-
         Name = info.Name;
         FullName = $"{collectionNode.ProcedureEnumType}.{Name}";
         ProcedureEnumValue = $"{collectionNode.ProcedureEnumName}.{Name}";

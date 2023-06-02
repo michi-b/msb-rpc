@@ -2,9 +2,8 @@
 using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.Generic;
-using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
-namespace MsbRpc.Test.Implementations.DateTimeEcho;
+namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
 public class DateTimeEchoServer : RegistryServer
 {

@@ -1,4 +1,5 @@
 ﻿using System.CodeDom.Compiler;
+using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Utility;

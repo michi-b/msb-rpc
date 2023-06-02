@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 
-namespace MsbRpc.Generator.CodeWriters.Files;
+namespace MsbRpc.Generator.CodeWriters.Files.Base;
 
 internal abstract class CodeFileWriter
 {

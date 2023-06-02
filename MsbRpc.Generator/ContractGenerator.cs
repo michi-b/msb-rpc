@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.CodeWriters.Files;
+using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;

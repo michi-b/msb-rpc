@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.CodeWriters.Files;
+using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.DiagnosticDescriptors;

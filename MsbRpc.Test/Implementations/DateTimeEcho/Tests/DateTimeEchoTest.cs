@@ -92,5 +92,5 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     }
 
     protected override DateTimeEchoClientEndPoint CreateClient(Messenger messenger)
-        => new(messenger, new DateTimeEchoClientConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
+        => new(messenger, new DateTimeEchoClientEndPointConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
 }

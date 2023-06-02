@@ -7,26 +7,21 @@ public class EndPointNode
 {
     public readonly ContractNode Contract;
     public readonly EndPointDirection Direction;
-    public readonly ConnectionEndType EndType;
     public readonly string Name;
-
-    /// <summary>
-    ///     endpoint name without "EndPoint" postfix in PascalCase
-    /// </summary>
-    public readonly string NameBase;
+    private readonly EndPointType Type;
 
     public EndPointNode
     (
         ContractNode contract,
-        ConnectionEndType connectionEndType,
+        EndPointType type,
         EndPointDirection direction
     )
     {
         Contract = contract;
-        EndType = connectionEndType;
-        string upperCaseTypeId = EndType.GetName();
-        NameBase = $"{contract.PascalCaseName}{upperCaseTypeId}";
-        Name = $"{NameBase}{EndPointPostfix}";
+        Type = type;
+        string upperCaseTypeId = Type.GetName();
+        string nameBase = $"{contract.PascalCaseName}{upperCaseTypeId}";
+        Name = $"{nameBase}{EndPointPostfix}";
         Direction = direction;
     }
 }

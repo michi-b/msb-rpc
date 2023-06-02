@@ -2,9 +2,9 @@
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
-public class DateTimeEchoClientConfigurationBuilder : OutboundEndPointConfigurationBuilder
+public class DateTimeEchoClientEndPointConfigurationBuilder : OutboundEndPointConfigurationBuilder
 {
-    public DateTimeEchoClientConfigurationBuilder()
+    public DateTimeEchoClientEndPointConfigurationBuilder()
     {
         LoggingName = "DateTimeEchoClientEndPoint";
         InitialBufferSize = 1024;

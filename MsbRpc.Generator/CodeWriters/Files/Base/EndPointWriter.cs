@@ -6,7 +6,7 @@ using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.Utility.IndependentNames;
 
-namespace MsbRpc.Generator.CodeWriters.Files;
+namespace MsbRpc.Generator.CodeWriters.Files.Base;
 
 internal abstract class EndPointWriter : CodeFileWriter
 {

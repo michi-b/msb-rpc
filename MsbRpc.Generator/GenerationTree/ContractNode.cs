@@ -32,7 +32,6 @@ public class ContractNode
         InterfaceName = info.InterfaceName;
         InterfaceType = $"{info.Namespace}.{info.InterfaceName}";
         PascalCaseName = GetContractName(InterfaceName);
-        PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
         var serializationResolver = new SerializationResolver(info.CustomSerializations.ToArray());
@@ -41,16 +40,16 @@ public class ContractNode
 
         Procedures = new ProcedureCollectionNode(procedures, this, serializationResolver);
 
-        ClientEndPoint = CreateEndPointNode(info, ConnectionEndType.Client);
-        ServerEndPoint = CreateEndPointNode(info, ConnectionEndType.Server);
+        ClientEndPoint = CreateEndPointNode(info, EndPointType.Client);
+        ServerEndPoint = CreateEndPointNode(info, EndPointType.Server);
     }
 
-    private EndPointNode CreateEndPointNode(ContractInfo info, ConnectionEndType endType)
+    private EndPointNode CreateEndPointNode(ContractInfo info, EndPointType endPointType)
         => new
         (
             this,
-            endType,
-            info.Direction.GetDirection(endType)
+            endPointType,
+            info.Direction.GetDirection(endPointType)
         );
 
     private static string GetContractName(string contractInterfaceName)
