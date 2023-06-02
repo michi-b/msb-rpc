@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Configuration.Builders;
 
-namespace MsbRpc.Test.Implementations.DateTimeEcho;
+namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
 public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder
 {

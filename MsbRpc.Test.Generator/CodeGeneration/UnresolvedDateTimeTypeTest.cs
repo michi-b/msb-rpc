@@ -8,7 +8,7 @@ namespace MsbRpc.Test.Generator.CodeGeneration;
 [TestClass]
 public class UnresolvedDateTimeTypeTest : ContractGenerationTest<UnresolvedDateTimeTypeTest, ContractGenerator>
 {
-    private const string Code = @"[RpcContract(RpcContractType.ClientToServer)]
+    private const string Code = @"[RpcContract]
 public interface IDateTimeEcho : IRpcContract
 {
     System.DateTime GetDateTime(System.DateTime myDateTime);

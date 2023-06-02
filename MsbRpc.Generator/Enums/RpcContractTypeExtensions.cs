@@ -5,21 +5,21 @@ namespace MsbRpc.Generator.Enums;
 
 internal static class RpcContractTypeExtensions
 {
-    public static EndPointDirection GetDirection(this RpcContractType contractType, ConnectionEndType connectionEndType)
+    public static EndPointDirection GetDirection(this RpcContractDirection contractDirection, ConnectionEndType connectionEndType)
     {
         return connectionEndType switch
         {
-            ConnectionEndType.Client => contractType switch
+            ConnectionEndType.Client => contractDirection switch
             {
-                RpcContractType.ClientToServer => EndPointDirection.Outbound,
-                RpcContractType.ServerToClient => EndPointDirection.Inbound,
-                _ => throw new ArgumentOutOfRangeException(nameof(contractType), contractType, null)
+                RpcContractDirection.ClientToServer => EndPointDirection.Outbound,
+                RpcContractDirection.ServerToClient => EndPointDirection.Inbound,
+                _ => throw new ArgumentOutOfRangeException(nameof(contractDirection), contractDirection, null)
             },
-            ConnectionEndType.Server => contractType switch
+            ConnectionEndType.Server => contractDirection switch
             {
-                RpcContractType.ClientToServer => EndPointDirection.Inbound,
-                RpcContractType.ServerToClient => EndPointDirection.Outbound,
-                _ => throw new ArgumentOutOfRangeException(nameof(contractType), contractType, null)
+                RpcContractDirection.ClientToServer => EndPointDirection.Inbound,
+                RpcContractDirection.ServerToClient => EndPointDirection.Outbound,
+                _ => throw new ArgumentOutOfRangeException(nameof(contractDirection), contractDirection, null)
             },
             _ => throw new ArgumentOutOfRangeException(nameof(connectionEndType), connectionEndType, null)
         };

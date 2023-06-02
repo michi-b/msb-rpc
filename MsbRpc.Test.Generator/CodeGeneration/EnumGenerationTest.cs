@@ -14,7 +14,7 @@ public class EnumGenerationTest : ContractGenerationTest<EnumGenerationTest, Con
     Return
 }
 
-[RpcContract(RpcContractType.ClientToServer)]
+[RpcContract(RpcContractDirection.ClientToServer)]
 internal interface IEnumTest : IRpcContract
 {
     MyEnum Call(MyEnum value);

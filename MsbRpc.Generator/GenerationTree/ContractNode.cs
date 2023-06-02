@@ -12,7 +12,9 @@ namespace MsbRpc.Generator.GenerationTree;
 public class ContractNode
 {
     public readonly ContractAccessibility Accessibility;
+
     public readonly EndPointNode ClientEndPoint;
+    public readonly int InitialBufferSize;
 
     public readonly string InterfaceName;
     public readonly string InterfaceType;
@@ -24,16 +26,16 @@ public class ContractNode
 
     public ContractNode(ref ContractInfo info)
     {
+        Accessibility = info.Accessibility;
+        InitialBufferSize = info.InitialBufferSize;
+
         InterfaceName = info.InterfaceName;
         InterfaceType = $"{info.Namespace}.{info.InterfaceName}";
         PascalCaseName = GetContractName(InterfaceName);
         PascalCaseName.PascalToCamelCase();
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
-        Accessibility = info.Accessibility;
 
-        KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>[] customerializations = info.CustomSerializations.ToArray();
-
-        var serializationResolver = new SerializationResolver(customerializations);
+        var serializationResolver = new SerializationResolver(info.CustomSerializations.ToArray());
 
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
 
@@ -48,7 +50,7 @@ public class ContractNode
         (
             this,
             endType,
-            info.ContractType.GetDirection(endType)
+            info.ContractDirection.GetDirection(endType)
         );
 
     private static string GetContractName(string contractInterfaceName)

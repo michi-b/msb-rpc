@@ -38,22 +38,25 @@ internal static class ContractInfoParser
             return null;
         }
 
-        RpcContractType? contractType = null;
+        //defaults (mirrored from RpcContractAttribute)
+        var contractType = RpcContractDirection.ClientToServer;
+        int initialBufferSize = 1024;
+
         foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
         {
             // ReSharper disable once ConvertSwitchStatementToSwitchExpression
             // there will probably be more arguments in the future
             switch (argument.Key)
             {
-                case "contractType":
-                    contractType = (RpcContractType)argument.Value.Value!;
+                case "contractDirection":
+                    contractType = (RpcContractDirection)argument.Value.Value!;
                     break;
+                case "initialBufferSize":
+                    initialBufferSize = (int)argument.Value.Value!;
+                    break;
+                default:
+                    return null;
             }
-        }
-
-        if (contractType == null)
-        {
-            return null;
         }
 
         #endregion
@@ -76,6 +79,14 @@ internal static class ContractInfoParser
             return null;
         }
 
-        return new ContractInfo(interfaceName, namespaceName, procedures, contractType.Value, accessibility);
+        return new ContractInfo
+        (
+            interfaceName,
+            namespaceName,
+            procedures,
+            contractType,
+            accessibility,
+            initialBufferSize
+        );
     }
 }
