@@ -38,22 +38,6 @@ internal class OutboundEndPointWriter : EndPointWriter
         }
 
         writer.WriteLine(" { }");
-        writer.WriteLine();
-
-        // public async factory method
-        writer.WriteLine($"public static async {Types.VaLueTask}<{Name}> {Methods.ConnectAsync}");
-        using (writer.GetParenthesesBlock())
-        {
-            writer.WriteLine($"{IPEndPointParameter},");
-            writer.WriteLine(OutboundEndPointConfigurationParameter);
-        }
-
-        using (writer.GetBlock())
-        {
-            writer.WriteLine($"{Types.Messenger} {Variables.Messenger} = await {Types.Messenger}.{Methods.ConnectAsync}({Parameters.IPEndPoint});");
-
-            writer.WriteLine($"return new {Name}({Variables.Messenger}, {Parameters.Configuration});");
-        }
     }
 
     protected override void WriteProcedures(IndentedTextWriter writer)
