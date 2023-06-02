@@ -39,7 +39,7 @@ internal static class ContractInfoParser
         }
 
         //defaults (mirrored from RpcContractAttribute)
-        var contractType = RpcContractDirection.ClientToServer;
+        var contractType = RpcDirection.ClientToServer;
         int initialBufferSize = 1024;
 
         foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
@@ -48,10 +48,10 @@ internal static class ContractInfoParser
             // there will probably be more arguments in the future
             switch (argument.Key)
             {
-                case "contractDirection":
-                    contractType = (RpcContractDirection)argument.Value.Value!;
+                case "direction":
+                    contractType = (RpcDirection)argument.Value.Value!;
                     break;
-                case "initialBufferSize":
+                case "defaultInitialBufferSize":
                     initialBufferSize = (int)argument.Value.Value!;
                     break;
                 default:

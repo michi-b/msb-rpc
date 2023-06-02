@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Attributes;
 
-public enum RpcContractDirection
+public enum RpcDirection
 {
     ClientToServer,
     ServerToClient

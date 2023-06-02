@@ -50,7 +50,7 @@ public class ContractNode
         (
             this,
             endType,
-            info.ContractDirection.GetDirection(endType)
+            info.Direction.GetDirection(endType)
         );
 
     private static string GetContractName(string contractInterfaceName)

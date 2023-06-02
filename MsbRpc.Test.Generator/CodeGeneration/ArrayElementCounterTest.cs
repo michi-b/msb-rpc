@@ -8,7 +8,7 @@ namespace MsbRpc.Test.Generator.CodeGeneration;
 [TestClass]
 public class ArrayElementCounterTest : ContractGenerationTest<ArrayElementCounterTest, ContractGenerator>
 {
-    private const string Code = @"[RpcContract(RpcContractDirection.ClientToServer)]
+    private const string Code = @"[RpcContract]
 public interface IArrayElementCounter : IRpcContract
 {
     int CountElements(int[] array);

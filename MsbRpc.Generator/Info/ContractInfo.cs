@@ -10,7 +10,7 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
     public readonly string InterfaceName;
     public readonly string Namespace;
     public readonly ImmutableArray<ProcedureInfo> Procedures;
-    public readonly RpcContractDirection ContractDirection;
+    public readonly RpcDirection Direction;
     public readonly int InitialBufferSize;
     public readonly ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo> CustomSerializations;
     public readonly ContractAccessibility Accessibility;
@@ -20,7 +20,7 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
         string interfaceName,
         string namespaceName,
         ImmutableArray<ProcedureInfo> procedures,
-        RpcContractDirection contractDirection,
+        RpcDirection direction,
         ContractAccessibility contractAccessibility,
         int initialBufferSize
     )
@@ -28,7 +28,7 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
         InterfaceName = interfaceName;
         Namespace = namespaceName;
         Procedures = procedures;
-        ContractDirection = contractDirection;
+        Direction = direction;
         CustomSerializations = ImmutableDictionary<TypeReferenceInfo, CustomSerializationInfo>.Empty;
         Accessibility = contractAccessibility;
         InitialBufferSize = initialBufferSize;
@@ -44,7 +44,7 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
         InterfaceName = other.InterfaceName;
         Namespace = other.Namespace;
         Procedures = other.Procedures;
-        ContractDirection = other.ContractDirection;
+        Direction = other.Direction;
         CustomSerializations = customSerializations;
         Accessibility = other.Accessibility;
         InitialBufferSize = other.InitialBufferSize;
@@ -54,7 +54,7 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
         => InterfaceName == other.InterfaceName
            && Namespace == other.Namespace
            && Procedures.Equals(other.Procedures)
-           && ContractDirection == other.ContractDirection
+           && Direction == other.Direction
            && CustomSerializations.Equals(other.CustomSerializations)
            && Accessibility == other.Accessibility
            && InitialBufferSize == other.InitialBufferSize;
@@ -68,7 +68,7 @@ public readonly struct ContractInfo : IEquatable<ContractInfo>
             int hashCode = InterfaceName.GetHashCode();
             hashCode = (hashCode * 397) ^ Namespace.GetHashCode();
             hashCode = (hashCode * 397) ^ Procedures.GetHashCode();
-            hashCode = (hashCode * 397) ^ (int)ContractDirection;
+            hashCode = (hashCode * 397) ^ (int)Direction;
             hashCode = (hashCode * 397) ^ CustomSerializations.GetHashCode();
             hashCode = (hashCode * 397) ^ (int)Accessibility;
             hashCode = (hashCode * 397) ^ InitialBufferSize;

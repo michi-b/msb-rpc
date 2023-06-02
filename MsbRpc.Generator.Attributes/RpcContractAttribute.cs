@@ -5,8 +5,8 @@ namespace MsbRpc.Generator.Attributes;
 [GeneratorTarget]
 public class RpcContractAttribute : Attribute
 {
-    [GeneratorTarget] public readonly RpcContractDirection ContractDirection;
-    [GeneratorTarget] public readonly int InitialBufferSize;
+    [GeneratorTarget] public readonly RpcDirection Direction;
+    [GeneratorTarget] public readonly int DefaultInitialBufferSize;
 
     /// <summary>
     /// Marks an interface to be an RPC contract and have it's RPC endpoints etc. generated.
@@ -15,22 +15,22 @@ public class RpcContractAttribute : Attribute
     /// and if any of these preconditions are not met, it will be ignored by the contract code generator.
     /// </summary>
     /// 
-    /// <param name="contractDirection">
+    /// <param name="direction">
     /// The direction of the contract, indicating which endpoint is the sender and which is the receiver of RPC invocations.
     /// </param>
     /// 
-    /// <param name="initialBufferSize">
+    /// <param name="defaultInitialBufferSize">
     /// The initial size of byte buffers used for serialization and deserialization of RPC invocations.
     /// Should be set large enough to encompass serialization of any expected RPC call or response, including parameters or return values and RPC headers.
     /// If the buffer is too small, it will be resized on demand, causing a memory allocation and possibly memory fragmentation.
     /// </param>
     public RpcContractAttribute
     (
-        RpcContractDirection contractDirection = RpcContractDirection.ClientToServer,
-        int initialBufferSize = 1024
+        RpcDirection direction = RpcDirection.ClientToServer,
+        int defaultInitialBufferSize = 1024
     )
     {
-        ContractDirection = contractDirection;
-        InitialBufferSize = initialBufferSize;
+        Direction = direction;
+        DefaultInitialBufferSize = defaultInitialBufferSize;
     }
 }

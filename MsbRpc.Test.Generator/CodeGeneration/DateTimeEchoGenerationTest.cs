@@ -23,7 +23,7 @@ public static class DateTimeSerializer
     public static DateTime Read(BufferReader reader) => new(reader.ReadLong());
 }
 
-[RpcContract(RpcContractDirection.ClientToServer)]
+[RpcContract]
 public interface IDateTimeEcho : IRpcContract
 {
     System.DateTime GetDateTime(System.DateTime myDateTime);

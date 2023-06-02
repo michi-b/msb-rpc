@@ -8,7 +8,7 @@ namespace MsbRpc.Test.Generator.CodeGeneration;
 [TestClass]
 public class IncrementerGenerationTest : ContractGenerationTest<IncrementerGenerationTest, ContractGenerator>
 {
-    private const string Code = @"[RpcContract(RpcContractDirection.ClientToServer)]
+    private const string Code = @"[RpcContract]
 public interface IIncrementer : IRpcContract
 {
     int Increment(int value);
