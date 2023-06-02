@@ -1,10 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
+using MsbRpc.Test.Generator.SerializationGeneration.Utility;
 
-namespace MsbRpc.Test.Generator.SerializationGeneration.Tests;
+namespace MsbRpc.Test.Generator.SerializationGeneration;
 
 [TestClass]
+[TestCategory(TestCategories.Serialization)]
 public class NullableStringSerializationTest : Base.Test
 {
     private static readonly TypeReferenceInfo NullableStringInfo = TypeReferenceInfo.CreateSimple("System.String", true);

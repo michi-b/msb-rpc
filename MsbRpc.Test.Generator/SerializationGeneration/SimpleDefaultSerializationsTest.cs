@@ -2,10 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Serialization.Default;
+using MsbRpc.Test.Generator.SerializationGeneration.Utility;
 
 namespace MsbRpc.Test.Generator.SerializationGeneration;
 
 [TestClass]
+[TestCategory(TestCategories.Serialization)]
 public class SimpleDefaultSerializationsTest : Base.Test
 {
     [TestMethod]

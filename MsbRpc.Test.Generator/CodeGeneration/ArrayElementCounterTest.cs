@@ -6,6 +6,7 @@ using MsbRpc.Test.Generator.Base;
 namespace MsbRpc.Test.Generator.CodeGeneration;
 
 [TestClass]
+[TestCategory(TestCategories.Contract)]
 public class ArrayElementCounterTest : ContractGenerationTest<ArrayElementCounterTest, ContractGenerator>
 {
     private const string Code = @"[RpcContract]

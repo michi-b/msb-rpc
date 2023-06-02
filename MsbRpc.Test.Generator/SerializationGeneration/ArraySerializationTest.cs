@@ -1,10 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
+using MsbRpc.Test.Generator.SerializationGeneration.Utility;
 
-namespace MsbRpc.Test.Generator.SerializationGeneration.Tests;
+namespace MsbRpc.Test.Generator.SerializationGeneration;
 
-[TestClass]
+[TestClass, TestCategory(TestCategories.Serialization)]
 public class ArraySerializationTest : Base.Test
 {
     private static readonly TypeReferenceInfo IntInfo = new(new NamedTypeDeclarationInfo("System.Int32"));

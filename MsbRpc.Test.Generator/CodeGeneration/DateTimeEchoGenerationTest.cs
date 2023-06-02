@@ -6,6 +6,7 @@ using MsbRpc.Test.Generator.Base;
 namespace MsbRpc.Test.Generator.CodeGeneration;
 
 [TestClass]
+[TestCategory(TestCategories.Contract)]
 public class DateTimeEchoGenerationTest : ContractGenerationTest<DateTimeEchoGenerationTest, ContractGenerator>
 {
     private const string Code = @"[ConstantSizeSerializer(typeof(DateTime))]

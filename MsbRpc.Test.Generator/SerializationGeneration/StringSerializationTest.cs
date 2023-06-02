@@ -1,20 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
-using MsbRpc.Generator.Serialization.Default;
+using MsbRpc.Test.Generator.SerializationGeneration.Utility;
 
-namespace MsbRpc.Test.Generator.SerializationGeneration.Tests;
+namespace MsbRpc.Test.Generator.SerializationGeneration;
 
 [TestClass]
-public class EnumSerializationTest : Base.Test
+[TestCategory(TestCategories.Serialization)]
+public class StringSerializationTest : Base.Test
 {
-    private const string EnumName = "MyEnum";
+    private static readonly TypeReferenceInfo NullableStringInfo = TypeReferenceInfo.CreateSimple("System.String");
 
-    private static readonly NamedTypeDeclarationInfo EnumDeclaration = new(EnumName, 0, EnumSerializationKind.Int);
-
-    private static readonly TypeReferenceInfo EnumInfo = new(EnumDeclaration);
-
-    private static ISerialization Serialization => new SerializationResolver().Resolve(EnumInfo);
+    private static ISerialization Serialization => new SerializationResolver().Resolve(NullableStringInfo);
 
     [TestMethod]
     public void SerializationIsResolved()
@@ -32,16 +29,16 @@ public class EnumSerializationTest : Base.Test
     public void DeclarationSyntaxIsCorrect()
     {
         string actual = Serialization.DeclarationSyntax;
-        Assert.AreEqual(EnumName, actual);
+        Assert.AreEqual(@"string", actual);
         TestContext.WriteLine(actual);
     }
 
     [TestMethod]
     public void DeserializationExpressionIsCorrect()
     {
-        const string expected = @"(MyEnum)(bufferReader.ReadInt());
+        const string expected = @"bufferReader.ReadString();
 ";
-        string actual = new SerializationTest(EnumInfo).GetFinalizedDeserializationExpression();
+        string actual = new SerializationTest(NullableStringInfo).GetFinalizedDeserializationExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }
@@ -49,9 +46,9 @@ public class EnumSerializationTest : Base.Test
     [TestMethod]
     public void SerializationStatementIsCorrect()
     {
-        const string expected = @"bufferWriter.Write((int)value);
+        const string expected = @"bufferWriter.Write(value);
 ";
-        string actual = new SerializationTest(EnumInfo).GetFinalizedSerializationStatement();
+        string actual = new SerializationTest(NullableStringInfo).GetFinalizedSerializationStatement();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }
@@ -60,8 +57,8 @@ public class EnumSerializationTest : Base.Test
     public void SizeExpressionIsCorrect()
     {
         const string expected =
-            @"MsbRpc.Serialization.Primitives.PrimitiveSerializer.IntSize";
-        string actual = new SerializationTest(EnumInfo).GetSizeExpression();
+            @"MsbRpc.Serialization.StringSerializer.GetSize(target)";
+        string actual = new SerializationTest(NullableStringInfo).GetSizeExpression();
         Assert.AreEqual(expected, actual);
         TestContext.Write(actual);
     }

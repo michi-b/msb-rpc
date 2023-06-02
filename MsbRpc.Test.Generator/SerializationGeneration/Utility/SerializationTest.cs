@@ -7,7 +7,7 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
 
-namespace MsbRpc.Test.Generator.SerializationGeneration;
+namespace MsbRpc.Test.Generator.SerializationGeneration.Utility;
 
 internal readonly ref struct SerializationTest
 {
@@ -16,21 +16,21 @@ internal readonly ref struct SerializationTest
     public string? ExpectedSerializationStatement { get; init; }
     public string? ExpectedDeserializationExpression { get; init; }
     public string? ExpectedDeclarationSyntax { get; init; }
-    public bool ExpectedIsVoid { get; init; }
+    private bool ExpectedIsVoid { get; }
 
-    public TypeReferenceInfo TargetType { get; }
-    public string TargetExpression { get; init; } = "target";
+    private TypeReferenceInfo TargetType { get; }
+    private static string TargetExpression => "target";
 
-    public string ValueExpression { get; init; } = "value";
+    private static string ValueExpression => "value";
 
-    public string BufferWriterExpression { get; init; } = "bufferWriter";
+    private static string BufferWriterExpression => "bufferWriter";
 
-    public string BufferReaderExpression { get; init; } = "bufferReader";
+    private static string BufferReaderExpression => "bufferReader";
 
     public SerializationTest(TypeReferenceInfo targetType)
         : this(new SerializationResolver(Array.Empty<KeyValuePair<TypeReferenceInfo, CustomSerializationInfo>>()), targetType) { }
 
-    public SerializationTest(SerializationResolver serializationResolver, TypeReferenceInfo targetType)
+    private SerializationTest(SerializationResolver serializationResolver, TypeReferenceInfo targetType)
     {
         _serializationResolver = serializationResolver;
         TargetType = targetType;
