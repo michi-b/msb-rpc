@@ -3,7 +3,7 @@ using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Default;
 using MsbRpc.Generator.Serialization.Serializations;
 using MsbRpc.Generator.Serialization.Serializations.Decorators;
-using static MsbRpc.Generator.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.Serialization;
 

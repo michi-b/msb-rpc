@@ -4,7 +4,7 @@ using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.Utility.IndependentCode;
-using static MsbRpc.Generator.Utility.IndependentNames.Types;
+using static MsbRpc.Generator.Utility.Names.Types;
 
 namespace MsbRpc.Generator.Extensions;
 
@@ -55,7 +55,7 @@ public static class IndentedTextWriterExtensions
             writer.WriteLine($"throw new {RpcExecutionException}<{procedureCollection.ProcedureEnumType}>");
             using (writer.GetParenthesesBlock(Appendix.SemicolonAndNewline))
             {
-                writer.WriteLine($"{IndependentNames.Variables.Exception},");
+                writer.WriteLine($"{Names.Variables.Exception},");
                 writer.WriteLine($"{procedure.FullName},");
                 writer.WriteLine(executionStageFullName);
             }

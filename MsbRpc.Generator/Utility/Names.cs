@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Generator.Utility;
 
-internal static class IndependentNames
+internal static class Names
 {
     public const string InterfacePrefix = "I";
     public const string GeneratedFilePostfix = ".g.cs";
@@ -68,6 +68,9 @@ internal static class IndependentNames
         public const string Array8DSerializer = Namespaces.MsbRpcArraySerialization + ".Array8DSerializer";
         public const string Array9DSerializer = Namespaces.MsbRpcArraySerialization + ".Array9DSerializer";
         public const string AnyRankArraySerializer = Namespaces.MsbRpcArraySerialization + ".AnyRankArraySerializer";
+        
+        public const string InboundEndPointConfigurationBuilder = "MsbRpc.Configuration.InboundEndPointConfigurationBuilder";
+        public const string OutboundEndPointConfigurationBuilder = "MsbRpc.Configuration.OutboundEndPointConfigurationBuilder";
     }
 
     public static class Methods

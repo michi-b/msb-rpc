@@ -7,7 +7,7 @@ namespace MsbRpc.Generator.Serialization.Default;
 
 public static class GenericDefaultSerializationKindExtensions
 {
-    private static readonly NamedTypeDeclarationInfo NullableNamedTypeDeclarationInfo = new(IndependentNames.Types.Nullable, 1);
+    private static readonly NamedTypeDeclarationInfo NullableNamedTypeDeclarationInfo = new(Names.Types.Nullable, 1);
 
     private static readonly IGenericSerializationFactory NullableSerializationFactory = new NullableSerialization.Factory();
 

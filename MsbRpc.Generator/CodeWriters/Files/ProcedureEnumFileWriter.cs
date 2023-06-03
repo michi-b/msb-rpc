@@ -3,7 +3,7 @@ using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Utility;
-using static MsbRpc.Generator.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 

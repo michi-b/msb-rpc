@@ -1,7 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Utility;
-using static MsbRpc.Generator.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.Serialization.Serializations.Decorators;
 

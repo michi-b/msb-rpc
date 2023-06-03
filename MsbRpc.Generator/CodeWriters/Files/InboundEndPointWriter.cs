@@ -6,8 +6,8 @@ using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.Utility.IndependentCode;
-using static MsbRpc.Generator.Utility.IndependentNames;
-using static MsbRpc.Generator.Utility.IndependentNames.Types;
+using static MsbRpc.Generator.Utility.Names;
+using static MsbRpc.Generator.Utility.Names.Types;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 

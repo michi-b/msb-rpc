@@ -5,7 +5,7 @@ using System.Linq;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
-using static MsbRpc.Generator.Utility.IndependentNames;
+using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.GenerationTree;
 

@@ -28,8 +28,12 @@ internal abstract class CodeFileWriter
 
     public Result Generate()
     {
-        IndentedTextWriter writer = CreateCodeWriter();
+        IndentedTextWriter writer = CreateWriter();
+
+        WriteFileHeader(writer);
+
         Write(writer);
+
         return new Result(FileName, writer.GetResult());
     }
 
@@ -45,14 +49,16 @@ internal abstract class CodeFileWriter
         }
     }
 
+    private void WriteFileHeader(TextWriter writer)
+    {
+        writer.WriteFileHeader(_nameSpace, UsedNamespaces);
+    }
+
     protected abstract void Write(IndentedTextWriter writer);
 
-    private IndentedTextWriter CreateCodeWriter()
+    private static IndentedTextWriter CreateWriter()
     {
         IndentedTextWriter writer = new(new StringWriter());
-
-        writer.WriteFileHeader(_nameSpace, UsedNamespaces);
-
         return writer;
     }
 }
