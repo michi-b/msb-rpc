@@ -12,13 +12,20 @@ internal abstract class EndPointConfigurationBuilderWriter : CodeFileWriter
 {
     private readonly string _baseClass;
 
-    private readonly string _class;
+    protected readonly string ClassName;
+
+    protected readonly EndPointNode EndPoint;
+
     protected override string FileName { get; }
 
     protected EndPointConfigurationBuilderWriter(EndPointNode endPoint) : base(endPoint.Contract)
     {
-        _class = $"{endPoint.Name}ConfigurationBuilder";
-        FileName = $"{_class}{GeneratedFilePostfix}";
+        EndPoint = endPoint;
+
+        ClassName = $"{endPoint.Name}ConfigurationBuilder";
+
+        FileName = $"{ClassName}{GeneratedFilePostfix}";
+
         _baseClass = endPoint.Direction switch
         {
             EndPointDirection.Inbound => Types.InboundEndPointConfigurationBuilder,
@@ -27,9 +34,19 @@ internal abstract class EndPointConfigurationBuilderWriter : CodeFileWriter
         };
     }
 
+    public static EndPointConfigurationBuilderWriter Get(EndPointNode endPoint)
+    {
+        return endPoint.Direction switch
+        {
+            EndPointDirection.Inbound => new InboundEndPointConfigurationBuilderWriter(endPoint),
+            EndPointDirection.Outbound => new OutboundEndPointConfigurationBuilderWriter(endPoint),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
     protected override void Write(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public class {_class} : {_baseClass}");
+        writer.WriteLine($"public class {ClassName} : {_baseClass}");
         using (writer.GetBlock(Appendix.None))
         {
             WriteConstructor(writer);
@@ -38,7 +55,7 @@ internal abstract class EndPointConfigurationBuilderWriter : CodeFileWriter
 
     private void WriteConstructor(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public {_class}()");
+        writer.WriteLine($"public {ClassName}()");
         using (writer.GetBlock())
         {
             WriteConstructorBody(writer);

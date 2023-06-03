@@ -22,8 +22,9 @@ internal interface IEnumTest : IRpcContract
 }";
 
     private const string Namespace = nameof(EnumGenerationTest);
+    private const string ContractName = "EnumTest";
 
-    public EnumGenerationTest() : base(Code, Namespace) { }
+    public EnumGenerationTest() : base(Code, Namespace, ContractName) { }
 
     [TestMethod]
     public async Task GeneratorHasResult()
@@ -58,12 +59,12 @@ internal interface IEnumTest : IRpcContract
     [TestMethod]
     public async Task GeneratesServerEndPoint()
     {
-        await TestGeneratesFile("EnumTestServerEndPoint.g.cs");
+        await TestGeneratesServerEndPoint();
     }
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        await TestGeneratesFile("EnumTestClientEndPoint.g.cs");
+        await TestGeneratesClientEndPoint();
     }
 }

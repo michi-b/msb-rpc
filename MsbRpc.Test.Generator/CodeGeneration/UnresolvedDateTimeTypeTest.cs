@@ -16,8 +16,9 @@ public interface IDateTimeEcho : IRpcContract
 }";
 
     private const string Namespace = nameof(UnresolvedDateTimeTypeTest);
+    private const string ContractName = "DateTimeEcho";
 
-    public UnresolvedDateTimeTypeTest() : base(Code, Namespace) { }
+    public UnresolvedDateTimeTypeTest() : base(Code, Namespace, ContractName) { }
 
     [TestMethod]
     public async Task GeneratorRuns()

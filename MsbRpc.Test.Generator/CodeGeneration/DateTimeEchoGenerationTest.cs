@@ -32,7 +32,9 @@ public interface IDateTimeEcho : IRpcContract
 
     private const string Namespace = nameof(DateTimeEchoGenerationTest);
 
-    public DateTimeEchoGenerationTest() : base(Code, Namespace) { }
+    private const string ContractName = "DateTimeEcho";
+
+    public DateTimeEchoGenerationTest() : base(Code, Namespace, ContractName) { }
 
     [TestMethod]
     public async Task GeneratorHasResult()
@@ -67,12 +69,18 @@ public interface IDateTimeEcho : IRpcContract
     [TestMethod]
     public async Task GeneratesServerEndPoint()
     {
-        await TestGeneratesFile("DateTimeEchoServerEndPoint.g.cs");
+        await TestGeneratesServerEndPoint();
     }
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        await TestGeneratesFile("DateTimeEchoClientEndPoint.g.cs");
+        await TestGeneratesClientEndPoint();
+    }
+
+    [TestMethod]
+    public async Task GeneratesClientEndPointConfigurationBuilder()
+    {
+        await TestGeneratesClientEndPointConfigurationBuilder();
     }
 }

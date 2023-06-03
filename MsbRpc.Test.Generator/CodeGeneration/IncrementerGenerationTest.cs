@@ -23,8 +23,10 @@ public interface IIncrementer : IRpcContract
 
     private const string Namespace = nameof(IncrementerGenerationTest);
 
+    private const string ContractName = "Incrementer";
+
     public IncrementerGenerationTest()
-        : base(Code, Namespace) { }
+        : base(Code, Namespace, ContractName) { }
 
     [TestMethod]
     public async Task GeneratorRuns()
@@ -65,24 +67,24 @@ public interface IIncrementer : IRpcContract
     [TestMethod]
     public async Task GeneratesServerProcedureEnum()
     {
-        await TestGeneratesFile("IncrementerProcedure.g.cs");
+        await TestGeneratesProcedureEnum();
     }
 
     [TestMethod]
     public async Task GeneratesServerProcedureEnumExtensions()
     {
-        await TestGeneratesFile("IncrementerProcedureExtensions.g.cs");
+        await TestGeneratesProcedureEnumExtensions();
     }
 
     [TestMethod]
     public async Task GeneratesServerEndPoint()
     {
-        await TestGeneratesFile("IncrementerServerEndPoint.g.cs");
+        await TestGeneratesServerEndPoint();
     }
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        await TestGeneratesFile("IncrementerClientEndPoint.g.cs");
+        await TestGeneratesClientEndPoint();
     }
 }

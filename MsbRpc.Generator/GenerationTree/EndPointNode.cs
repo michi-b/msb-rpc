@@ -6,9 +6,16 @@ namespace MsbRpc.Generator.GenerationTree;
 public class EndPointNode
 {
     public readonly ContractNode Contract;
+    
+    /// <summary>
+    /// inbound or outbound
+    /// </summary>
     public readonly EndPointDirection Direction;
+    
+    /// <summary>
+    /// class name of the endpoint
+    /// </summary>
     public readonly string Name;
-    private readonly EndPointType Type;
 
     public EndPointNode
     (
@@ -18,8 +25,7 @@ public class EndPointNode
     )
     {
         Contract = contract;
-        Type = type;
-        string upperCaseTypeId = Type.GetName();
+        string upperCaseTypeId = type.GetName();
         string nameBase = $"{contract.PascalCaseName}{upperCaseTypeId}";
         Name = $"{nameBase}{EndPointPostfix}";
         Direction = direction;

@@ -69,8 +69,8 @@ internal static class Names
         public const string Array9DSerializer = Namespaces.MsbRpcArraySerialization + ".Array9DSerializer";
         public const string AnyRankArraySerializer = Namespaces.MsbRpcArraySerialization + ".AnyRankArraySerializer";
         
-        public const string InboundEndPointConfigurationBuilder = "MsbRpc.Configuration.InboundEndPointConfigurationBuilder";
-        public const string OutboundEndPointConfigurationBuilder = "MsbRpc.Configuration.OutboundEndPointConfigurationBuilder";
+        public const string InboundEndPointConfigurationBuilder = "MsbRpc.Configuration.Builders.InboundEndPointConfigurationBuilder";
+        public const string OutboundEndPointConfigurationBuilder = "MsbRpc.Configuration.Builders.OutboundEndPointConfigurationBuilder";
     }
 
     public static class Methods
@@ -137,6 +137,8 @@ internal static class Names
         public const string EndPointBuffer = "Buffer";
         public const string InboundEndpointImplementation = "Implementation";
         public const string PrimitiveSerializerBoolSize = Types.PrimitiveSerializer + ".BoolSize";
+        public const string InitialBufferSize = "InitialBufferSize";
+        public const string LoggingName = "LoggingName";
     }
 
     public static class GlobalConstants

@@ -14,7 +14,7 @@ public class ContractNode
     public readonly ContractAccessibility Accessibility;
 
     public readonly EndPointNode ClientEndPoint;
-    public readonly int InitialBufferSize;
+    public readonly int DefaultInitialBufferSize;
 
     public readonly string InterfaceName;
     public readonly string InterfaceType;
@@ -27,7 +27,7 @@ public class ContractNode
     public ContractNode(ref ContractInfo info)
     {
         Accessibility = info.Accessibility;
-        InitialBufferSize = info.InitialBufferSize;
+        DefaultInitialBufferSize = info.InitialBufferSize;
 
         InterfaceName = info.InterfaceName;
         InterfaceType = $"{info.Namespace}.{info.InterfaceName}";

@@ -17,7 +17,9 @@ public interface IArrayElementCounter : IRpcContract
 
     private const string Namespace = nameof(ArrayElementCounterTest);
 
-    public ArrayElementCounterTest() : base(Code, Namespace) { }
+    private const string ContractName = "ArrayElementCounter";
+
+    public ArrayElementCounterTest() : base(Code, Namespace, ContractName) { }
 
     [TestMethod]
     public async Task GeneratorHasResult()
@@ -52,12 +54,18 @@ public interface IArrayElementCounter : IRpcContract
     [TestMethod]
     public async Task GeneratesServerEndPoint()
     {
-        await TestGeneratesFile("ArrayElementCounterServerEndPoint.g.cs");
+        await TestGeneratesServerEndPoint();
     }
 
     [TestMethod]
     public async Task GeneratesClientEndPoint()
     {
-        await TestGeneratesFile("ArrayElementCounterClientEndPoint.g.cs");
+        await TestGeneratesClientEndPoint();
+    }
+
+    [TestMethod]
+    public async Task GeneratesClientEndPointConfigurationBuilder()
+    {
+        await TestGeneratesClientEndPointConfigurationBuilder();
     }
 }

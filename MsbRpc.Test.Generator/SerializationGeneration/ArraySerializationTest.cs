@@ -5,7 +5,8 @@ using MsbRpc.Test.Generator.SerializationGeneration.Utility;
 
 namespace MsbRpc.Test.Generator.SerializationGeneration;
 
-[TestClass, TestCategory(TestCategories.Serialization)]
+[TestClass]
+[TestCategory(TestCategories.Serialization)]
 public class ArraySerializationTest : Base.Test
 {
     private static readonly TypeReferenceInfo IntInfo = new(new NamedTypeDeclarationInfo("System.Int32"));
