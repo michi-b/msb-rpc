@@ -41,6 +41,7 @@ internal static class ContractInfoParser
         //defaults (mirrored from RpcContractAttribute)
         var contractType = RpcDirection.ClientToServer;
         int initialBufferSize = 1024;
+        bool generateServer = false;
 
         foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
         {
@@ -53,6 +54,9 @@ internal static class ContractInfoParser
                     break;
                 case "defaultInitialBufferSize":
                     initialBufferSize = (int)argument.Value.Value!;
+                    break;
+                case "generateServer":
+                    generateServer = (bool)argument.Value.Value!;
                     break;
                 default:
                     return null;
@@ -86,7 +90,8 @@ internal static class ContractInfoParser
             procedures,
             contractType,
             accessibility,
-            initialBufferSize
+            initialBufferSize,
+            generateServer
         );
     }
 }

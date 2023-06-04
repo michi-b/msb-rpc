@@ -16,12 +16,11 @@ public class ContractNode
 
     public readonly string AccessibilityKeyword;
 
-    public readonly EndPointNode ClientEndPoint;
-
     public readonly int DefaultInitialBufferSize;
 
+    public readonly bool GenerateServer;
+
     // contract name depended names
-    public readonly string ImplementationFactoryInterface;
     public readonly string ImplementationFactoryInterfaceName;
 
     /// <summary>
@@ -38,9 +37,10 @@ public class ContractNode
     /// </summary>
     public readonly string PascalCaseName;
 
+    // child nodes
     public readonly ProcedureCollectionNode Procedures;
-
     public readonly EndPointNode ServerEndPoint;
+    public readonly EndPointNode ClientEndPoint;
 
     /// <summary>
     ///     name of the server class
@@ -55,7 +55,9 @@ public class ContractNode
     public ContractNode(ref ContractInfo info)
     {
         AccessibilityKeyword = info.Accessibility.GetKeyword();
+        
         DefaultInitialBufferSize = info.InitialBufferSize;
+        GenerateServer = info.GenerateServer;
 
         InterfaceName = info.InterfaceName;
         Interface = $"{info.Namespace}.{info.InterfaceName}";
@@ -64,7 +66,6 @@ public class ContractNode
 
         //contract name depended names
         ImplementationFactoryInterfaceName = $"{InterfaceName}{ImplementationFactoryInterfacePostFix}";
-        ImplementationFactoryInterface = $"{Namespace}.{ImplementationFactoryInterfaceName}";
         ServerName = $"{PascalCaseName}{ServerPostfix}";
         ServerType = $"{Namespace}.{ServerName}";
 
