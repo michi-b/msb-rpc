@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using MsbRpc.Generator.Enums;
+using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.Utility.Names;
@@ -11,28 +11,43 @@ namespace MsbRpc.Generator.GenerationTree;
 
 public class ContractNode
 {
-    public readonly ContractAccessibility Accessibility;
+    private const string ImplementationFactoryInterfacePostFix = "ImplementationFactory";
+    public readonly string AccessibilityKeyword;
 
     public readonly EndPointNode ClientEndPoint;
     public readonly int DefaultInitialBufferSize;
+    public readonly string ImplementationFactoryInterface;
+
+    public readonly string ImplementationFactoryInterfaceName;
+
+    /// <summary>
+    ///     interface name prepended with namespace
+    /// </summary>
+    public readonly string Interface;
 
     public readonly string InterfaceName;
-    public readonly string InterfaceType;
 
     public readonly string Namespace;
+
+    /// <summary>
+    ///     pascale case name of the contract interface without the leading 'I'
+    /// </summary>
     public readonly string PascalCaseName;
+
     public readonly ProcedureCollectionNode Procedures;
     public readonly EndPointNode ServerEndPoint;
 
     public ContractNode(ref ContractInfo info)
     {
-        Accessibility = info.Accessibility;
+        AccessibilityKeyword = info.Accessibility.GetKeyword();
         DefaultInitialBufferSize = info.InitialBufferSize;
 
         InterfaceName = info.InterfaceName;
-        InterfaceType = $"{info.Namespace}.{info.InterfaceName}";
+        Interface = $"{info.Namespace}.{info.InterfaceName}";
         PascalCaseName = GetContractName(InterfaceName);
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
+        ImplementationFactoryInterfaceName = $"{InterfaceName}{ImplementationFactoryInterfacePostFix}";
+        ImplementationFactoryInterface = $"{Namespace}.{ImplementationFactoryInterfaceName}";
 
         var serializationResolver = new SerializationResolver(info.CustomSerializations.ToArray());
 

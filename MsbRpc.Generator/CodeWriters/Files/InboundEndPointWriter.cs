@@ -17,15 +17,15 @@ internal class InboundEndPointWriter : EndPointWriter
 
     protected override void WriteClassHeader(IndentedTextWriter writer)
     {
-        writer.WriteLine($"{ContractAccessibilityKeyword} class {Name}");
+        writer.WriteLine($"{Contract.AccessibilityKeyword} class {Name}");
         writer.Indent++;
-        writer.WriteLine($": {InboundEndPoint}<{Procedures.ProcedureEnumType}, {Contract.InterfaceType}>");
+        writer.WriteLine($": {InboundEndPoint}<{Procedures.ProcedureEnumType}, {Contract.Interface}>");
         writer.Indent--;
     }
 
     protected override void WriteConstructorsAndFactoryMethods(IndentedTextWriter writer)
     {
-        string contractImplementationParameterLine = $"{Contract.InterfaceType} {Parameters.ContractImplementation}";
+        string contractImplementationParameterLine = $"{Contract.Interface} {Parameters.ContractImplementation}";
 
         // public constructor accepting a logger factory
         writer.WriteLine($"public {Name}");

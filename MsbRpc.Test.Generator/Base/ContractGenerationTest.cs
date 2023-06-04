@@ -39,6 +39,8 @@ public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerati
         return new LoggerFactory().AddSerilog(logger);
     }
 
+    #region FileGeneration
+
     protected async Task<CodeTestResult> TestGeneratesClientEndPoint() => await TestGeneratesFile($"{_contractName}ClientEndPoint.g.cs");
     protected async Task<CodeTestResult> TestGeneratesServerEndPoint() => await TestGeneratesFile($"{_contractName}ServerEndPoint.g.cs");
     protected async Task<CodeTestResult> TestGeneratesProcedureEnum() => await TestGeneratesFile($"{_contractName}Procedure.g.cs");
@@ -49,4 +51,11 @@ public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerati
 
     protected async Task<CodeTestResult> TestGeneratesServerEndPointConfigurationBuilder()
         => await TestGeneratesFile($"{_contractName}ServerEndPointConfigurationBuilder.g.cs");
+
+    protected async Task<CodeTestResult> TestGeneratesServerConfigurationBuilder() => await TestGeneratesFile($"{_contractName}ServerConfigurationBuilder.g.cs");
+    protected async Task<CodeTestResult> TestGeneratesImplementationFactoryInterface() => await TestGeneratesFile($"I{_contractName}ImplementationFactory.g.cs");
+
+    protected async Task<CodeTestResult> TestGeneratesImplementationFactory() => await TestGeneratesFile($"{_contractName}ImplementationFactory.g.cs");
+
+    #endregion
 }

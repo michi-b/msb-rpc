@@ -27,6 +27,7 @@ internal static class Names
         public const string Void = "System.Void";
         public const string Nullable = "System.Nullable";
         public const string NullableSerializer = "MsbRpc.Serialization.NullableSerializer";
+        public const string Func = "System.Func";
 
         // messaging types
         public const string Messenger = "MsbRpc.Messaging.Messenger";
@@ -42,7 +43,6 @@ internal static class Names
         // endpoint types
         public const string InboundEndPoint = "MsbRpc.EndPoints.InboundEndPoint";
         public const string OutboundEndPoint = "MsbRpc.EndPoints.OutboundEndPoint";
-        public const string EndPointDirection = "MsbRpc.EndPoints.EndPointDirection";
 
         // configuration
         public const string InboundEndPointConfiguration = "MsbRpc.Configuration.InboundEndPointConfiguration";
@@ -68,9 +68,10 @@ internal static class Names
         public const string Array8DSerializer = Namespaces.MsbRpcArraySerialization + ".Array8DSerializer";
         public const string Array9DSerializer = Namespaces.MsbRpcArraySerialization + ".Array9DSerializer";
         public const string AnyRankArraySerializer = Namespaces.MsbRpcArraySerialization + ".AnyRankArraySerializer";
-        
+
         public const string InboundEndPointConfigurationBuilder = "MsbRpc.Configuration.Builders.InboundEndPointConfigurationBuilder";
         public const string OutboundEndPointConfigurationBuilder = "MsbRpc.Configuration.Builders.OutboundEndPointConfigurationBuilder";
+        public const string ServerConfigurationBuilder = "MsbRpc.Configuration.Builders.ServerConfigurationBuilder";
     }
 
     public static class Methods
@@ -84,7 +85,6 @@ internal static class Names
         public const string GetProcedure = "GetProcedure";
         public const string GetProcedureName = "GetName";
         public const string GetProcedureId = "GetId";
-        public const string ConnectAsync = "ConnectAsync";
         public const string AssertIsOperable = "AssertIsOperable";
 
         // buffer methods
@@ -114,6 +114,8 @@ internal static class Names
         public const string SerializerGetSize = "GetSize";
         public const string SerializerWrite = "Write";
         public const string SerializerRead = "Read";
+
+        public const string FactoryCreate = "Create";
     }
 
     public static class Parameters
@@ -125,6 +127,7 @@ internal static class Names
         public const string Request = "request";
         public const string IPEndPoint = "endPoint";
         public const string Configuration = "configuration";
+        public const string FactoryCreateFunc = "create";
     }
 
     public static class Properties
@@ -139,6 +142,8 @@ internal static class Names
         public const string PrimitiveSerializerBoolSize = Types.PrimitiveSerializer + ".BoolSize";
         public const string InitialBufferSize = "InitialBufferSize";
         public const string LoggingName = "LoggingName";
+        public const string ThreadName = "ThreadName";
+        public const string FactoryCreateFunc = "_create";
     }
 
     public static class GlobalConstants
@@ -158,12 +163,6 @@ internal static class Names
         public const string DecimalSize = Types.PrimitiveSerializer + ".DecimalSize";
     }
 
-    public static class EnumValues
-    {
-        public const string InboundEndPointDirection = Types.EndPointDirection + ".Inbound";
-        public const string OutboundEndPointDirection = Types.EndPointDirection + ".Outbound";
-    }
-
     public static class Variables
     {
         public const string Result = "result";
@@ -174,7 +173,6 @@ internal static class Names
         public const string ResponseReader = "responseReader";
         public const string ResultSize = "resultSize";
         public const string ResponseWriter = "responseWriter";
-        public const string Messenger = "messenger";
         public const string ArgumentSizeSum = "argumentSizeSum";
         public const string Exception = "exception";
     }

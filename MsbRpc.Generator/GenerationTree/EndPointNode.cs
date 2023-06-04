@@ -6,14 +6,14 @@ namespace MsbRpc.Generator.GenerationTree;
 public class EndPointNode
 {
     public readonly ContractNode Contract;
-    
+
     /// <summary>
-    /// inbound or outbound
+    ///     inbound or outbound
     /// </summary>
     public readonly EndPointDirection Direction;
-    
+
     /// <summary>
-    /// class name of the endpoint
+    ///     class name of the endpoint
     /// </summary>
     public readonly string Name;
 

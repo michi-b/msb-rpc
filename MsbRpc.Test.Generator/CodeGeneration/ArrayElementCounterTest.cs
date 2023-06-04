@@ -46,26 +46,30 @@ public interface IArrayElementCounter : IRpcContract
     }
 
     [TestMethod]
-    public async Task GeneratesAnyTrees()
-    {
-        await TestGeneratesAnyTrees();
-    }
+    public async Task GeneratesAnyTrees() => await TestGeneratesAnyTrees();
+
+    #region FileGeneration
 
     [TestMethod]
-    public async Task GeneratesServerEndPoint()
-    {
-        await TestGeneratesServerEndPoint();
-    }
+    public async Task GeneratesServerEndPoint() => await TestGeneratesServerEndPoint();
 
     [TestMethod]
-    public async Task GeneratesClientEndPoint()
-    {
-        await TestGeneratesClientEndPoint();
-    }
+    public async Task GeneratesClientEndPoint() => await TestGeneratesClientEndPoint();
 
     [TestMethod]
-    public async Task GeneratesClientEndPointConfigurationBuilder()
-    {
-        await TestGeneratesClientEndPointConfigurationBuilder();
-    }
+    public async Task GeneratesClientEndPointConfigurationBuilder() => await TestGeneratesClientEndPointConfigurationBuilder();
+
+    [TestMethod]
+    public async Task GeneratesServerEndPointConfigurationBuilder() => await TestGeneratesServerEndPointConfigurationBuilder();
+
+    [TestMethod]
+    public async Task GeneratesImplementationFactoryInterface() => await TestGeneratesImplementationFactoryInterface();
+
+    [TestMethod]
+    public async Task GeneratesImplementationFactory() => await TestGeneratesImplementationFactory();
+
+    [TestMethod]
+    public async Task GeneratesServerConfigurationBuilder() => await TestGeneratesServerConfigurationBuilder();
+
+    #endregion
 }

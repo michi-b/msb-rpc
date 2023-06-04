@@ -10,21 +10,13 @@ namespace MsbRpc.Generator.CodeWriters.Files.Base;
 
 internal abstract class CodeFileWriter
 {
-    private readonly string _nameSpace;
-
-    protected readonly string ContractAccessibilityKeyword;
+    protected readonly ContractNode Contract;
 
     protected abstract string FileName { get; }
 
     protected virtual string[] UsedNamespaces => Array.Empty<string>();
 
-    protected CodeFileWriter(ContractNode contract) : this(contract.Namespace, contract.Accessibility.GetKeyword()) { }
-
-    private CodeFileWriter(string nameSpace, string contractAccessibilityKeyword)
-    {
-        _nameSpace = nameSpace;
-        ContractAccessibilityKeyword = contractAccessibilityKeyword;
-    }
+    protected CodeFileWriter(ContractNode contract) => Contract = contract;
 
     public Result Generate()
     {
@@ -51,7 +43,7 @@ internal abstract class CodeFileWriter
 
     private void WriteFileHeader(TextWriter writer)
     {
-        writer.WriteFileHeader(_nameSpace, UsedNamespaces);
+        writer.WriteFileHeader(Contract.Namespace, UsedNamespaces);
     }
 
     protected abstract void Write(IndentedTextWriter writer);

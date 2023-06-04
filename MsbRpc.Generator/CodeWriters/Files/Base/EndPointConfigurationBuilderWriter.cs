@@ -1,32 +1,21 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using MsbRpc.Generator.Enums;
-using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
-using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.CodeWriters.Files.Base;
 
-internal abstract class EndPointConfigurationBuilderWriter : CodeFileWriter
+internal abstract class EndPointConfigurationBuilderWriter : ConfigurationBuilderWriter
 {
-    private readonly string _baseClass;
-
-    protected readonly string ClassName;
-
     protected readonly EndPointNode EndPoint;
 
-    protected override string FileName { get; }
+    protected override string BaseClass { get; }
 
-    protected EndPointConfigurationBuilderWriter(EndPointNode endPoint) : base(endPoint.Contract)
+    protected EndPointConfigurationBuilderWriter(EndPointNode endPoint) : base(endPoint.Contract, endPoint.Name)
     {
         EndPoint = endPoint;
 
-        ClassName = $"{endPoint.Name}ConfigurationBuilder";
-
-        FileName = $"{ClassName}{GeneratedFilePostfix}";
-
-        _baseClass = endPoint.Direction switch
+        BaseClass = endPoint.Direction switch
         {
             EndPointDirection.Inbound => Types.InboundEndPointConfigurationBuilder,
             EndPointDirection.Outbound => Types.OutboundEndPointConfigurationBuilder,
@@ -43,24 +32,4 @@ internal abstract class EndPointConfigurationBuilderWriter : CodeFileWriter
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-    protected override void Write(IndentedTextWriter writer)
-    {
-        writer.WriteLine($"public class {ClassName} : {_baseClass}");
-        using (writer.GetBlock(Appendix.None))
-        {
-            WriteConstructor(writer);
-        }
-    }
-
-    private void WriteConstructor(IndentedTextWriter writer)
-    {
-        writer.WriteLine($"public {ClassName}()");
-        using (writer.GetBlock())
-        {
-            WriteConstructorBody(writer);
-        }
-    }
-
-    protected abstract void WriteConstructorBody(IndentedTextWriter writer);
 }

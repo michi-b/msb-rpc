@@ -8,9 +8,7 @@ public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder
     {
         LoggingName = "DateTimeEchoServer";
         ThreadName = "DateTimeEchoServer";
-        EndPointConfiguration.LoggingName = "DateTimeEchoServerEndPoint";
         EndPointRegistryConfiguration.LoggingName = "DateTimeEchoServerEndPointRegistry";
-
-        EndPointConfiguration.InitialBufferSize = 1024;
+        EndPointConfiguration = new DateTimeEchoServerEndPointConfigurationBuilder();
     }
 }
