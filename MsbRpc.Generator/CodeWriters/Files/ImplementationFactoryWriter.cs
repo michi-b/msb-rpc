@@ -58,7 +58,7 @@ internal class ImplementationFactoryWriter : CodeFileWriter
 
     private void WriteCreateMethod(IndentedTextWriter writer)
     {
-        writer.WriteLine($"public {Contract.Interface} {Methods.FactoryCreate}()");
+        writer.WriteLine($"public {Contract.Interface} {Methods.ImplementationFactoryCreate}()");
         using (writer.GetBlock())
         {
             writer.WriteLine($"return {Fields.FactoryCreateFunc}();");

@@ -22,6 +22,10 @@ public class ContractNode
 
     // contract name depended names
     public readonly string ImplementationFactoryInterfaceName;
+/// <summary>
+/// implementation factory interface name prepended with namespace
+/// </summary>
+    public readonly string ImplementationFactoryInterface;
 
     /// <summary>
     ///     interface name prepended with namespace
@@ -47,11 +51,6 @@ public class ContractNode
     /// </summary>
     public readonly string ServerName;
 
-    /// <summary>
-    ///     server name prepended with namespace
-    /// </summary>
-    public readonly string ServerType;
-
     public ContractNode(ref ContractInfo info)
     {
         AccessibilityKeyword = info.Accessibility.GetKeyword();
@@ -66,8 +65,8 @@ public class ContractNode
 
         //contract name depended names
         ImplementationFactoryInterfaceName = $"{InterfaceName}{ImplementationFactoryInterfacePostFix}";
+        ImplementationFactoryInterface = $"{Namespace}.{ImplementationFactoryInterfaceName}";
         ServerName = $"{PascalCaseName}{ServerPostfix}";
-        ServerType = $"{Namespace}.{ServerName}";
 
         var serializationResolver = new SerializationResolver(info.CustomSerializations.ToArray());
 

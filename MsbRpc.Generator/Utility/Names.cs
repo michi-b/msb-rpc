@@ -71,8 +71,16 @@ internal static class Names
         public const string InboundEndPointConfigurationBuilder = "MsbRpc.Configuration.Builders.InboundEndPointConfigurationBuilder";
         public const string OutboundEndPointConfigurationBuilder = "MsbRpc.Configuration.Builders.OutboundEndPointConfigurationBuilder";
         public const string ServerConfigurationBuilder = "MsbRpc.Configuration.Builders.ServerConfigurationBuilder";
+        public const string ServerConfiguration = "MsbRpc.Configuration.ServerConfiguration";
+
+        public const string RegistryServer = "MsbRpc.Servers.Generic.RegistryServer";
     }
 
+    public static class Interfaces
+    {
+        public const string InboundEndPoint = "MsbRpc.EndPoints.Interfaces.IInboundEndPoint";
+    }
+    
     public static class Methods
     {
         public const string GetNameProcedureExtension = "GetName";
@@ -114,7 +122,8 @@ internal static class Names
         public const string SerializerWrite = "Write";
         public const string SerializerRead = "Read";
 
-        public const string FactoryCreate = "Create";
+        public const string ServerCreateEndPoint = "CreateEndPoint";
+        public const string ImplementationFactoryCreate = "Create";
     }
 
     public static class Parameters
@@ -123,10 +132,12 @@ internal static class Names
         public const string Procedure = "procedure";
         public const string ProcedureId = "procedureId";
         public const string ContractImplementation = "implementation";
+        public const string ContractImplementationFactory = "implementationFactory";
         public const string Request = "request";
         public const string IPEndPoint = "endPoint";
         public const string Configuration = "configuration";
         public const string FactoryCreateFunc = "create";
+        public const string Id = "id";
     }
 
     public static class Properties
@@ -136,6 +147,8 @@ internal static class Names
         public const string ThreadName = "ThreadName";
         public const string EndPointRegistryConfiguration = "EndPointRegistryConfiguration";
         public const string EndPointConfiguration = "EndPointConfiguration";
+        public const string ServerConfiguration = "Configuration";
+        public const string ServerConfigurationInboundEndPointConfiguration = "InboundEndPointConfiguration";
     }
 
     public static class Fields

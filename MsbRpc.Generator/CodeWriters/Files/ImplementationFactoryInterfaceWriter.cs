@@ -31,6 +31,6 @@ internal class ImplementationFactoryInterfaceWriter : CodeFileWriter
     private void WriteInterfaceBody(IndentedTextWriter writer)
     {
         //todo: add interface parameters for compound contracts
-        writer.WriteLine($"{Contract.Interface} {Methods.FactoryCreate}();");
+        writer.WriteLine($"{Contract.Interface} {Methods.ImplementationFactoryCreate}();");
     }
 }

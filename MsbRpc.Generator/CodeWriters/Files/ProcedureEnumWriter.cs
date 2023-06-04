@@ -7,13 +7,13 @@ using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 
-internal class ProcedureEnumFileWriter : CodeFileWriter
+internal class ProcedureEnumWriter : CodeFileWriter
 {
     protected override string FileName { get; }
 
     private ProcedureCollectionNode Procedures { get; }
 
-    public ProcedureEnumFileWriter(ProcedureCollectionNode procedures)
+    public ProcedureEnumWriter(ProcedureCollectionNode procedures)
         : base(procedures.Contract)
     {
         Procedures = procedures;
