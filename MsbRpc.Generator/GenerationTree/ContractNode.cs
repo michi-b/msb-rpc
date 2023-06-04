@@ -12,12 +12,16 @@ namespace MsbRpc.Generator.GenerationTree;
 public class ContractNode
 {
     private const string ImplementationFactoryInterfacePostFix = "ImplementationFactory";
+    private const string ServerPostfix = "Server";
+
     public readonly string AccessibilityKeyword;
 
     public readonly EndPointNode ClientEndPoint;
-    public readonly int DefaultInitialBufferSize;
-    public readonly string ImplementationFactoryInterface;
 
+    public readonly int DefaultInitialBufferSize;
+
+    // contract name depended names
+    public readonly string ImplementationFactoryInterface;
     public readonly string ImplementationFactoryInterfaceName;
 
     /// <summary>
@@ -35,7 +39,18 @@ public class ContractNode
     public readonly string PascalCaseName;
 
     public readonly ProcedureCollectionNode Procedures;
+
     public readonly EndPointNode ServerEndPoint;
+
+    /// <summary>
+    ///     name of the server class
+    /// </summary>
+    public readonly string ServerName;
+
+    /// <summary>
+    ///     server name prepended with namespace
+    /// </summary>
+    public readonly string ServerType;
 
     public ContractNode(ref ContractInfo info)
     {
@@ -46,8 +61,12 @@ public class ContractNode
         Interface = $"{info.Namespace}.{info.InterfaceName}";
         PascalCaseName = GetContractName(InterfaceName);
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
+
+        //contract name depended names
         ImplementationFactoryInterfaceName = $"{InterfaceName}{ImplementationFactoryInterfacePostFix}";
         ImplementationFactoryInterface = $"{Namespace}.{ImplementationFactoryInterfaceName}";
+        ServerName = $"{PascalCaseName}{ServerPostfix}";
+        ServerType = $"{Namespace}.{ServerName}";
 
         var serializationResolver = new SerializationResolver(info.CustomSerializations.ToArray());
 

@@ -11,7 +11,7 @@ internal abstract class EndPointConfigurationBuilderWriter : ConfigurationBuilde
 
     protected override string BaseClass { get; }
 
-    protected EndPointConfigurationBuilderWriter(EndPointNode endPoint) : base(endPoint.Contract, endPoint.Name)
+    protected EndPointConfigurationBuilderWriter(EndPointNode endPoint) : base(endPoint.Contract, endPoint.ConfigurationBuilderName)
     {
         EndPoint = endPoint;
 

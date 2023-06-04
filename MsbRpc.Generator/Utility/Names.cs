@@ -5,7 +5,6 @@ internal static class Names
     public const string InterfacePrefix = "I";
     public const string GeneratedFilePostfix = ".g.cs";
     public const string GeneratedNamespacePostFix = ".Generated";
-    public const string EndPointPostfix = "EndPoint";
     public const string ArgumentPostfix = "Argument";
     public const string ExtensionsPostFix = "Extensions";
     public const string ProcedurePostfix = "Procedure";
@@ -133,6 +132,10 @@ internal static class Names
     public static class Properties
     {
         public const string RanToCompletion = "RanToCompletion";
+        public const string LoggingName = "LoggingName";
+        public const string ThreadName = "ThreadName";
+        public const string EndPointRegistryConfiguration = "EndPointRegistryConfiguration";
+        public const string EndPointConfiguration = "EndPointConfiguration";
     }
 
     public static class Fields
@@ -141,8 +144,6 @@ internal static class Names
         public const string InboundEndpointImplementation = "Implementation";
         public const string PrimitiveSerializerBoolSize = Types.PrimitiveSerializer + ".BoolSize";
         public const string InitialBufferSize = "InitialBufferSize";
-        public const string LoggingName = "LoggingName";
-        public const string ThreadName = "ThreadName";
         public const string FactoryCreateFunc = "_create";
     }
 

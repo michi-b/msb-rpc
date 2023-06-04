@@ -7,15 +7,21 @@ namespace MsbRpc.Generator.CodeWriters.Files;
 
 internal class ServerConfigurationBuilderWriter : ConfigurationBuilderWriter
 {
+    private const string EndPointRegistryPostFix = "EndPointRegistry";
+
+    private readonly string _endPointRegistryLoggingName;
+
     protected override string BaseClass => Types.ServerConfigurationBuilder;
 
-    //todo: proper constructor
-    public ServerConfigurationBuilderWriter(ContractNode contract, string configurationTargetClassName) : base(contract, configurationTargetClassName) { }
-    // public ServerConfigurationBuilderWriter(ContractNode contract, EndPointConfigurationBuilderWriter serverEndPointConfigurationBuilderWriter) : base(contract) { }
+    public ServerConfigurationBuilderWriter(ContractNode contract) : base
+        (contract, $"{contract.ServerName}{ConfigurationBuilderPostfix}")
+        => _endPointRegistryLoggingName = contract.ServerName + EndPointRegistryPostFix;
 
     protected override void WriteConstructorBody(IndentedTextWriter writer)
     {
-        writer.WriteLine($"{Fields.LoggingName} = \"{ClassName}\";");
-        writer.WriteLine($"{Fields.ThreadName} = \"{ClassName}\";");
+        writer.WriteLine($"{Properties.LoggingName} = \"{Contract.ServerName}\";");
+        writer.WriteLine($"{Properties.ThreadName} = \"{Contract.ServerName}\";");
+        writer.WriteLine($"{Properties.EndPointRegistryConfiguration}.{Properties.LoggingName} = \"{_endPointRegistryLoggingName}\";");
+        writer.WriteLine($"{Properties.EndPointConfiguration} = new {Contract.ServerEndPoint.ConfigurationBuilderFullName}();");
     }
 }

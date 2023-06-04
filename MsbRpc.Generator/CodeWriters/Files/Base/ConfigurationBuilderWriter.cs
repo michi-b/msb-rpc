@@ -8,6 +8,7 @@ namespace MsbRpc.Generator.CodeWriters.Files.Base;
 
 internal abstract class ConfigurationBuilderWriter : CodeFileWriter
 {
+    public const string ConfigurationBuilderPostfix = "ConfigurationBuilder";
     protected readonly string ClassName;
     protected override string FileName { get; }
 
@@ -16,13 +17,11 @@ internal abstract class ConfigurationBuilderWriter : CodeFileWriter
     /// </summary>
     protected abstract string BaseClass { get; }
 
-    protected ConfigurationBuilderWriter(ContractNode contract, string configurationTargetClassName) : base(contract)
+    protected ConfigurationBuilderWriter(ContractNode contract, string className) : base(contract)
     {
-        ClassName = GetConfigurationBuilderClassName(configurationTargetClassName);
+        ClassName = className;
         FileName = $"{ClassName}{GeneratedFilePostfix}";
     }
-
-    private static string GetConfigurationBuilderClassName(string configurationTargetClassName) => $"{configurationTargetClassName}ConfigurationBuilder";
 
     protected override void Write(IndentedTextWriter writer)
     {

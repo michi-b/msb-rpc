@@ -11,7 +11,7 @@ internal class InboundEndPointConfigurationBuilderWriter : EndPointConfiguration
 
     protected override void WriteConstructorBody(IndentedTextWriter writer)
     {
-        writer.WriteLine($"{Fields.LoggingName} = \"{ClassName}\";");
+        writer.WriteLine($"{Properties.LoggingName} = \"{ClassName}\";");
         writer.WriteLine($"{Fields.InitialBufferSize} = {EndPoint.Contract.DefaultInitialBufferSize};");
     }
 }
