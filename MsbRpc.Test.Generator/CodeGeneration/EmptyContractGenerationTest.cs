@@ -7,19 +7,16 @@ namespace MsbRpc.Test.Generator.CodeGeneration;
 
 [TestClass]
 [TestCategory(TestCategories.Contract)]
-public class ArrayElementCounterTest : ContractGenerationTest<ArrayElementCounterTest, ContractGenerator>
+public class EmptyContractGenerationTest : ContractGenerationTest<EmptyContractGenerationTest, ContractGenerator>
 {
-    private const string Code = @"[RpcContract]
-public interface IArrayElementCounter : IRpcContract
-{
-    int CountElements(int[] array);
-}";
+    private const string Code = @"[RpcContract, GenerateServer]
+public interface IEmptyContract : IRpcContract { }";
 
-    private const string Namespace = nameof(ArrayElementCounterTest);
+    private const string Namespace = nameof(EmptyContractGenerationTest);
 
-    private const string ContractName = "ArrayElementCounter";
+    private const string ContractName = "EmptyContract";
 
-    public ArrayElementCounterTest() : base(Code, Namespace, ContractName) { }
+    public EmptyContractGenerationTest() : base(Code, Namespace, ContractName) { }
 
     [TestMethod]
     public async Task GeneratorHasResult()
@@ -67,6 +64,9 @@ public interface IArrayElementCounter : IRpcContract
 
     [TestMethod]
     public async Task GeneratesImplementationFactory() => await TestGeneratesImplementationFactory();
+
+    [TestMethod]
+    public async Task GeneratesServerConfigurationBuilder() => await TestGeneratesServerConfigurationBuilder();
 
     #endregion
 }
