@@ -9,7 +9,7 @@ namespace MsbRpc.Test.Generator.CodeGeneration;
 [TestCategory(TestCategories.Contract)]
 public class ArrayElementCounterTest : ContractGenerationTest<ArrayElementCounterTest, ContractGenerator>
 {
-    private const string Code = @"[RpcContract(generateServer: true)]
+    private const string Code = @"[RpcContract, GenerateServer]
 public interface IArrayElementCounter : IRpcContract
 {
     int CountElements(int[] array);

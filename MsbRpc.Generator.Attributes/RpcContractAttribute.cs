@@ -2,11 +2,12 @@
 
 namespace MsbRpc.Generator.Attributes;
 
+[GeneratorMarker]
+[AttributeUsage(AttributeTargets.Interface)]
 public class RpcContractAttribute : Attribute
 {
     [GeneratorTarget] public readonly int DefaultInitialBufferSize;
     [GeneratorTarget] public readonly RpcDirection Direction;
-    [GeneratorTarget] public readonly bool GenerateServer;
 
     /// <summary>
     ///     Marks an interface to be an RPC contract and have it's RPC endpoints etc. generated.
@@ -26,21 +27,13 @@ public class RpcContractAttribute : Attribute
     ///     If the buffer is too small, it will be resized on demand, causing a memory allocation and possibly memory
     ///     fragmentation.
     /// </param>
-    /// <param name="generateServer">
-    ///     Whether to generate a server implementation for the contract.
-    ///     A server in this context is a class that listens for new connections serve as RPC channels of the target RPC contract.
-    ///     There are other ways to create such RPC channels, but usually on "entry point" contract will generate a server,
-    ///     that can then be used to create further RPC channels.
-    /// </param>
     public RpcContractAttribute
     (
         RpcDirection direction = RpcDirection.ClientToServer,
-        int defaultInitialBufferSize = 1024,
-        bool generateServer = false
+        int defaultInitialBufferSize = 1024
     )
     {
         Direction = direction;
         DefaultInitialBufferSize = defaultInitialBufferSize;
-        GenerateServer = generateServer;   
     }
 }

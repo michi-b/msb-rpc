@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
+using MsbRpc.Generator.Info.Parsers;
 
 namespace MsbRpc.Generator.Utility;
 

@@ -80,7 +80,7 @@ internal static class Names
     {
         public const string InboundEndPoint = "MsbRpc.EndPoints.Interfaces.IInboundEndPoint";
     }
-    
+
     public static class Methods
     {
         public const string GetNameProcedureExtension = "GetName";

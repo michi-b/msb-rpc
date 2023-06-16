@@ -15,17 +15,19 @@ public class ContractNode
     private const string ServerPostfix = "Server";
 
     public readonly string AccessibilityKeyword;
+    public readonly EndPointNode ClientEndPoint;
 
     public readonly int DefaultInitialBufferSize;
 
     public readonly bool GenerateServer;
 
+    /// <summary>
+    ///     implementation factory interface name prepended with namespace
+    /// </summary>
+    public readonly string ImplementationFactoryInterface;
+
     // contract name depended names
     public readonly string ImplementationFactoryInterfaceName;
-/// <summary>
-/// implementation factory interface name prepended with namespace
-/// </summary>
-    public readonly string ImplementationFactoryInterface;
 
     /// <summary>
     ///     interface name prepended with namespace
@@ -44,19 +46,18 @@ public class ContractNode
     // child nodes
     public readonly ProcedureCollectionNode Procedures;
     public readonly EndPointNode ServerEndPoint;
-    public readonly EndPointNode ClientEndPoint;
 
     /// <summary>
     ///     name of the server class
     /// </summary>
     public readonly string ServerName;
 
-    public ContractNode(ref ContractInfo info)
+    internal ContractNode(ref ContractInfo info)
     {
         AccessibilityKeyword = info.Accessibility.GetKeyword();
-        
+
         DefaultInitialBufferSize = info.InitialBufferSize;
-        GenerateServer = info.GenerateServer;
+        GenerateServer = info.ServerGeneration.HasValue;
 
         InterfaceName = info.InterfaceName;
         Interface = $"{info.Namespace}.{info.InterfaceName}";

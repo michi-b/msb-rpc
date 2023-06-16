@@ -1,11 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
+using MsbRpc.Generator.Attributes;
 
 namespace MsbRpc.Generator.Extensions;
 
 internal static class NamedTypeSymbolExtensions
 {
     public static bool GetIsRpcContractAttribute(this INamedTypeSymbol attributeClass)
-        => attributeClass.Name == "RpcContractAttribute" && attributeClass.ContainingNamespace.GetIsAttributesNamespace();
+        => attributeClass.Name == nameof(RpcContractAttribute) && attributeClass.ContainingNamespace.GetIsAttributesNamespace();
+
+    public static bool GetIsGenerateServerAttribute(this INamedTypeSymbol attributeClass)
+        => attributeClass.Name == nameof(GenerateServerAttribute) && attributeClass.ContainingNamespace.GetIsAttributesNamespace();
 
     public static bool GetIsRpcContractInterface(this INamedTypeSymbol interfaceSymbol)
         => interfaceSymbol.Name == "IRpcContract" && interfaceSymbol.ContainingNamespace.GetIsContracts();

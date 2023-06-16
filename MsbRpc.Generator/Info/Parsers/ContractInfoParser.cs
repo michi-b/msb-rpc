@@ -6,7 +6,7 @@ using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Extensions;
 
-namespace MsbRpc.Generator.Info;
+namespace MsbRpc.Generator.Info.Parsers;
 
 internal static class ContractInfoParser
 {
@@ -17,15 +17,23 @@ internal static class ContractInfoParser
         #region get attributes
 
         AttributeData? contractAttribute = null;
+        ServerGenerationInfo? serverGenerationInfo = null;
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         // foreach is more readable to me here
         foreach (AttributeData attribute in symbol.GetAttributes())
         {
             INamedTypeSymbol? attributeClass = attribute.AttributeClass;
-            if (attributeClass != null && attributeClass.GetIsRpcContractAttribute())
+            if (attributeClass != null)
             {
-                contractAttribute = attribute;
+                if (attributeClass.GetIsRpcContractAttribute())
+                {
+                    contractAttribute = attribute;
+                }
+                else if (attributeClass.GetIsGenerateServerAttribute())
+                {
+                    serverGenerationInfo = ServerGenerationInfoParser.Parse(attribute);
+                }
             }
         }
 
@@ -41,7 +49,6 @@ internal static class ContractInfoParser
         //defaults (mirrored from RpcContractAttribute)
         var contractType = RpcDirection.ClientToServer;
         int initialBufferSize = 1024;
-        bool generateServer = false;
 
         foreach (KeyValuePair<string, TypedConstant> argument in contractAttribute.GetArguments())
         {
@@ -54,9 +61,6 @@ internal static class ContractInfoParser
                     break;
                 case "defaultInitialBufferSize":
                     initialBufferSize = (int)argument.Value.Value!;
-                    break;
-                case "generateServer":
-                    generateServer = (bool)argument.Value.Value!;
                     break;
                 default:
                     return null;
@@ -91,7 +95,7 @@ internal static class ContractInfoParser
             contractType,
             accessibility,
             initialBufferSize,
-            generateServer
+            serverGenerationInfo
         );
     }
 }
