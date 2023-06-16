@@ -9,7 +9,7 @@ using static MsbRpc.Generator.Utility.Names;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class ContractNode
+internal class ContractNode
 {
     private const string ImplementationFactoryInterfacePostFix = "ImplementationFactory";
     private const string ServerPostfix = "Server";
@@ -18,8 +18,6 @@ public class ContractNode
     public readonly EndPointNode ClientEndPoint;
 
     public readonly int DefaultInitialBufferSize;
-
-    public readonly bool GenerateServer;
 
     /// <summary>
     ///     implementation factory interface name prepended with namespace
@@ -47,17 +45,18 @@ public class ContractNode
     public readonly ProcedureCollectionNode Procedures;
     public readonly EndPointNode ServerEndPoint;
 
+    public readonly ServerGenerationNode? ServerGeneration;
+
     /// <summary>
     ///     name of the server class
     /// </summary>
     public readonly string ServerName;
 
-    internal ContractNode(ref ContractInfo info)
+    public ContractNode(ref ContractInfo info)
     {
         AccessibilityKeyword = info.Accessibility.GetKeyword();
 
         DefaultInitialBufferSize = info.InitialBufferSize;
-        GenerateServer = info.ServerGeneration.HasValue;
 
         InterfaceName = info.InterfaceName;
         Interface = $"{info.Namespace}.{info.InterfaceName}";
@@ -77,6 +76,11 @@ public class ContractNode
 
         ClientEndPoint = CreateEndPointNode(info, EndPointType.Client);
         ServerEndPoint = CreateEndPointNode(info, EndPointType.Server);
+
+        if (info.ServerGeneration != null)
+        {
+            ServerGeneration = new ServerGenerationNode(info.ServerGeneration.Value, this);
+        }
     }
 
     private EndPointNode CreateEndPointNode(ContractInfo info, EndPointType endPointType)

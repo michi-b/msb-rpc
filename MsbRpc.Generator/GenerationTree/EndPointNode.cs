@@ -3,7 +3,7 @@ using MsbRpc.Generator.Enums;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class EndPointNode
+internal class EndPointNode
 {
     private const string EndPointPostfix = "EndPoint";
     public readonly string ConfigurationBuilderFullName;

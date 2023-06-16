@@ -1,10 +1,6 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using MsbRpc.Generator.GenerationTree;
+﻿using System.CodeDom.Compiler;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
-using static MsbRpc.Generator.Utility.IndependentCode;
-using static MsbRpc.Generator.Utility.Names.Types;
 
 namespace MsbRpc.Generator.Extensions;
 
@@ -20,46 +16,6 @@ public static class IndentedTextWriterExtensions
     {
         writer.WriteLine("try");
         return writer.GetBlock(appendix);
-    }
-
-    public static void WriteProcedureReturnSwitch
-    (
-        this IndentedTextWriter writer,
-        ProcedureCollectionNode procedures,
-        Func<ProcedureNode, string> getCaseExpression
-    )
-    {
-        writer.WriteLine(ReturnProcedureSwitch);
-        using (writer.GetBlock(Appendix.SemicolonAndNewline))
-        {
-            foreach (ProcedureNode procedure in procedures)
-            {
-                writer.WriteLine($"{procedure.ProcedureEnumValue} => {getCaseExpression(procedure)},");
-            }
-
-            writer.WriteLine(ProcedureParameterOutOfRangeSwitchExpressionCase);
-        }
-    }
-
-    public static void WriteRpcExecutionExceptionCatchBlock
-    (
-        this IndentedTextWriter writer,
-        ProcedureCollectionNode procedureCollection,
-        ProcedureNode procedure,
-        string executionStageFullName
-    )
-    {
-        writer.WriteLine(ExceptionCatchStatement);
-        using (writer.GetBlock())
-        {
-            writer.WriteLine($"throw new {RpcExecutionException}<{procedureCollection.ProcedureEnumType}>");
-            using (writer.GetParenthesesBlock(Appendix.SemicolonAndNewline))
-            {
-                writer.WriteLine($"{Names.Variables.Exception},");
-                writer.WriteLine($"{procedure.FullName},");
-                writer.WriteLine(executionStageFullName);
-            }
-        }
     }
 
     public static void WriteSerializationSizeExpression(this IndentedTextWriter writer, ISerialization serialization, string targetExpression)

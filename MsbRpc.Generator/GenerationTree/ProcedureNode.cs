@@ -4,7 +4,7 @@ using MsbRpc.Generator.Serialization;
 
 namespace MsbRpc.Generator.GenerationTree;
 
-public class ProcedureNode
+internal class ProcedureNode
 {
     public readonly string FullName;
     public readonly bool HasParameters;

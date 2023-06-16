@@ -93,7 +93,7 @@ public class ContractGenerator : IIncrementalGenerator
             context.GenerateFile(EndPointConfigurationBuilderWriter.Get(contract.ClientEndPoint));
             context.GenerateFile(new ImplementationFactoryInterfaceWriter(contract));
             context.GenerateFile(new ImplementationFactoryWriter(contract));
-            if (contract.GenerateServer)
+            if (contract.ServerGeneration != null)
             {
                 context.GenerateFile(new ServerConfigurationBuilderWriter(contract));
             }

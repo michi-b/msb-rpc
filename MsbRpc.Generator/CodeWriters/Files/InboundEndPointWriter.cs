@@ -2,6 +2,7 @@
 using System.Linq;
 using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.Extensions;
+using MsbRpc.Generator.Extensions.Internal;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
