@@ -27,12 +27,15 @@ internal class ProcedureEnumWriter : CodeFileWriter
         writer.WriteLine($"{Contract.AccessibilityKeyword} enum {Procedures.ProcedureEnumName}");
         using (writer.GetBlock(Appendix.None))
         {
-            for (int i = 0; i < Procedures.LastIndex; i++)
+            if (Procedures.Length > 0)
             {
-                writer.WriteLine($"{GetEnumMemberDefinition(i)},");
-            }
+                for (int i = 0; i < Procedures.LastIndex; i++)
+                {
+                    writer.WriteLine($"{GetEnumMemberDefinition(i)},");
+                }
 
-            writer.WriteLine(GetEnumMemberDefinition(Procedures.LastIndex));
+                writer.WriteLine(GetEnumMemberDefinition(Procedures.LastIndex));
+            }
         }
     }
 }

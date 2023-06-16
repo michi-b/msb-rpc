@@ -82,11 +82,6 @@ internal static class ContractInfoParser
             return null;
         }
 
-        if (procedures.Length == 0)
-        {
-            return null;
-        }
-
         return new ContractInfo
         (
             interfaceName,
