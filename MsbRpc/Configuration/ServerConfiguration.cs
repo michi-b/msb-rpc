@@ -11,9 +11,13 @@ public readonly struct ServerConfiguration
 
     public readonly int ListenBacklogSize;
 
-    public readonly LogConfiguration LogAcceptedNewConnection;
+    public readonly LogConfiguration LogAcceptedNewUnIdentifiedConnection;
+    
+    public readonly LogConfiguration LogAcceptedNewIdentifiedConnection;
 
     public readonly LogConfiguration LogDeclinedNewConnectionDuringDisposal;
+    
+    public readonly LogConfiguration LogDeclinedNewConnectionDueToException;
 
     public readonly bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
 
@@ -41,12 +45,14 @@ public readonly struct ServerConfiguration
     {
         LoggerFactory = builder.LoggerFactory;
         ListenBacklogSize = builder.ListenBacklogSize;
-        LogAcceptedNewConnection = builder.LogAcceptedNewConnection;
+        LogAcceptedNewUnIdentifiedConnection = builder.LogAcceptedNewUnIdentifiedConnection;
+        LogAcceptedNewIdentifiedConnection = builder.LogAcceptedNewIdentifiedConnection;
         LogDeclinedNewConnectionDuringDisposal = builder.LogDeclinedNewConnectionDuringDisposal;
         LogExceptionWhenLoggingStoppedListeningDueToDisposal = builder.LogExceptionWhenLoggingStoppedListeningDueToDisposal;
         LoggingName = builder.LoggingName;
         LogStartedListening = builder.LogStartedListening;
         LogStoppedListeningDueToDisposal = builder.LogStoppedListeningDueToDisposal;
+        LogDeclinedNewConnectionDueToException = builder.LogDeclinedNewConnectionDueToException;
         LogStoppedListeningDueToException = builder.LogStoppedListeningDueToException;
         LogWasCreatedWithEphemeralPort = builder.LogWasCreatedWithEphemeralPort;
         LogWasCreatedWithSpecifiedPort = builder.LogWasCreatedWithSpecifiedPort;

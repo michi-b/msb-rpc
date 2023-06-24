@@ -72,7 +72,7 @@ public abstract class ConcurrentDisposable : IDisposable
     /// </summary>
     /// <exception cref="ObjectDisposedException"></exception>
     /// <remarks>
-    ///     there is still some danker in this, because any trigger for disposing this object may still occur while performing
+    ///     there is still some danger in this, because any trigger for disposing this object may still occur while performing
     ///     the action, but actual disposal will be delayed until after the action returned
     /// </remarks>
     protected T ExecuteIfNotDisposed<T>(Func<T> func)

@@ -6,8 +6,10 @@ namespace MsbRpc.Configuration.Builders.Interfaces;
 public interface IServerConfigurationBuilder : IConfigurationWithLoggerFactoryBuilder
 {
     int ListenBacklogSize { get; set; }
-    LogConfigurationBuilder LogAcceptedNewConnection { get; set; }
+    LogConfigurationBuilder LogAcceptedNewUnIdentifiedConnection { get; set; }
+    LogConfigurationBuilder LogAcceptedNewIdentifiedConnection { get; set; }
     LogConfigurationBuilder LogDeclinedNewConnectionDuringDisposal { get; set; }
+    LogConfigurationBuilder LogDeclinedNewConnectionDueToException { get; set; }
     bool LogExceptionWhenLoggingStoppedListeningDueToDisposal { get; set; }
     string LoggingName { get; set; }
     LogConfigurationBuilder LogStartedListening { get; set; }

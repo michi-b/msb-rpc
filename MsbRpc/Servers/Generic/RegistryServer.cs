@@ -21,17 +21,18 @@ public abstract class RegistryServer : Server
         _endPointRegistry = new InboundEndPointRegistry(ref endPointRegistryConfiguration);
     }
 
-    protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger, int id);
-
-    protected override void Accept(Messenger messenger)
+    public override void AcceptUnIdentified(Messenger messenger)
     {
         //first "invalid" integral value after int.MaxValue
         const uint int32EndValue = (uint)int.MaxValue + 1;
 
         _lastGivenEndPointId++;
         _lastGivenEndPointId %= int32EndValue;
+
         _endPointRegistry.Start(CreateEndPoint(messenger, (int)_lastGivenEndPointId));
     }
+
+    protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger, int id);
 
     protected override void DisposeManagedResources()
     {

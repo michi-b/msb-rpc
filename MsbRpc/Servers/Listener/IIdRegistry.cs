@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Servers.SocketListener;
+﻿namespace MsbRpc.Servers.Listener;
 
 public interface IIdRegistry<TItem>
 {

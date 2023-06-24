@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using MsbRpc.Exceptions;
 
-namespace MsbRpc.Servers.SocketListener;
+namespace MsbRpc.Servers.Listener;
 
 public class ConcurrentSequentialIdRegistry<TItem> : IIdRegistry<TItem>
 {

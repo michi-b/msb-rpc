@@ -1,15 +1,21 @@
 ﻿using System;
-using System.Net.Sockets;
 using System.Threading;
+using MsbRpc.Messaging;
 
-namespace MsbRpc.Servers.SocketListener;
+namespace MsbRpc.Servers.Listener;
 
-public class ListenTask
+public struct ListenTask
 {
-    private Semaphore _isCompletedSemaphore = new(0, 1);
-    private Socket? _result;
+    private Semaphore _isCompletedSemaphore;
+    private Messenger? _result;
 
-    public Socket Await(int millisecondsTimeOut = 10000)
+    public ListenTask()
+    {
+        _isCompletedSemaphore = new Semaphore(0, 1);
+        _result = null;
+    }
+
+    public Messenger Await(int millisecondsTimeOut = 10000)
     {
         if (!_isCompletedSemaphore.WaitOne(millisecondsTimeOut))
         {
@@ -24,11 +30,11 @@ public class ListenTask
         return _result;
     }
 
-    public void Complete(Socket result)
+    public void Fullfill(Messenger result)
     {
         if (_result != null)
         {
-            throw new InvalidOperationException($"{nameof(ListenTask)}.{nameof(Complete)} has been called more than once.");
+            throw new InvalidOperationException($"{nameof(ListenTask)}.{nameof(Fullfill)} has been called more than once.");
         }
 
         _result = result;

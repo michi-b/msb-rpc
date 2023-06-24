@@ -10,8 +10,10 @@ namespace MsbRpc.Configuration.Builders;
 public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<ServerConfiguration>, IServerConfigurationBuilder
 {
     public int ListenBacklogSize { get; set; } = 100;
-    public LogConfigurationBuilder LogAcceptedNewConnection { get; set; } = new(LogEventIds.ServerAcceptedNewConnection, LogLevel.Trace);
+    public LogConfigurationBuilder LogAcceptedNewUnIdentifiedConnection { get; set; } = new(LogEventIds.ServerAcceptedNewUnIdentifiedConnection, LogLevel.Trace);
+    public LogConfigurationBuilder LogAcceptedNewIdentifiedConnection { get; set; } = new(LogEventIds.ServerAcceptedNewUnIdentifiedConnection, LogLevel.Trace);
     public LogConfigurationBuilder LogDeclinedNewConnectionDuringDisposal { get; set; } = new(LogEventIds.ServerDeclinedNewConnectionDuringDisposal, LogLevel.Warning);
+    public LogConfigurationBuilder LogDeclinedNewConnectionDueToException { get; set; } = new(LogEventIds.ServerDeclinedNewConnectionDueToException, LogLevel.Error);
     public bool LogExceptionWhenLoggingStoppedListeningDueToDisposal { get; set; }
     public string LoggingName { get; set; } = "Server";
     public LogConfigurationBuilder LogStartedListening { get; set; } = new(LogEventIds.ServerStartedListening);

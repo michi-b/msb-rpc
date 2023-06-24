@@ -41,13 +41,17 @@ public static class LogEventIds
 
     public static readonly EventId ServerStartedListening = new((int)Ids.ServerStartedListening, nameof(Ids.ServerStartedListening));
 
-    public static readonly EventId ServerAcceptedNewConnection = new((int)Ids.ServerAcceptedNewConnection, nameof(Ids.ServerAcceptedNewConnection));
+    public static readonly EventId ServerAcceptedNewUnIdentifiedConnection = new((int)Ids.ServerAcceptedNewUnIdentifiedConnection, nameof(Ids.ServerAcceptedNewUnIdentifiedConnection));
+    public static readonly EventId ServerAcceptedNewIdentifiedConnection = new((int)Ids.ServerAcceptedNewIdentifiedConnection, nameof(Ids.ServerAcceptedNewIdentifiedConnection));
 
     public static readonly EventId ServerDeclinedNewConnectionDuringDisposal
-        = new((int)Ids.ServerImmediatelyDisposedNewConnection, nameof(Ids.ServerImmediatelyDisposedNewConnection));
+        = new((int)Ids.ServerDeclinedNewConnectionDuringDisposal, nameof(Ids.ServerDeclinedNewConnectionDuringDisposal));
 
     public static readonly EventId ServerStoppedListeningDueToDisposal
         = new((int)Ids.ServerStoppedListeningDueToDisposal, nameof(Ids.ServerStoppedListeningDueToDisposal));
+    
+    public static readonly EventId ServerDeclinedNewConnectionDueToException
+        = new((int)Ids.ServerDeclinedNewConnectionDueToException, nameof(Ids.ServerDeclinedNewConnectionDueToException));
 
     public static readonly EventId ServerStoppedListeningDueToException
         = new((int)Ids.ServerStoppedListeningDueToException, nameof(Ids.ServerStoppedListeningDueToException));
@@ -79,8 +83,10 @@ public static class LogEventIds
         ServerWasCreatedWithSpecifiedPort,
         ServerWasCreatedWithEphemeralPort,
         ServerStartedListening,
-        ServerAcceptedNewConnection,
-        ServerImmediatelyDisposedNewConnection,
+        ServerAcceptedNewUnIdentifiedConnection,
+        ServerAcceptedNewIdentifiedConnection,
+        ServerDeclinedNewConnectionDuringDisposal,
+        ServerDeclinedNewConnectionDueToException,
         ServerStoppedListeningDueToDisposal,
         ServerStoppedListeningDueToException,
         ServerEndPointRegistered,
