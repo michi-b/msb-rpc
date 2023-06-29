@@ -10,5 +10,12 @@ public class ServerConfigurationBuilder : ConfigurationWithLoggerFactoryBuilder<
     public ConnectionListenerConfigurationBuilder ConnectionListenerConfiguration { get; set; } = new();
     public IInboundEndPointRegistryConfigurationBuilder EndPointRegistryConfiguration { get; set; } = new InboundEndPointRegistryConfigurationBuilder();
     public IInboundEndPointConfigurationBuilder EndPointConfiguration { get; set; } = new InboundEndPointConfigurationBuilder();
+
+    // sets both the name and the logging name of the connection listener with added "ConnectionListener" suffix
+    public string Name
+    {
+        set => ConnectionListenerConfiguration.Name = value + "ConnectionListener";
+    }
+
     public override ServerConfiguration Build() => new(this);
 }

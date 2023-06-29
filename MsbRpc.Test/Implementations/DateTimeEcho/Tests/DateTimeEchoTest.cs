@@ -94,5 +94,5 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectAsync
         (IPEndPoint serverEndPoint)
         => await DateTimeEchoClientEndPoint.ConnectAsync
-            (serverEndPoint, new DateTimeEchoClientEndPointConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
+            (serverEndPoint, new DateTimeEchoClientEndPointConfigurationBuilder { LoggerFactory = TestUtility.LoggerFactory }.Build());
 }

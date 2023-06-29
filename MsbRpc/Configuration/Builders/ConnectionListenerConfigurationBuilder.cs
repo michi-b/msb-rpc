@@ -33,5 +33,15 @@ public class ConnectionListenerConfigurationBuilder : ConfigurationWithLoggerFac
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
 
+    // sets both the name and the logging name
+    public string Name
+    {
+        set
+        {
+            LoggingName = value;
+            ThreadName = value;
+        }
+    }
+
     public override ConnectionListenerConfiguration Build() => new(this);
 }
