@@ -18,7 +18,7 @@ public class ConnectionListener : ConcurrentDisposable
 {
     private readonly ConcurrentDictionary<int, ListenTask> _listenTasks = new();
     private readonly ILogger? _logger;
-    private readonly ServerConfiguration _serverConfiguration;
+    private readonly ConnectionListenerConfiguration _serverConfiguration;
     private readonly Socket _socket;
     private readonly IUnIdentifiedConnectionReceiver _unIdentifiedConnectionReceiver;
     private readonly RpcBuffer _initialConnectionMessageBuffer =  new(InitialConnectionMessage.MessageMaxSize);
@@ -27,7 +27,7 @@ public class ConnectionListener : ConcurrentDisposable
 
     [PublicAPI] public Thread Thread { get; private set; }
 
-    private ConnectionListener(Socket socket, ServerConfiguration configuration, IUnIdentifiedConnectionReceiver unIdentifiedConnectionReceiver)
+    private ConnectionListener(Socket socket, ConnectionListenerConfiguration configuration, IUnIdentifiedConnectionReceiver unIdentifiedConnectionReceiver)
     {
         _socket = socket;
         _serverConfiguration = configuration;
@@ -51,7 +51,7 @@ public class ConnectionListener : ConcurrentDisposable
         Thread = null!;
     }
 
-    public static ConnectionListener Run(ServerConfiguration configuration, Server receiver)
+    public static ConnectionListener Run(ConnectionListenerConfiguration configuration, Server receiver)
     {
         IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
 
@@ -77,42 +77,6 @@ public class ConnectionListener : ConcurrentDisposable
     protected override void DisposeManagedResources()
     {
         _socket.Dispose();
-    }
-
-    private void LogWasCreatedWithEphemeralPort()
-    {
-        if (_logger != null)
-        {
-            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithEphemeralPort;
-            if (_logger.GetIsEnabled(configuration))
-            {
-                _logger.Log
-                (
-                    configuration.Level,
-                    configuration.Id,
-                    "{LoggingName} was created with ephemeral port",
-                    _serverConfiguration.LoggingName
-                );
-            }
-        }
-    }
-
-    private void LogWasCreatedWithSpecificPort()
-    {
-        if (_logger != null)
-        {
-            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithSpecifiedPort;
-            if (_logger.GetIsEnabled(configuration))
-            {
-                _logger.Log
-                (
-                    configuration.Level,
-                    configuration.Id,
-                    "{LoggingName} was created with specified port",
-                    _serverConfiguration.LoggingName
-                );
-            }
-        }
     }
 
     private void Run()
@@ -220,6 +184,42 @@ public class ConnectionListener : ConcurrentDisposable
         {
             messengerForExceptionHandling?.Dispose();
             LogDeclinedNewConnectionDueToException(e);
+        }
+    }
+
+    private void LogWasCreatedWithEphemeralPort()
+    {
+        if (_logger != null)
+        {
+            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithEphemeralPort;
+            if (_logger.GetIsEnabled(configuration))
+            {
+                _logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    "{LoggingName} was created with ephemeral port",
+                    _serverConfiguration.LoggingName
+                );
+            }
+        }
+    }
+
+    private void LogWasCreatedWithSpecificPort()
+    {
+        if (_logger != null)
+        {
+            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithSpecifiedPort;
+            if (_logger.GetIsEnabled(configuration))
+            {
+                _logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    "{LoggingName} was created with specified port",
+                    _serverConfiguration.LoggingName
+                );
+            }
         }
     }
 

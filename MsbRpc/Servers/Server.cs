@@ -23,7 +23,7 @@ public abstract class Server : ConcurrentDisposable, IUnIdentifiedConnectionRece
             throw new InvalidOperationException($"{ConnectionListener.Thread.Name} is already started.");
         }
 
-        ConnectionListener = ConnectionListener.Run(Configuration, this);
+        ConnectionListener = ConnectionListener.Run(Configuration.ConnectionListenerConfiguration, this);
 
         return ConnectionListener;
     }
