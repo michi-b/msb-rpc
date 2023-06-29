@@ -37,13 +37,22 @@ public class Messenger : MarkedDisposable
         Port = socket.Port;
     }
 
-    public static async ValueTask<Messenger> ConnectAsync(IPAddress address, int port, ILoggerFactory? loggerFactory = null)
+    public static async ValueTask<Messenger> ConnectAsync
+    (
+        IPAddress address,
+        int port,
+        ILoggerFactory? loggerFactory = null
+    )
     {
         IPEndPoint serverEndPoint = new(address, port);
         return await ConnectAsync(serverEndPoint, loggerFactory);
     }
 
-    public static async ValueTask<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory = null)
+    public static async ValueTask<Messenger> ConnectAsync
+    (
+        IPEndPoint serverEndPoint,
+        ILoggerFactory? loggerFactory = null
+    )
     {
         Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         try
@@ -67,7 +76,7 @@ public class Messenger : MarkedDisposable
     {
         while (true)
         {
-            ReceiveResult receiveResult = ReceiveMessage(buffer);
+            ReceiveResult receiveResult = Receive(buffer);
             switch (receiveResult.ReturnCode)
             {
                 case ReceiveReturnCode.Success:
@@ -91,7 +100,7 @@ public class Messenger : MarkedDisposable
     {
         while (true)
         {
-            ReceiveResult receiveResult = await ReceiveMessageAsync(buffer);
+            ReceiveResult receiveResult = await ReceiveAsync(buffer);
             switch (receiveResult.ReturnCode)
             {
                 case ReceiveReturnCode.Success:
@@ -110,7 +119,7 @@ public class Messenger : MarkedDisposable
     }
 
     /// <throws>SocketReceiveException</throws>
-    public ReceiveResult ReceiveMessage(RpcBuffer buffer)
+    public ReceiveResult Receive(RpcBuffer buffer)
     {
         try
         {
@@ -144,7 +153,7 @@ public class Messenger : MarkedDisposable
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
     [PublicAPI]
-    public async ValueTask<ReceiveResult> ReceiveMessageAsync(RpcBuffer buffer)
+    public async ValueTask<ReceiveResult> ReceiveAsync(RpcBuffer buffer)
     {
         try
         {

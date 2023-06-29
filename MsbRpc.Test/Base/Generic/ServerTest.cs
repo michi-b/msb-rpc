@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
-using MsbRpc.Messaging;
 using MsbRpc.Servers;
 using MsbRpc.Servers.Generic;
 using MsbRpc.Test.Utility;
@@ -18,8 +17,10 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     where TProcedure : Enum
     where TContract : IRpcContract
 {
-    protected async ValueTask<TClientEndPoint> ConnectClient(Server server)
-        => CreateClient(await Messenger.ConnectAsync(new IPEndPoint(ServerTestUtility.LocalHost, server.Port)));
+    protected async ValueTask<TClientEndPoint> ConnectAsync(Server server) 
+        => await ConnectAsync(new IPEndPoint(ServerTestUtility.LocalHost, server.ConnectionListener!.Port));
+
+    protected abstract ValueTask<TClientEndPoint> ConnectAsync(IPEndPoint serverEndPoint);
 
     protected TServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {
@@ -29,8 +30,6 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     }
 
     protected abstract TServer CreateServer();
-
-    protected abstract TClientEndPoint CreateClient(Messenger messenger);
 
     protected void TestListens()
     {
@@ -45,7 +44,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     protected async Task TestConnectsAndDisconnects()
     {
         using TServer server = StartServer();
-        TClientEndPoint client = await ConnectClient(server);
+        TClientEndPoint client = await ConnectAsync(server);
         await ServerTestUtility.AssertBecomesEqual(1, () => server.EndPoints.Length);
         client.Dispose();
         await ServerTestUtility.AssertBecomesEqual(0, () => server.EndPoints.Length);
@@ -55,10 +54,10 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     {
         using TServer server = StartServer();
 
-        TClientEndPoint client1 = await ConnectClient(server);
+        TClientEndPoint client1 = await ConnectAsync(server);
         await ServerTestUtility.AssertBecomesEqual(1, () => server.EndPoints.Length);
 
-        TClientEndPoint client2 = await ConnectClient(server);
+        TClientEndPoint client2 = await ConnectAsync(server);
         await ServerTestUtility.AssertBecomesEqual(2, () => server.EndPoints.Length);
 
         client1.Dispose();
@@ -73,7 +72,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
         TClientEndPoint client;
         using (TServer server = StartServer())
         {
-            client = await ConnectClient(server);
+            client = await ConnectAsync(server);
         }
 
         client.Dispose();

@@ -12,11 +12,11 @@ public readonly struct ServerConfiguration
     public readonly int ListenBacklogSize;
 
     public readonly LogConfiguration LogAcceptedNewUnIdentifiedConnection;
-    
+
     public readonly LogConfiguration LogAcceptedNewIdentifiedConnection;
 
     public readonly LogConfiguration LogDeclinedNewConnectionDuringDisposal;
-    
+
     public readonly LogConfiguration LogDeclinedNewConnectionDueToException;
 
     public readonly bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;

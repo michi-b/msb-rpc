@@ -3,13 +3,14 @@ using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+using MsbRpc.Servers.Listener;
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
 public class DateTimeEchoClientEndPoint
     : OutboundEndPoint<DateTimeEchoProcedure>
 {
-    public DateTimeEchoClientEndPoint
+    private DateTimeEchoClientEndPoint
     (
         Messenger messenger,
         in OutboundEndPointConfiguration configuration
@@ -26,7 +27,13 @@ public class DateTimeEchoClientEndPoint
     )
     {
         Messenger messenger = await Messenger.ConnectAsync(endPoint);
-        return new DateTimeEchoClientEndPoint(messenger, configuration);
+        
+        var result = new DateTimeEchoClientEndPoint(messenger, configuration);
+        
+        //send initial connection message so the server knows what kind of connection this is
+        await messenger.SendInitialConnectionMessage(InitialConnectionMessage.CreateUnIdentified(), result.Buffer);
+
+        return result;
     }
 
     public async ValueTask<DateTime> GetDateTimeAsync(DateTime clientDateTime)

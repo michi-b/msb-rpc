@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Net;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
 using MsbRpc.Configuration.Builders.Extensions;
-using MsbRpc.Messaging;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 using MsbRpc.Test.Utility;
@@ -40,7 +40,7 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     public async Task ServerRespondsWithDifferentDateTime()
     {
         using DateTimeEchoServer server = StartServer();
-        using DateTimeEchoClientEndPoint client = await ConnectClient(server);
+        using DateTimeEchoClientEndPoint client = await ConnectAsync(server);
         DateTime clientDateTime = DateTime.Now;
         DateTime serverDateTime = await client.GetDateTimeAsync(clientDateTime);
         Assert.AreNotEqual(default, serverDateTime);
@@ -59,7 +59,7 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     public async Task ServerHasNotInitiallyRunToCompletion()
     {
         using DateTimeEchoServer server = StartServer();
-        using DateTimeEchoClientEndPoint client = await ConnectClient(server);
+        using DateTimeEchoClientEndPoint client = await ConnectAsync(server);
         Assert.IsFalse(client.RanToCompletion);
     }
 
@@ -67,7 +67,7 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
     public async Task ServerRunsToCompletionUponSingleRpcInvocation()
     {
         using DateTimeEchoServer server = StartServer();
-        using DateTimeEchoClientEndPoint client = await ConnectClient(server);
+        using DateTimeEchoClientEndPoint client = await ConnectAsync(server);
         await client.GetDateTimeAsync(DateTime.Now);
         Assert.IsTrue(client.RanToCompletion);
     }
@@ -91,6 +91,8 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
         );
     }
 
-    protected override DateTimeEchoClientEndPoint CreateClient(Messenger messenger)
-        => new(messenger, new DateTimeEchoClientEndPointConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
+    protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectAsync
+        (IPEndPoint serverEndPoint)
+        => await DateTimeEchoClientEndPoint.ConnectAsync
+            (serverEndPoint, new DateTimeEchoClientEndPointConfigurationBuilder().WithLoggerFactory(TestUtility.LoggerFactory));
 }

@@ -59,7 +59,7 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
 
         LogSentAnyRequest(procedure, request.Buffer.Count);
 
-        ReceiveResult result = await Messenger.ReceiveMessageAsync(Buffer);
+        ReceiveResult result = await Messenger.ReceiveAsync(Buffer);
 
         switch (result.ReturnCode)
         {
@@ -92,7 +92,7 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
         {
             try
             {
-                ReceiveResult exceptionTransmissionResult = await Messenger.ReceiveMessageAsync(Buffer);
+                ReceiveResult exceptionTransmissionResult = await Messenger.ReceiveAsync(Buffer);
                 switch (exceptionTransmissionResult.ReturnCode)
                 {
                     case ReceiveReturnCode.Success:
@@ -153,7 +153,7 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
 
         LogSentAnyRequest(procedure, request.Buffer.Count);
 
-        ReceiveResult result = Messenger.ReceiveMessage(Buffer);
+        ReceiveResult result = Messenger.Receive(Buffer);
 
         return result.ReturnCode switch
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Annotations;
@@ -8,6 +9,7 @@ using MsbRpc.Configuration;
 using MsbRpc.Disposable;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
+using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
 
 namespace MsbRpc.Servers.Listener;
@@ -15,28 +17,50 @@ namespace MsbRpc.Servers.Listener;
 public class ConnectionListener : ConcurrentDisposable
 {
     private readonly ConcurrentDictionary<int, ListenTask> _listenTasks = new();
-
     private readonly ILogger? _logger;
     private readonly ServerConfiguration _serverConfiguration;
     private readonly Socket _socket;
     private readonly IUnIdentifiedConnectionReceiver _unIdentifiedConnectionReceiver;
+    private readonly RpcBuffer _initialConnectionMessageBuffer =  new(InitialConnectionMessage.MessageMaxSize);
+
+    [PublicAPI] public int Port { get; }
 
     [PublicAPI] public Thread Thread { get; private set; }
 
-    private ConnectionListener(Socket socket, ServerConfiguration configuration, IUnIdentifiedConnectionReceiver unIdentifiedConnectionReceiver, ILogger? logger)
+    private ConnectionListener(Socket socket, ServerConfiguration configuration, IUnIdentifiedConnectionReceiver unIdentifiedConnectionReceiver)
     {
-        _logger = logger;
         _socket = socket;
         _serverConfiguration = configuration;
         _unIdentifiedConnectionReceiver = unIdentifiedConnectionReceiver;
+
+        var listenEndPoint = socket.LocalEndPoint as IPEndPoint;
+        Port = configuration.Port == 0 ? listenEndPoint!.Port : configuration.Port;
+
+        _logger = configuration.LoggerFactory?.CreateLogger<ConnectionListener>();
+
+        if (Port == 0)
+        {
+            LogWasCreatedWithEphemeralPort();
+        }
+        else
+        {
+            LogWasCreatedWithSpecificPort();
+        }
 
         // thread will always be set by public static "Run" method, which is the only non-private way to construct this class
         Thread = null!;
     }
 
-    public static ConnectionListener Run(Socket socket, ServerConfiguration configuration, string threadName, IUnIdentifiedConnectionReceiver receiver, ILogger? logger)
+    public static ConnectionListener Run(ServerConfiguration configuration, Server receiver)
     {
-        ConnectionListener listener = new(socket, configuration, receiver, logger);
+        IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
+
+        var socket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        socket.Bind(new IPEndPoint(localHost, configuration.Port));
+
+        ConnectionListener listener = new(socket, configuration, receiver);
+
+        string threadName = $"{listener._serverConfiguration.ThreadName}:{listener.Port}";
 
         Thread Start()
         {
@@ -50,12 +74,55 @@ public class ConnectionListener : ConcurrentDisposable
         return listener;
     }
 
+    protected override void DisposeManagedResources()
+    {
+        _socket.Dispose();
+    }
+
+    private void LogWasCreatedWithEphemeralPort()
+    {
+        if (_logger != null)
+        {
+            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithEphemeralPort;
+            if (_logger.GetIsEnabled(configuration))
+            {
+                _logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    "{LoggingName} was created with ephemeral port",
+                    _serverConfiguration.LoggingName
+                );
+            }
+        }
+    }
+
+    private void LogWasCreatedWithSpecificPort()
+    {
+        if (_logger != null)
+        {
+            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithSpecifiedPort;
+            if (_logger.GetIsEnabled(configuration))
+            {
+                _logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    "{LoggingName} was created with specified port",
+                    _serverConfiguration.LoggingName
+                );
+            }
+        }
+    }
+
     private void Run()
     {
         try
         {
             _socket.Listen(_serverConfiguration.ListenBacklogSize);
+            
             LogStartedListening();
+            
             while (!IsDisposed)
             {
                 Socket newConnectionSocket = _socket.Accept();
@@ -114,7 +181,7 @@ public class ConnectionListener : ConcurrentDisposable
             CancellationToken cancellationToken = new CancellationTokenSource(timeOut).Token;
             cancellationToken.Register(() => messenger.Dispose());
 
-            InitialConnectionMessage connectionMessage = await messenger.ReceiveInitialConnectionMessageAsync();
+            InitialConnectionMessage connectionMessage = await messenger.ReceiveInitialConnectionMessageAsync(_initialConnectionMessageBuffer);
 
             switch (connectionMessage.ConnectionType)
             {
