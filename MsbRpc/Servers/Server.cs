@@ -16,7 +16,7 @@ public abstract class Server : ConcurrentDisposable, IUnIdentifiedConnectionRece
     protected Server(ref ServerConfiguration configuration) => Configuration = configuration;
 
     [PublicAPI]
-    public ConnectionListener Start()
+    public ConnectionListener Listen()
     {
         if (ConnectionListener != null)
         {

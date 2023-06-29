@@ -25,7 +25,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     protected TServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
     {
         TServer server = CreateServer();
-        server.Start();
+        server.Listen();
         return server;
     }
 
