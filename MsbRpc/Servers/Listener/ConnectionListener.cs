@@ -16,12 +16,12 @@ namespace MsbRpc.Servers.Listener;
 
 public class ConnectionListener : ConcurrentDisposable
 {
+    private readonly RpcBuffer _initialConnectionMessageBuffer = new(InitialConnectionMessage.MessageMaxSize);
     private readonly ConcurrentDictionary<int, ListenTask> _listenTasks = new();
     private readonly ILogger? _logger;
     private readonly ConnectionListenerConfiguration _serverConfiguration;
     private readonly Socket _socket;
     private readonly IUnIdentifiedConnectionReceiver _unIdentifiedConnectionReceiver;
-    private readonly RpcBuffer _initialConnectionMessageBuffer =  new(InitialConnectionMessage.MessageMaxSize);
 
     [PublicAPI] public int Port { get; }
 
@@ -84,9 +84,9 @@ public class ConnectionListener : ConcurrentDisposable
         try
         {
             _socket.Listen(_serverConfiguration.ListenBacklogSize);
-            
+
             LogStartedListening();
-            
+
             while (!IsDisposed)
             {
                 Socket newConnectionSocket = _socket.Accept();
@@ -327,7 +327,7 @@ public class ConnectionListener : ConcurrentDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} immediately disposed new connection because this server is disposed",
+                    "{LoggingName} immediately disposed new connection because it is disposed",
                     _serverConfiguration.LoggingName
                 );
             }
@@ -346,7 +346,7 @@ public class ConnectionListener : ConcurrentDisposable
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "{LoggingName} immediately disposed new connection because this server is disposed",
+                    "{LoggingName} immediately disposed new connection due to exception",
                     _serverConfiguration.LoggingName
                 );
             }
