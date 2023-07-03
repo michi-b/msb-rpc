@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Network;
 using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
@@ -242,7 +243,7 @@ public class RpcSocketTest : Test<RpcSocketTest>
         CancellationToken cancellationToken
     )
     {
-        IPAddress localHost = await NetworkUtility.GetLocalHostAsync(cancellationToken);
+        IPAddress localHost = await NetworkUtility.GetLocalHostAsync();
 
         using Socket listenSocket = createSocket(localHost.AddressFamily);
         listenSocket.Bind(new IPEndPoint(localHost, 0));

@@ -10,26 +10,26 @@ namespace MsbRpc.Servers.Listener;
 public readonly struct InitialConnectionMessage
 {
     /// <summary>
-    ///     byte size of <see cref="ConnectionType" /> (byte) and <see cref="Id" /> (int32)
+    ///     byte size of <see cref="MessengerType" /> (byte) and <see cref="Id" /> (int32)
     /// </summary>
     private const int MaxSize = PrimitiveSerializer.ByteSize + PrimitiveSerializer.IntSize;
 
     public const int MessageMaxSize = Message.Offset + MaxSize;
 
-    public ConnectionType ConnectionType { get; }
+    public MessengerType MessengerType { get; }
     public int? Id { get; }
 
     [MayBeUsedByGeneratedCode]
-    private InitialConnectionMessage(ConnectionType connectionType, int? id)
+    private InitialConnectionMessage(MessengerType messengerType, int? id)
     {
-        Debug.Assert(connectionType == ConnectionType.UnIdentified || id.HasValue);
-        ConnectionType = connectionType;
+        Debug.Assert(messengerType == MessengerType.UnIdentified || id.HasValue);
+        MessengerType = messengerType;
         Id = id;
     }
 
-    public static InitialConnectionMessage CreateUnIdentified() => new(ConnectionType.UnIdentified, null);
+    public static readonly InitialConnectionMessage UnIdentified = new(MessengerType.UnIdentified, null);
 
-    public static InitialConnectionMessage CreateIdentified(int id) => new(ConnectionType.Identified, id);
+    public static InitialConnectionMessage CreateIdentified(int id) => new(MessengerType.Identified, id);
 
     public static InitialConnectionMessage Read(Message message)
     {
@@ -39,21 +39,21 @@ public readonly struct InitialConnectionMessage
 
         BufferReader bufferReader = new(messageBuffer);
 
-        ConnectionType connectionType = bufferReader.ReadByte() switch
+        MessengerType messengerType = bufferReader.ReadByte() switch
         {
-            0 => ConnectionType.UnIdentified,
-            1 => ConnectionType.Identified,
+            0 => MessengerType.UnIdentified,
+            1 => MessengerType.Identified,
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        int? id = connectionType switch
+        int? id = messengerType switch
         {
-            ConnectionType.UnIdentified => null,
-            ConnectionType.Identified => bufferReader.ReadInt(),
+            MessengerType.UnIdentified => null,
+            MessengerType.Identified => bufferReader.ReadInt(),
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return new InitialConnectionMessage(connectionType, id);
+        return new InitialConnectionMessage(messengerType, id);
     }
 
     public Message Write(RpcBuffer buffer)
@@ -69,7 +69,7 @@ public readonly struct InitialConnectionMessage
 
         BufferWriter bufferWriter = new(message.Buffer);
 
-        bufferWriter.Write((byte)ConnectionType);
+        bufferWriter.Write((byte)MessengerType);
 
         if (Id.HasValue)
         {
@@ -85,6 +85,6 @@ public readonly struct InitialConnectionMessage
     {
         string idString = Id.HasValue ? $"ID : {Id.Value}" : "no ID";
 
-        return $"'{ConnectionType}, {idString}'";
+        return $"'{MessengerType}, {idString}'";
     }
 }

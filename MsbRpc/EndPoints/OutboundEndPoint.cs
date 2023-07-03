@@ -36,9 +36,10 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
     protected OutboundEndPoint
     (
         Messenger messenger,
+        RpcBuffer buffer,
         in OutboundEndPointConfiguration configuration
     )
-        : base(messenger, configuration.InitialBufferSize, configuration.LoggingName)
+        : base(messenger, buffer, configuration.LoggingName)
     {
         Configuration = configuration;
         _logger = Configuration.LoggerFactory?.CreateLogger<OutboundEndPoint<TProcedure>>();

@@ -9,36 +9,35 @@ using MsbRpc.Configuration;
 using MsbRpc.Disposable;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
+using MsbRpc.Network;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
 
 namespace MsbRpc.Servers.Listener;
 
-public class ConnectionListener : ConcurrentDisposable
+public class MessengerListener : ConcurrentDisposable
 {
     private readonly RpcBuffer _initialConnectionMessageBuffer = new(InitialConnectionMessage.MessageMaxSize);
-    private readonly ConcurrentDictionary<int, ListenTask> _listenTasks = new();
+    private readonly ConcurrentDictionary<int, MessengerListenTask> _listenTasks = new();
     private readonly ILogger? _logger;
     private readonly ConnectionListenerConfiguration _serverConfiguration;
     private readonly Socket _socket;
-    private readonly IUnIdentifiedConnectionReceiver _unIdentifiedConnectionReceiver;
+    private readonly IMessengerReceiver _unIdentifiedMessengerReceiver;
 
-    [PublicAPI] public int Port { get; }
-
+    [PublicAPI] public IPEndPoint EndPoint { get; }
     [PublicAPI] public Thread Thread { get; private set; }
 
-    private ConnectionListener(Socket socket, ConnectionListenerConfiguration configuration, IUnIdentifiedConnectionReceiver unIdentifiedConnectionReceiver)
+    private MessengerListener(Socket socket, ConnectionListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
     {
         _socket = socket;
         _serverConfiguration = configuration;
-        _unIdentifiedConnectionReceiver = unIdentifiedConnectionReceiver;
+        _unIdentifiedMessengerReceiver = unIdentifiedMessengerReceiver;
 
-        var listenEndPoint = socket.LocalEndPoint as IPEndPoint;
-        Port = configuration.Port == 0 ? listenEndPoint!.Port : configuration.Port;
+        EndPoint = (IPEndPoint)socket.LocalEndPoint;
 
-        _logger = configuration.LoggerFactory?.CreateLogger<ConnectionListener>();
+        _logger = configuration.LoggerFactory?.CreateLogger<MessengerListener>();
 
-        if (Port == 0)
+        if (EndPoint.Port == 0)
         {
             LogWasCreatedWithEphemeralPort();
         }
@@ -51,25 +50,24 @@ public class ConnectionListener : ConcurrentDisposable
         Thread = null!;
     }
 
-    public static ConnectionListener Run(ConnectionListenerConfiguration configuration, Server receiver)
+    public static MessengerListener Start(ConnectionListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
     {
-        IPAddress localHost = Dns.GetHostEntry("localhost").AddressList[0];
+        var socket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        var socket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        socket.Bind(new IPEndPoint(localHost, configuration.Port));
+        socket.Bind(new IPEndPoint(NetworkUtility.GetLocalHost(), configuration.Port));
 
-        ConnectionListener listener = new(socket, configuration, receiver);
+        MessengerListener listener = new(socket, configuration, unIdentifiedMessengerReceiver);
 
-        string threadName = $"{listener._serverConfiguration.ThreadName}:{listener.Port}";
+        string threadName = $"{listener._serverConfiguration.ThreadName}:{listener.EndPoint.Port}";
 
-        Thread Start()
+        Thread StartListenThread()
         {
-            Thread listenThread = new(() => listener.Run()) { Name = threadName };
+            Thread listenThread = new(() => listener.Start()) { Name = threadName };
             listenThread.Start();
             return listenThread;
         }
 
-        listener.Thread = listener.ExecuteIfNotDisposed(Start);
+        listener.Thread = listener.ExecuteIfNotDisposed(StartListenThread);
 
         return listener;
     }
@@ -79,7 +77,7 @@ public class ConnectionListener : ConcurrentDisposable
         _socket.Dispose();
     }
 
-    private void Run()
+    private void Start()
     {
         try
         {
@@ -93,7 +91,7 @@ public class ConnectionListener : ConcurrentDisposable
 
                 void AcceptUnsafe()
                 {
-                    Accept(_socket);
+                    Accept(newConnectionSocket);
                 }
 
                 void Decline()
@@ -147,23 +145,23 @@ public class ConnectionListener : ConcurrentDisposable
 
             InitialConnectionMessage connectionMessage = await messenger.ReceiveInitialConnectionMessageAsync(_initialConnectionMessageBuffer);
 
-            switch (connectionMessage.ConnectionType)
+            switch (connectionMessage.MessengerType)
             {
-                case ConnectionType.UnIdentified:
-                    _unIdentifiedConnectionReceiver.AcceptUnIdentified(messenger);
+                case MessengerType.UnIdentified:
+                    _unIdentifiedMessengerReceiver.AcceptUnIdentified(messenger);
                     LogAcceptedNewUnIdentifiedConnection();
                     break;
-                case ConnectionType.Identified:
+                case MessengerType.Identified:
                     if (connectionMessage.Id != null)
                     {
-                        if (_listenTasks.TryRemove(connectionMessage.Id.Value, out ListenTask listenTask))
+                        if (_listenTasks.TryRemove(connectionMessage.Id.Value, out MessengerListenTask listenTask))
                         {
                             listenTask.Fullfill(messenger);
                             LogAcceptedNewIdentifiedConnection(connectionMessage.Id.Value);
                         }
                         else
                         {
-                            throw new IdentifiedConnectionAcceptanceException
+                            throw new IdentifiedMessengerException
                             (
                                 connectionMessage,
                                 $"registered listen tasks do not contain an entry for the id {connectionMessage.Id}"
@@ -172,12 +170,12 @@ public class ConnectionListener : ConcurrentDisposable
                     }
                     else
                     {
-                        throw new IdentifiedConnectionAcceptanceException(connectionMessage, "connection message is marked to be identified but has no ID");
+                        throw new IdentifiedMessengerException(connectionMessage, "connection message is marked to be identified but has no ID");
                     }
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(ConnectionType));
+                    throw new ArgumentOutOfRangeException(nameof(MessengerType));
             }
         }
         catch (Exception e)
@@ -234,8 +232,9 @@ public class ConnectionListener : ConcurrentDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} started listening",
-                    _serverConfiguration.LoggingName
+                    "{LoggingName} started listening with a backlog of {BacklogSize}",
+                    _serverConfiguration.LoggingName,
+                    _serverConfiguration.ListenBacklogSize
                 );
             }
         }

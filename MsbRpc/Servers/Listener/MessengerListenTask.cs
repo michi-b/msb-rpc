@@ -4,12 +4,12 @@ using MsbRpc.Messaging;
 
 namespace MsbRpc.Servers.Listener;
 
-public struct ListenTask
+public struct MessengerListenTask
 {
     private Semaphore _isCompletedSemaphore;
     private Messenger? _result;
 
-    public ListenTask()
+    public MessengerListenTask()
     {
         _isCompletedSemaphore = new Semaphore(0, 1);
         _result = null;
@@ -19,12 +19,12 @@ public struct ListenTask
     {
         if (!_isCompletedSemaphore.WaitOne(millisecondsTimeOut))
         {
-            throw new TimeoutException($"{nameof(ListenTask)}.{nameof(Await)} timed out.");
+            throw new TimeoutException($"{nameof(MessengerListenTask)}.{nameof(Await)} timed out.");
         }
 
         if (_result == null)
         {
-            throw new NullReferenceException($"{nameof(_result)} is null though the {nameof(ListenTask)}.{nameof(_isCompletedSemaphore)} has been signaled.");
+            throw new NullReferenceException($"{nameof(_result)} is null though the {nameof(MessengerListenTask)}.{nameof(_isCompletedSemaphore)} has been signaled.");
         }
 
         return _result;
@@ -34,7 +34,7 @@ public struct ListenTask
     {
         if (_result != null)
         {
-            throw new InvalidOperationException($"{nameof(ListenTask)}.{nameof(Fullfill)} has been called more than once.");
+            throw new InvalidOperationException($"{nameof(MessengerListenTask)}.{nameof(Fullfill)} has been called more than once.");
         }
 
         _result = result;

@@ -9,6 +9,7 @@ using MsbRpc.Disposable;
 using MsbRpc.Logging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+using MsbRpc.Servers.Listener;
 using MsbRpc.Sockets;
 
 namespace MsbRpc.Messaging;
@@ -41,16 +42,18 @@ public class Messenger : MarkedDisposable
     (
         IPAddress address,
         int port,
+        RpcBuffer buffer,
         ILoggerFactory? loggerFactory = null
     )
     {
         IPEndPoint serverEndPoint = new(address, port);
-        return await ConnectAsync(serverEndPoint, loggerFactory);
+        return await ConnectAsync(serverEndPoint, buffer, loggerFactory);
     }
 
     public static async ValueTask<Messenger> ConnectAsync
     (
         IPEndPoint serverEndPoint,
+        RpcBuffer buffer,
         ILoggerFactory? loggerFactory = null
     )
     {
@@ -69,7 +72,11 @@ public class Messenger : MarkedDisposable
             throw;
         }
 
-        return new Messenger(new RpcSocket(socket));
+        var result = new Messenger(new RpcSocket(socket));
+
+        await result.SendInitialConnectionMessage(InitialConnectionMessage.UnIdentified, buffer);
+
+        return result;
     }
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)

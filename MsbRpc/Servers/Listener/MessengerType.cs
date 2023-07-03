@@ -1,6 +1,6 @@
 ﻿namespace MsbRpc.Servers.Listener;
 
-public enum ConnectionType : byte
+public enum MessengerType : byte
 {
     /// <summary>
     ///     The connection has no specific target

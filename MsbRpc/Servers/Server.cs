@@ -7,23 +7,23 @@ using MsbRpc.Servers.Listener;
 
 namespace MsbRpc.Servers;
 
-public abstract class Server : ConcurrentDisposable, IUnIdentifiedConnectionReceiver
+public abstract class Server : ConcurrentDisposable, IMessengerReceiver
 {
     protected readonly ServerConfiguration Configuration;
 
-    [PublicAPI] public ConnectionListener? ConnectionListener { get; private set; }
+    [PublicAPI] public MessengerListener? ConnectionListener { get; private set; }
 
     protected Server(ref ServerConfiguration configuration) => Configuration = configuration;
 
     [PublicAPI]
-    public ConnectionListener Listen()
+    public MessengerListener Listen()
     {
         if (ConnectionListener != null)
         {
             throw new InvalidOperationException($"{ConnectionListener.Thread.Name} is already started.");
         }
 
-        ConnectionListener = ConnectionListener.Run(Configuration.ConnectionListenerConfiguration, this);
+        ConnectionListener = MessengerListener.Start(Configuration.ConnectionListenerConfiguration, this);
 
         return ConnectionListener;
     }

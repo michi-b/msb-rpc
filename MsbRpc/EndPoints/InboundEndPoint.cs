@@ -42,7 +42,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
         Messenger messenger,
         TImplementation implementation,
         in InboundEndPointConfiguration configuration
-    ) : base(messenger, configuration.InitialBufferSize, configuration.LoggingName)
+    ) : base(messenger, new RpcBuffer(configuration.InitialBufferSize), configuration.LoggingName)
     {
         _logger = configuration.LoggerFactory?.CreateLogger<InboundEndPoint<TProcedure, TImplementation>>();
         Configuration = configuration;

@@ -17,15 +17,15 @@ public readonly struct ConnectionListenerConfiguration
     public readonly LogConfiguration LogStoppedListeningDueToDisposal;
 
     public readonly LogConfiguration LogStoppedListeningDueToException;
-    
+
     public readonly LogConfiguration LogStartedListening;
-    
+
     public readonly LogConfiguration LogWasCreatedWithEphemeralPort;
 
     public readonly LogConfiguration LogWasCreatedWithSpecifiedPort;
-    
+
     public readonly bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
-    
+
     public readonly int ListenBacklogSize;
 
     public readonly string LoggingName;
@@ -50,6 +50,5 @@ public readonly struct ConnectionListenerConfiguration
         LogWasCreatedWithSpecifiedPort = builder.LogWasCreatedWithSpecifiedPort;
         Port = builder.Port;
         ThreadName = builder.ThreadName;
-        throw new System.NotImplementedException();
     }
 }

@@ -3,7 +3,6 @@ using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
-using MsbRpc.Servers.Listener;
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
@@ -13,10 +12,12 @@ public class DateTimeEchoClientEndPoint
     private DateTimeEchoClientEndPoint
     (
         Messenger messenger,
+        RpcBuffer buffer,
         in OutboundEndPointConfiguration configuration
     ) : base
     (
         messenger,
+        buffer,
         configuration
     ) { }
 
@@ -26,13 +27,9 @@ public class DateTimeEchoClientEndPoint
         OutboundEndPointConfiguration configuration
     )
     {
-        Messenger messenger = await Messenger.ConnectAsync(endPoint);
-        
-        var result = new DateTimeEchoClientEndPoint(messenger, configuration);
-        
-        //send initial connection message so the server knows what kind of connection this is
-        await messenger.SendInitialConnectionMessage(InitialConnectionMessage.CreateUnIdentified(), result.Buffer);
-
+        RpcBuffer buffer = new(configuration.InitialBufferSize);
+        Messenger messenger = await Messenger.ConnectAsync(endPoint, buffer, configuration.LoggerFactory);
+        var result = new DateTimeEchoClientEndPoint(messenger, buffer, configuration);
         return result;
     }
 

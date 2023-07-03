@@ -23,14 +23,14 @@ public abstract class EndPoint<TProcedure> : MarkedDisposable, IEndPoint where T
 
     private string DebuggerDisplay => $"{LoggingNameWithId} ({GetType().Name})";
 
-    protected EndPoint(Messenger messenger, int initialBufferSize, string loggingName)
+    protected EndPoint(Messenger messenger, RpcBuffer buffer, string loggingName)
     {
         Name = loggingName;
         LoggingNameWithId = loggingName;
         Id = -1;
 
         Messenger = messenger;
-        Buffer = new RpcBuffer(initialBufferSize);
+        Buffer = buffer;
     }
 
     protected EndPoint

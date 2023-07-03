@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Network;
 using MsbRpc.Serialization.Primitives;
 using MsbRpc.Sockets;
 using MsbRpc.Test.Base.Generic;

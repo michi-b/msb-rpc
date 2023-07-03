@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using JetBrains.Annotations;
+using MsbRpc.Network;
 
 namespace MsbRpc.Test.Network.Utility;
 
@@ -15,7 +16,7 @@ public class EphemeralListener : IDisposable
         ListenSocket = listenSocket;
     }
 
-    public static async ValueTask<EphemeralListener> CreateAsync(CancellationToken cancellationToken) => await CreateAsync(1, cancellationToken);
+    public static async ValueTask<EphemeralListener> CreateAsync(CancellationToken cancellationToken) => await CreateAsync(1);
 
     public async ValueTask<Socket> AcceptAsync(CancellationToken cancellationToken) => await ListenSocket.AcceptAsync(cancellationToken);
 
@@ -25,16 +26,15 @@ public class EphemeralListener : IDisposable
         ListenSocket.Dispose();
     }
 
-    private static async ValueTask<EphemeralListener> CreateAsync(int backlogSize, CancellationToken cancellationToken)
+    private static async ValueTask<EphemeralListener> CreateAsync(int backlogSize)
     {
-        IPAddress localHost = await NetworkUtility.GetLocalHostAsync(cancellationToken);
+        IPAddress localHost = await NetworkUtility.GetLocalHostAsync();
 
         var listenSocket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         listenSocket.Bind(new IPEndPoint(localHost, 0));
         var listenEndPoint = (IPEndPoint)listenSocket.LocalEndPoint!;
         Console.WriteLine($"using port {listenEndPoint.Port}");
         listenSocket.Listen(backlogSize);
-
         return new EphemeralListener(listenEndPoint, listenSocket);
     }
 }

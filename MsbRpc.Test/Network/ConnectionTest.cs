@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsbRpc.Network;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 
@@ -14,7 +15,7 @@ public class ConnectionTest : Test<ConnectionTest>
     {
         CancellationToken cancellationToken = CancellationToken;
 
-        IPAddress localHost = await NetworkUtility.GetLocalHostAsync(cancellationToken);
+        IPAddress localHost = await NetworkUtility.GetLocalHostAsync();
 
         using var listenSocket = new Socket(localHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         listenSocket.Bind(new IPEndPoint(localHost, 0));
