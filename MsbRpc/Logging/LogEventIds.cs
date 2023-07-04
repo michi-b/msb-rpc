@@ -35,29 +35,27 @@ public static class LogEventIds
     public static EventId OutboundEndPointExceptionTransmissionException = new
         ((int)Ids.OutboundEndPointExceptionTransmissionException, nameof(Ids.OutboundEndPointExceptionTransmissionException));
 
-    public static readonly EventId ConnectionListenerWasCreatedWithSpecifiedPort = new((int)Ids.ConnectionListenerWasCreatedWithSpecifiedPort, nameof(Ids.ConnectionListenerWasCreatedWithSpecifiedPort));
+    public static readonly EventId MessengerListenerWasCreated = new((int)Ids.MessengerListenerWasCreated, nameof(Ids.MessengerListenerWasCreated));
 
-    public static readonly EventId ConnectionListenerWasCreatedWithEphemeralPort = new((int)Ids.ConnectionListenerWasCreatedWithEphemeralPort, nameof(Ids.ConnectionListenerWasCreatedWithEphemeralPort));
+    public static readonly EventId MessengerListenerStartedListening = new((int)Ids.MessengerListenerStartedListening, nameof(Ids.MessengerListenerStartedListening));
 
-    public static readonly EventId ConnectionListenerStartedListening = new((int)Ids.ConnectionListenerStartedListening, nameof(Ids.ConnectionListenerStartedListening));
+    public static readonly EventId MessengerListenerAcceptedNewUnIdentifiedConnection =
+        new((int)Ids.MessengerListenerAcceptedNewUnIdentifiedConnection, nameof(Ids.MessengerListenerAcceptedNewUnIdentifiedConnection));
 
-    public static readonly EventId ConnectionListenerAcceptedNewUnIdentifiedConnection =
-        new((int)Ids.ConnectionListenerAcceptedNewUnIdentifiedConnection, nameof(Ids.ConnectionListenerAcceptedNewUnIdentifiedConnection));
+    public static readonly EventId MessengerListenerAcceptedNewIdentifiedConnection =
+        new((int)Ids.MessengerListenerAcceptedNewIdentifiedConnection, nameof(Ids.MessengerListenerAcceptedNewIdentifiedConnection));
 
-    public static readonly EventId ConnectionListenerAcceptedNewIdentifiedConnection =
-        new((int)Ids.ConnectionListenerAcceptedNewIdentifiedConnection, nameof(Ids.ConnectionListenerAcceptedNewIdentifiedConnection));
+    public static readonly EventId MessengerListenerDeclinedNewConnectionDuringDisposal
+        = new((int)Ids.MessengerListenerDeclinedNewConnectionDuringDisposal, nameof(Ids.MessengerListenerDeclinedNewConnectionDuringDisposal));
 
-    public static readonly EventId ConnectionListenerDeclinedNewConnectionDuringDisposal
-        = new((int)Ids.ConnectionListenerDeclinedNewConnectionDuringDisposal, nameof(Ids.ConnectionListenerDeclinedNewConnectionDuringDisposal));
+    public static readonly EventId MessengerListenerStoppedListeningDueToDisposal
+        = new((int)Ids.MessengerListenerStoppedListeningDueToDisposal, nameof(Ids.MessengerListenerStoppedListeningDueToDisposal));
 
-    public static readonly EventId ConnectionListenerStoppedListeningDueToDisposal
-        = new((int)Ids.ConnectionListenerStoppedListeningDueToDisposal, nameof(Ids.ConnectionListenerStoppedListeningDueToDisposal));
+    public static readonly EventId MessengerListenerDeclinedNewConnectionDueToException
+        = new((int)Ids.MessengerListenerDeclinedNewConnectionDueToException, nameof(Ids.MessengerListenerDeclinedNewConnectionDueToException));
 
-    public static readonly EventId ConnectionListenerDeclinedNewConnectionDueToException
-        = new((int)Ids.ConnectionListenerDeclinedNewConnectionDueToException, nameof(Ids.ConnectionListenerDeclinedNewConnectionDueToException));
-
-    public static readonly EventId ConnectionListenerStoppedListeningDueToException
-        = new((int)Ids.ConnectionListenerStoppedListeningDueToException, nameof(Ids.ConnectionListenerStoppedListeningDueToException));
+    public static readonly EventId MessengerListenerStoppedListeningDueToException
+        = new((int)Ids.MessengerListenerStoppedListeningDueToException, nameof(Ids.MessengerListenerStoppedListeningDueToException));
 
     public static readonly EventId ServerEndPointRegistered = new((int)Ids.ServerEndPointRegistered, nameof(Ids.ServerEndPointRegistered));
 
@@ -83,15 +81,14 @@ public static class LogEventIds
         OutboundEndPointSentRequest,
         OutboundEndPointRemoteRpcException,
         OutboundEndPointExceptionTransmissionException,
-        ConnectionListenerWasCreatedWithSpecifiedPort,
-        ConnectionListenerWasCreatedWithEphemeralPort,
-        ConnectionListenerStartedListening,
-        ConnectionListenerAcceptedNewUnIdentifiedConnection,
-        ConnectionListenerAcceptedNewIdentifiedConnection,
-        ConnectionListenerDeclinedNewConnectionDuringDisposal,
-        ConnectionListenerDeclinedNewConnectionDueToException,
-        ConnectionListenerStoppedListeningDueToDisposal,
-        ConnectionListenerStoppedListeningDueToException,
+        MessengerListenerWasCreated,
+        MessengerListenerStartedListening,
+        MessengerListenerAcceptedNewUnIdentifiedConnection,
+        MessengerListenerAcceptedNewIdentifiedConnection,
+        MessengerListenerDeclinedNewConnectionDuringDisposal,
+        MessengerListenerDeclinedNewConnectionDueToException,
+        MessengerListenerStoppedListeningDueToDisposal,
+        MessengerListenerStoppedListeningDueToException,
         ServerEndPointRegistered,
         ServerEndPointDeregistered,
         ServerEndPointDeregisteredOnRegistryDisposal,

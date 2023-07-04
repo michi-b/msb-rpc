@@ -7,5 +7,5 @@ public interface IServerConfigurationBuilder : IConfigurationWithLoggerFactoryBu
 {
     IInboundEndPointRegistryConfigurationBuilder EndPointRegistryConfiguration { get; set; }
     IInboundEndPointConfigurationBuilder EndPointConfiguration { get; set; }
-    ConnectionListenerConfigurationBuilder ConnectionListenerConfiguration { get; set; }
+    MessengerListenerConfigurationBuilder MessengerListenerConfiguration { get; set; }
 }

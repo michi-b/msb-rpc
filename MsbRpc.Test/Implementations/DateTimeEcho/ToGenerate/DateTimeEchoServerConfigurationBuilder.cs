@@ -6,8 +6,8 @@ public class DateTimeEchoServerConfigurationBuilder : ServerConfigurationBuilder
 {
     public DateTimeEchoServerConfigurationBuilder()
     {
-        ConnectionListenerConfiguration.LoggingName = "DateTimeEchoServerConnectionListener";
-        ConnectionListenerConfiguration.ThreadName = "DateTimeEchoServerConnectionListener";
+        MessengerListenerConfiguration.LoggingName = "DateTimeEchoServerConnectionListener";
+        MessengerListenerConfiguration.ThreadName = "DateTimeEchoServerConnectionListener";
         EndPointRegistryConfiguration.LoggingName = "DateTimeEchoServerEndPointRegistry";
         EndPointConfiguration = new DateTimeEchoServerEndPointConfigurationBuilder();
     }

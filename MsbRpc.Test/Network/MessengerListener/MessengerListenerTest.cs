@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -9,29 +10,41 @@ namespace MsbRpc.Test.Network.MessengerListener;
 [TestClass]
 public class MessengerListenerTest : Base.Test
 {
-    private readonly ConnectionListenerConfigurationBuilder _configuration = new();
+    private readonly MessengerListenerConfigurationBuilder _configuration;
+
+    private ILogger<MessengerListenerTest> _logger;
+
+    public MessengerListenerTest()
+    {
+        ILoggerFactory loggerFactory = CreateLoggerFactory();
+        _logger = loggerFactory.CreateLogger<MessengerListenerTest>();
+        _configuration = new MessengerListenerConfigurationBuilder { LoggerFactory = loggerFactory };
+    }
 
     [TestMethod]
-    public void CanListen()
+    public void Listens()
     {
         Listener listener = Listener.Start(_configuration, new NullMessengerReceiver());
         listener.Dispose();
     }
 
+    // Listener CreateListener()
+    // {
+    //     
+    // }
+
     [TestMethod]
-    public async Task CanConnectOnce()
+    public async Task ConnectsOnce()
     {
-        const int maxRetries = 100;
         var buffer = new RpcBuffer();
         var messengerReceiver = new MockMessengerReceiver();
         Listener listener = Listener.Start(_configuration, messengerReceiver);
-        Messenger clientMessenger = await Messenger.ConnectAsync(listener.EndPoint, buffer);
-        int retryCount = 0;
-        while (!messengerReceiver.Messengers.TryDequeue(out Messenger connection))
-        {
-            Assert.AreNotEqual(retryCount++, maxRetries);
-            Thread.Sleep(100);
-        }
+        await Messenger.ConnectAsync(listener.EndPoint, buffer);
+        await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
+        Assert.AreEqual(1, messengerReceiver.Messengers.Count);
         listener.Dispose();
     }
+
+    // [TestMethod]
+    // public async Task ConnectsIdentified() { }
 }

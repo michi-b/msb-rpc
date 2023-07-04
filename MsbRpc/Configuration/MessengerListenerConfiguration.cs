@@ -3,7 +3,7 @@ using MsbRpc.Configuration.Builders;
 
 namespace MsbRpc.Configuration;
 
-public readonly struct ConnectionListenerConfiguration
+public readonly struct MessengerListenerConfiguration
 {
     public readonly ILoggerFactory? LoggerFactory;
 
@@ -20,9 +20,7 @@ public readonly struct ConnectionListenerConfiguration
 
     public readonly LogConfiguration LogStartedListening;
 
-    public readonly LogConfiguration LogWasCreatedWithEphemeralPort;
-
-    public readonly LogConfiguration LogWasCreatedWithSpecifiedPort;
+    public readonly LogConfiguration LogWasCreated;
 
     public readonly bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
 
@@ -33,7 +31,7 @@ public readonly struct ConnectionListenerConfiguration
 
     public readonly string ThreadName;
 
-    public ConnectionListenerConfiguration(ConnectionListenerConfigurationBuilder builder)
+    public MessengerListenerConfiguration(MessengerListenerConfigurationBuilder builder)
     {
         LoggerFactory = builder.LoggerFactory;
         ListenBacklogSize = builder.ListenBacklogSize;
@@ -46,8 +44,7 @@ public readonly struct ConnectionListenerConfiguration
         LogStoppedListeningDueToDisposal = builder.LogStoppedListeningDueToDisposal;
         LogDeclinedNewConnectionDueToException = builder.LogDeclinedNewConnectionDueToException;
         LogStoppedListeningDueToException = builder.LogStoppedListeningDueToException;
-        LogWasCreatedWithEphemeralPort = builder.LogWasCreatedWithEphemeralPort;
-        LogWasCreatedWithSpecifiedPort = builder.LogWasCreatedWithSpecifiedPort;
+        LogWasCreated = builder.LogWasCreated;
         Port = builder.Port;
         ThreadName = builder.ThreadName;
     }

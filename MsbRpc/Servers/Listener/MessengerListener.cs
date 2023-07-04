@@ -20,14 +20,14 @@ public class MessengerListener : ConcurrentDisposable
     private readonly RpcBuffer _initialConnectionMessageBuffer = new(InitialConnectionMessage.MessageMaxSize);
     private readonly ConcurrentDictionary<int, MessengerListenTask> _listenTasks = new();
     private readonly ILogger? _logger;
-    private readonly ConnectionListenerConfiguration _serverConfiguration;
+    private readonly MessengerListenerConfiguration _serverConfiguration;
     private readonly Socket _socket;
     private readonly IMessengerReceiver _unIdentifiedMessengerReceiver;
 
     [PublicAPI] public IPEndPoint EndPoint { get; }
     [PublicAPI] public Thread Thread { get; private set; }
 
-    private MessengerListener(Socket socket, ConnectionListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
+    private MessengerListener(Socket socket, MessengerListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
     {
         _socket = socket;
         _serverConfiguration = configuration;
@@ -37,20 +37,13 @@ public class MessengerListener : ConcurrentDisposable
 
         _logger = configuration.LoggerFactory?.CreateLogger<MessengerListener>();
 
-        if (EndPoint.Port == 0)
-        {
-            LogWasCreatedWithEphemeralPort();
-        }
-        else
-        {
-            LogWasCreatedWithSpecificPort();
-        }
+        LogWasCreated();
 
         // thread will always be set by public static "Run" method, which is the only non-private way to construct this class
         Thread = null!;
     }
 
-    public static MessengerListener Start(ConnectionListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
+    public static MessengerListener Start(MessengerListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
     {
         var socket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
@@ -185,37 +178,20 @@ public class MessengerListener : ConcurrentDisposable
         }
     }
 
-    private void LogWasCreatedWithEphemeralPort()
+    private void LogWasCreated()
     {
         if (_logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithEphemeralPort;
+            LogConfiguration configuration = _serverConfiguration.LogWasCreated;
             if (_logger.GetIsEnabled(configuration))
             {
                 _logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} was created with ephemeral port",
-                    _serverConfiguration.LoggingName
-                );
-            }
-        }
-    }
-
-    private void LogWasCreatedWithSpecificPort()
-    {
-        if (_logger != null)
-        {
-            LogConfiguration configuration = _serverConfiguration.LogWasCreatedWithSpecifiedPort;
-            if (_logger.GetIsEnabled(configuration))
-            {
-                _logger.Log
-                (
-                    configuration.Level,
-                    configuration.Id,
-                    "{LoggingName} was created with specified port",
-                    _serverConfiguration.LoggingName
+                    "{LoggingName} was created at {EndPoint}",
+                    _serverConfiguration.LoggingName,
+                    EndPoint
                 );
             }
         }
@@ -289,7 +265,7 @@ public class MessengerListener : ConcurrentDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} accepted new unidentified connection",
+                    "{LoggingName} accepted new unidentified messenger",
                     _serverConfiguration.LoggingName
                 );
             }
@@ -307,7 +283,7 @@ public class MessengerListener : ConcurrentDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} accepted new identified connection with connection ID {ConnectionId}",
+                    "{LoggingName} accepted new identified messenger with ID {ConnectionId}",
                     _serverConfiguration.LoggingName,
                     id
                 );

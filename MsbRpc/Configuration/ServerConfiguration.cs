@@ -6,7 +6,7 @@ namespace MsbRpc.Configuration;
 [PublicAPI]
 public readonly struct ServerConfiguration
 {
-    public readonly ConnectionListenerConfiguration ConnectionListenerConfiguration;
+    public readonly MessengerListenerConfiguration MessengerListenerConfiguration;
 
     public readonly InboundEndPointConfiguration InboundEndPointConfiguration;
 
@@ -16,6 +16,6 @@ public readonly struct ServerConfiguration
     {
         InboundEndPointConfiguration = new InboundEndPointConfiguration(builder.EndPointConfiguration);
         InboundEndPointRegistryConfiguration = new InboundEndpointRegistryConfiguration(builder.EndPointRegistryConfiguration);
-        ConnectionListenerConfiguration = new ConnectionListenerConfiguration(builder.ConnectionListenerConfiguration);
+        MessengerListenerConfiguration = new MessengerListenerConfiguration(builder.MessengerListenerConfiguration);
     }
 }

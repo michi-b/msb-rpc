@@ -23,7 +23,7 @@ public abstract class Server : ConcurrentDisposable, IMessengerReceiver
             throw new InvalidOperationException($"{ConnectionListener.Thread.Name} is already started.");
         }
 
-        ConnectionListener = MessengerListener.Start(Configuration.ConnectionListenerConfiguration, this);
+        ConnectionListener = MessengerListener.Start(Configuration.MessengerListenerConfiguration, this);
 
         return ConnectionListener;
     }
