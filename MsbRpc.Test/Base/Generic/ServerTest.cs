@@ -17,8 +17,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
     where TProcedure : Enum
     where TContract : IRpcContract
 {
-    protected async ValueTask<TClientEndPoint> ConnectAsync(Server server) 
-        => await ConnectAsync(new IPEndPoint(ServerTestUtility.LocalHost, server.ConnectionListener!.EndPoint.Port));
+    protected async ValueTask<TClientEndPoint> ConnectAsync(Server server) => await ConnectAsync(server.ConnectionListener!.EndPoint);
 
     protected abstract ValueTask<TClientEndPoint> ConnectAsync(IPEndPoint serverEndPoint);
 
