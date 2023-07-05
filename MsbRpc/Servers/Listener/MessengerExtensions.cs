@@ -6,20 +6,20 @@ namespace MsbRpc.Servers.Listener;
 
 public static class MessengerExtensions
 {
-    public static async ValueTask<InitialConnectionMessage> ReceiveInitialConnectionMessageAsync(this Messenger messenger, RpcBuffer buffer)
+    public static async ValueTask<ConnectionRequest> ReceiveConnectionRequestAsync(this Messenger messenger, RpcBuffer buffer)
     {
         ReceiveResult receiveResult = await messenger.ReceiveAsync(buffer);
         ReceiveReturnCode receiveReturnCode = receiveResult.ReturnCode;
 
         if (receiveReturnCode != ReceiveReturnCode.Success)
         {
-            throw new InitialConnectionMessageReceiveFailedException(receiveReturnCode);
+            throw new ReceiveConnectionRequestFailedException(receiveReturnCode);
         }
 
-        return InitialConnectionMessage.Read(receiveResult.Message);
+        return ConnectionRequest.Read(receiveResult.Message);
     }
 
-    public static async ValueTask SendInitialConnectionMessage(this Messenger messenger, InitialConnectionMessage target, RpcBuffer buffer)
+    public static async ValueTask SendConnectionRequest(this Messenger messenger, ConnectionRequest target, RpcBuffer buffer)
     {
         Message message = target.Write(buffer);
         await messenger.SendAsync(message);

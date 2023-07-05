@@ -12,6 +12,9 @@ public class MessengerListenerConfigurationBuilder : ConfigurationWithLoggerFact
     public LogConfigurationBuilder LogAcceptedNewUnIdentifiedConnection { get; set; } =
         new(LogEventIds.MessengerListenerAcceptedNewUnIdentifiedConnection, LogLevel.Trace);
 
+    public LogConfigurationBuilder LogCompletedIdentifiedConnectionTask { get; set; } =
+        new(LogEventIds.MessengerListenerCompletedIdentifiedConnectionTask, LogLevel.Trace);
+
     public LogConfigurationBuilder LogAcceptedNewIdentifiedConnection { get; set; } =
         new(LogEventIds.MessengerListenerAcceptedNewIdentifiedConnection, LogLevel.Trace);
 
@@ -29,11 +32,13 @@ public class MessengerListenerConfigurationBuilder : ConfigurationWithLoggerFact
     public LogConfigurationBuilder LogWasCreated { get; set; } = new(LogEventIds.MessengerListenerWasCreated);
 
     // ReSharper disable once RedundantDefaultMemberInitializer
+
     // 0 means "ephemeral port"
     public int Port { get; set; } = 0;
     public string ThreadName { get; set; } = "Server";
 
     // sets both the name and the logging name
+
     public string Name
     {
         set

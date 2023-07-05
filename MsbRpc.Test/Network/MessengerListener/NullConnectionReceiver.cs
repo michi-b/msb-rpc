@@ -6,7 +6,7 @@ namespace MsbRpc.Test.Network.MessengerListener;
 /// <summary>
 /// a connection receiver that immediately closes received connections
 /// </summary>
-public class NullMessengerReceiver : IMessengerReceiver
+public class NullConnectionReceiver : IConnectionReceiver
 {
     public void AcceptUnIdentified(Messenger messenger)
     {

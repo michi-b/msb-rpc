@@ -2,7 +2,7 @@
 
 namespace MsbRpc.Servers.Listener;
 
-public interface IMessengerReceiver
+public interface IConnectionReceiver
 {
     public void AcceptUnIdentified(Messenger messenger);
 }

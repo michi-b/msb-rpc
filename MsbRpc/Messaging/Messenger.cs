@@ -74,7 +74,7 @@ public class Messenger : MarkedDisposable
 
         var result = new Messenger(new RpcSocket(socket));
 
-        await result.SendInitialConnectionMessage(InitialConnectionMessage.UnIdentified, buffer);
+        await result.SendConnectionRequest(ConnectionRequest.UnIdentified, buffer);
 
         return result;
     }

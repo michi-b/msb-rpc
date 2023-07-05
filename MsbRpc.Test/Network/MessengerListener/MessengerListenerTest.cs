@@ -24,20 +24,15 @@ public class MessengerListenerTest : Base.Test
     [TestMethod]
     public void Listens()
     {
-        Listener listener = Listener.Start(_configuration, new NullMessengerReceiver());
+        Listener listener = Listener.Start(_configuration, new NullConnectionReceiver());
         listener.Dispose();
     }
-
-    // Listener CreateListener()
-    // {
-    //     
-    // }
 
     [TestMethod]
     public async Task ConnectsOnce()
     {
         var buffer = new RpcBuffer();
-        var messengerReceiver = new MockMessengerReceiver();
+        var messengerReceiver = new MockConnectionReceiver();
         Listener listener = Listener.Start(_configuration, messengerReceiver);
         await Messenger.ConnectAsync(listener.EndPoint, buffer);
         await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
@@ -45,6 +40,15 @@ public class MessengerListenerTest : Base.Test
         listener.Dispose();
     }
 
-    // [TestMethod]
-    // public async Task ConnectsIdentified() { }
+    [TestMethod]
+    public async Task ConnectsIdentified()
+    {
+        var buffer = new RpcBuffer();
+        var messengerReceiver = new MockConnectionReceiver();
+        Listener listener = Listener.Start(_configuration, messengerReceiver);
+        await Messenger.ConnectAsync(listener.EndPoint, buffer);
+        await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
+        Assert.AreEqual(1, messengerReceiver.Messengers.Count);
+        listener.Dispose();
+    }
 }

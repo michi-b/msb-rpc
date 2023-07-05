@@ -7,7 +7,7 @@ using MsbRpc.Servers.Listener;
 
 namespace MsbRpc.Servers;
 
-public abstract class Server : ConcurrentDisposable, IMessengerReceiver
+public abstract class Server : ConcurrentDisposable, IConnectionReceiver
 {
     protected readonly ServerConfiguration Configuration;
 

@@ -42,6 +42,9 @@ public static class LogEventIds
     public static readonly EventId MessengerListenerAcceptedNewUnIdentifiedConnection =
         new((int)Ids.MessengerListenerAcceptedNewUnIdentifiedConnection, nameof(Ids.MessengerListenerAcceptedNewUnIdentifiedConnection));
 
+    public static EventId MessengerListenerCompletedIdentifiedConnectionTask { get; set; }
+        = new((int)Ids.MessengerListenerSignalledIdentifiedConnectionTaskCompleted, nameof(Ids.MessengerListenerSignalledIdentifiedConnectionTaskCompleted));
+
     public static readonly EventId MessengerListenerAcceptedNewIdentifiedConnection =
         new((int)Ids.MessengerListenerAcceptedNewIdentifiedConnection, nameof(Ids.MessengerListenerAcceptedNewIdentifiedConnection));
 
@@ -83,6 +86,7 @@ public static class LogEventIds
         OutboundEndPointExceptionTransmissionException,
         MessengerListenerWasCreated,
         MessengerListenerStartedListening,
+        MessengerListenerSignalledIdentifiedConnectionTaskCompleted,
         MessengerListenerAcceptedNewUnIdentifiedConnection,
         MessengerListenerAcceptedNewIdentifiedConnection,
         MessengerListenerDeclinedNewConnectionDuringDisposal,
@@ -93,6 +97,6 @@ public static class LogEventIds
         ServerEndPointDeregistered,
         ServerEndPointDeregisteredOnRegistryDisposal,
         ServerEndPointThrewException,
-        MessengerConnectionFailed
+        MessengerConnectionFailed,
     }
 }

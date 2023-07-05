@@ -9,6 +9,7 @@ public readonly struct MessengerListenerConfiguration
 
     public readonly LogConfiguration LogAcceptedNewUnIdentifiedConnection;
 
+    public readonly LogConfiguration LogCompletedIdentifiedConnectionTask;
     public readonly LogConfiguration LogAcceptedNewIdentifiedConnection;
 
     public readonly LogConfiguration LogDeclinedNewConnectionDuringDisposal;
@@ -36,6 +37,7 @@ public readonly struct MessengerListenerConfiguration
         LoggerFactory = builder.LoggerFactory;
         ListenBacklogSize = builder.ListenBacklogSize;
         LogAcceptedNewUnIdentifiedConnection = builder.LogAcceptedNewUnIdentifiedConnection;
+        LogCompletedIdentifiedConnectionTask = builder.LogCompletedIdentifiedConnectionTask;
         LogAcceptedNewIdentifiedConnection = builder.LogAcceptedNewIdentifiedConnection;
         LogDeclinedNewConnectionDuringDisposal = builder.LogDeclinedNewConnectionDuringDisposal;
         LogExceptionWhenLoggingStoppedListeningDueToDisposal = builder.LogExceptionWhenLoggingStoppedListeningDueToDisposal;

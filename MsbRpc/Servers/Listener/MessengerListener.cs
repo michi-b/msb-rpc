@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -17,21 +16,21 @@ namespace MsbRpc.Servers.Listener;
 
 public class MessengerListener : ConcurrentDisposable
 {
-    private readonly RpcBuffer _initialConnectionMessageBuffer = new(InitialConnectionMessage.MessageMaxSize);
-    private readonly ConcurrentDictionary<int, MessengerListenTask> _listenTasks = new();
+    private readonly ConnectionTaskRegistry _connectionTasks = new();
+    private readonly RpcBuffer _initialConnectionMessageBuffer = new(ConnectionRequest.MessageMaxSize);
     private readonly ILogger? _logger;
     private readonly MessengerListenerConfiguration _serverConfiguration;
     private readonly Socket _socket;
-    private readonly IMessengerReceiver _unIdentifiedMessengerReceiver;
+    private readonly IConnectionReceiver _unIdentifiedConnectionReceiver;
 
     [PublicAPI] public IPEndPoint EndPoint { get; }
     [PublicAPI] public Thread Thread { get; private set; }
 
-    private MessengerListener(Socket socket, MessengerListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
+    private MessengerListener(Socket socket, MessengerListenerConfiguration configuration, IConnectionReceiver unIdentifiedConnectionReceiver)
     {
         _socket = socket;
         _serverConfiguration = configuration;
-        _unIdentifiedMessengerReceiver = unIdentifiedMessengerReceiver;
+        _unIdentifiedConnectionReceiver = unIdentifiedConnectionReceiver;
 
         EndPoint = (IPEndPoint)socket.LocalEndPoint;
 
@@ -43,13 +42,13 @@ public class MessengerListener : ConcurrentDisposable
         Thread = null!;
     }
 
-    public static MessengerListener Start(MessengerListenerConfiguration configuration, IMessengerReceiver unIdentifiedMessengerReceiver)
+    public static MessengerListener Start(MessengerListenerConfiguration configuration, IConnectionReceiver unIdentifiedConnectionReceiver)
     {
         var socket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
         socket.Bind(new IPEndPoint(NetworkUtility.GetLocalHost(), configuration.Port));
 
-        MessengerListener listener = new(socket, configuration, unIdentifiedMessengerReceiver);
+        MessengerListener listener = new(socket, configuration, unIdentifiedConnectionReceiver);
 
         string threadName = $"{listener._serverConfiguration.ThreadName}:{listener.EndPoint.Port}";
 
@@ -63,6 +62,34 @@ public class MessengerListener : ConcurrentDisposable
         listener.Thread = listener.ExecuteIfNotDisposed(StartListenThread);
 
         return listener;
+    }
+
+    /// <summary>
+    ///     schedules awaiting an identified connection that can be received by calling <see cref="Await(int, int)" />
+    /// </summary>
+    /// <returns>
+    ///     the id of the scheduled connection that can be used to receive the connection by calling
+    ///     <see cref="Await(int, int)" />
+    /// </returns>
+    public int ScheduleIdentifiedConnection() => _connectionTasks.Schedule();
+
+    /// <summary>
+    ///     awaits an identified connection task with the given id that can be retrieved by calling
+    ///     <see cref="ScheduleIdentifiedConnection" />
+    /// </summary>
+    /// <param name="identifiedConnectionId">
+    ///     the id of the connection task that was scheduled by calling <see cref="ScheduleIdentifiedConnection" />
+    /// </param>
+    /// <param name="millisecondsTimeout">
+    ///     the timeout in milliseconds after which the method will throw a <see cref="TimeoutException" />
+    /// </param>
+    /// <exception cref="TimeoutException"></exception>
+    /// <returns></returns>
+    public Messenger Await(int identifiedConnectionId, int millisecondsTimeout = ConnectionTask.DefaultMillisecondsTimeout)
+    {
+        Messenger messenger = _connectionTasks.Await(identifiedConnectionId, millisecondsTimeout);
+        LogAcceptedNewIdentifiedConnection(identifiedConnectionId);
+        return messenger;
     }
 
     protected override void DisposeManagedResources()
@@ -136,39 +163,40 @@ public class MessengerListener : ConcurrentDisposable
             CancellationToken cancellationToken = new CancellationTokenSource(timeOut).Token;
             cancellationToken.Register(() => messenger.Dispose());
 
-            InitialConnectionMessage connectionMessage = await messenger.ReceiveInitialConnectionMessageAsync(_initialConnectionMessageBuffer);
+            ConnectionRequest connectionRequest = await messenger.ReceiveConnectionRequestAsync(_initialConnectionMessageBuffer);
 
-            switch (connectionMessage.MessengerType)
+            switch (connectionRequest.ConnectionRequestType)
             {
-                case MessengerType.UnIdentified:
-                    _unIdentifiedMessengerReceiver.AcceptUnIdentified(messenger);
+                case ConnectionRequestType.UnIdentified:
+                    _unIdentifiedConnectionReceiver.AcceptUnIdentified(messenger);
                     LogAcceptedNewUnIdentifiedConnection();
                     break;
-                case MessengerType.Identified:
-                    if (connectionMessage.Id != null)
+                case ConnectionRequestType.Identified:
+                    if (connectionRequest.Id != null)
                     {
-                        if (_listenTasks.TryRemove(connectionMessage.Id.Value, out MessengerListenTask listenTask))
+                        try
                         {
-                            listenTask.Fullfill(messenger);
-                            LogAcceptedNewIdentifiedConnection(connectionMessage.Id.Value);
+                            _connectionTasks.Complete(connectionRequest.Id.Value, messenger);
+                            LogCompletedIdentifiedConnectionTask(connectionRequest.Id.Value);
                         }
-                        else
+                        catch (Exception e)
                         {
-                            throw new IdentifiedMessengerException
+                            throw new InvalidIdentifiedConnectionRequestException
                             (
-                                connectionMessage,
-                                $"registered listen tasks do not contain an entry for the id {connectionMessage.Id}"
+                                connectionRequest,
+                                $"registered listen tasks do not contain an entry for the id {connectionRequest.Id}",
+                                e
                             );
                         }
                     }
                     else
                     {
-                        throw new IdentifiedMessengerException(connectionMessage, "connection message is marked to be identified but has no ID");
+                        throw new InvalidIdentifiedConnectionRequestException(connectionRequest, "connection message is marked to be identified but has no ID");
                     }
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(MessengerType));
+                    throw new ArgumentOutOfRangeException(nameof(ConnectionRequestType));
             }
         }
         catch (Exception e)
@@ -267,6 +295,25 @@ public class MessengerListener : ConcurrentDisposable
                     configuration.Id,
                     "{LoggingName} accepted new unidentified messenger",
                     _serverConfiguration.LoggingName
+                );
+            }
+        }
+    }
+
+    private void LogCompletedIdentifiedConnectionTask(int id)
+    {
+        if (_logger != null)
+        {
+            LogConfiguration configuration = _serverConfiguration.LogCompletedIdentifiedConnectionTask;
+            if (_logger.GetIsEnabled(configuration))
+            {
+                _logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    "{LoggingName} completed identified connection task with id {ConnectionId}",
+                    _serverConfiguration.LoggingName,
+                    id
                 );
             }
         }

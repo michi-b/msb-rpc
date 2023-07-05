@@ -4,7 +4,7 @@ using MsbRpc.Servers.Listener;
 
 namespace MsbRpc.Test.Network.MessengerListener;
 
-public class MockMessengerReceiver : IMessengerReceiver
+public class MockConnectionReceiver : IConnectionReceiver
 {
     public ConcurrentQueue<Messenger> Messengers { get; } = new ConcurrentQueue<Messenger>();
 
