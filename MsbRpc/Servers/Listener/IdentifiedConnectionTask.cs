@@ -1,6 +1,6 @@
 ﻿using MsbRpc.Messaging;
 
-namespace MsbRpc.Servers.Listener.ConnectionTask;
+namespace MsbRpc.Servers.Listener;
 
 public class IdentifiedConnectionTask
 {

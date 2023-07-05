@@ -40,13 +40,13 @@ public class Messenger : MarkedDisposable
 
     public static async ValueTask<Messenger> ConnectAsync
     (
-        IPAddress address,
+        IPAddress ipAddress,
         int port,
         RpcBuffer buffer,
         ILoggerFactory? loggerFactory = null
     )
     {
-        IPEndPoint serverEndPoint = new(address, port);
+        IPEndPoint serverEndPoint = new(ipAddress, port);
         return await ConnectAsync(serverEndPoint, buffer, loggerFactory);
     }
 
@@ -57,7 +57,42 @@ public class Messenger : MarkedDisposable
         ILoggerFactory? loggerFactory = null
     )
     {
+        Messenger result = await ConnectAsync(serverEndPoint, loggerFactory);
+
+        await result.SendConnectionRequest(ConnectionRequest.UnIdentified, buffer);
+
+        return result;
+    }
+
+    public static ValueTask<Messenger> ConnectAsync
+    (
+        IPAddress ipAddress,
+        int port,
+        int identifiedConnectionRequestId,
+        RpcBuffer buffer,
+        ILoggerFactory? loggerFactory = null
+    )
+        => ConnectAsync(new IPEndPoint(ipAddress, port), identifiedConnectionRequestId, buffer, loggerFactory);
+
+    public static async ValueTask<Messenger> ConnectAsync
+    (
+        IPEndPoint serverEndPoint,
+        int identifiedConnectionRequestId,
+        RpcBuffer buffer,
+        ILoggerFactory? loggerFactory = null
+    )
+    {
+        Messenger result = await ConnectAsync(serverEndPoint, loggerFactory);
+
+        await result.SendConnectionRequest(new ConnectionRequest(identifiedConnectionRequestId), buffer);
+
+        return result;
+    }
+
+    private static async Task<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory)
+    {
         Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
         try
         {
             await socket.ConnectAsync(serverEndPoint);
@@ -72,11 +107,7 @@ public class Messenger : MarkedDisposable
             throw;
         }
 
-        var result = new Messenger(new RpcSocket(socket));
-
-        await result.SendConnectionRequest(ConnectionRequest.UnIdentified, buffer);
-
-        return result;
+        return new Messenger(new RpcSocket(socket));
     }
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)

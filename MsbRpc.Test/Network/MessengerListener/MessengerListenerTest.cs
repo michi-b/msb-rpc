@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+using MsbRpc.Servers.Listener;
 using Listener = MsbRpc.Servers.Listener.MessengerListener;
 
 namespace MsbRpc.Test.Network.MessengerListener;
@@ -12,13 +13,15 @@ public class MessengerListenerTest : Base.Test
 {
     private readonly MessengerListenerConfigurationBuilder _configuration;
 
-    private ILogger<MessengerListenerTest> _logger;
+    private readonly ILogger<MessengerListenerTest> _logger;
+
+    private readonly ILoggerFactory _loggerFactory;
 
     public MessengerListenerTest()
     {
-        ILoggerFactory loggerFactory = CreateLoggerFactory();
-        _logger = loggerFactory.CreateLogger<MessengerListenerTest>();
-        _configuration = new MessengerListenerConfigurationBuilder { LoggerFactory = loggerFactory };
+        _loggerFactory = CreateLoggerFactory();
+        _logger = _loggerFactory.CreateLogger<MessengerListenerTest>();
+        _configuration = new MessengerListenerConfigurationBuilder { LoggerFactory = _loggerFactory };
     }
 
     [TestMethod]
@@ -34,7 +37,7 @@ public class MessengerListenerTest : Base.Test
         var buffer = new RpcBuffer();
         var messengerReceiver = new MockConnectionReceiver();
         Listener listener = Listener.Start(_configuration, messengerReceiver);
-        await Messenger.ConnectAsync(listener.EndPoint, buffer);
+        await Messenger.ConnectAsync(listener.EndPoint, buffer, _loggerFactory);
         await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
         Assert.AreEqual(1, messengerReceiver.Messengers.Count);
         listener.Dispose();
@@ -46,9 +49,13 @@ public class MessengerListenerTest : Base.Test
         var buffer = new RpcBuffer();
         var messengerReceiver = new MockConnectionReceiver();
         Listener listener = Listener.Start(_configuration, messengerReceiver);
-        await Messenger.ConnectAsync(listener.EndPoint, buffer);
-        await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
-        Assert.AreEqual(1, messengerReceiver.Messengers.Count);
+        IdentifiedConnectionTask connectionTask = listener.Schedule();
+        _logger.Log(LogLevel.Information, "Scheduled connection task with id {ConnectionId}", connectionTask.Id);
+        await Messenger.ConnectAsync(listener.EndPoint, connectionTask.Id, buffer, _loggerFactory);
+        Messenger messenger = connectionTask.Await();
+        Assert.IsNotNull(messenger);
+        Assert.IsTrue(messenger.IsConnected);
+        Assert.AreEqual(0, messengerReceiver.Messengers.Count);
         listener.Dispose();
     }
 }

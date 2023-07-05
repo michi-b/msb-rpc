@@ -20,7 +20,7 @@ public class IdentifiedItemRegistry<TItem>
         {
             lock (this)
             {
-                id = _maxId++;
+                id = ++_maxId;
             }
         }
 

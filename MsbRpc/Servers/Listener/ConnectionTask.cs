@@ -3,13 +3,13 @@ using System.Diagnostics;
 using System.Threading;
 using MsbRpc.Messaging;
 
-namespace MsbRpc.Servers.Listener.ConnectionTask;
+namespace MsbRpc.Servers.Listener;
 
-public class ConnectionTask
+internal class ConnectionTask
 {
     public const int DefaultMillisecondsTimeout = 10000;
-    private Messenger? _result;
     private readonly ManualResetEventSlim _completed;
+    private Messenger? _result;
 
     public ConnectionTask()
     {

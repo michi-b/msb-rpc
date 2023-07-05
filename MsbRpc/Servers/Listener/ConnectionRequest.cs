@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 
@@ -19,7 +18,8 @@ public readonly struct ConnectionRequest
     public ConnectionRequestType ConnectionRequestType { get; }
     public int? Id { get; }
 
-    [MayBeUsedByGeneratedCode]
+    public ConnectionRequest(int identifiedConnectionRequestId) : this(ConnectionRequestType.Identified, identifiedConnectionRequestId) { }
+
     private ConnectionRequest(ConnectionRequestType connectionRequestType, int? id)
     {
         Debug.Assert(connectionRequestType == ConnectionRequestType.UnIdentified || id.HasValue);

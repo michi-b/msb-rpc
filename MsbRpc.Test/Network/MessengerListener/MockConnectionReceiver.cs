@@ -6,7 +6,7 @@ namespace MsbRpc.Test.Network.MessengerListener;
 
 public class MockConnectionReceiver : IConnectionReceiver
 {
-    public ConcurrentQueue<Messenger> Messengers { get; } = new ConcurrentQueue<Messenger>();
+    public ConcurrentQueue<Messenger> Messengers { get; } = new();
 
     public void AcceptUnIdentified(Messenger messenger)
     {

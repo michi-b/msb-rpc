@@ -4,7 +4,7 @@ using MsbRpc.Servers.Listener;
 namespace MsbRpc.Test.Network.MessengerListener;
 
 /// <summary>
-/// a connection receiver that immediately closes received connections
+///     a connection receiver that immediately closes received connections
 /// </summary>
 public class NullConnectionReceiver : IConnectionReceiver
 {

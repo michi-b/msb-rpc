@@ -14,9 +14,9 @@ using MsbRpc.Sockets;
 
 namespace MsbRpc.Servers.Listener;
 
-public class MessengerListener : ConcurrentDisposable
+public partial class MessengerListener : ConcurrentDisposable
 {
-    private readonly ConnectionTaskRegistry _connectionTasks = new();
+    private readonly ConnectionTaskRegistry _connectionTasks;
     private readonly RpcBuffer _initialConnectionMessageBuffer = new(ConnectionRequest.MessageMaxSize);
     private readonly ILogger? _logger;
     private readonly MessengerListenerConfiguration _serverConfiguration;
@@ -40,6 +40,8 @@ public class MessengerListener : ConcurrentDisposable
 
         // thread will always be set by public static "Run" method, which is the only non-private way to construct this class
         Thread = null!;
+
+        _connectionTasks = new ConnectionTaskRegistry(this);
     }
 
     public static MessengerListener Start(MessengerListenerConfiguration configuration, IConnectionReceiver unIdentifiedConnectionReceiver)
@@ -64,33 +66,7 @@ public class MessengerListener : ConcurrentDisposable
         return listener;
     }
 
-    /// <summary>
-    ///     schedules awaiting an identified connection that can be received by calling <see cref="Await(int, int)" />
-    /// </summary>
-    /// <returns>
-    ///     the id of the scheduled connection that can be used to receive the connection by calling
-    ///     <see cref="Await(int, int)" />
-    /// </returns>
-    public int ScheduleIdentifiedConnection() => _connectionTasks.Schedule();
-
-    /// <summary>
-    ///     awaits an identified connection task with the given id that can be retrieved by calling
-    ///     <see cref="ScheduleIdentifiedConnection" />
-    /// </summary>
-    /// <param name="identifiedConnectionId">
-    ///     the id of the connection task that was scheduled by calling <see cref="ScheduleIdentifiedConnection" />
-    /// </param>
-    /// <param name="millisecondsTimeout">
-    ///     the timeout in milliseconds after which the method will throw a <see cref="TimeoutException" />
-    /// </param>
-    /// <exception cref="TimeoutException"></exception>
-    /// <returns></returns>
-    public Messenger Await(int identifiedConnectionId, int millisecondsTimeout = ConnectionTask.DefaultMillisecondsTimeout)
-    {
-        Messenger messenger = _connectionTasks.Await(identifiedConnectionId, millisecondsTimeout);
-        LogAcceptedNewIdentifiedConnection(identifiedConnectionId);
-        return messenger;
-    }
+    public IdentifiedConnectionTask Schedule() => _connectionTasks.Schedule();
 
     protected override void DisposeManagedResources()
     {
@@ -172,26 +148,24 @@ public class MessengerListener : ConcurrentDisposable
                     LogAcceptedNewUnIdentifiedConnection();
                     break;
                 case ConnectionRequestType.Identified:
-                    if (connectionRequest.Id != null)
-                    {
-                        try
-                        {
-                            _connectionTasks.Complete(connectionRequest.Id.Value, messenger);
-                            LogCompletedIdentifiedConnectionTask(connectionRequest.Id.Value);
-                        }
-                        catch (Exception e)
-                        {
-                            throw new InvalidIdentifiedConnectionRequestException
-                            (
-                                connectionRequest,
-                                $"registered listen tasks do not contain an entry for the id {connectionRequest.Id}",
-                                e
-                            );
-                        }
-                    }
-                    else
+                    if (connectionRequest.Id == null)
                     {
                         throw new InvalidIdentifiedConnectionRequestException(connectionRequest, "connection message is marked to be identified but has no ID");
+                    }
+
+                    try
+                    {
+                        _connectionTasks.Complete(connectionRequest.Id.Value, messenger);
+                        LogCompletedIdentifiedConnectionTask(connectionRequest.Id.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new InvalidIdentifiedConnectionRequestException
+                        (
+                            connectionRequest,
+                            $"registered listen tasks do not contain an entry for the id {connectionRequest.Id}",
+                            e
+                        );
                     }
 
                     break;
@@ -319,7 +293,7 @@ public class MessengerListener : ConcurrentDisposable
         }
     }
 
-    private void LogAcceptedNewIdentifiedConnection(int id)
+    internal void LogAcceptedNewIdentifiedConnection(int id)
     {
         if (_logger != null)
         {
