@@ -8,6 +8,7 @@ using MsbRpc.Test.Utility;
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.Tests;
 
+[TestCategory($"{nameof(Implementations)}")]
 [TestClass]
 public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer, DateTimeEchoServerEndPoint, DateTimeEchoClientEndPoint, DateTimeEchoProcedure,
     IDateTimeEcho>

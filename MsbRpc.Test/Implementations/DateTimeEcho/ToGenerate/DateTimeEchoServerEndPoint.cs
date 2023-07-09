@@ -22,7 +22,6 @@ public class DateTimeEchoServerEndPoint
     (
         messenger,
         implementation,
-        id,
         configuration
     ) { }
 

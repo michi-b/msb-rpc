@@ -17,7 +17,6 @@ public class DateTimeEchoClientEndPoint
     ) : base
     (
         messenger,
-        buffer,
         configuration
     ) { }
 

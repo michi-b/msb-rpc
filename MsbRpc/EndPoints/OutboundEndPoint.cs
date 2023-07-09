@@ -24,22 +24,9 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
     protected OutboundEndPoint
     (
         Messenger messenger,
-        int id,
         in OutboundEndPointConfiguration configuration
     )
-        : base(messenger, id, configuration.InitialBufferSize, configuration.LoggingName)
-    {
-        Configuration = configuration;
-        _logger = Configuration.LoggerFactory?.CreateLogger<OutboundEndPoint<TProcedure>>();
-    }
-
-    protected OutboundEndPoint
-    (
-        Messenger messenger,
-        RpcBuffer buffer,
-        in OutboundEndPointConfiguration configuration
-    )
-        : base(messenger, buffer, configuration.LoggingName)
+        : base(messenger, new RpcBuffer(configuration.InitialBufferSize), configuration.LoggingName)
     {
         Configuration = configuration;
         _logger = Configuration.LoggerFactory?.CreateLogger<OutboundEndPoint<TProcedure>>();
@@ -179,9 +166,9 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "{LoggingNameWithId} encountered an exception while receiving an exception transmission for procedure '{ProcedureName}'"
+                    "{Name} encountered an exception while receiving an exception transmission for procedure '{ProcedureName}'"
                     + " and as a result this endpoint is being disposed",
-                    LoggingNameWithId,
+                    LoggingName,
                     GetName(procedure)
                 );
             }
@@ -201,9 +188,9 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
                     configuration.Level,
                     configuration.Id,
                     exception,
-                    "{LoggingNameWithId} had remote endpoint report an exception while handling a request for procedure '{ProcedureName}'"
+                    "{Name} had remote endpoint report an exception while handling a request for procedure '{ProcedureName}'"
                     + " with transmitted report '{ExceptionReport}'",
-                    LoggingNameWithId,
+                    LoggingName,
                     GetName(exception.Procedure),
                     transmission.GetReport()
                 );
@@ -222,8 +209,8 @@ public abstract class OutboundEndPoint<TProcedure> : EndPoint<TProcedure>, IOutb
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingNameWithId} sent a request to {ProcedureName} with {ArgumentByteCount} argument bytes",
-                    LoggingNameWithId,
+                    "{Name} sent a request to {ProcedureName} with {ArgumentByteCount} argument bytes",
+                    LoggingName,
                     GetName(procedure),
                     argumentByteCount
                 );
