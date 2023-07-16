@@ -149,6 +149,7 @@ internal static class Names
         public const string EndPointConfiguration = "EndPointConfiguration";
         public const string ServerConfiguration = "Configuration";
         public const string ServerConfigurationInboundEndPointConfiguration = "InboundEndPointConfiguration";
+        public const string ServerConfigurationMessengerListenerConfiguration = "MessengerListenerConfiguration";
     }
 
     public static class Fields

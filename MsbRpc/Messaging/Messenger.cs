@@ -89,27 +89,6 @@ public class Messenger : MarkedDisposable
         return result;
     }
 
-    private static async Task<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory)
-    {
-        Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-        try
-        {
-            await socket.ConnectAsync(serverEndPoint);
-        }
-        catch (Exception exception)
-        {
-            if (loggerFactory != null)
-            {
-                LogConnectionFailed(loggerFactory.CreateLogger<Messenger>(), serverEndPoint, exception);
-            }
-
-            throw;
-        }
-
-        return new Messenger(new RpcSocket(socket));
-    }
-
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
     {
         while (true)
@@ -237,6 +216,27 @@ public class Messenger : MarkedDisposable
     public void Send(Message message)
     {
         _socket.Send(message.GetFullMessageBuffer());
+    }
+
+    private static async Task<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory)
+    {
+        Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+        try
+        {
+            await socket.ConnectAsync(serverEndPoint);
+        }
+        catch (Exception exception)
+        {
+            if (loggerFactory != null)
+            {
+                LogConnectionFailed(loggerFactory.CreateLogger<Messenger>(), serverEndPoint, exception);
+            }
+
+            throw;
+        }
+
+        return new Messenger(new RpcSocket(socket));
     }
 
     protected override void Dispose(bool disposing)

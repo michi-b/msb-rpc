@@ -12,7 +12,6 @@ public class DateTimeEchoClientEndPoint
     private DateTimeEchoClientEndPoint
     (
         Messenger messenger,
-        RpcBuffer buffer,
         in OutboundEndPointConfiguration configuration
     ) : base
     (
@@ -28,7 +27,7 @@ public class DateTimeEchoClientEndPoint
     {
         RpcBuffer buffer = new(configuration.InitialBufferSize);
         Messenger messenger = await Messenger.ConnectAsync(endPoint, buffer, configuration.LoggerFactory);
-        var result = new DateTimeEchoClientEndPoint(messenger, buffer, configuration);
+        var result = new DateTimeEchoClientEndPoint(messenger, configuration);
         return result;
     }
 
