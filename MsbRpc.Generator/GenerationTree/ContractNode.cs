@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using MsbRpc.Generator.Enums;
@@ -6,6 +8,8 @@ using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
 using static MsbRpc.Generator.Utility.Names;
+
+#endregion
 
 namespace MsbRpc.Generator.GenerationTree;
 

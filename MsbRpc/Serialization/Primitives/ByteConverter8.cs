@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+#endregion
 
 #pragma warning disable CS0649
 

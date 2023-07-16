@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Messaging;
+
+#endregion
 
 namespace MsbRpc.Servers.Listener;
 

@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿#region
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
+
+#endregion
 
 namespace MsbRpc.Generator.GenerationTree;
 

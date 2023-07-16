@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Serializations;
 using MsbRpc.Generator.Utility;
+
+#endregion
 
 namespace MsbRpc.Generator.Serialization.Default;
 

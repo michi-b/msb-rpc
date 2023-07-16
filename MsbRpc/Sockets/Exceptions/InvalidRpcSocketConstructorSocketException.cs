@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Net.Sockets;
+
+#endregion
 
 namespace MsbRpc.Sockets.Exceptions;
 

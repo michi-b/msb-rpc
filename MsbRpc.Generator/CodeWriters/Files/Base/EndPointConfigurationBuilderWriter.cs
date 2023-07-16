@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.Utility.Names;
+
+#endregion
 
 namespace MsbRpc.Generator.CodeWriters.Files.Base;
 

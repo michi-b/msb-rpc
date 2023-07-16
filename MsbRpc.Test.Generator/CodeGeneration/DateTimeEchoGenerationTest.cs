@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿#region
+
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator;
 using MsbRpc.Test.Generator.Base;
+
+#endregion
 
 namespace MsbRpc.Test.Generator.CodeGeneration;
 

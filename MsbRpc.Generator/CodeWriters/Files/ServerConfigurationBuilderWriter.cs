@@ -1,7 +1,11 @@
-﻿using System.CodeDom.Compiler;
+﻿#region
+
+using System.CodeDom.Compiler;
 using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.GenerationTree;
 using static MsbRpc.Generator.Utility.Names;
+
+#endregion
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 

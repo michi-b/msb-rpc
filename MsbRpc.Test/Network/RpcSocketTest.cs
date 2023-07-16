@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿#region
+
+using System.Net;
 using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Network;
@@ -9,6 +11,8 @@ using MsbRpc.Sockets;
 using MsbRpc.Sockets.Exceptions;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
+
+#endregion
 
 namespace MsbRpc.Test.Network;
 

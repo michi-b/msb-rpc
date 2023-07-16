@@ -1,10 +1,14 @@
-﻿using System.Net;
+﻿#region
+
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration;
 using MsbRpc.Configuration.Builders.Extensions;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 using MsbRpc.Test.Utility;
+
+#endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.Tests;
 

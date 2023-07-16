@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
 using MsbRpc.Attributes;
 using static MsbRpc.Serialization.Primitives.PrimitiveSerializer;
+
+#endregion
 
 namespace MsbRpc.Serialization.Buffers;
 

@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using JetBrains.Annotations;
 using MsbRpc.Disposable;
 using MsbRpc.Exceptions;
+
+#endregion
 
 namespace MsbRpc.Contracts;
 

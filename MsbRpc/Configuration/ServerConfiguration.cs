@@ -1,5 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿#region
+
+using JetBrains.Annotations;
 using MsbRpc.Configuration.Builders.Interfaces;
+
+#endregion
 
 namespace MsbRpc.Configuration;
 

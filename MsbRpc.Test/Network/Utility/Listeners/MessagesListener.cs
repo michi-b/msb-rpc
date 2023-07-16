@@ -1,7 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#region
+
+using System.Diagnostics.CodeAnalysis;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 namespace MsbRpc.Test.Network.Utility.Listeners;
 

@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+
+#endregion
 
 namespace MsbRpc.Servers.Listener;
 

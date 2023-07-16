@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Text;
 using JetBrains.Annotations;
 using MsbRpc.Contracts;
 using MsbRpc.Serialization;
 using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 namespace MsbRpc.Exceptions;
 

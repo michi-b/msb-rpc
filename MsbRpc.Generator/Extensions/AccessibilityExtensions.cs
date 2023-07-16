@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Enums;
+
+#endregion
 
 namespace MsbRpc.Generator.Extensions;
 

@@ -1,4 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿#region
+
+using System.Collections.Immutable;
+
+#endregion
 
 namespace MsbRpc.Generator.Extensions;
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -10,6 +12,8 @@ using MsbRpc.Exceptions.Generic;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 namespace MsbRpc.EndPoints;
 

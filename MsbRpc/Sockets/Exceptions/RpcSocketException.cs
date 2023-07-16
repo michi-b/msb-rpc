@@ -1,6 +1,11 @@
 ﻿#nullable enable
+
+#region
+
 using System;
 using JetBrains.Annotations;
+
+#endregion
 
 namespace MsbRpc.Sockets.Exceptions;
 

@@ -1,6 +1,10 @@
-﻿using System.CodeDom.Compiler;
+﻿#region
+
+using System.CodeDom.Compiler;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
+
+#endregion
 
 namespace MsbRpc.Generator.Extensions;
 

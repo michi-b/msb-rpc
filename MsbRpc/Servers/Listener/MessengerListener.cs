@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -11,6 +13,8 @@ using MsbRpc.Messaging;
 using MsbRpc.Network;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
+
+#endregion
 
 namespace MsbRpc.Servers.Listener;
 

@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Immutable;
 using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Enums;
+
+#endregion
 
 namespace MsbRpc.Generator.Info;
 

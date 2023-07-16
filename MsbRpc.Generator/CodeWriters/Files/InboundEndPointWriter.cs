@@ -1,4 +1,6 @@
-﻿using System.CodeDom.Compiler;
+﻿#region
+
+using System.CodeDom.Compiler;
 using System.Linq;
 using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.Extensions;
@@ -9,6 +11,8 @@ using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.Utility.IndependentCode;
 using static MsbRpc.Generator.Utility.Names;
 using static MsbRpc.Generator.Utility.Names.Types;
+
+#endregion
 
 namespace MsbRpc.Generator.CodeWriters.Files;
 

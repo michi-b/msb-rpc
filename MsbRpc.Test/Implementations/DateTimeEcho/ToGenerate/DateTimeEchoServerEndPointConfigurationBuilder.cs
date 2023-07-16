@@ -1,4 +1,8 @@
-﻿using MsbRpc.Configuration.Builders;
+﻿#region
+
+using MsbRpc.Configuration.Builders;
+
+#endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 

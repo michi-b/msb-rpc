@@ -1,5 +1,9 @@
-﻿using System.Threading;
+﻿#region
+
+using System.Threading;
 using MsbRpc.EndPoints.Interfaces;
+
+#endregion
 
 namespace MsbRpc.Servers;
 

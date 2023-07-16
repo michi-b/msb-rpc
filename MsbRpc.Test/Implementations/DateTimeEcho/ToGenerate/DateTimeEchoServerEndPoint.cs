@@ -1,9 +1,13 @@
-﻿using MsbRpc.Configuration;
+﻿#region
+
+using MsbRpc.Configuration;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 // ReSharper disable UnusedParameter.Local
 

@@ -1,9 +1,13 @@
-﻿using System.CodeDom.Compiler;
+﻿#region
+
+using System.CodeDom.Compiler;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Serializations.Abstract;
 using MsbRpc.Generator.Utility;
 using static MsbRpc.Generator.Utility.Names;
+
+#endregion
 
 namespace MsbRpc.Generator.Serialization.Serializations;
 

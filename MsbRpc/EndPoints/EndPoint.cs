@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using MsbRpc.Attributes;
 using MsbRpc.Disposable;
@@ -6,6 +8,8 @@ using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 namespace MsbRpc.EndPoints;
 

@@ -1,6 +1,10 @@
-﻿using MsbRpc.Generator.Attributes.Serialization;
+﻿#region
+
+using MsbRpc.Generator.Attributes.Serialization;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+
+#endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho;
 

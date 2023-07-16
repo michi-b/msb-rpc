@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.CodeDom.Compiler;
+
+#endregion
 
 namespace MsbRpc.Generator.Serialization.Serializations;
 

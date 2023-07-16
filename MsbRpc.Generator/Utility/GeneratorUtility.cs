@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,6 +10,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Parsers;
+
+#endregion
 
 namespace MsbRpc.Generator.Utility;
 

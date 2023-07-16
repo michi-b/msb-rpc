@@ -1,6 +1,10 @@
-﻿using System.Net.Sockets;
+﻿#region
+
+using System.Net.Sockets;
 using MsbRpc.Messaging;
 using MsbRpc.Sockets;
+
+#endregion
 
 namespace MsbRpc.Test.Network.Utility;
 

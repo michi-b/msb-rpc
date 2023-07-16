@@ -1,4 +1,6 @@
-﻿using System.CodeDom.Compiler;
+﻿#region
+
+using System.CodeDom.Compiler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -6,6 +8,8 @@ using MsbRpc.Serialization.Primitives;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 using MessageList = System.Collections.Generic.List<System.ArraySegment<byte>>;
+
+#endregion
 
 namespace MsbRpc.Test.Network;
 

@@ -1,8 +1,12 @@
-﻿using System.Diagnostics;
+﻿#region
+
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+
+#endregion
 
 namespace MsbRpc.Test.Utility;
 

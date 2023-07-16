@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
 using static MsbRpc.Serialization.Buffers.BufferReader;
 using static MsbRpc.Serialization.Buffers.BufferWriter;
+
+#endregion
 
 namespace MsbRpc.Serialization.Arrays;
 

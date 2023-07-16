@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+
+#endregion
 
 namespace MsbRpc.Serialization;
 

@@ -1,6 +1,10 @@
-﻿using MsbRpc.Network;
+﻿#region
+
+using MsbRpc.Network;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
+
+#endregion
 
 namespace MsbRpc.Test.Network.Utility.Listeners;
 

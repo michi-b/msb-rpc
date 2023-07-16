@@ -1,6 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Messaging;
 using MsbRpc.Test.Network.Utility.Listeners;
+
+#endregion
 
 namespace MsbRpc.Test.Network;
 

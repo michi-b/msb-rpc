@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Exceptions;
+
+#endregion
 
 namespace MsbRpc.Contracts;
 

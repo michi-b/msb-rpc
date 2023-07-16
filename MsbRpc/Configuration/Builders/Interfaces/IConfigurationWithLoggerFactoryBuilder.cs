@@ -1,5 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿#region
+
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+
+#endregion
 
 namespace MsbRpc.Configuration.Builders.Interfaces;
 

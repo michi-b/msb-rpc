@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +8,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
+
+#endregion
 
 namespace MsbRpc.Test.Generator.SerializationGeneration.Utility;
 

@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿#region
+
+using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Interfaces;
+
+#endregion
 
 namespace MsbRpc.Configuration;
 

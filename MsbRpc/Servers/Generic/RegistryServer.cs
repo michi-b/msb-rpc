@@ -1,6 +1,10 @@
-﻿using MsbRpc.Configuration;
+﻿#region
+
+using MsbRpc.Configuration;
 using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Messaging;
+
+#endregion
 
 namespace MsbRpc.Servers.Generic;
 
@@ -21,7 +25,7 @@ public abstract class RegistryServer : Server
 
     public override void AcceptUnIdentified(Messenger messenger)
     {
-        _endPointRegistry.Start(CreateEndPoint(messenger));
+        _endPointRegistry.Run(CreateEndPoint(messenger));
     }
 
     protected abstract IInboundEndPoint CreateEndPoint(Messenger messenger);

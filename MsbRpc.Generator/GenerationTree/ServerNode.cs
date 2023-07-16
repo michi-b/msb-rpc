@@ -1,5 +1,9 @@
-﻿using MsbRpc.Generator.Info;
+﻿#region
+
+using MsbRpc.Generator.Info;
 using static MsbRpc.Generator.Utility.Names;
+
+#endregion
 
 namespace MsbRpc.Generator.GenerationTree;
 

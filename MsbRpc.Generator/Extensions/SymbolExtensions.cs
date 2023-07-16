@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using Microsoft.CodeAnalysis;
+
+#endregion
 
 namespace MsbRpc.Generator.Extensions;
 

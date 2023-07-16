@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
 using MsbRpc.Generator.Extensions;
 using MsbRpc.Generator.GenerationTree;
+
+#endregion
 
 namespace MsbRpc.Generator.CodeWriters.Files.Base;
 

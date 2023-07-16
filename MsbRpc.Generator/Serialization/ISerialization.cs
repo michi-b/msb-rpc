@@ -1,4 +1,8 @@
-﻿using System.CodeDom.Compiler;
+﻿#region
+
+using System.CodeDom.Compiler;
+
+#endregion
 
 namespace MsbRpc.Generator.Serialization;
 

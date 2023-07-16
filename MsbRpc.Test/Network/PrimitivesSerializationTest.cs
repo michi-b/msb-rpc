@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#region
+
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Network;
 using MsbRpc.Serialization.Primitives;
@@ -6,6 +8,8 @@ using MsbRpc.Sockets;
 using MsbRpc.Test.Base.Generic;
 using MsbRpc.Test.Network.Utility;
 using MsbRpc.Test.Network.Utility.Listeners;
+
+#endregion
 
 namespace MsbRpc.Test.Network;
 

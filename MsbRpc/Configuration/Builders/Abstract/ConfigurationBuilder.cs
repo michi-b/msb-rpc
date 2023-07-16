@@ -1,4 +1,8 @@
-﻿using MsbRpc.Configuration.Builders.Interfaces.Generic;
+﻿#region
+
+using MsbRpc.Configuration.Builders.Interfaces.Generic;
+
+#endregion
 
 namespace MsbRpc.Configuration.Builders.Abstract;
 

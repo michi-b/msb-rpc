@@ -1,9 +1,13 @@
-﻿using JetBrains.Annotations;
+﻿#region
+
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+
+#endregion
 
 namespace MsbRpc.Test.Base;
 

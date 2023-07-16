@@ -1,7 +1,11 @@
-﻿using MsbRpc.Configuration;
+﻿#region
+
+using MsbRpc.Configuration;
 using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.Generic;
+
+#endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 

@@ -1,4 +1,8 @@
-﻿using Misbat.CodeAnalysis.Test.CodeTest;
+﻿#region
+
+using Misbat.CodeAnalysis.Test.CodeTest;
+
+#endregion
 
 namespace MsbRpc.Test.Generator.Utility;
 

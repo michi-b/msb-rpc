@@ -1,6 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿#region
+
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Test.Utility;
+
+#endregion
 
 namespace MsbRpc.Test.Base.Generic;
 

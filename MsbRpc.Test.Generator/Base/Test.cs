@@ -1,6 +1,10 @@
-﻿using System.Threading;
+﻿#region
+
+using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+#endregion
 
 namespace MsbRpc.Test.Generator.Base;
 

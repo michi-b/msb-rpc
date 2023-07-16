@@ -1,4 +1,8 @@
-﻿using MsbRpc.Contracts;
+﻿#region
+
+using MsbRpc.Contracts;
+
+#endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho;
 

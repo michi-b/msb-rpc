@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Generator.Enums;
+
+#endregion
 
 namespace MsbRpc.Generator.Extensions;
 

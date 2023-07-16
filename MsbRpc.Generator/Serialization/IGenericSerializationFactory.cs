@@ -1,4 +1,8 @@
-﻿using MsbRpc.Generator.Info;
+﻿#region
+
+using MsbRpc.Generator.Info;
+
+#endregion
 
 namespace MsbRpc.Generator.Serialization;
 

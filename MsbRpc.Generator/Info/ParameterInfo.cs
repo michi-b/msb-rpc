@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Utility;
+
+#endregion
 
 namespace MsbRpc.Generator.Info;
 

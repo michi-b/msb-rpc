@@ -1,6 +1,10 @@
-﻿using System.Collections.Immutable;
+﻿#region
+
+using System.Collections.Immutable;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization;
+
+#endregion
 
 namespace MsbRpc.Generator.GenerationTree;
 

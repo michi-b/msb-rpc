@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Attributes;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Extensions;
+
+#endregion
 
 namespace MsbRpc.Generator.Info.Parsers;
 

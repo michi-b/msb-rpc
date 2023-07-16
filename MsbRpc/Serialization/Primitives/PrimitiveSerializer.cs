@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using JetBrains.Annotations;
+
+#endregion
 
 namespace MsbRpc.Serialization.Primitives;
 

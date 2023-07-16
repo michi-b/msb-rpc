@@ -1,7 +1,11 @@
-﻿using System.Net;
+﻿#region
+
+using System.Net;
 using System.Net.Sockets;
 using JetBrains.Annotations;
 using MsbRpc.Network;
+
+#endregion
 
 namespace MsbRpc.Test.Network.Utility;
 

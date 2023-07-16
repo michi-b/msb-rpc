@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -11,6 +13,8 @@ using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Info.Comparers;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Utility;
+
+#endregion
 
 namespace MsbRpc.Generator;
 

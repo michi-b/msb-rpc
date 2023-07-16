@@ -1,4 +1,8 @@
-﻿using MsbRpc.Messaging;
+﻿#region
+
+using MsbRpc.Messaging;
+
+#endregion
 
 namespace MsbRpc.Servers.Listener;
 

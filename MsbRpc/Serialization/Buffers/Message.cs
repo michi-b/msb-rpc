@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using MsbRpc.Attributes;
 using MsbRpc.Serialization.Primitives;
+
+#endregion
 
 namespace MsbRpc.Serialization.Buffers;
 

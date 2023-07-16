@@ -1,8 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Serialization;
 using MsbRpc.Serialization.Arrays;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
+
+#endregion
 
 namespace MsbRpc.Test.Serialization;
 

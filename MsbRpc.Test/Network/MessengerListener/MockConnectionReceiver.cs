@@ -1,6 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿#region
+
+using System.Collections.Concurrent;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.Listener;
+
+#endregion
 
 namespace MsbRpc.Test.Network.MessengerListener;
 

@@ -1,5 +1,9 @@
-﻿using MsbRpc.Generator.CodeWriters.Files.Base;
+﻿#region
+
+using MsbRpc.Generator.CodeWriters.Files.Base;
 using MsbRpc.Generator.Enums;
+
+#endregion
 
 namespace MsbRpc.Generator.GenerationTree;
 

@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Generator.Serialization;
 using MsbRpc.Generator.Serialization.Default;
 using MsbRpc.Test.Generator.SerializationGeneration.Utility;
+
+#endregion
 
 namespace MsbRpc.Test.Generator.SerializationGeneration;
 

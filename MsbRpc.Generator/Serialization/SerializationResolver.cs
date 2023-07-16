@@ -1,14 +1,22 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using MsbRpc.Generator.Info;
 using MsbRpc.Generator.Serialization.Default;
 using MsbRpc.Generator.Serialization.Serializations;
 using MsbRpc.Generator.Serialization.Serializations.Decorators;
 using static MsbRpc.Generator.Utility.Names;
 
+#endregion
+
 namespace MsbRpc.Generator.Serialization;
+
+#region
 
 using SerializationRegistry = Dictionary<TypeReferenceInfo, ISerialization>;
 using GenericSerializationFactoryRegistry = Dictionary<NamedTypeDeclarationInfo, IGenericSerializationFactory>;
+
+#endregion
 
 public class SerializationResolver
 {

@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using MsbRpc.Generator.Enums;
 using MsbRpc.Generator.Info;
+
+#endregion
 
 namespace MsbRpc.Generator.Serialization.Serializations;
 

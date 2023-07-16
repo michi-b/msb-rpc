@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Concurrent;
+
+#endregion
 
 namespace MsbRpc.Servers.Listener;
 

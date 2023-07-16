@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -9,6 +11,8 @@ using MsbRpc.Configuration;
 using MsbRpc.Disposable;
 using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Extensions;
+
+#endregion
 
 namespace MsbRpc.Servers;
 
@@ -36,7 +40,7 @@ public class InboundEndPointRegistry : ConcurrentDisposable
     }
 
     [PublicAPI]
-    public void Start(IInboundEndPoint endPoint)
+    public void Run(IInboundEndPoint endPoint)
     {
         void RunUnsafe()
         {

@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿#region
+
+using System.Net;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
@@ -6,6 +8,8 @@ using MsbRpc.Exceptions;
 using MsbRpc.Servers;
 using MsbRpc.Servers.Generic;
 using MsbRpc.Test.Utility;
+
+#endregion
 
 namespace MsbRpc.Test.Base.Generic;
 

@@ -1,8 +1,12 @@
-﻿using System.Net;
+﻿#region
+
+using System.Net;
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
@@ -9,6 +11,8 @@ using MsbRpc.Generator.Attributes;
 using MsbRpc.Test.Generator.Utility;
 using Serilog;
 using Serilog.Core;
+
+#endregion
 
 namespace MsbRpc.Test.Generator.Base;
 

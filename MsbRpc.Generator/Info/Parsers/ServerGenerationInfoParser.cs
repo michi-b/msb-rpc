@@ -1,4 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#region
+
+using Microsoft.CodeAnalysis;
+
+#endregion
 
 namespace MsbRpc.Generator.Info.Parsers;
 

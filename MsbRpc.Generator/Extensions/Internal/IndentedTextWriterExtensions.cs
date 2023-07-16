@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.CodeDom.Compiler;
 using MsbRpc.Generator.GenerationTree;
 using MsbRpc.Generator.Utility;
+
+#endregion
 
 namespace MsbRpc.Generator.Extensions.Internal;
 

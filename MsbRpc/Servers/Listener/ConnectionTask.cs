@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using System.Threading;
 using MsbRpc.Messaging;
+
+#endregion
 
 namespace MsbRpc.Servers.Listener;
 

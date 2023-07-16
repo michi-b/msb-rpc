@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using MsbRpc.Generator.Utility;
+
+#endregion
 
 namespace MsbRpc.Generator.Info;
 

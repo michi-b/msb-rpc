@@ -1,5 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#region
+
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
+
+#endregion
 
 namespace MsbRpc.Generator;
 

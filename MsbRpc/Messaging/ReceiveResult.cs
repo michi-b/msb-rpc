@@ -1,4 +1,8 @@
-﻿using MsbRpc.Serialization.Buffers;
+﻿#region
+
+using MsbRpc.Serialization.Buffers;
+
+#endregion
 
 namespace MsbRpc.Messaging;
 
