@@ -9,7 +9,7 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <Version>0.0.0-preview.16</Version>
+        <Version>0.0.0-preview.17</Version>
         <Title>MsbRpc.Generator</Title>
         <Authors>Michael Simon Brunner</Authors>
         <Description>MsbRpc is a remote procedure call framework based on TCP Sockets and Roslyn source generators</Description>
@@ -25,10 +25,12 @@
     <ItemGroup>
         <None Include="..\icon.png">
           <Pack>True</Pack>
+          <PackagePath>\</PackagePath>
           <Link>icon.png</Link>
         </None>
         <None Include="..\LICENSE.txt">
           <Pack>True</Pack>
+          <PackagePath>\</PackagePath>
           <Link>LICENSE.txt</Link>
        </None>
        <None Include="README.md">
@@ -56,6 +58,7 @@
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(OutputPath)\MsbRpc.Generator.Attributes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(OutputPath)\MsbRpc.Generator.Attributes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false" />
+        <None Include="$(OutputPath)\MsbRpc.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false" />
     </ItemGroup>
     
     <ItemGroup>
