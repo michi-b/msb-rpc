@@ -9,7 +9,7 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <Version>0.0.0-preview.16</Version>
+        <!--<Version>0.0.0-preview.16</Version>-->
         <Title>MsbRpc</Title>
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
         <Authors>Michael Simon Brunner</Authors>
@@ -26,12 +26,10 @@
     <ItemGroup>
         <None Include="..\icon.png">
             <Pack>True</Pack>
-            <PackagePath></PackagePath>
             <Link>icon.png</Link>
         </None>
         <None Include="..\LICENSE.txt">
             <Pack>True</Pack>
-            <PackagePath></PackagePath>
             <Link>LICENSE.txt</Link>
         </None>
         <None Include="README.md">
