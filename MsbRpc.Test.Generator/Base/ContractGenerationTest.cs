@@ -53,9 +53,8 @@ public abstract class ContractGenerationTest<TTest, TGenerator> : SingleGenerati
         => await TestGeneratesFile($"{_contractName}ServerEndPointConfigurationBuilder.g.cs");
 
     protected async Task<CodeTestResult> TestGeneratesServerConfigurationBuilder() => await TestGeneratesFile($"{_contractName}ServerConfigurationBuilder.g.cs");
-    protected async Task<CodeTestResult> TestGeneratesImplementationFactoryInterface() => await TestGeneratesFile($"I{_contractName}ImplementationFactory.g.cs");
 
-    protected async Task<CodeTestResult> TestGeneratesImplementationFactory() => await TestGeneratesFile($"{_contractName}ImplementationFactory.g.cs");
+    protected async Task<CodeTestResult> TestGeneratesServer() => await TestGeneratesFile($"{_contractName}Server.g.cs");
 
     #endregion
 }

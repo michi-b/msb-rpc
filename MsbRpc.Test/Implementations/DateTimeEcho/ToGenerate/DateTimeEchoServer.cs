@@ -21,5 +21,5 @@ public class DateTimeEchoServer : RegistryServer
     }
 
     protected override IInboundEndPoint CreateEndPoint(Messenger messenger)
-        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), Configuration.InboundEndPointConfiguration);
+        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), Configuration.EndPointConfiguration);
 }

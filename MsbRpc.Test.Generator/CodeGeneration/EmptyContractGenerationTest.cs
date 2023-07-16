@@ -60,13 +60,10 @@ public interface IEmptyContract : IRpcContract { }";
     public async Task GeneratesServerEndPointConfigurationBuilder() => await TestGeneratesServerEndPointConfigurationBuilder();
 
     [TestMethod]
-    public async Task GeneratesImplementationFactoryInterface() => await TestGeneratesImplementationFactoryInterface();
-
-    [TestMethod]
-    public async Task GeneratesImplementationFactory() => await TestGeneratesImplementationFactory();
-
-    [TestMethod]
     public async Task GeneratesServerConfigurationBuilder() => await TestGeneratesServerConfigurationBuilder();
+
+    [TestMethod]
+    public async Task GeneratesServer() => await TestGeneratesServer();
 
     #endregion
 }

@@ -62,11 +62,5 @@ public interface IArrayElementCounter : IRpcContract
     [TestMethod]
     public async Task GeneratesServerEndPointConfigurationBuilder() => await TestGeneratesServerEndPointConfigurationBuilder();
 
-    [TestMethod]
-    public async Task GeneratesImplementationFactoryInterface() => await TestGeneratesImplementationFactoryInterface();
-
-    [TestMethod]
-    public async Task GeneratesImplementationFactory() => await TestGeneratesImplementationFactory();
-
     #endregion
 }

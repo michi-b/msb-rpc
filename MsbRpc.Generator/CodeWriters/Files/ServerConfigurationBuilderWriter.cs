@@ -11,16 +11,20 @@ internal class ServerConfigurationBuilderWriter : ConfigurationBuilderWriter
 
     private readonly string _endPointRegistryLoggingName;
 
+    private readonly ServerNode _server;
+
     protected override string BaseClass => Types.ServerConfigurationBuilder;
 
-    public ServerConfigurationBuilderWriter(ContractNode contract) : base
-        (contract, $"{contract.ServerName}{ConfigurationBuilderPostfix}")
-        => _endPointRegistryLoggingName = contract.ServerName + EndPointRegistryPostFix;
+    public ServerConfigurationBuilderWriter(ServerNode server) : base(server.Contract, $"{server.Name}{ConfigurationBuilderPostfix}")
+    {
+        _server = server;
+        _endPointRegistryLoggingName = server.Name + EndPointRegistryPostFix;
+    }
 
     protected override void WriteConstructorBody(IndentedTextWriter writer)
     {
-        string listenerConfiguration = Properties.ServerConfigurationMessengerListenerConfiguration;
-        string listenerName = $"{Contract.ServerName}Listener";
+        string listenerConfiguration = Properties.MessengerListenerConfiguration;
+        string listenerName = $"{_server.Name}Listener";
 
         writer.WriteLine($"{listenerConfiguration}.{Properties.LoggingName} = \"{listenerName}\";");
         writer.WriteLine($"{listenerConfiguration}.{Properties.ThreadName} = \"{listenerName}\";");

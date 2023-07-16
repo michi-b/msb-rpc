@@ -11,21 +11,12 @@ namespace MsbRpc.Generator.GenerationTree;
 
 internal class ContractNode
 {
-    private const string ImplementationFactoryInterfacePostFix = "ImplementationFactory";
-    private const string ServerPostfix = "Server";
-
     public readonly string AccessibilityKeyword;
     public readonly EndPointNode ClientEndPoint;
 
     public readonly int DefaultInitialBufferSize;
 
-    /// <summary>
-    ///     implementation factory interface name prepended with namespace
-    /// </summary>
-    public readonly string ImplementationFactoryInterface;
-
     // contract name depended names
-    public readonly string ImplementationFactoryInterfaceName;
 
     /// <summary>
     ///     interface name prepended with namespace
@@ -43,14 +34,9 @@ internal class ContractNode
 
     // child nodes
     public readonly ProcedureCollectionNode Procedures;
+
+    public readonly ServerNode? Server;
     public readonly EndPointNode ServerEndPoint;
-
-    public readonly ServerGenerationNode? ServerGeneration;
-
-    /// <summary>
-    ///     name of the server class
-    /// </summary>
-    public readonly string ServerName;
 
     public ContractNode(ref ContractInfo info)
     {
@@ -63,11 +49,6 @@ internal class ContractNode
         PascalCaseName = GetContractName(InterfaceName);
         Namespace = $"{info.Namespace}{GeneratedNamespacePostFix}";
 
-        //contract name depended names
-        ImplementationFactoryInterfaceName = $"{InterfaceName}{ImplementationFactoryInterfacePostFix}";
-        ImplementationFactoryInterface = $"{Namespace}.{ImplementationFactoryInterfaceName}";
-        ServerName = $"{PascalCaseName}{ServerPostfix}";
-
         var serializationResolver = new SerializationResolver(info.CustomSerializations.ToArray());
 
         ImmutableArray<ProcedureInfo> procedures = info.Procedures;
@@ -77,9 +58,10 @@ internal class ContractNode
         ClientEndPoint = CreateEndPointNode(info, EndPointType.Client);
         ServerEndPoint = CreateEndPointNode(info, EndPointType.Server);
 
+        // server node depends on the server endpoint, so must be constructed afterwards
         if (info.ServerGeneration != null)
         {
-            ServerGeneration = new ServerGenerationNode(info.ServerGeneration.Value, this);
+            Server = new ServerNode(info.ServerGeneration.Value, this);
         }
     }
 

@@ -79,6 +79,7 @@ internal static class Names
     public static class Interfaces
     {
         public const string InboundEndPoint = "MsbRpc.EndPoints.Interfaces.IInboundEndPoint";
+        public const string Factory = "MsbRpc.IFactory";
     }
 
     public static class Methods
@@ -118,12 +119,22 @@ internal static class Names
         public const string BufferReaderReadDecimal = "ReadDecimal";
         public const string BufferReaderReadString = "ReadString";
 
+        // server stuff
+        public const string CreateEndPoint = "CreateEndPoint";
+
+        // any factory "Create" method
+        public const string Create = "Create";
+
+        // for e.g. running a server in a separate thread
+        public const string Run = "Run";
+
+        // for e.g. listening for connections or messages in a thread
+        public const string ServerListen = "Listen";
+
+        // serializer stuff
         public const string SerializerGetSize = "GetSize";
         public const string SerializerWrite = "Write";
         public const string SerializerRead = "Read";
-
-        public const string ServerCreateEndPoint = "CreateEndPoint";
-        public const string ImplementationFactoryCreate = "Create";
     }
 
     public static class Parameters
@@ -136,8 +147,6 @@ internal static class Names
         public const string Request = "request";
         public const string IPEndPoint = "endPoint";
         public const string Configuration = "configuration";
-        public const string FactoryCreateFunc = "create";
-        public const string Id = "id";
     }
 
     public static class Properties
@@ -148,8 +157,7 @@ internal static class Names
         public const string EndPointRegistryConfiguration = "EndPointRegistryConfiguration";
         public const string EndPointConfiguration = "EndPointConfiguration";
         public const string ServerConfiguration = "Configuration";
-        public const string ServerConfigurationInboundEndPointConfiguration = "InboundEndPointConfiguration";
-        public const string ServerConfigurationMessengerListenerConfiguration = "MessengerListenerConfiguration";
+        public const string MessengerListenerConfiguration = "MessengerListenerConfiguration";
     }
 
     public static class Fields
@@ -190,6 +198,7 @@ internal static class Names
         public const string ResponseWriter = "responseWriter";
         public const string ArgumentSizeSum = "argumentSizeSum";
         public const string Exception = "exception";
+        public const string Server = "server";
     }
 
     public static string PascalToCamelCase(this string target)
