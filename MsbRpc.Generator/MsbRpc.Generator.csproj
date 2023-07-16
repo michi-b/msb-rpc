@@ -25,12 +25,10 @@
     <ItemGroup>
         <None Include="..\icon.png">
           <Pack>True</Pack>
-          <PackagePath></PackagePath>
           <Link>icon.png</Link>
         </None>
         <None Include="..\LICENSE.txt">
           <Pack>True</Pack>
-          <PackagePath></PackagePath>
           <Link>LICENSE.txt</Link>
        </None>
        <None Include="README.md">
@@ -51,6 +49,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\MsbRpc.Generator.Attributes\MsbRpc.Generator.Attributes.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\MsbRpc\MsbRpc.csproj" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
