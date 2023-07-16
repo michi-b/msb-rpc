@@ -6,18 +6,18 @@ using MsbRpc.Messaging;
 
 #endregion
 
-namespace MsbRpc.Servers.Generic;
+namespace MsbRpc.Servers;
 
 /// <summary>
 ///     extends server with registration of endpoints, and disposes them on disposal, also joining their threads
 /// </summary>
-public abstract class RegistryServer : Server
+public abstract class InboundEndPointServer : Server
 {
     private readonly InboundEndPointRegistry _endPointRegistry;
 
     public InboundEndPointRegistryEntry[] EndPoints => _endPointRegistry.EndPoints;
 
-    protected RegistryServer(ref ServerConfiguration configuration) : base(ref configuration)
+    protected InboundEndPointServer(ref ServerConfiguration configuration) : base(ref configuration)
     {
         InboundEndpointRegistryConfiguration endPointRegistryConfiguration = configuration.InboundEndPointRegistryConfiguration;
         _endPointRegistry = new InboundEndPointRegistry(ref endPointRegistryConfiguration);

@@ -27,7 +27,7 @@ internal class ServerWriter : CodeFileWriter
 
     protected override void Write(IndentedTextWriter writer)
     {
-        writer.WriteLine($"{Contract.AccessibilityKeyword} class {_server.Name} : {Types.RegistryServer}");
+        writer.WriteLine($"{Contract.AccessibilityKeyword} class {_server.Name} : {Types.InboundEndPointServer}");
 
         using (writer.GetBlock(Appendix.None))
         {

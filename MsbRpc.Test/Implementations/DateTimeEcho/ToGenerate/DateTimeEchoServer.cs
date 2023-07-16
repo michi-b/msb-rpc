@@ -3,13 +3,13 @@
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Messaging;
-using MsbRpc.Servers.Generic;
+using MsbRpc.Servers;
 
 #endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
-public class DateTimeEchoServer : RegistryServer
+public class DateTimeEchoServer : InboundEndPointServer
 {
     private readonly IFactory<IDateTimeEcho> _implementationFactory;
 

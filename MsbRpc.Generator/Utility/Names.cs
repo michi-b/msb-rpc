@@ -73,7 +73,7 @@ internal static class Names
         public const string ServerConfigurationBuilder = "MsbRpc.Configuration.Builders.ServerConfigurationBuilder";
         public const string ServerConfiguration = "MsbRpc.Configuration.ServerConfiguration";
 
-        public const string RegistryServer = "MsbRpc.Servers.Generic.RegistryServer";
+        public const string InboundEndPointServer = "MsbRpc.Servers.InboundEndPointServer";
     }
 
     public static class Interfaces

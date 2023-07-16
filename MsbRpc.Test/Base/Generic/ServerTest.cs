@@ -6,7 +6,6 @@ using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
 using MsbRpc.Servers;
-using MsbRpc.Servers.Generic;
 using MsbRpc.Test.Utility;
 
 #endregion
@@ -15,7 +14,7 @@ namespace MsbRpc.Test.Base.Generic;
 
 public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract> : Test<TTest>
     where TTest : ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract>
-    where TServer : RegistryServer
+    where TServer : InboundEndPointServer
     where TServerEndPoint : InboundEndPoint<TProcedure, TContract>
     where TClientEndPoint : OutboundEndPoint<TProcedure>
     where TProcedure : Enum
