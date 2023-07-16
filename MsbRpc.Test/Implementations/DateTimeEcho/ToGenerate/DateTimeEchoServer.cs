@@ -9,10 +9,17 @@ public class DateTimeEchoServer : RegistryServer
 {
     private readonly IFactory<IDateTimeEcho> _implementationFactory;
 
-    public DateTimeEchoServer(IFactory<IDateTimeEcho> implementationFactory, ref ServerConfiguration configuration)
+    private DateTimeEchoServer(IFactory<IDateTimeEcho> implementationFactory, ref ServerConfiguration configuration)
         : base(ref configuration)
         => _implementationFactory = implementationFactory;
 
-    protected override IInboundEndPoint CreateEndPoint(Messenger messenger, int id)
-        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), id, Configuration.InboundEndPointConfiguration);
+    public static DateTimeEchoServer Run(IFactory<IDateTimeEcho> implementationFactory, ref ServerConfiguration configuration)
+    {
+        DateTimeEchoServer server = new(implementationFactory, ref configuration);
+        server.Listen();
+        return server;
+    }
+
+    protected override IInboundEndPoint CreateEndPoint(Messenger messenger)
+        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), Configuration.InboundEndPointConfiguration);
 }

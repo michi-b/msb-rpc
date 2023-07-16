@@ -16,19 +16,6 @@ public class DateTimeEchoServerEndPoint
     (
         Messenger messenger,
         IDateTimeEcho implementation,
-        int id,
-        in InboundEndPointConfiguration configuration
-    ) : base
-    (
-        messenger,
-        implementation,
-        configuration
-    ) { }
-
-    public DateTimeEchoServerEndPoint
-    (
-        Messenger messenger,
-        IDateTimeEcho implementation,
         in InboundEndPointConfiguration configuration
     ) : base
     (

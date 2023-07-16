@@ -85,11 +85,7 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
             }
         );
 
-        return new DateTimeEchoServer
-        (
-            new DateTimeEchoImplementationFactory(() => new DateTimeEcho()),
-            ref configuration
-        );
+        return DateTimeEchoServer.Run(new DateTimeEchoImplementationFactory(() => new DateTimeEcho()), ref configuration);
     }
 
     protected override async ValueTask<DateTimeEchoClientEndPoint> ConnectAsync

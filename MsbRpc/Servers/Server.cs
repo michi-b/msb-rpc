@@ -15,8 +15,7 @@ public abstract class Server : ConcurrentDisposable, IConnectionReceiver
 
     protected Server(ref ServerConfiguration configuration) => Configuration = configuration;
 
-    [PublicAPI]
-    public MessengerListener Listen()
+    protected MessengerListener Listen()
     {
         if (ConnectionListener != null)
         {
@@ -27,7 +26,7 @@ public abstract class Server : ConcurrentDisposable, IConnectionReceiver
 
         return ConnectionListener;
     }
-
+    
     public abstract void AcceptUnIdentified(Messenger messenger);
 
     protected override void DisposeManagedResources()
