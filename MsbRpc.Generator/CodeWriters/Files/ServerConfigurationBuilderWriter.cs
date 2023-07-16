@@ -20,8 +20,10 @@ internal class ServerConfigurationBuilderWriter : ConfigurationBuilderWriter
     protected override void WriteConstructorBody(IndentedTextWriter writer)
     {
         string listenerConfiguration = Properties.ServerConfigurationMessengerListenerConfiguration;
-        writer.WriteLine($"{listenerConfiguration}.{Properties.LoggingName} = \"{Contract.ServerName}Listener\";");
-        writer.WriteLine($"{listenerConfiguration}.{Properties.ThreadName} = \"{Contract.ServerName}\";");
+        string listenerName = $"{Contract.ServerName}Listener";
+
+        writer.WriteLine($"{listenerConfiguration}.{Properties.LoggingName} = \"{listenerName}\";");
+        writer.WriteLine($"{listenerConfiguration}.{Properties.ThreadName} = \"{listenerName}\";");
         writer.WriteLine($"{Properties.EndPointRegistryConfiguration}.{Properties.LoggingName} = \"{_endPointRegistryLoggingName}\";");
         writer.WriteLine($"{Properties.EndPointConfiguration} = new {Contract.ServerEndPoint.ConfigurationBuilderFullName}();");
     }
