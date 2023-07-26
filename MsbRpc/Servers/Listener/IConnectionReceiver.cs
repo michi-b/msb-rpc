@@ -8,5 +8,5 @@ namespace MsbRpc.Servers.Listener;
 
 public interface IConnectionReceiver
 {
-    public void AcceptUnIdentified(Messenger messenger);
+    public void Accept(Messenger messenger);
 }

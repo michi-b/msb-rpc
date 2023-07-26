@@ -11,7 +11,6 @@ using MsbRpc.Disposable;
 using MsbRpc.Logging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
-using MsbRpc.Servers.Listener;
 using MsbRpc.Sockets;
 
 #endregion
@@ -40,57 +39,6 @@ public class Messenger : MarkedDisposable
     {
         _socket = socket;
         Port = socket.Port;
-    }
-
-    public static async ValueTask<Messenger> ConnectAsync
-    (
-        IPAddress ipAddress,
-        int port,
-        RpcBuffer buffer,
-        ILoggerFactory? loggerFactory = null
-    )
-    {
-        IPEndPoint serverEndPoint = new(ipAddress, port);
-        return await ConnectAsync(serverEndPoint, buffer, loggerFactory);
-    }
-
-    public static async ValueTask<Messenger> ConnectAsync
-    (
-        IPEndPoint serverEndPoint,
-        RpcBuffer buffer,
-        ILoggerFactory? loggerFactory = null
-    )
-    {
-        Messenger result = await ConnectAsync(serverEndPoint, loggerFactory);
-
-        await result.SendConnectionRequest(ConnectionRequest.UnIdentified, buffer);
-
-        return result;
-    }
-
-    public static ValueTask<Messenger> ConnectAsync
-    (
-        IPAddress ipAddress,
-        int port,
-        int identifiedConnectionRequestId,
-        RpcBuffer buffer,
-        ILoggerFactory? loggerFactory = null
-    )
-        => ConnectAsync(new IPEndPoint(ipAddress, port), identifiedConnectionRequestId, buffer, loggerFactory);
-
-    public static async ValueTask<Messenger> ConnectAsync
-    (
-        IPEndPoint serverEndPoint,
-        int identifiedConnectionRequestId,
-        RpcBuffer buffer,
-        ILoggerFactory? loggerFactory = null
-    )
-    {
-        Messenger result = await ConnectAsync(serverEndPoint, loggerFactory);
-
-        await result.SendConnectionRequest(new ConnectionRequest(identifiedConnectionRequestId), buffer);
-
-        return result;
     }
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
@@ -222,7 +170,7 @@ public class Messenger : MarkedDisposable
         _socket.Send(message.GetFullMessageBuffer());
     }
 
-    private static async Task<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory)
+    public static async Task<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory)
     {
         Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 

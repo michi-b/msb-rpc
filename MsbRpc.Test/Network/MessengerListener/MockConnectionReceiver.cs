@@ -12,7 +12,7 @@ public class MockConnectionReceiver : IConnectionReceiver
 {
     public ConcurrentQueue<Messenger> Messengers { get; } = new();
 
-    public void AcceptUnIdentified(Messenger messenger)
+    public void Accept(Messenger messenger)
     {
         Messengers.Enqueue(messenger);
     }

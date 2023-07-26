@@ -12,7 +12,7 @@ namespace MsbRpc.Test.Network.MessengerListener;
 /// </summary>
 public class NullConnectionReceiver : IConnectionReceiver
 {
-    public void AcceptUnIdentified(Messenger messenger)
+    public void Accept(Messenger messenger)
     {
         messenger.Dispose();
     }

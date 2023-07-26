@@ -1,9 +1,8 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
@@ -11,87 +10,90 @@ using MsbRpc.Disposable;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Network;
-using MsbRpc.Serialization.Buffers;
 using MsbRpc.Sockets;
-
-#endregion
 
 namespace MsbRpc.Servers.Listener;
 
-public partial class MessengerListener : ConcurrentDisposable
+public class MessengerListener : ConcurrentDisposable
 {
-    private readonly ConnectionTaskRegistry _connectionTasks;
-    private readonly RpcBuffer _initialConnectionMessageBuffer = new(ConnectionRequest.MessageMaxSize);
-    private readonly ILogger? _logger;
-    private readonly MessengerListenerConfiguration _serverConfiguration;
-    private readonly Socket _socket;
-    private readonly IConnectionReceiver _unIdentifiedConnectionReceiver;
+    protected readonly MessengerListenerConfiguration Configuration;
 
-    [PublicAPI] public IPEndPoint EndPoint { get; }
-    [PublicAPI] public Thread Thread { get; private set; }
+    protected readonly ILogger? Logger;
 
-    private MessengerListener(Socket socket, MessengerListenerConfiguration configuration, IConnectionReceiver unIdentifiedConnectionReceiver)
+    private bool _isListening;
+
+    /// <summary>
+    ///     The endpoint this listener is listening on.
+    ///     Modifying it after starting listening has no effect.
+    /// </summary>
+    [PublicAPI]
+    public IPEndPoint EndPoint { get; set; }
+
+    /// <summary>
+    ///     The thread this listener is running on, or null if it is not running
+    /// </summary>
+    [PublicAPI]
+    public Thread? ListenThread { get; private set; }
+
+    /// <summary>
+    ///     The socket this listener is listening on, or null if it is not listening
+    /// </summary>
+    [PublicAPI]
+    public Socket? ListenSocket { get; private set; }
+
+    public MessengerListener(MessengerListenerConfiguration configuration)
     {
-        _socket = socket;
-        _serverConfiguration = configuration;
-        _unIdentifiedConnectionReceiver = unIdentifiedConnectionReceiver;
-
-        EndPoint = (IPEndPoint)socket.LocalEndPoint;
-
-        _logger = configuration.LoggerFactory?.CreateLogger<MessengerListener>();
-
+        Configuration = configuration;
+        Logger = configuration.LoggerFactory?.CreateLogger<MessengerListener>();
+        EndPoint = new IPEndPoint(NetworkUtility.GetLocalHost(), Configuration.Port);
         LogWasCreated();
-
-        // thread will always be set by public static "Run" method, which is the only non-private way to construct this class
-        Thread = null!;
-
-        _connectionTasks = new ConnectionTaskRegistry(this);
+        ListenThread = null;
     }
 
-    public static MessengerListener Start(MessengerListenerConfiguration configuration, IConnectionReceiver unIdentifiedConnectionReceiver)
+    public void Listen(IConnectionReceiver connectionReceiver)
     {
-        var socket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        if (_isListening)
+        {
+            throw new InvalidOperationException($"{nameof(MessengerListener)} is already listening.");
+        }
 
-        socket.Bind(new IPEndPoint(NetworkUtility.GetLocalHost(), configuration.Port));
+        ListenSocket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        MessengerListener listener = new(socket, configuration, unIdentifiedConnectionReceiver);
+        ListenSocket.Bind(EndPoint);
 
-        string threadName = $"{listener._serverConfiguration.ThreadName}:{listener.EndPoint.Port}";
+        string threadName = $"{Configuration.ThreadName}:{EndPoint.Port}";
 
         Thread StartListenThread()
         {
-            Thread listenThread = new(() => listener.Start()) { Name = threadName };
+            Thread listenThread = new(() => Listen(ListenSocket, connectionReceiver)) { Name = threadName };
             listenThread.Start();
             return listenThread;
         }
 
-        listener.Thread = listener.ExecuteIfNotDisposed(StartListenThread);
-
-        return listener;
+        ListenThread = ExecuteIfNotDisposed(StartListenThread);
+        _isListening = true;
     }
-
-    public IdentifiedConnectionTask Schedule() => _connectionTasks.Schedule();
 
     protected override void DisposeManagedResources()
     {
-        _socket.Dispose();
+        ListenSocket?.Dispose();
     }
 
-    private void Start()
+    private void Listen(Socket socket, IConnectionReceiver connectionReceiver)
     {
         try
         {
-            _socket.Listen(_serverConfiguration.ListenBacklogSize);
+            socket.Listen(Configuration.ListenBacklogSize);
 
             LogStartedListening();
 
             while (!IsDisposed)
             {
-                Socket newConnectionSocket = _socket.Accept();
+                Socket newConnectionSocket = socket.Accept();
 
                 void AcceptUnsafe()
                 {
-                    Accept(newConnectionSocket);
+                    Accept(newConnectionSocket, connectionReceiver);
                 }
 
                 void Decline()
@@ -127,76 +129,48 @@ public partial class MessengerListener : ConcurrentDisposable
                     throw;
             }
         }
+        finally
+        {
+            _isListening = false;
+            ListenThread = null;
+            ListenSocket?.Dispose();
+            ListenSocket = null;
+        }
     }
 
-    private async void Accept(Socket socket)
+    private async void Accept(Socket socket, IConnectionReceiver connectionReceiver)
     {
-        Messenger? messengerForExceptionHandling = null;
         try
         {
             Messenger messenger = new(new RpcSocket(socket));
-
-            messengerForExceptionHandling = messenger;
-
-            int timeOut = 10000; //TODO: control timeout via configuration
-
-            CancellationToken cancellationToken = new CancellationTokenSource(timeOut).Token;
-            cancellationToken.Register(() => messenger.Dispose());
-
-            ConnectionRequest connectionRequest = await messenger.ReceiveConnectionRequestAsync(_initialConnectionMessageBuffer);
-
-            switch (connectionRequest.ConnectionRequestType)
+            bool intercepted = await Intercept(messenger);
+            if (!intercepted)
             {
-                case ConnectionRequestType.UnIdentified:
-                    _unIdentifiedConnectionReceiver.AcceptUnIdentified(messenger);
-                    LogAcceptedNewUnIdentifiedConnection();
-                    break;
-                case ConnectionRequestType.Identified:
-                    if (connectionRequest.Id == null)
-                    {
-                        throw new InvalidIdentifiedConnectionRequestException(connectionRequest, "connection message is marked to be identified but has no ID");
-                    }
-
-                    try
-                    {
-                        _connectionTasks.Complete(connectionRequest.Id.Value, messenger);
-                        LogCompletedIdentifiedConnectionTask(connectionRequest.Id.Value);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new InvalidIdentifiedConnectionRequestException
-                        (
-                            connectionRequest,
-                            $"registered listen tasks do not contain an entry for the id {connectionRequest.Id}",
-                            e
-                        );
-                    }
-
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(ConnectionRequestType));
+                connectionReceiver.Accept(messenger);
+                LogAcceptedNewUnIdentifiedConnection();
             }
         }
         catch (Exception e)
         {
-            messengerForExceptionHandling?.Dispose();
             LogDeclinedNewConnectionDueToException(e);
         }
     }
 
+    protected virtual Task<bool> Intercept(Messenger messenger) => Task.FromResult(false);
+
     private void LogWasCreated()
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogWasCreated;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogWasCreated;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} was created at {EndPoint}",
-                    _serverConfiguration.LoggingName,
+                    Configuration.LoggingName,
                     EndPoint
                 );
             }
@@ -205,18 +179,18 @@ public partial class MessengerListener : ConcurrentDisposable
 
     private void LogStartedListening()
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogStartedListening;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogStartedListening;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} started listening with a backlog of {BacklogSize}",
-                    _serverConfiguration.LoggingName,
-                    _serverConfiguration.ListenBacklogSize
+                    Configuration.LoggingName,
+                    Configuration.ListenBacklogSize
                 );
             }
         }
@@ -224,18 +198,18 @@ public partial class MessengerListener : ConcurrentDisposable
 
     private void LogStoppedListeningDueToException(Exception exception)
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogStoppedListeningDueToException;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogStoppedListeningDueToException;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     exception,
                     "{LoggingName} stopped listening due to an exception",
-                    _serverConfiguration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -243,18 +217,18 @@ public partial class MessengerListener : ConcurrentDisposable
 
     private void LogStoppedListeningDueToDisposal(Exception exception)
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogStoppedListeningDueToDisposal;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogStoppedListeningDueToDisposal;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
-                    _serverConfiguration.LogExceptionWhenLoggingStoppedListeningDueToDisposal ? exception : null,
+                    Configuration.LogExceptionWhenLoggingStoppedListeningDueToDisposal ? exception : null,
                     "{LoggingName} stopped listening due to disposal",
-                    _serverConfiguration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -262,73 +236,56 @@ public partial class MessengerListener : ConcurrentDisposable
 
     private void LogAcceptedNewUnIdentifiedConnection()
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogAcceptedNewUnIdentifiedConnection;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogAcceptedNewUnIdentifiedConnection;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} accepted new unidentified messenger",
-                    _serverConfiguration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
     }
 
-    private void LogCompletedIdentifiedConnectionTask(int id)
-    {
-        if (_logger != null)
-        {
-            LogConfiguration configuration = _serverConfiguration.LogCompletedIdentifiedConnectionTask;
-            if (_logger.GetIsEnabled(configuration))
-            {
-                _logger.Log
-                (
-                    configuration.Level,
-                    configuration.Id,
-                    "{LoggingName} completed identified connection task with id {ConnectionId}",
-                    _serverConfiguration.LoggingName,
-                    id
-                );
-            }
-        }
-    }
+
 
     internal void LogAcceptedNewIdentifiedConnection(int id)
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogAcceptedNewIdentifiedConnection;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogAcceptedNewIdentifiedConnection;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} accepted new identified messenger with ID {ConnectionId}",
-                    _serverConfiguration.LoggingName,
+                    Configuration.LoggingName,
                     id
                 );
             }
         }
     }
-
+    
     private void LogDeclinedNewConnectionDuringDisposal()
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogDeclinedNewConnectionDuringDisposal;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogDeclinedNewConnectionDuringDisposal;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     "{LoggingName} immediately disposed new connection because it is disposed",
-                    _serverConfiguration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }
@@ -336,18 +293,18 @@ public partial class MessengerListener : ConcurrentDisposable
 
     private void LogDeclinedNewConnectionDueToException(Exception exception)
     {
-        if (_logger != null)
+        if (Logger != null)
         {
-            LogConfiguration configuration = _serverConfiguration.LogDeclinedNewConnectionDueToException;
-            if (_logger.GetIsEnabled(configuration))
+            LogConfiguration configuration = Configuration.LogDeclinedNewConnectionDueToException;
+            if (Logger.GetIsEnabled(configuration))
             {
-                _logger.Log
+                Logger.Log
                 (
                     configuration.Level,
                     configuration.Id,
                     exception,
                     "{LoggingName} immediately disposed new connection due to exception",
-                    _serverConfiguration.LoggingName
+                    Configuration.LoggingName
                 );
             }
         }

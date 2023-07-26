@@ -10,36 +10,14 @@ using MsbRpc.Serialization.Primitives;
 namespace MsbRpc.Servers.Listener;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public readonly struct ConnectionRequest
+public abstract class ConnectionRequest<TId> where TId : struct
 {
-    /// <summary>
-    ///     byte size of <see cref="ConnectionRequestType" /> (byte) and <see cref="Id" /> (int32)
-    /// </summary>
-    private const int MaxSize = PrimitiveSerializer.ByteSize + PrimitiveSerializer.IntSize;
-
-    public const int MessageMaxSize = Message.Offset + MaxSize;
-
     public ConnectionRequestType ConnectionRequestType { get; }
-    public int? Id { get; }
+    public TId? Id { get; }
 
-    public ConnectionRequest(int identifiedConnectionRequestId) : this(ConnectionRequestType.Identified, identifiedConnectionRequestId) { }
-
-    private ConnectionRequest(ConnectionRequestType connectionRequestType, int? id)
-    {
-        Debug.Assert(connectionRequestType == ConnectionRequestType.UnIdentified || id.HasValue);
-        ConnectionRequestType = connectionRequestType;
-        Id = id;
-    }
-
-    public static readonly ConnectionRequest UnIdentified = new(ConnectionRequestType.UnIdentified, null);
-
-    public static ConnectionRequest CreateIdentified(int id) => new(ConnectionRequestType.Identified, id);
-
-    public static ConnectionRequest Read(Message message)
+    public ConnectionRequest(Message message, Func<BufferReader, TId> readId)
     {
         ArraySegment<byte> messageBuffer = message.Buffer;
-
-        Debug.Assert(messageBuffer.Count <= MessageMaxSize);
 
         BufferReader bufferReader = new(messageBuffer);
 
@@ -49,24 +27,38 @@ public readonly struct ConnectionRequest
             1 => ConnectionRequestType.Identified,
             _ => throw new ArgumentOutOfRangeException()
         };
-
-        int? id = connectionRequestType switch
+        
+        Id = connectionRequestType switch
         {
             ConnectionRequestType.UnIdentified => null,
-            ConnectionRequestType.Identified => bufferReader.ReadInt(),
+            ConnectionRequestType.Identified => readId(bufferReader),
             _ => throw new ArgumentOutOfRangeException()
         };
-
-        return new ConnectionRequest(connectionRequestType, id);
+    }
+    
+    public ConnectionRequest(TId id)
+    {
+        ConnectionRequestType = ConnectionRequestType.Identified;
+        Id = id;
     }
 
-    public Message Write(RpcBuffer buffer)
+    public ConnectionRequest()
+    {
+        ConnectionRequestType = ConnectionRequestType.UnIdentified;
+        Id = null;
+    }
+
+    protected abstract TId ReadId(BufferReader bufferReader);
+
+    protected abstract int IdSize { get; }
+
+    public Message WriteMessage(RpcBuffer buffer, Action<BufferWriter, TId> writeId)
     {
         int count = PrimitiveSerializer.ByteSize;
 
         if (Id.HasValue)
         {
-            count += PrimitiveSerializer.IntSize;
+            count += IdSize;
         }
 
         Message message = buffer.GetMessage(count);
@@ -77,7 +69,7 @@ public readonly struct ConnectionRequest
 
         if (Id.HasValue)
         {
-            bufferWriter.Write(Id.Value);
+            writeId(bufferWriter, Id.Value);
         }
 
         return message;

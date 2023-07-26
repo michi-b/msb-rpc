@@ -9,7 +9,7 @@ using MsbRpc.Messaging;
 
 namespace MsbRpc.Servers.Listener;
 
-internal class ConnectionTask
+public class ConnectionTask
 {
     public const int DefaultMillisecondsTimeout = 10000;
     private readonly ManualResetEventSlim _completed;

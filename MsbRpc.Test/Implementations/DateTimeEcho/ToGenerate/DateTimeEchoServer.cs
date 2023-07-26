@@ -1,29 +1,35 @@
 ﻿#region
 
 using MsbRpc.Configuration;
-using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Messaging;
-using MsbRpc.Servers;
+using MsbRpc.Servers.InboundEndPointRegistry;
+using MsbRpc.Servers.Listener;
 
 #endregion
 
 namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
-public class DateTimeEchoServer : InboundEndPointServer
+public class DateTimeEchoServer : IConnectionReceiver
 {
     private readonly IFactory<IDateTimeEcho> _implementationFactory;
+    private readonly InboundEndPointConfiguration _endPointConfiguration;
+    private readonly IInboundEndPointRegistry _endPointRegistry;
 
-    private DateTimeEchoServer(IFactory<IDateTimeEcho> implementationFactory, ref ServerConfiguration configuration)
-        : base(ref configuration)
-        => _implementationFactory = implementationFactory;
-
-    public static DateTimeEchoServer Run(IFactory<IDateTimeEcho> implementationFactory, ref ServerConfiguration configuration)
+    public DateTimeEchoServer
+    (
+        IFactory<IDateTimeEcho> implementationFactory,
+        InboundEndPointConfiguration endPointConfiguration,
+        IInboundEndPointRegistry endPointRegistry
+    )
     {
-        DateTimeEchoServer server = new(implementationFactory, ref configuration);
-        server.Listen();
-        return server;
+        _implementationFactory = implementationFactory;
+        _endPointConfiguration = endPointConfiguration;
+        _endPointRegistry = endPointRegistry;
     }
 
-    protected override IInboundEndPoint CreateEndPoint(Messenger messenger)
-        => new DateTimeEchoServerEndPoint(messenger, _implementationFactory.Create(), Configuration.EndPointConfiguration);
+    public void Accept(Messenger messenger)
+    {
+        DateTimeEchoServerEndPoint endPoint = new(messenger, _implementationFactory.Create(), _endPointConfiguration);
+        _endPointRegistry.Run(endPoint);
+    }
 }

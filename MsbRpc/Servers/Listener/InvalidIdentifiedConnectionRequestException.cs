@@ -6,11 +6,11 @@ using System;
 
 namespace MsbRpc.Servers.Listener;
 
-public class InvalidIdentifiedConnectionRequestException : Exception
+public class InvalidIdentifiedConnectionRequestException<TId> : Exception where TId : struct
 {
-    public InvalidIdentifiedConnectionRequestException(ConnectionRequest connectionRequest, string message)
+    public InvalidIdentifiedConnectionRequestException(ConnectionRequest<TId> connectionRequest, string message)
         : base($"{message}; the connection message is: {connectionRequest}") { }
 
-    public InvalidIdentifiedConnectionRequestException(ConnectionRequest connectionRequest, string message, Exception innerException)
+    public InvalidIdentifiedConnectionRequestException(ConnectionRequest<TId> connectionRequest, string message, Exception innerException)
         : base($"{message}; the connection message is: {connectionRequest}", innerException) { }
 }

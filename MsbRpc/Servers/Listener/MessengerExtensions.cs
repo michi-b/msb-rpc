@@ -1,5 +1,6 @@
 ﻿#region
 
+using System;
 using System.Threading.Tasks;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -10,7 +11,12 @@ namespace MsbRpc.Servers.Listener;
 
 public static class MessengerExtensions
 {
-    public static async ValueTask<ConnectionRequest> ReceiveConnectionRequestAsync(this Messenger messenger, RpcBuffer buffer)
+    public static async ValueTask<ConnectionRequest<TId>> ReceiveConnectionRequestAsync<TId>
+    (
+        this Messenger messenger,
+        RpcBuffer buffer,
+        Func<Message, ConnectionRequest<TId>> readConnectionRequest
+    ) where TId : struct
     {
         ReceiveResult receiveResult = await messenger.ReceiveAsync(buffer);
         ReceiveReturnCode receiveReturnCode = receiveResult.ReturnCode;
@@ -19,13 +25,13 @@ public static class MessengerExtensions
         {
             throw new ReceiveConnectionRequestFailedException(receiveReturnCode);
         }
-
-        return ConnectionRequest.Read(receiveResult.Message);
+        
+        return readConnectionRequest(receiveResult.Message);
     }
 
-    public static async ValueTask SendConnectionRequest(this Messenger messenger, ConnectionRequest target, RpcBuffer buffer)
+    public static async ValueTask SendConnectionRequestAsync<TId>(this Messenger messenger, ConnectionRequest<TId> target, RpcBuffer buffer, Action<BufferWriter,TId> writeId) where TId : struct
     {
-        Message message = target.Write(buffer);
+        Message message = target.WriteMessage(buffer, writeId);
         await messenger.SendAsync(message);
     }
 }

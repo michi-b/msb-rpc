@@ -14,10 +14,10 @@ using MsbRpc.Extensions;
 
 #endregion
 
-namespace MsbRpc.Servers;
+namespace MsbRpc.Servers.InboundEndPointRegistry;
 
 [PublicAPI]
-public class InboundEndPointRegistry : ConcurrentDisposable
+public class InboundEndPointRegistry : ConcurrentDisposable, IInboundEndPointRegistry
 {
     private readonly Dictionary<int, InboundEndPointRegistryEntry> _endPoints = new(); // key is managed thread id
     private readonly ILogger<InboundEndPointRegistry>? _logger;

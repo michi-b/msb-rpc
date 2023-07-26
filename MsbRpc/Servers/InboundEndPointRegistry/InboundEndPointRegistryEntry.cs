@@ -5,7 +5,7 @@ using MsbRpc.EndPoints.Interfaces;
 
 #endregion
 
-namespace MsbRpc.Servers;
+namespace MsbRpc.Servers.InboundEndPointRegistry;
 
 public struct InboundEndPointRegistryEntry
 {

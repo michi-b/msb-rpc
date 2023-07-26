@@ -2,21 +2,26 @@
 
 using System;
 using System.Collections.Concurrent;
+using MsbRpc.Serialization.Buffers;
+using MsbRpc.Serialization.Primitives;
 
 #endregion
 
 namespace MsbRpc.Servers.Listener;
 
-public class IdentifiedItemRegistry<TItem>
+public abstract class ConcurrentIdentifiedItemRegistry<TId, TItem> : IConcurrentIdentifiedItemRegistry<TId, TItem> where TId : struct
 {
-    private readonly ConcurrentQueue<int> _freeIds = new();
-    private readonly ConcurrentDictionary<int, TItem> _items = new();
-    private int _maxId = -1;
+    private readonly ConcurrentQueue<TId> _freeIds = new();
+    private readonly ConcurrentDictionary<TId, TItem> _items = new();
 
-    public int Add(TItem item)
+    public int MaxMessageSize => Message.Offset + PrimitiveSerializer.ByteSize + IdSize;
+
+    protected abstract int IdSize { get; }
+
+    public TId Add(TItem item)
     {
-        int id;
-        if (_freeIds.TryDequeue(out int reusedId))
+        TId id;
+        if (_freeIds.TryDequeue(out TId reusedId))
         {
             id = reusedId;
         }
@@ -24,7 +29,7 @@ public class IdentifiedItemRegistry<TItem>
         {
             lock (this)
             {
-                id = ++_maxId;
+                id = AcquireNewId();
             }
         }
 
@@ -37,7 +42,7 @@ public class IdentifiedItemRegistry<TItem>
         return id;
     }
 
-    public TItem Take(int id)
+    public TItem Take(TId id)
     {
         if (!_items.TryRemove(id, out TItem item))
         {
@@ -48,4 +53,6 @@ public class IdentifiedItemRegistry<TItem>
 
         return item;
     }
+
+    protected abstract TId AcquireNewId();
 }

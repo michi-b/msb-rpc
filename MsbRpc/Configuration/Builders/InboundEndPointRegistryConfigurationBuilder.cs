@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Abstract;
 using MsbRpc.Configuration.Builders.Interfaces;
 using MsbRpc.Logging;
-using MsbRpc.Servers;
+using MsbRpc.Servers.InboundEndPointRegistry;
 
 #endregion
 
