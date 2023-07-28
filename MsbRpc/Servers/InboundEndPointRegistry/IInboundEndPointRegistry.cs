@@ -1,4 +1,8 @@
-﻿using MsbRpc.EndPoints.Interfaces;
+﻿#region
+
+using MsbRpc.EndPoints.Interfaces;
+
+#endregion
 
 namespace MsbRpc.Servers.InboundEndPointRegistry;
 

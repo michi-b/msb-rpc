@@ -1,8 +1,7 @@
-﻿namespace MsbRpc.Servers.Listener;
+﻿namespace MsbRpc.Servers.Listeners.Concurrent;
 
 public interface IConcurrentIdentifiedItemRegistry<TId, TItem>
 {
-    int MaxMessageSize { get; }
     TId Add(TItem item);
     TItem Take(TId id);
 }

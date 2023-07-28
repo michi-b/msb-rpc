@@ -1,10 +1,11 @@
 ﻿#region
 
 using MsbRpc.Messaging;
+using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners;
 
 public class IdentifiedConnectionTask
 {

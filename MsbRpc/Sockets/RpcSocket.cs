@@ -16,7 +16,6 @@ namespace MsbRpc.Sockets;
 public class RpcSocket : MarkedDisposable
 {
     private readonly Socket _socket;
-    public readonly int Port;
 
     public bool IsConnected => _socket.Connected;
 
@@ -29,16 +28,15 @@ public class RpcSocket : MarkedDisposable
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
 
-        var endPoint = socket.LocalEndPoint as IPEndPoint;
-        if (endPoint == null)
+        if (socket.LocalEndPoint is not IPEndPoint)
         {
             throw new InvalidRpcSocketConstructorSocketException(socket, nameof(socket));
         }
 
-        Port = endPoint.Port;
-
         _socket = socket;
     }
+
+    public override string ToString() => $"{nameof(RpcSocket)}: {_socket.LocalEndPoint} -> {_socket.RemoteEndPoint}";
 
     /// <throws>SocketSendException</throws>
     public void Send(ArraySegment<byte> bytes)

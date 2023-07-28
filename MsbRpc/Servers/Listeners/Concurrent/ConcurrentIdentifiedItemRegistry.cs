@@ -2,19 +2,15 @@
 
 using System;
 using System.Collections.Concurrent;
-using MsbRpc.Serialization.Buffers;
-using MsbRpc.Serialization.Primitives;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners.Concurrent;
 
 public abstract class ConcurrentIdentifiedItemRegistry<TId, TItem> : IConcurrentIdentifiedItemRegistry<TId, TItem> where TId : struct
 {
     private readonly ConcurrentQueue<TId> _freeIds = new();
     private readonly ConcurrentDictionary<TId, TItem> _items = new();
-
-    public int MaxMessageSize => Message.Offset + PrimitiveSerializer.ByteSize + IdSize;
 
     protected abstract int IdSize { get; }
 

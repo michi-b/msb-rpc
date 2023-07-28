@@ -1,10 +1,11 @@
 ﻿#region
 
 using System;
+using MsbRpc.Servers.Listeners.Connections.Generic;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners;
 
 public class InvalidIdentifiedConnectionRequestException<TId> : Exception where TId : struct
 {

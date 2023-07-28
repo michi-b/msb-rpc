@@ -48,6 +48,10 @@
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Servers\Listeners\Connections\Identified\" />
+    </ItemGroup>
+
     <PropertyGroup>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

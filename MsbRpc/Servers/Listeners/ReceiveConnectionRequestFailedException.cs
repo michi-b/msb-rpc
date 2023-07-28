@@ -5,7 +5,7 @@ using MsbRpc.Messaging;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners;
 
 public class ReceiveConnectionRequestFailedException : Exception
 {

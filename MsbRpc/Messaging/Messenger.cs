@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Disposable;
+using MsbRpc.Exceptions;
 using MsbRpc.Logging;
 using MsbRpc.Serialization.Buffers;
 using MsbRpc.Serialization.Primitives;
@@ -25,21 +26,12 @@ public class Messenger : MarkedDisposable
     private static readonly ReceiveResult DisposedConnectionReceiveResult = new(Message.Empty, ReceiveReturnCode.ConnectionDisposed);
     private static readonly ReceiveResult EmptyReceiveResult = new(Message.Empty, ReceiveReturnCode.Success);
     private readonly RpcSocket _socket;
-    public readonly int Port;
 
     public bool IsConnected => _socket.IsConnected;
 
-    public Messenger(Socket socket)
-    {
-        _socket = new RpcSocket(socket);
-        Port = ((IPEndPoint)socket.RemoteEndPoint).Port;
-    }
+    public Messenger(Socket socket) => _socket = new RpcSocket(socket);
 
-    public Messenger(RpcSocket socket)
-    {
-        _socket = socket;
-        Port = socket.Port;
-    }
+    public Messenger(RpcSocket socket) => _socket = socket;
 
     public ListenReturnCode Listen(RpcBuffer buffer, Func<Message, bool> receive)
     {
@@ -121,6 +113,22 @@ public class Messenger : MarkedDisposable
 
     /// <throws>OperationCanceledException</throws>
     /// <throws>SocketReceiveException</throws>
+    /// <throws>ConnectionClosedException</throws>
+    /// <throws>ConnectionDisposedException</throws>
+    public async ValueTask<Message> ReceiveMessageAsync(RpcBuffer buffer)
+    {
+        ReceiveResult receiveResult = await ReceiveAsync(buffer);
+        return receiveResult.ReturnCode switch
+        {
+            ReceiveReturnCode.Success => receiveResult.Message,
+            ReceiveReturnCode.ConnectionClosed => throw new ConnectionClosedException(_socket),
+            ReceiveReturnCode.ConnectionDisposed => throw new ConnectionDisposedException(_socket),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    /// <throws>OperationCanceledException</throws>
+    /// <throws>SocketReceiveException</throws>
     [PublicAPI]
     public async ValueTask<ReceiveResult> ReceiveAsync(RpcBuffer buffer)
     {
@@ -170,19 +178,19 @@ public class Messenger : MarkedDisposable
         _socket.Send(message.GetFullMessageBuffer());
     }
 
-    public static async Task<Messenger> ConnectAsync(IPEndPoint serverEndPoint, ILoggerFactory? loggerFactory)
+    public static async Task<Messenger> ConnectAsync(IPEndPoint remoteEndPoint, ILogger? logger = null)
     {
-        Socket socket = new(serverEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        Socket socket = new(remoteEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
         try
         {
-            await socket.ConnectAsync(serverEndPoint);
+            await socket.ConnectAsync(remoteEndPoint);
         }
         catch (Exception exception)
         {
-            if (loggerFactory != null)
+            if (logger != null)
             {
-                LogConnectionFailed(loggerFactory.CreateLogger<Messenger>(), serverEndPoint, exception);
+                LogConnectionFailed(logger, remoteEndPoint, exception);
             }
 
             throw;

@@ -1,18 +1,25 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+using MsbRpc.Servers.Listeners.Concurrent;
+using MsbRpc.Servers.Listeners.Connections;
+using MsbRpc.Servers.Listeners.Connections.Generic;
 
-namespace MsbRpc.Servers.Listener;
+#endregion
+
+namespace MsbRpc.Servers.Listeners;
 
 public abstract class ScheduledMessengerListener<TId> : MessengerListener where TId : struct
 {
-    private readonly RpcBuffer _buffer;
     private readonly Func<Message, ConnectionRequest<TId>> _readConnectionRequest;
     private readonly IConcurrentIdentifiedItemRegistry<TId, ConnectionTask> _registry;
+    protected RpcBuffer Buffer;
 
     protected ScheduledMessengerListener
     (
@@ -21,15 +28,15 @@ public abstract class ScheduledMessengerListener<TId> : MessengerListener where 
     ) : base(configuration)
     {
         _registry = registry;
-        _buffer = new RpcBuffer(_registry.MaxMessageSize);
         _readConnectionRequest = ReadConnectionRequest;
+        Buffer = new RpcBuffer();
     }
 
     protected abstract ConnectionRequest<TId> ReadConnectionRequest(Message message);
 
     protected override async Task<bool> Intercept(Messenger messenger)
     {
-        ConnectionRequest<TId> connectionRequest = await messenger.ReceiveConnectionRequestAsync(_buffer, _readConnectionRequest);
+        ConnectionRequest<TId> connectionRequest = await messenger.ReceiveConnectionRequestAsync(Buffer, _readConnectionRequest);
 
         switch (connectionRequest.ConnectionRequestType)
         {

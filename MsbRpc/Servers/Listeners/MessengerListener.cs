@@ -10,9 +10,10 @@ using MsbRpc.Disposable;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Network;
+using MsbRpc.Servers.Listeners.Connections;
 using MsbRpc.Sockets;
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners;
 
 public class MessengerListener : ConcurrentDisposable
 {
@@ -50,7 +51,7 @@ public class MessengerListener : ConcurrentDisposable
         ListenThread = null;
     }
 
-    public void Listen(IConnectionReceiver connectionReceiver)
+    public void StartListen(IConnectionReceiver connectionReceiver)
     {
         if (_isListening)
         {

@@ -1,6 +1,5 @@
 ﻿#region
 
-using System.Net;
 using MsbRpc.Configuration;
 using MsbRpc.EndPoints;
 using MsbRpc.Messaging;
@@ -22,18 +21,6 @@ public class DateTimeEchoClientEndPoint
         messenger,
         configuration
     ) { }
-
-    public static async ValueTask<DateTimeEchoClientEndPoint> ConnectAsync
-    (
-        IPEndPoint endPoint,
-        OutboundEndPointConfiguration configuration
-    )
-    {
-        RpcBuffer buffer = new(configuration.InitialBufferSize);
-        Messenger messenger = await Messenger.ConnectAsync(endPoint, buffer, configuration.LoggerFactory);
-        var result = new DateTimeEchoClientEndPoint(messenger, configuration);
-        return result;
-    }
 
     public async ValueTask<DateTime> GetDateTimeAsync(DateTime clientDateTime)
     {

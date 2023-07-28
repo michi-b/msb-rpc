@@ -1,7 +1,7 @@
 ﻿#region
 
 using MsbRpc.Messaging;
-using MsbRpc.Servers.Listener;
+using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 

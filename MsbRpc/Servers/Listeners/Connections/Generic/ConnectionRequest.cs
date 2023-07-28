@@ -7,15 +7,20 @@ using MsbRpc.Serialization.Primitives;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners.Connections.Generic;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public abstract class ConnectionRequest<TId> where TId : struct
 {
+    protected const int MessageSizeWithoutId = PrimitiveSerializer.ByteSize + Message.Offset;
     public ConnectionRequestType ConnectionRequestType { get; }
     public TId? Id { get; }
 
-    public ConnectionRequest(Message message, Func<BufferReader, TId> readId)
+    protected abstract int IdSize { get; }
+
+    public string DebuggerDisplay => ToString();
+
+    protected ConnectionRequest(Message message, Func<BufferReader, TId> readId)
     {
         ArraySegment<byte> messageBuffer = message.Buffer;
 
@@ -27,7 +32,7 @@ public abstract class ConnectionRequest<TId> where TId : struct
             1 => ConnectionRequestType.Identified,
             _ => throw new ArgumentOutOfRangeException()
         };
-        
+
         Id = connectionRequestType switch
         {
             ConnectionRequestType.UnIdentified => null,
@@ -35,31 +40,46 @@ public abstract class ConnectionRequest<TId> where TId : struct
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
-    public ConnectionRequest(TId id)
+
+    protected ConnectionRequest(TId id)
     {
         ConnectionRequestType = ConnectionRequestType.Identified;
         Id = id;
     }
 
-    public ConnectionRequest()
+    protected ConnectionRequest()
     {
         ConnectionRequestType = ConnectionRequestType.UnIdentified;
         Id = null;
     }
 
-    protected abstract TId ReadId(BufferReader bufferReader);
-
-    protected abstract int IdSize { get; }
-
-    public Message WriteMessage(RpcBuffer buffer, Action<BufferWriter, TId> writeId)
+    public override string ToString()
     {
-        int count = PrimitiveSerializer.ByteSize;
+        string idString = Id.HasValue ? $"ID : {Id.Value}" : "no ID";
 
-        if (Id.HasValue)
+        return $"'{ConnectionRequestType}, {idString}'";
+    }
+
+    private int GetSize(ConnectionRequestSizeOptions options)
+    {
+        int size = PrimitiveSerializer.ByteSize;
+
+        if (options.HasFlag(ConnectionRequestSizeOptions.WithId))
         {
-            count += IdSize;
+            size += IdSize;
         }
+
+        if (options.HasFlag(ConnectionRequestSizeOptions.WithMessageOffset))
+        {
+            size += Message.Offset;
+        }
+
+        return size;
+    }
+
+    public Message GetMessage(RpcBuffer buffer)
+    {
+        int count = GetSize(Id.HasValue ? ConnectionRequestSizeOptions.WithId : ConnectionRequestSizeOptions.None);
 
         Message message = buffer.GetMessage(count);
 
@@ -69,18 +89,11 @@ public abstract class ConnectionRequest<TId> where TId : struct
 
         if (Id.HasValue)
         {
-            writeId(bufferWriter, Id.Value);
+            Write(bufferWriter, Id.Value);
         }
 
         return message;
     }
 
-    public string DebuggerDisplay => ToString();
-
-    public override string ToString()
-    {
-        string idString = Id.HasValue ? $"ID : {Id.Value}" : "no ID";
-
-        return $"'{ConnectionRequestType}, {idString}'";
-    }
+    protected abstract void Write(BufferWriter bufferWriter, TId id);
 }

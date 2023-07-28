@@ -4,10 +4,11 @@ using System;
 using System.Threading.Tasks;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
+using MsbRpc.Servers.Listeners.Connections.Generic;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners;
 
 public static class MessengerExtensions
 {
@@ -25,13 +26,7 @@ public static class MessengerExtensions
         {
             throw new ReceiveConnectionRequestFailedException(receiveReturnCode);
         }
-        
-        return readConnectionRequest(receiveResult.Message);
-    }
 
-    public static async ValueTask SendConnectionRequestAsync<TId>(this Messenger messenger, ConnectionRequest<TId> target, RpcBuffer buffer, Action<BufferWriter,TId> writeId) where TId : struct
-    {
-        Message message = target.WriteMessage(buffer, writeId);
-        await messenger.SendAsync(message);
+        return readConnectionRequest(receiveResult.Message);
     }
 }

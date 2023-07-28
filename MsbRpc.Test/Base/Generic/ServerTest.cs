@@ -6,7 +6,8 @@ using MsbRpc.Configuration.Builders;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
 using MsbRpc.Exceptions;
-using MsbRpc.Servers.Listener;
+using MsbRpc.Servers.Listeners;
+using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 
@@ -38,7 +39,7 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
         TServer server = CreateServer(messengerListener);
         for (int timeout = 0; timeout < 10; timeout++)
         {
-            messengerListener.Listen(server);
+            messengerListener.StartListen(server);
             Thread.Sleep(timeout);
             messengerListener.ListenSocket?.Dispose();
         }

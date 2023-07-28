@@ -3,7 +3,7 @@
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration.Builders.Abstract;
 using MsbRpc.Logging;
-using MsbRpc.Servers.Listener;
+using MsbRpc.Servers.Listeners;
 
 #endregion
 

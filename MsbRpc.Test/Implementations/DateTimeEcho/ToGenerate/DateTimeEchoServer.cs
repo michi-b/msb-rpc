@@ -3,7 +3,7 @@
 using MsbRpc.Configuration;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.InboundEndPointRegistry;
-using MsbRpc.Servers.Listener;
+using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 
@@ -11,9 +11,9 @@ namespace MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
 
 public class DateTimeEchoServer : IConnectionReceiver
 {
-    private readonly IFactory<IDateTimeEcho> _implementationFactory;
     private readonly InboundEndPointConfiguration _endPointConfiguration;
     private readonly IInboundEndPointRegistry _endPointRegistry;
+    private readonly IFactory<IDateTimeEcho> _implementationFactory;
 
     public DateTimeEchoServer
     (

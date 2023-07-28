@@ -4,9 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Messaging;
-using MsbRpc.Serialization.Buffers;
-using MsbRpc.Servers.Listener;
-using Listener = MsbRpc.Servers.Listener.MessengerListener;
+using MsbRpc.Servers.Listeners;
+using Listener = MsbRpc.Servers.Listeners.MessengerListener;
 
 #endregion
 
@@ -32,19 +31,18 @@ public class MessengerListenerTest : Base.Test
     public void Listens()
     {
         using Listener listener = new(_configuration);
-        listener.Listen(new NullConnectionReceiver());
+        listener.StartListen(new NullConnectionReceiver());
     }
 
     [TestMethod]
     public async Task ConnectsOnce()
     {
-        var buffer = new RpcBuffer();
         var messengerReceiver = new MockConnectionReceiver();
-        Listener listener = Listener.Start(_configuration, messengerReceiver);
-        await Messenger.ConnectAsync(listener.EndPoint, buffer, _loggerFactory);
+        using DefaultMessengerListener listener = new DefaultMessengerListener(_configuration);
+        listener.StartListen(messengerReceiver);
+        await Messenger.ConnectAsync(listener.EndPoint, _loggerFactory);
         await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
         Assert.AreEqual(1, messengerReceiver.Messengers.Count);
-        listener.Dispose();
     }
 
     // [TestMethod]

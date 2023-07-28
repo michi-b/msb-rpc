@@ -1,7 +1,6 @@
 ﻿#region
 
 using System;
-using System.Diagnostics;
 
 #endregion
 
@@ -9,15 +8,9 @@ namespace MsbRpc.Serialization.Buffers;
 
 public class RpcBuffer
 {
-    private const int DefaultInitialBufferSize = 1024;
-
     private byte[] _bytes;
 
-    public RpcBuffer(int initialBufferSize = DefaultInitialBufferSize)
-    {
-        Debug.Assert(initialBufferSize >= 0);
-        _bytes = initialBufferSize == 0 ? ByteArrayUtility.Empty : new byte[initialBufferSize];
-    }
+    public RpcBuffer(int initialBufferSize = 0) => _bytes = initialBufferSize == 0 ? ByteArrayUtility.Empty : new byte[initialBufferSize];
 
     public Request GetRequest(int id, int count = 0)
     {

@@ -7,7 +7,7 @@ using MsbRpc.Messaging;
 
 #endregion
 
-namespace MsbRpc.Servers.Listener;
+namespace MsbRpc.Servers.Listeners.Connections;
 
 public class ConnectionTask
 {

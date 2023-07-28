@@ -1,4 +1,4 @@
-﻿namespace MsbRpc.Servers.Listener;
+﻿namespace MsbRpc.Servers.Listeners.Connections;
 
 public enum ConnectionRequestType : byte
 {
