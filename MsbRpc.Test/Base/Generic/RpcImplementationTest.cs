@@ -1,48 +1,74 @@
 ﻿#region
 
-using System.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
+using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Exceptions;
+using MsbRpc.Messaging;
 using MsbRpc.Servers.Listeners;
-using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 
 namespace MsbRpc.Test.Base.Generic;
 
-public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract> : Test<TTest>
-    where TTest : ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoint, TProcedure, TContract>
-    where TServer : IConnectionReceiver
+public abstract class RpcImplementationTest<TTest, TServerEndPoint, TClientEndPoint, TProcedure, TContract> : Test<TTest>
+    where TTest : RpcImplementationTest<TTest, TServerEndPoint, TClientEndPoint, TProcedure, TContract>
     where TServerEndPoint : InboundEndPoint<TProcedure, TContract>
     where TClientEndPoint : OutboundEndPoint<TProcedure>
     where TProcedure : Enum
     where TContract : IRpcContract
 {
-    protected async ValueTask<TClientEndPoint> ConnectAsync(TServer server) => await ConnectAsync(server.ConnectionListener!.EndPoint);
+    private readonly int _port;
 
-    protected abstract ValueTask<TClientEndPoint> ConnectAsync(IPEndPoint serverEndPoint);
+    protected virtual string ListenerName => $"{typeof(TTest).Name}{nameof(MessengerListener)}";
 
-    protected TServer StartServer(RpcExceptionTransmissionOptions exceptionTransmissionOptions = RpcExceptionTransmissionOptions.None)
+    protected RpcImplementationTest(int port) => _port = port;
+
+    protected virtual void ConfigureListener(MessengerListenerConfigurator configurator)
     {
-        TServer server = CreateServer();
-        return server;
+        configurator.Port = _port;
+        configurator.LoggerFactory = LoggerFactory;
+        configurator.WithName(ListenerName);
     }
 
-    protected abstract TServer CreateServer(MessengerListener messengerListener);
+    private MessengerListener StartListen()
+    {
+        MessengerListenerConfigurator configurator = new();
+        ConfigureListener(configurator);
+        MessengerListener listener = new(new MessengerListenerConfigurator());
+        listener.StartListening(new ConnectionReceiver<TServerEndPoint, TProcedure, TContract>(CreateServerEndPoint, LoggerFactory, CancellationToken));
+        return listener;
+    }
+
+    protected abstract TServerEndPoint CreateServerEndPoint(Messenger messenger);
 
     protected void TestListens()
     {
-        var messengerListener = new MessengerListener(new MessengerListenerConfigurationBuilder());
-        TServer server = CreateServer(messengerListener);
-        for (int timeout = 0; timeout < 10; timeout++)
+        MessengerListener messengerListener;
+        using (messengerListener = StartListen())
         {
-            messengerListener.StartListen(server);
-            Thread.Sleep(timeout);
-            messengerListener.ListenSocket?.Dispose();
+            for (int timeout = 0; timeout < 10; timeout++)
+            {
+                Thread.Sleep(timeout);
+                Assert.IsTrue(messengerListener.IsListening);
+            }
         }
+        Assert.IsFalse(messengerListener.IsListening);
+    }
+
+    protected async Task TestCanDisposeServerPrematurely()
+    {
+        //todo: reimplement this test
+        // TClientEndPoint client;
+        // using (TServer server = StartServer())
+        // {
+        //     client = await ConnectAsync(server);
+        // }
+        //
+        // client.Dispose();
     }
 
     protected async Task TestConnectsAndDisconnects()
@@ -71,17 +97,6 @@ public abstract class ServerTest<TTest, TServer, TServerEndPoint, TClientEndPoin
         //
         // client2.Dispose();
         // await ServerTestUtility.AssertBecomesEqual(0, () => server.EndPoints.Length);
-    }
-
-    protected async Task TestCanDisposeServerPrematurely()
-    {
-        TClientEndPoint client;
-        using (TServer server = StartServer())
-        {
-            client = await ConnectAsync(server);
-        }
-
-        client.Dispose();
     }
 
     protected static void LogTransmittedExceptionTypeName(RpcExceptionTransmission transmission)

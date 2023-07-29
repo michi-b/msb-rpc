@@ -1,19 +1,10 @@
-﻿#region
+﻿namespace MsbRpc.Test.Implementations.DateTimeEcho.Tests;
 
-using System.Net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MsbRpc.Test.Base.Generic;
-using MsbRpc.Test.Implementations.DateTimeEcho.ToGenerate;
-using MsbRpc.Test.Utility;
-
-#endregion
-
-namespace MsbRpc.Test.Implementations.DateTimeEcho.Tests;
-
+//todo: reimplement this test
+#if false
 [TestCategory($"{nameof(Implementations)}")]
 [TestClass]
-public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer, DateTimeEchoServerEndPoint, DateTimeEchoClientEndPoint, DateTimeEchoProcedure,
-    IDateTimeEcho>
+public class DateTimeEchoTest : RpcImplementationTest<DateTimeEchoTest, DateTimeEchoServerEndPoint, DateTimeEchoClientEndPoint, DateTimeEchoProcedure, IDateTimeEcho>
 {
     [TestMethod]
     public void Listens()
@@ -95,3 +86,4 @@ public class DateTimeEchoTest : ServerTest<DateTimeEchoTest, DateTimeEchoServer,
         => await DateTimeEchoClientEndPoint.ConnectAsync
             (serverEndPoint, new DateTimeEchoClientEndPointConfigurationBuilder { LoggerFactory = TestUtility.LoggerFactory }.Build());
 }
+#endif

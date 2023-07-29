@@ -44,10 +44,14 @@ public class Test
     private async ValueTask WaitForConditionAsync(Func<bool> condition, int maxRetries, ILogger logger, CancellationToken cancellationToken)
     {
         int retryIndex = 0;
+
+        bool success = false;
+
         while (retryIndex < maxRetries && !cancellationToken.IsCancellationRequested)
         {
             retryIndex++;
-            if (condition())
+            // ReSharper disable once AssignmentInConditionalExpression
+            if (success = condition())
             {
                 break;
             }
@@ -56,6 +60,6 @@ public class Test
             retryIndex++;
         }
 
-        logger.Log(LogLevel.Information, "finished after {RetryCount} retries", retryIndex + 1);
+        logger.Log(LogLevel.Information, "{Success} after {RetryCount} retries", success ? "Success" : "Fail", retryIndex + 1);
     }
 }

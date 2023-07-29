@@ -2,6 +2,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Attributes;
@@ -40,7 +42,7 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
         Implementation = implementation;
     }
 
-    public void Listen()
+    public ListenReturnCode Listen()
     {
         LogStartListening();
 
@@ -55,6 +57,31 @@ public abstract class InboundEndPoint<TProcedure, TImplementation> : EndPoint<TP
             {
                 LogStoppedListeningWithoutRunningToCompletion(listenReturnCode);
             }
+
+            return listenReturnCode;
+        }
+        finally
+        {
+            Dispose();
+        }
+    }
+
+    public async Task<ListenReturnCode> ListenAsync(CancellationToken cancellationToken)
+    {
+        LogStartListening();
+        try
+        {
+            ListenReturnCode listenReturnCode = await Messenger.ListenAsync(Buffer, ReceiveMessage, cancellationToken);
+            if (RanToCompletion)
+            {
+                LogRanToCompletion(listenReturnCode);
+            }
+            else
+            {
+                LogStoppedListeningWithoutRunningToCompletion(listenReturnCode);
+            }
+
+            return listenReturnCode;
         }
         finally
         {

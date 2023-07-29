@@ -6,7 +6,7 @@ using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 
-namespace MsbRpc.Test.Network.MessengerListener;
+namespace MsbRpc.Test.Network.Listeners;
 
 public class MockConnectionReceiver : IConnectionReceiver
 {

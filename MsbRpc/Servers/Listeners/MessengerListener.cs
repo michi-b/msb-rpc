@@ -25,17 +25,18 @@ public class MessengerListener : ConcurrentDisposable
 
     protected readonly ILogger? Logger;
 
-    private bool _isListening;
+    public bool IsListening { get; private set; }
 
     /// <summary>
     ///     The endpoint this listener is listening on.
-    ///     Modifying it after starting listening has no effect.
+    ///     If the port is configured to be 0, this will be the actual endpoint the listener is listening on after it has
+    ///     started listening.
     /// </summary>
     [PublicAPI]
-    public IPEndPoint EndPoint { get; set; }
+    public IPEndPoint EndPoint { get; private set; }
 
     /// <summary>
-    ///     The thread this listener is running on, or null if it is not running
+    ///     The thread this listener is running on, or null if it is not running in a thread
     /// </summary>
     [PublicAPI]
     public Thread? ListenThread { get; private set; }
@@ -55,16 +56,34 @@ public class MessengerListener : ConcurrentDisposable
         ListenThread = null;
     }
 
-    public void StartListen(IConnectionReceiver connectionReceiver)
+    /// <summary>
+    ///     listens blocking on the current thread
+    /// </summary>
+    [PublicAPI]
+    public void Listen(IConnectionReceiver connectionReceiver)
     {
-        if (_isListening)
-        {
-            throw new InvalidOperationException($"{nameof(MessengerListener)} is already listening.");
-        }
+        ListenSocket = CreateAndBindListenSocket();
+        Listen(ListenSocket, connectionReceiver);
+        ListenThread = Thread.CurrentThread;
+    }
 
-        ListenSocket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+    /// <summary>
+    ///     starts listening asynchronously in a new task
+    /// </summary>
+    [PublicAPI]
+    public async Task ListenAsync(IConnectionReceiver connectionReceiver, CancellationToken cancellationToken)
+    {
+        ListenSocket = CreateAndBindListenSocket();
+        await ListenAsync(ListenSocket, connectionReceiver, cancellationToken);
+    }
 
-        ListenSocket.Bind(EndPoint);
+    /// <summary>
+    ///     starts listening in a new thread
+    /// </summary>
+    [PublicAPI]
+    public Thread StartListening(IConnectionReceiver connectionReceiver)
+    {
+        ListenSocket = CreateAndBindListenSocket();
 
         string threadName = $"{Configuration.ThreadName}:{EndPoint.Port}";
 
@@ -76,12 +95,65 @@ public class MessengerListener : ConcurrentDisposable
         }
 
         ListenThread = ExecuteIfNotDisposed(StartListenThread);
-        _isListening = true;
+
+        return ListenThread;
     }
 
-    protected override void DisposeManagedResources()
+    /// <exception cref="InvalidOperationException">operation is invalid if the listener is already listening</exception>
+    /// <returns>the listen socket, which shall be assigned to <see cref="ListenSocket" /></returns>
+    private Socket CreateAndBindListenSocket()
     {
-        ListenSocket?.Dispose();
+        if (IsListening)
+        {
+            throw new InvalidOperationException($"{nameof(MessengerListener)} is already listening.");
+        }
+
+        var listenSocket = new Socket(IPAddress.Any.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        listenSocket.Bind(EndPoint);
+        EndPoint = (IPEndPoint)listenSocket.LocalEndPoint;
+        ListenSocket = listenSocket;
+        return listenSocket;
+    }
+
+    private async ValueTask ListenAsync(Socket socket, IConnectionReceiver connectionReceiver, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.Register(Dispose);
+
+            socket.Listen(Configuration.ListenBacklogSize);
+
+            LogStartedListening();
+
+            while (!IsDisposed)
+            {
+                Socket newConnectionSocket = await socket.AcceptAsync();
+
+                void AcceptUnsafe()
+                {
+                    Accept(newConnectionSocket, connectionReceiver);
+                }
+
+                void Decline()
+                {
+                    newConnectionSocket.Dispose();
+                    LogDeclinedNewConnectionDuringDisposal();
+                }
+
+                ExecuteIfNotDisposed(AcceptUnsafe, alternativeAction: Decline, throwObjectDisposedExceptionOtherwise: false);
+            }
+        }
+        catch (Exception exception)
+        {
+            if (HandleExceptionWhileListening(exception))
+            {
+                throw;
+            }
+        }
+        finally
+        {
+            FinalizeListening();
+        }
     }
 
     private void Listen(Socket socket, IConnectionReceiver connectionReceiver)
@@ -112,35 +184,60 @@ public class MessengerListener : ConcurrentDisposable
         }
         catch (Exception exception)
         {
-            switch (exception)
+            if (HandleExceptionWhileListening(exception))
             {
-                case SocketException { SocketErrorCode: SocketError.Interrupted }:
-                case ObjectDisposedException:
-                    if (IsDisposed)
-                    {
-                        LogStoppedListeningDueToDisposal(exception);
-                    }
-                    else
-                    {
-                        LogStoppedListeningDueToException(exception);
-                        Dispose();
-                        throw;
-                    }
-
-                    return;
-                default:
-                    LogStoppedListeningDueToException(exception);
-                    Dispose();
-                    throw;
+                throw;
             }
         }
         finally
         {
-            _isListening = false;
-            ListenThread = null;
-            ListenSocket?.Dispose();
-            ListenSocket = null;
+            FinalizeListening();
         }
+    }
+
+    /// <returns>whether exception needs to be rethrown, i.e. escalated to outer scope</returns>
+    private bool HandleExceptionWhileListening(Exception exception)
+    {
+        switch (exception)
+        {
+            case SocketException { SocketErrorCode: SocketError.Interrupted }:
+            case SocketException { SocketErrorCode: SocketError.OperationAborted }:
+            case ObjectDisposedException:
+                if (IsDisposed)
+                {
+                    if (exception is SocketException socketException)
+                    {
+                        LogStoppedListeningDueToDisposal(socketException);
+                    }
+                    else
+                    {
+                        LogStoppedListeningDueToDisposal(exception);
+                    }
+
+                    return false;
+                }
+
+                LogStoppedListeningDueToException(exception);
+                Dispose();
+                return true;
+            default:
+                LogStoppedListeningDueToException(exception);
+                Dispose();
+                return true;
+        }
+    }
+
+    private void FinalizeListening()
+    {
+        IsListening = false;
+        ListenThread = null;
+        ListenSocket?.Dispose();
+        ListenSocket = null;
+    }
+
+    protected override void DisposeManagedResources()
+    {
+        ListenSocket?.Dispose();
     }
 
     private async void Accept(Socket socket, IConnectionReceiver connectionReceiver)
@@ -194,8 +291,9 @@ public class MessengerListener : ConcurrentDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    "{LoggingName} started listening with a backlog of {BacklogSize}",
+                    "{LoggingName} started listening on port {Port} with a backlog of {BacklogSize}",
                     Configuration.LoggingName,
+                    EndPoint.Port,
                     Configuration.ListenBacklogSize
                 );
             }
@@ -221,6 +319,28 @@ public class MessengerListener : ConcurrentDisposable
         }
     }
 
+    private void LogStoppedListeningDueToDisposal(SocketException socketException)
+    {
+        if (Logger != null)
+        {
+            LogConfiguration configuration = Configuration.LogStoppedListeningDueToDisposal;
+            if (Logger.GetIsEnabled(configuration))
+            {
+                SocketError socketError = socketException.SocketErrorCode;
+                Logger.Log
+                (
+                    configuration.Level,
+                    configuration.Id,
+                    Configuration.LogExceptionThatStoppedListeningWhileDisposed ? socketException : null,
+                    "{LoggingName} stopped listening due to disposal with socket error {SocketError} ({SocketErrorCode})",
+                    Configuration.LoggingName,
+                    socketError,
+                    (int)socketError
+                );
+            }
+        }
+    }
+
     private void LogStoppedListeningDueToDisposal(Exception exception)
     {
         if (Logger != null)
@@ -232,7 +352,7 @@ public class MessengerListener : ConcurrentDisposable
                 (
                     configuration.Level,
                     configuration.Id,
-                    Configuration.LogExceptionWhenLoggingStoppedListeningDueToDisposal ? exception : null,
+                    Configuration.LogExceptionThatStoppedListeningWhileDisposed ? exception : null,
                     "{LoggingName} stopped listening due to disposal",
                     Configuration.LoggingName
                 );

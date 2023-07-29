@@ -73,6 +73,8 @@ public class Messenger : MarkedDisposable
                     break;
                 case ReceiveReturnCode.ConnectionClosed:
                     return ListenReturnCode.ConnectionClosed;
+                case ReceiveReturnCode.ConnectionDisposed:
+                    return ListenReturnCode.ConnectionDisposed;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -10,7 +10,9 @@ namespace MsbRpc.Test.Base.Generic;
 
 public class Test<TTest> : Test where TTest : Test<TTest>
 {
-    [PublicAPI] protected static readonly ILogger<TTest> Logger;
+    [PublicAPI] protected static readonly ILogger<TTest> Logger = CreateLogger();
 
-    static Test() => Logger = TestUtility.LoggerFactory.CreateLogger<TTest>();
+    [PublicAPI] public static ILoggerFactory LoggerFactory => TestUtility.LoggerFactory;
+
+    private static ILogger<TTest> CreateLogger() => LoggerFactory.CreateLogger<TTest>();
 }

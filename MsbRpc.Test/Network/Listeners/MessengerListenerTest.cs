@@ -1,48 +1,40 @@
 ﻿#region
 
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.Listeners;
-using Listener = MsbRpc.Servers.Listeners.MessengerListener;
+using MsbRpc.Test.Base.Generic;
 
 #endregion
 
-namespace MsbRpc.Test.Network.MessengerListener;
+namespace MsbRpc.Test.Network.Listeners;
 
 [TestClass]
-public class MessengerListenerTest : Base.Test
+public class MessengerListenerTest : Test<MessengerListenerTest>
 {
-    private readonly MessengerListenerConfigurationBuilder _configuration;
+    private readonly MessengerListenerConfigurator _configuration;
 
-    private readonly ILogger<MessengerListenerTest> _logger;
-
-    private readonly ILoggerFactory _loggerFactory;
-
-    public MessengerListenerTest()
-    {
-        _loggerFactory = CreateLoggerFactory();
-        _logger = _loggerFactory.CreateLogger<MessengerListenerTest>();
-        _configuration = new MessengerListenerConfigurationBuilder { LoggerFactory = _loggerFactory };
-    }
+    public MessengerListenerTest() => _configuration = new MessengerListenerConfigurator { LoggerFactory = LoggerFactory };
 
     [TestMethod]
     public void Listens()
     {
-        using Listener listener = new(_configuration);
-        listener.StartListen(new NullConnectionReceiver());
+        using MessengerListener listener = new(_configuration);
+        listener.StartListening(new NullConnectionReceiver());
     }
 
     [TestMethod]
     public async Task ConnectsOnce()
     {
         var messengerReceiver = new MockConnectionReceiver();
-        using var listener = new DefaultMessengerListener(_configuration);
-        listener.StartListen(messengerReceiver);
-        await Messenger.ConnectAsync(listener.EndPoint, _loggerFactory);
-        await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
+        using var listener = new MessengerListener(_configuration);
+        Task listenTask = listener.ListenAsync(messengerReceiver, CancellationToken);
+        await Messenger.ConnectAsync(listener.EndPoint, Logger);
+        await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, Logger, CancellationToken);
         Assert.AreEqual(1, messengerReceiver.Messengers.Count);
+        listener.Dispose();
+        await listenTask;
     }
 
     // [TestMethod]

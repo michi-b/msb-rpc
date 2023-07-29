@@ -10,33 +10,23 @@ namespace MsbRpc.Configuration;
 public readonly struct MessengerListenerConfiguration
 {
     public readonly ILoggerFactory? LoggerFactory;
-
     public readonly LogConfiguration LogAcceptedNewUnIdentifiedConnection;
-
     public readonly LogConfiguration LogCompletedIdentifiedConnectionTask;
     public readonly LogConfiguration LogAcceptedNewIdentifiedConnection;
-
     public readonly LogConfiguration LogDeclinedNewConnectionDuringDisposal;
-
     public readonly LogConfiguration LogDeclinedNewConnectionDueToException;
     public readonly LogConfiguration LogStoppedListeningDueToDisposal;
-
+    public readonly bool LogExceptionThatStoppedListeningWhileDisposed;
     public readonly LogConfiguration LogStoppedListeningDueToException;
-
     public readonly LogConfiguration LogStartedListening;
-
     public readonly LogConfiguration LogWasCreated;
 
-    public readonly bool LogExceptionWhenLoggingStoppedListeningDueToDisposal;
-
     public readonly int ListenBacklogSize;
-
     public readonly string LoggingName;
     public readonly int Port;
-
     public readonly string ThreadName;
 
-    public MessengerListenerConfiguration(MessengerListenerConfigurationBuilder builder)
+    public MessengerListenerConfiguration(MessengerListenerConfigurator builder)
     {
         LoggerFactory = builder.LoggerFactory;
         ListenBacklogSize = builder.ListenBacklogSize;
@@ -44,7 +34,7 @@ public readonly struct MessengerListenerConfiguration
         LogCompletedIdentifiedConnectionTask = builder.LogCompletedIdentifiedConnectionTask;
         LogAcceptedNewIdentifiedConnection = builder.LogAcceptedNewIdentifiedConnection;
         LogDeclinedNewConnectionDuringDisposal = builder.LogDeclinedNewConnectionDuringDisposal;
-        LogExceptionWhenLoggingStoppedListeningDueToDisposal = builder.LogExceptionWhenLoggingStoppedListeningDueToDisposal;
+        LogExceptionThatStoppedListeningWhileDisposed = builder.LogExceptionThatStoppedListeningWhileDisposed;
         LoggingName = builder.LoggingName;
         LogStartedListening = builder.LogStartedListening;
         LogStoppedListeningDueToDisposal = builder.LogStoppedListeningDueToDisposal;
