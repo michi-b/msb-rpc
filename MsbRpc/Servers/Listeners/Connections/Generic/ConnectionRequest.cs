@@ -13,7 +13,7 @@ namespace MsbRpc.Servers.Listeners.Connections.Generic;
 public abstract class ConnectionRequest<TId> where TId : struct
 {
     protected const int MessageSizeWithoutId = PrimitiveSerializer.ByteSize + Message.Offset;
-    public ConnectionRequestType ConnectionRequestType { get; }
+    public ConnectionRequestType Type { get; }
     public TId? Id { get; }
 
     protected abstract int IdSize { get; }
@@ -43,13 +43,13 @@ public abstract class ConnectionRequest<TId> where TId : struct
 
     protected ConnectionRequest(TId id)
     {
-        ConnectionRequestType = ConnectionRequestType.Identified;
+        Type = ConnectionRequestType.Identified;
         Id = id;
     }
 
     protected ConnectionRequest()
     {
-        ConnectionRequestType = ConnectionRequestType.UnIdentified;
+        Type = ConnectionRequestType.UnIdentified;
         Id = null;
     }
 
@@ -57,7 +57,25 @@ public abstract class ConnectionRequest<TId> where TId : struct
     {
         string idString = Id.HasValue ? $"ID : {Id.Value}" : "no ID";
 
-        return $"'{ConnectionRequestType}, {idString}'";
+        return $"'{Type}, {idString}'";
+    }
+
+    public Message GetMessage(RpcBuffer buffer)
+    {
+        int count = GetSize(Id.HasValue ? ConnectionRequestSizeOptions.WithId : ConnectionRequestSizeOptions.None);
+
+        Message message = buffer.GetMessage(count);
+
+        BufferWriter bufferWriter = new(message.Buffer);
+
+        bufferWriter.Write((byte)Type);
+
+        if (Id.HasValue)
+        {
+            Write(bufferWriter, Id.Value);
+        }
+
+        return message;
     }
 
     private int GetSize(ConnectionRequestSizeOptions options)
@@ -75,24 +93,6 @@ public abstract class ConnectionRequest<TId> where TId : struct
         }
 
         return size;
-    }
-
-    public Message GetMessage(RpcBuffer buffer)
-    {
-        int count = GetSize(Id.HasValue ? ConnectionRequestSizeOptions.WithId : ConnectionRequestSizeOptions.None);
-
-        Message message = buffer.GetMessage(count);
-
-        BufferWriter bufferWriter = new(message.Buffer);
-
-        bufferWriter.Write((byte)ConnectionRequestType);
-
-        if (Id.HasValue)
-        {
-            Write(bufferWriter, Id.Value);
-        }
-
-        return message;
     }
 
     protected abstract void Write(BufferWriter bufferWriter, TId id);

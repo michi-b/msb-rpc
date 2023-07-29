@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -12,6 +14,8 @@ using MsbRpc.Messaging;
 using MsbRpc.Network;
 using MsbRpc.Servers.Listeners.Connections;
 using MsbRpc.Sockets;
+
+#endregion
 
 namespace MsbRpc.Servers.Listeners;
 
@@ -144,7 +148,7 @@ public class MessengerListener : ConcurrentDisposable
         try
         {
             Messenger messenger = new(new RpcSocket(socket));
-            bool intercepted = await Intercept(messenger);
+            bool intercepted = await Accept(messenger);
             if (!intercepted)
             {
                 connectionReceiver.Accept(messenger);
@@ -157,7 +161,8 @@ public class MessengerListener : ConcurrentDisposable
         }
     }
 
-    protected virtual Task<bool> Intercept(Messenger messenger) => Task.FromResult(false);
+    /// <returns>whether the messenger was accepted non-unidentified (unidentified messenger acceptance was intercepted)</returns>
+    protected virtual Task<bool> Accept(Messenger messenger) => Task.FromResult(false);
 
     private void LogWasCreated()
     {
@@ -253,8 +258,6 @@ public class MessengerListener : ConcurrentDisposable
         }
     }
 
-
-
     internal void LogAcceptedNewIdentifiedConnection(int id)
     {
         if (Logger != null)
@@ -273,7 +276,7 @@ public class MessengerListener : ConcurrentDisposable
             }
         }
     }
-    
+
     private void LogDeclinedNewConnectionDuringDisposal()
     {
         if (Logger != null)

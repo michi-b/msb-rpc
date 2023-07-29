@@ -4,5 +4,5 @@ public enum ConnectionResult
 {
     Okay = 0,
     InvalidId = 1,
-    Error = 2,
+    Error = 2
 }

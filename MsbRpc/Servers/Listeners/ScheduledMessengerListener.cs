@@ -1,9 +1,12 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MsbRpc.Configuration;
+using MsbRpc.Exceptions;
 using MsbRpc.Extensions;
 using MsbRpc.Messaging;
 using MsbRpc.Serialization.Buffers;
@@ -17,28 +20,73 @@ namespace MsbRpc.Servers.Listeners;
 
 public abstract class ScheduledMessengerListener<TId> : MessengerListener where TId : struct
 {
+    private readonly RpcBuffer _buffer;
     private readonly Func<Message, ConnectionRequest<TId>> _readConnectionRequest;
-    private readonly IConcurrentIdentifiedItemRegistry<TId, ConnectionTask> _registry;
-    protected RpcBuffer Buffer;
+    private readonly IConnectionTaskRegistry<TId> _registry;
 
     protected ScheduledMessengerListener
     (
         MessengerListenerConfiguration configuration,
-        IConcurrentIdentifiedItemRegistry<TId, ConnectionTask> registry
+        IConnectionTaskRegistry<TId> registry
     ) : base(configuration)
     {
         _registry = registry;
         _readConnectionRequest = ReadConnectionRequest;
-        Buffer = new RpcBuffer();
+        _buffer = new RpcBuffer();
+    }
+
+    public KeyValuePair<TId, ConnectionTask> Schedule() => _registry.Add(new ConnectionTask());
+
+    protected static async ValueTask<Messenger> ConnectAsync
+    (
+        IPEndPoint remoteEndPoint,
+        RpcBuffer buffer,
+        Func<TId, ConnectionRequest<TId>> createIdentifiedConnectionRequest,
+        TId id,
+        ILogger? logger = null
+    )
+    {
+        Messenger messenger = await Messenger.ConnectAsync(remoteEndPoint, logger);
+        await messenger.SendAsync(createIdentifiedConnectionRequest(id).GetMessage(buffer));
+        var connectionResult = (ConnectionResult)(await messenger.ReceiveMessageAsync(buffer)).GetReader().ReadInt();
+        if (connectionResult != ConnectionResult.Okay)
+        {
+            messenger.Dispose();
+            throw new ConnectionFailedException(connectionResult);
+        }
+
+        return messenger;
+    }
+
+    protected static async ValueTask<Messenger> ConnectAsync
+    (
+        IPEndPoint remoteEndPoint,
+        RpcBuffer buffer,
+        Func<ConnectionRequest<TId>> createUnIdentifiedConnectionRequest,
+        ILogger? logger = null
+    )
+    {
+        Messenger messenger = await Messenger.ConnectAsync(remoteEndPoint, logger);
+        await messenger.SendAsync(createUnIdentifiedConnectionRequest().GetMessage(buffer));
+        var connectionResult = (ConnectionResult)(await messenger.ReceiveMessageAsync(buffer)).GetReader().ReadInt();
+        if (connectionResult != ConnectionResult.Okay)
+        {
+            messenger.Dispose();
+            throw new ConnectionFailedException(connectionResult);
+        }
+
+        return messenger;
     }
 
     protected abstract ConnectionRequest<TId> ReadConnectionRequest(Message message);
 
-    protected override async Task<bool> Intercept(Messenger messenger)
+    /// <inheritdoc cref="MessengerListener.Accept(Messenger)" />
+    /// >
+    protected override async Task<bool> Accept(Messenger messenger)
     {
-        ConnectionRequest<TId> connectionRequest = await messenger.ReceiveConnectionRequestAsync(Buffer, _readConnectionRequest);
+        ConnectionRequest<TId> connectionRequest = await messenger.ReceiveConnectionRequestAsync(_buffer, _readConnectionRequest);
 
-        switch (connectionRequest.ConnectionRequestType)
+        switch (connectionRequest.Type)
         {
             case ConnectionRequestType.UnIdentified:
                 return false;

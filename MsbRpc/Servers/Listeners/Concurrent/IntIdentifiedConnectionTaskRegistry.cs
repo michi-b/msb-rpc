@@ -6,9 +6,10 @@ using MsbRpc.Serialization.Primitives;
 
 namespace MsbRpc.Servers.Listeners.Concurrent;
 
-public class IntIdentifiedItemRegistry<TItem> : ConcurrentIdentifiedItemRegistry<int, TItem>
+public class IntIdentifiedConnectionTaskRegistry : ConnectionTaskRegistry<int>
 {
     private int _nextId;
+
     protected override int IdSize { get; } = PrimitiveSerializer.IntSize;
     protected override int AcquireNewId() => _nextId++;
 }

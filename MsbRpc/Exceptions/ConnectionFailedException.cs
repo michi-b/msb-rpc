@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using MsbRpc.Servers.Listeners.Connections;
+
+#endregion
 
 namespace MsbRpc.Exceptions;
 

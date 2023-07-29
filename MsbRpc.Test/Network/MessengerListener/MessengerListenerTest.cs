@@ -38,7 +38,7 @@ public class MessengerListenerTest : Base.Test
     public async Task ConnectsOnce()
     {
         var messengerReceiver = new MockConnectionReceiver();
-        using DefaultMessengerListener listener = new DefaultMessengerListener(_configuration);
+        using var listener = new DefaultMessengerListener(_configuration);
         listener.StartListen(messengerReceiver);
         await Messenger.ConnectAsync(listener.EndPoint, _loggerFactory);
         await WaitForConditionAsync(() => messengerReceiver.Messengers.Count == 1, _logger, CancellationToken);
