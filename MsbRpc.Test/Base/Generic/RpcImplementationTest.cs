@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsbRpc.Configuration.Builders;
 using MsbRpc.Contracts;
 using MsbRpc.EndPoints;
-using MsbRpc.EndPoints.Interfaces;
 using MsbRpc.Exceptions;
 using MsbRpc.Messaging;
 using MsbRpc.Servers.Listeners;
@@ -56,6 +55,7 @@ public abstract class RpcImplementationTest<TTest, TServerEndPoint, TClientEndPo
                 Assert.IsTrue(messengerListener.IsListening);
             }
         }
+
         Assert.IsFalse(messengerListener.IsListening);
     }
 

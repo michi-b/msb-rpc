@@ -42,6 +42,7 @@ internal class ConnectionReceiver<TServerEndPoint, TProcedure, TContract> : Conc
             ListenReturnCode listenReturnCode = task.Result;
             _logger.Log(LogLevel.Information, "Joining connection task {Task} with listen return code {ListenReturnCode}", task.Id, listenReturnCode);
         }
+
         _connections.Clear();
         base.DisposeManagedResources();
     }

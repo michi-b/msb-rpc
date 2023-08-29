@@ -2,7 +2,6 @@
 
 using System;
 using MsbRpc.Messaging;
-using MsbRpc.Servers.Listeners.Connections;
 
 #endregion
 
